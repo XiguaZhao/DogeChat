@@ -92,27 +92,34 @@ extension ChatRoomViewController: MessageInputDelegate {
 }
 
 extension ChatRoomViewController: MessageDelegate {
-  func receiveMessage(_ message: Message) {
+  
+  func receiveMessage(_ message: Message, option: MessageOption) {
+    if option != messageOption { return }
     insertNewMessageCell(message)
   }
   func updateOnlineNumber(to newNumber: Int) {
+    guard messageOption == .toAll else { return }
     navigationItem.title = "Let's Chat!" + "(\(newNumber)人在线)"
   }
   func receiveMessages(_ messages: [Message], pages: Int) {
-    let minId = (self.messages.last?.id) ?? Int.max
+    let minId = (self.messages.first?.id) ?? Int.max
     self.pagesAndCurNum.pages = pages
     let filtered = messages.filter { $0.id < minId }
     for message in filtered {
       self.messages.insert(message, at: 0)
       self.tableView.insertRows(at: [IndexPath(row: 0, section: 0)], with: .automatic)
+      if messageOption == .toAll {
+        manager.messagesGroup.insert(message, at: 0)
+      } else {
+        manager.messagesSingle.insert(message, at: 0, for: friendName)
+      }
     }
     self.tableView.refreshControl?.endRefreshing()
   }
 }
 
-//MARK: Refresh
 extension ChatRoomViewController {
-  
+  //MARK: Refresh
   func addRefreshController() {
     let controller = UIRefreshControl()
     controller.addTarget(self, action: #selector(displayHistory), for: .valueChanged)
@@ -124,8 +131,59 @@ extension ChatRoomViewController {
       self.tableView.refreshControl?.endRefreshing()
       return
     }
+    pagesAndCurNum.curNum = (self.messages.count / 10) + 1
     manager.historyMessages(for: (messageOption == .toAll) ? "chatRoom" : friendName, pageNum: pagesAndCurNum.curNum)
     pagesAndCurNum.curNum += 1
   }
   
+  //MARK: ContextMune
+  @available(iOS 13.0, *)
+  func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+    let cell = tableView.cellForRow(at: indexPath) as! MessageTableViewCell
+    let identifier = "\(indexPath.row)" as NSString
+    return UIContextMenuConfiguration(identifier: identifier, previewProvider: nil
+    ) { (menuElement) -> UIMenu? in
+      let copyAction = UIAction(title: "复制") { (_) in
+        let text = cell.messageLabel.text
+        UIPasteboard.general.string = text
+      }
+      var revokeAction: UIAction?
+      if self.messages[indexPath.row].messageSender == .ourself {
+        revokeAction = UIAction(title: "撤回") { (_) in
+          self.revoke(indexPath: indexPath)
+        }
+      }
+      let menu = UIMenu(title: "", image: nil, children: (revokeAction == nil) ? [copyAction] : [copyAction, revokeAction!])
+      return menu
+    }
+  }
+  
+  func revoke(indexPath: IndexPath) {
+    let id = messages[indexPath.row].id
+    manager.revokeMessage(id: id)
+    removeMessage(index: indexPath.row)
+  }
+  
+  func revokeSuccess() {
+    
+  }
+  
+  func removeMessage(index: Int) {
+    var updatedMessage = messages[index]
+    updatedMessage.message = "\(messages[index].senderUsername)撤回了一条消息"
+    updatedMessage.messageType = .join
+    messages[index] = updatedMessage
+    switch messageOption {
+    case .toAll:
+      manager.messagesGroup[index] = updatedMessage
+    case .toOne:
+      manager.messagesSingle.update(at: index, for: friendName, with: updatedMessage)
+    }
+    tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .automatic)
+  }
+  
+  func revokeMessage(_ id: Int) {
+    guard let index = messages.firstIndex(where: { $0.id == id }) else { return }
+    removeMessage(index: index)
+  }
 }

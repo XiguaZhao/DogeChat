@@ -41,6 +41,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     window?.rootViewController = UINavigationController(rootViewController: JoinChatViewController())
     window?.makeKeyAndVisible()
     
+    let icon = UIApplicationShortcutIcon(type: .add)
+    let item = UIApplicationShortcutItem(type: "add", localizedTitle: "添加快捷操作", localizedSubtitle: nil, icon: icon, userInfo: nil)
+    if UIApplication.shared.shortcutItems?.count == 0 {
+      UIApplication.shared.shortcutItems = [item]
+    }
+    
     return true
   }
   
@@ -48,6 +54,25 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     if (window?.rootViewController as! UINavigationController).topViewController?.title == "JoinChatVC" { return }
     guard !WebSocketManager.shared.cookie.isEmpty else { return }
     WebSocketManager.shared.connect()
+  }
+  
+  func application(_ application: UIApplication, performActionFor shortcutItem: UIApplicationShortcutItem, completionHandler: @escaping (Bool) -> Void) {
+    guard let nav = window?.rootViewController as? UINavigationController else { return }
+    switch shortcutItem.type {
+    case "add":
+      if nav.topViewController is SelectShortcutTVC { return }
+      nav.pushViewController(SelectShortcutTVC(), animated: true)
+    case "contact":
+      if !(nav.topViewController is JoinChatViewController) {
+        nav.popToRootViewController(animated: true)
+      }
+      guard let userInfo = shortcutItem.userInfo, let username = userInfo["username"] as? String,
+      let password = userInfo["password"] as? String else { return }
+      guard let vc = nav.topViewController as? JoinChatViewController else { return }
+      vc.login(username: username, password: password)
+    default:
+      return
+    }
   }
       
 }

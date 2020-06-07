@@ -52,19 +52,23 @@ extension JoinChatViewController: UITextFieldDelegate {
   func textFieldShouldReturn(_ textField: UITextField) -> Bool {
     if textField === textField { passwordTextField.resignFirstResponder() } else { textField.resignFirstResponder() }
     if let username = nameTextField.text, let password = passwordTextField.text {
-      manager.login(username: username, password: password) { loginResult in
-        if loginResult == "登录成功" {
-          let contactsTVC = ContactsTableViewController()
-          contactsTVC.username = username
-          self.navigationController?.pushViewController(contactsTVC, animated: true)
-        } else {
-          let alert = UIAlertController(title: loginResult, message: "请重新检查输入", preferredStyle: .alert)
-          alert.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
-          self.present(alert, animated: true)
-        }
-      }
+      login(username: username, password: password)
     }
     return true
+  }
+  
+  func login(username: String, password: String) {
+    manager.login(username: username, password: password) { loginResult in
+      if loginResult == "登录成功" {
+        let contactsTVC = ContactsTableViewController()
+        contactsTVC.username = username
+        self.navigationController?.pushViewController(contactsTVC, animated: true)
+      } else {
+        let alert = UIAlertController(title: loginResult, message: "请重新检查输入", preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
+        self.present(alert, animated: true)
+      }
+    }
   }
 }
 

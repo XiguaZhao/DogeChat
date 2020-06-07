@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import AVKit
 
 protocol ChatRoomDelegate: class {
   func receive(message: Message)
@@ -27,7 +28,7 @@ class ChatRoom: NSObject {
     var readStream: Unmanaged<CFReadStream>?
     var writeStream: Unmanaged<CFWriteStream>?
     
-    CFStreamCreatePairWithSocketToHost(kCFAllocatorDefault, "47.102.114.94" as CFString, 12345, &readStream, &writeStream)
+    CFStreamCreatePairWithSocketToHost(kCFAllocatorDefault, "47.102.114.94" as CFString, 5060, &readStream, &writeStream)
     inputStream = readStream!.takeRetainedValue()
     outputStream = writeStream!.takeRetainedValue()
     
@@ -68,6 +69,18 @@ class ChatRoom: NSObject {
     inputStream.close()
     outputStream.close()
   }
+  
+  func testSpeech() {
+    Timer.scheduledTimer(withTimeInterval: 2, repeats: false) { (_) in
+      print("------")
+      guard let url = Bundle.main.url(forResource: "test", withExtension: "m4a") else { return }
+      guard let data = try? Data(contentsOf: url) else { return }
+      _ = data.withUnsafeBytes {
+        guard let pointer = $0.baseAddress?.assumingMemoryBound(to: UInt8.self) else { return }
+        print(self.outputStream.write(pointer, maxLength: data.count))
+      }
+    }
+  }
 }
 
 extension ChatRoom: StreamDelegate {
@@ -98,10 +111,11 @@ extension ChatRoom: StreamDelegate {
         print(error)
         break
       }
+//      print(String(bytesNoCopy: buffer, length: numberOfBytesRead, encoding: .utf8, freeWhenDone: true))
       
-      if let message = processedMessageString(buffer: buffer, length: numberOfBytesRead) {
-        delegate?.receive(message: message)
-      }
+//      if let message = processedMessageString(buffer: buffer, length: numberOfBytesRead) {
+//        print(message)
+//      }
     }
   }
   

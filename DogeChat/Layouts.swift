@@ -33,7 +33,7 @@ import UIKit
 extension ChatRoomViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
-    
+    manager.messageDelegate = self
     NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillChange(notification:)), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
     
     addRefreshController()
@@ -58,7 +58,7 @@ extension ChatRoomViewController {
     }
   }
   func loadViews() {
-    navigationItem.title = (self.messageOption == .toOne) ? friendName : "let's Chat!"
+    navigationItem.title = (self.messageOption == .toOne) ? friendName : "Let's Chat!"
     navigationItem.backBarButtonItem?.title = "Run!"
     
     view.backgroundColor = UIColor(red: 24/255, green: 180/255, blue: 128/255, alpha: 1.0)
@@ -107,8 +107,8 @@ extension JoinChatViewController {
     view.addSubview(logoImageView)
     view.addSubview(nameTextField)
     view.addSubview(passwordTextField)
-    nameTextField.text = "username"
-    passwordTextField.text = "cwq980316"
+    nameTextField.text = "赵锡光"
+    passwordTextField.text = "1234567890"//"cwq980316"
   }
 
   func loadViews() {

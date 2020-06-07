@@ -30,6 +30,8 @@
 		07C6AF93247D1AF70007222F /* NotificationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07C6AF92247D1AF70007222F /* NotificationController.swift */; };
 		07C6AF95247D1AF80007222F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 07C6AF94247D1AF80007222F /* Assets.xcassets */; };
 		07C6AF9A247D1AF80007222F /* ChatWatch.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 07C6AF7D247D1AF10007222F /* ChatWatch.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		07E001D8248BFA7D00D4A287 /* test.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 07E001D5248BFA7D00D4A287 /* test.m4a */; };
+		07E001DA248CA56800D4A287 /* SelectShortcutTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07E001D9248CA56800D4A287 /* SelectShortcutTVC.swift */; };
 		AE28D6E51EC0AB9800E886B9 /* StringExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE28D6E41EC0AB9800E886B9 /* StringExtension.swift */; };
 		AE909BEB1EB54099009D9D95 /* MessageTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE909BEA1EB54099009D9D95 /* MessageTableViewCell.swift */; };
 		AE909BED1EB54B13009D9D95 /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE909BEC1EB54B13009D9D95 /* Message.swift */; };
@@ -150,6 +152,8 @@
 		07C6AF94247D1AF80007222F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		07C6AF96247D1AF80007222F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		07C6AF97247D1AF80007222F /* PushNotificationPayload.apns */ = {isa = PBXFileReference; lastKnownFileType = text; path = PushNotificationPayload.apns; sourceTree = "<group>"; };
+		07E001D5248BFA7D00D4A287 /* test.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; name = test.m4a; path = ../../../../Downloads/test.m4a; sourceTree = "<group>"; };
+		07E001D9248CA56800D4A287 /* SelectShortcutTVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectShortcutTVC.swift; sourceTree = "<group>"; };
 		0B69595E028EAB1E5EC8EA2E /* Pods-DogeChat.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DogeChat.release.xcconfig"; path = "Target Support Files/Pods-DogeChat/Pods-DogeChat.release.xcconfig"; sourceTree = "<group>"; };
 		11446107E0EC4769216E7331 /* Pods-DogeChat.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DogeChat.debug.xcconfig"; path = "Target Support Files/Pods-DogeChat/Pods-DogeChat.debug.xcconfig"; sourceTree = "<group>"; };
 		7CBE11CF0D4B9B7BC61E93CE /* Pods_DogeChat.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_DogeChat.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -321,6 +325,7 @@
 			isa = PBXGroup;
 			children = (
 				070C41732489204F0035314A /* SearchViewController.swift */,
+				07E001D9248CA56800D4A287 /* SelectShortcutTVC.swift */,
 				0702F7E5247E62B200B22846 /* ContactsTableViewController.swift */,
 				AEC6BF501EAF345A007CA6E5 /* ChatRoomViewController.swift */,
 				073144A7245FF94500D915E8 /* WebSocketManager.swift */,
@@ -334,6 +339,7 @@
 				AEC6BF4A1EAF320E007CA6E5 /* Info.plist */,
 				AEFEAA4F1EAF37BC00889E76 /* Inconsolata-Bold.ttf */,
 				AEFEAA501EAF37BC00889E76 /* Inconsolata-Regular.ttf */,
+				07E001D5248BFA7D00D4A287 /* test.m4a */,
 			);
 			path = DogeChat;
 			sourceTree = "<group>";
@@ -535,6 +541,7 @@
 				AEC6BF491EAF320E007CA6E5 /* LaunchScreen.storyboard in Resources */,
 				AEFEAA521EAF37BC00889E76 /* Inconsolata-Regular.ttf in Resources */,
 				AEFEAA511EAF37BC00889E76 /* Inconsolata-Bold.ttf in Resources */,
+				07E001D8248BFA7D00D4A287 /* test.m4a in Resources */,
 				AEC6BF461EAF320E007CA6E5 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -621,6 +628,7 @@
 				070C41742489204F0035314A /* SearchViewController.swift in Sources */,
 				AE909BEB1EB54099009D9D95 /* MessageTableViewCell.swift in Sources */,
 				070C417124879C440035314A /* Helper.swift in Sources */,
+				07E001DA248CA56800D4A287 /* SelectShortcutTVC.swift in Sources */,
 				071F970E247D45C1000B3DBC /* WatchSession.swift in Sources */,
 				AE909BEF1EB54C4B009D9D95 /* Label.swift in Sources */,
 				AE909BED1EB54B13009D9D95 /* Message.swift in Sources */,
@@ -947,6 +955,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
@@ -965,6 +974,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};

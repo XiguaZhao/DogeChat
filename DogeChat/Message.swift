@@ -36,20 +36,21 @@ enum MessageType: String{
 }
 
 struct Message {
-  let message: String
+  var message: String
   let senderUsername: String
   let messageSender: MessageSender
-  let messageType: MessageType
-  let date = ""
+  var messageType: MessageType
+  let date: String
   let option: MessageOption
   let id: Int
   
-  init(message: String, messageSender: MessageSender, username: String, messageType: MessageType, date: String = "", option: MessageOption = .toOne, id: Int = 0) {
+  init(message: String, messageSender: MessageSender, username: String, messageType: MessageType, option: MessageOption = .toOne, id: Int = 0, date: String = "") {
     self.message = message.withoutWhitespace()
     self.messageSender = messageSender
     self.senderUsername = username
     self.messageType = messageType
     self.option = option
     self.id = id
+    self.date = date
   }
 }

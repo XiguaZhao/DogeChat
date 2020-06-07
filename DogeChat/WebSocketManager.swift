@@ -15,9 +15,11 @@ import WatchConnectivity
 let url_pre = "https://procwq.top/"
 
 protocol MessageDelegate: class {
-  func receiveMessage(_ message: Message)
+  func receiveMessage(_ message: Message, option: MessageOption)
   func updateOnlineNumber(to newNumber: Int)
   func receiveMessages(_ messages: [Message], pages: Int)
+  func revokeMessage(_ id: Int)
+  func revokeSuccess()
 }
 
 enum MessageOption {
@@ -32,7 +34,7 @@ class WebSocketManager: NSObject {
   let encrypt = EncryptMessage()
   var maxId: Int {
     get {
-      UserDefaults.standard.value(forKey: "maxID") as! Int
+      (UserDefaults.standard.value(forKey: "maxID") as? Int) ?? 0
     }
     set {
       UserDefaults.standard.set(newValue, forKey: "maxID")
@@ -41,8 +43,7 @@ class WebSocketManager: NSObject {
   var username = ""
   var socket: WebSocket!
   var toBeUpdatedMessages = [Message]()
-  weak var groupDelegate: MessageDelegate?
-  weak var singleDelegate: MessageDelegate?
+  weak var messageDelegate: MessageDelegate?
   var messagesGroup: [Message] = []
   var messagesSingle: [String: [Message]] = [:]
   
@@ -88,13 +89,17 @@ class WebSocketManager: NSObject {
     socket.disconnect()
   }
   
+  func makeJsonString(for dict: [String: Any]) -> String {
+    let jsonData = try! JSONSerialization.data(withJSONObject: dict, options: .prettyPrinted)
+    let jsonStr = String(data: jsonData, encoding: .utf8)!
+    return jsonStr
+  }
+  
   func prepareEncrypt() {
     let publicKey = encrypt.getPublicKey()
     guard !publicKey.isEmpty else { return }
     let paras = ["method": "publicKey", "key": publicKey]
-    let jsonData = try! JSONSerialization.data(withJSONObject: paras, options: .prettyPrinted)
-    let json = String(data: jsonData, encoding: .utf8)!
-    socket.write(string: json) {
+    socket.write(string: makeJsonString(for: paras)) {
       print("已发送公钥")
     }
   }
@@ -123,9 +128,7 @@ class WebSocketManager: NSObject {
       let encryptedContent = encrypt.encryptMessage(content)
       paras = ["method": "NewMessage", "message": ["content": encryptedContent, "receiver": receiver, "sender": sender]]
     }
-    let jsonData = try! JSONSerialization.data(withJSONObject: paras, options: .prettyPrinted)
-    let json = String(data: jsonData, encoding: .utf8)!
-    socket.write(string: json) {
+    socket.write(string: makeJsonString(for: paras)) {
       print("已发送")
     }
   }
@@ -133,22 +136,24 @@ class WebSocketManager: NSObject {
   //MARK: History Messages
   func getUnreadMessage() {
     let paras: [String: Any] = ["method": "getUnreadMessage", "id": maxId]
-    let jsonData = try! JSONSerialization.data(withJSONObject: paras, options: .prettyPrinted)
-    let jsonStr = String(data: jsonData, encoding: .utf8)!
-    socket.write(string: jsonStr) {
+    socket.write(string: makeJsonString(for: paras)) {
       print("获取未读消息请求")
     }
   }
   
   func historyMessages(for name: String, pageNum: Int)  {
     let paras: [String: Any] = ["method": "getHistory", "friend": name, "pageNum": pageNum]
-    let jsonData = try! JSONSerialization.data(withJSONObject: paras, options: .prettyPrinted)
-    let jsonStr = String(data: jsonData, encoding: .utf8)!
-    socket.write(string: jsonStr) {
+    socket.write(string: makeJsonString(for: paras)) {
       print("获取历史消息")
     }
   }
-    
+  //MARK: Revoke
+  func revokeMessage(id: Int) {
+    let paras: [String: Any] = ["method": "revokeMessage", "id": id]
+    socket.write(string: makeJsonString(for: paras)) {
+      print("撤回消息")
+    }
+  }
 }
 
 extension WebSocketManager: WebSocketDelegate {
@@ -176,7 +181,6 @@ extension WebSocketManager: WebSocketDelegate {
   private func parseReceivedMessage(_ jsonString: String) {
     let json = JSON(parseJSON: jsonString)
     let method = json["method"].stringValue
-    var _message: Message?
     switch method {
     case "publicKey":
       let key = json["key"].stringValue
@@ -194,19 +198,19 @@ extension WebSocketManager: WebSocketDelegate {
       let id = json["id"].intValue
       maxId = max(maxId, id)
       let newMessage = Message(message: content, messageSender: .someoneElse, username: sender, messageType: .text, option: .toAll, id: id)
-      groupDelegate?.receiveMessage(newMessage)
+      messageDelegate?.receiveMessage(newMessage, option: .toAll)
       messagesGroup.append(newMessage)
 //      notifyWatch(newMessage: newMessage)
-      _message = newMessage
+      postNotification(message: newMessage)
     case "join":
       let user = json["user"].stringValue
       let number = json["total"].intValue
-      groupDelegate?.updateOnlineNumber(to: number)
+      messageDelegate?.updateOnlineNumber(to: number)
       let username = user.components(separatedBy: " ")[0]
       guard username != self.username else {
         return
       }
-      groupDelegate?.receiveMessage(Message(message: user, messageSender: .someoneElse, username: user, messageType: .join))
+      messageDelegate?.receiveMessage(Message(message: user, messageSender: .someoneElse, username: user, messageType: .join), option: .toAll)
     case "getUnreadMessage":
       let messages = json["messages"].arrayValue
       for message in messages {
@@ -214,9 +218,9 @@ extension WebSocketManager: WebSocketDelegate {
         maxId = max(maxId, id)
         let username = message["sender"].stringValue
         let newMessage = Message(message: message["content"].stringValue, messageSender: username == self.username ? .ourself : .someoneElse, username: username, messageType: .text, option: .toAll, id: id)
-        groupDelegate?.receiveMessage(newMessage)
+        messageDelegate?.receiveMessage(newMessage, option: .toAll)
         messagesGroup.append(newMessage)
-        _message = newMessage
+        postNotification(message: newMessage)
 //        notifyWatch(newMessage: newMessage)
       }
     case "NewMessage":
@@ -227,10 +231,10 @@ extension WebSocketManager: WebSocketDelegate {
         let sender = msg["messageSender"].stringValue
         let date = msg["messageTime"].stringValue
         let id = msg["messageId"].intValue
-        let newMessage = Message(message: decrypted, messageSender: .someoneElse, username: sender, messageType: .text, date: date, option: .toOne, id: id)
-        singleDelegate?.receiveMessage(newMessage)
+        let newMessage = Message(message: decrypted, messageSender: .someoneElse, username: sender, messageType: .text, option: .toOne, id: id, date: date)
+        messageDelegate?.receiveMessage(newMessage, option: .toOne)
         messagesSingle.add(newMessage, for: sender)
-        _message = newMessage
+        postNotification(message: newMessage)
       }
     case "getHistory":
       let pages = json["data"]["pages"].intValue
@@ -245,13 +249,21 @@ extension WebSocketManager: WebSocketDelegate {
         let newMessage = Message(message: content, messageSender: (sender == self.username) ? .ourself : .someoneElse, username: sender, messageType: .text, id: id)
         result.append(newMessage)
       }
-      singleDelegate?.receiveMessages(result, pages: pages)
-      groupDelegate?.receiveMessages(result, pages: pages)
+      messageDelegate?.receiveMessages(result, pages: pages)
+    case "revokeMessageSuccess":
+      if json["status"].intValue == 200 {
+        messageDelegate?.revokeSuccess()
+      }
+    case "revokeMessage":
+      let messageId = json["id"].intValue
+      messageDelegate?.revokeMessage(messageId)
     default:
       return
     }
-    guard let newMessage = _message else { return }
-    NotificationCenter.default.post(name: .receiveNewMessage, object: newMessage)
+  }
+  
+  private func postNotification(message: Message) {
+    NotificationCenter.default.post(name: .receiveNewMessage, object: message)
   }
   
   func notifyWatch(newMessage: Message) {

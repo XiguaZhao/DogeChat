@@ -58,11 +58,10 @@ class ContactsTableViewController: UITableViewController {
     self.refreshControl = control
   }
   
-  override func viewWillAppear(_ animated: Bool) {
-    super.viewWillAppear(animated)
-  }
   
   deinit {
+    manager.messagesGroup.removeAll()
+    manager.messagesSingle.removeAll()
     manager.disconnect()
   }
   
@@ -71,7 +70,7 @@ class ContactsTableViewController: UITableViewController {
       let height = tableView.cellForRow(at: IndexPath(row: 0, section: 0))?.contentView.frame.height
       else { return }
     if navigationController?.topViewController != self, let indexPath = tableView.indexPathForSelectedRow {
-      guard usernames[indexPath.row] != message.senderUsername else { return }
+      if usernames[indexPath.row] == message.senderUsername && message.option == .toOne { return }
       if indexPath.row == 0 && message.option == .toAll { return }
     }
     let offset: CGFloat = 10
@@ -114,6 +113,9 @@ class ContactsTableViewController: UITableViewController {
   override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
     let cell = tableView.dequeueReusableCell(withIdentifier: "defaultCell", for: indexPath)
     cell.textLabel?.text = usernames[indexPath.row]
+    if self.traitCollection.forceTouchCapability == .available {
+      registerForPreviewing(with: self, sourceView: cell)
+    }
     return cell
   }
   
@@ -121,22 +123,50 @@ class ContactsTableViewController: UITableViewController {
   
   
   override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    let chatRoomVC = ChatroomVC(for: indexPath)
+    tableView.cellForRow(at: indexPath)?.accessoryView = nil
+    self.navigationController?.pushViewController(chatRoomVC, animated: true)
+  }
+  
+  private func ChatroomVC(for indexPath: IndexPath) -> ChatRoomViewController {
     let chatRoomVC = ChatRoomViewController()
     chatRoomVC.username = username
     switch indexPath.row {
     case 0:
-      chatRoomVC.manager.groupDelegate = chatRoomVC
       chatRoomVC.messages = manager.messagesGroup
     default:
       chatRoomVC.messageOption = .toOne
       let friendName = usernames[indexPath.row]
       chatRoomVC.friendName = friendName
-      chatRoomVC.manager.singleDelegate = chatRoomVC
       chatRoomVC.messages = manager.messagesSingle[friendName] ?? []
     }
-    tableView.cellForRow(at: indexPath)?.accessoryView = nil
-    self.navigationController?.pushViewController(chatRoomVC, animated: true)
-//    tableView.deselectRow(at: indexPath, animated: true)
+    return chatRoomVC
   }
 
+}
+
+//MARK: 3D TOUCH
+extension ContactsTableViewController: UIViewControllerPreviewingDelegate {
+    
+  func previewingContext(_ previewingContext: UIViewControllerPreviewing, viewControllerForLocation location: CGPoint) -> UIViewController? {
+    guard let cell = previewingContext.sourceView as? UITableViewCell,
+      let indexPath = tableView.indexPath(for: cell) else { return nil }
+    let vc = ChatroomVC(for: indexPath)
+    let needGetHistory: Bool
+    switch indexPath.row {
+    case 0:
+      needGetHistory = manager.messagesGroup.isEmpty
+    default:
+      needGetHistory = manager.messagesSingle[usernames[indexPath.row]] == nil
+    }
+    if needGetHistory { vc.displayHistory() }
+    return vc
+  }
+  
+  func previewingContext(_ previewingContext: UIViewControllerPreviewing, commit viewControllerToCommit: UIViewController) {
+    (previewingContext.sourceView as? UITableViewCell)?.accessoryView = nil
+    navigationController?.pushViewController(viewControllerToCommit, animated: true)
+  }
+  
+  
 }

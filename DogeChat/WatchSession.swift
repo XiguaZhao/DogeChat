@@ -22,8 +22,8 @@ class WatchSession: NSObject, WCSessionDelegate {
   private override init() {
     session = WCSession.isSupported() ? .default : nil
     super.init()
-    session.delegate = self
-    session.activate()
+//    session.delegate = self
+//    session.activate()
   }
   
   func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {

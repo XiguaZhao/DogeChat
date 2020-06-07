@@ -22,9 +22,9 @@ class DogeChatTests: XCTestCase {
     func testExample() throws {
         // This is an example of a functional test case.
         // Use XCTAssert and related functions to verify your tests produce the correct results.
-      WebSocketManager.shared.login(username: "username2", password: "1234567890") { (msg) in
-        print(msg)
-      }
+      let manager = ChatRoom()
+      manager.setupNetworkCommunication()
+      manager.testSpeech()
     }
 
     func testPerformanceExample() throws {

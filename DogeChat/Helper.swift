@@ -16,11 +16,30 @@ extension ContactsTableViewController {
 }
 
 extension Dictionary where Value == [Message] {
-  mutating func add (_ element: Message, for key: Key) {
+  mutating func add(_ element: Message, for key: Key) {
     if self[key] == nil {
       self[key] = [element]
     } else {
       self[key]!.append(element)
     }
   }
+  
+  mutating func insert(_ element: Message, at index: Int, for key: Key) {
+    if self[key] == nil {
+      self[key] = [element]
+    } else {
+      self[key]!.insert(element, at: index)
+    }
+  }
+  
+  mutating func remove(at index: Int, for key: Key) -> Message? {
+    if self[key] == nil { return nil }
+    return self[key]!.remove(at: index)
+  }
+  
+  mutating func update(at index: Int, for key: Key, with newElement: Message) {
+    if self[key] == nil { return }
+    self[key]![index] = newElement
+  }
 }
+
