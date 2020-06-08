@@ -31,7 +31,7 @@
 import UIKit
 
 protocol MessageInputDelegate: class {
-  func sendWasTapped(message: String)
+  func sendWasTapped(content: String)
 }
 
 class MessageInputView: UIView {
@@ -74,7 +74,7 @@ class MessageInputView: UIView {
   
   @objc func sendTapped() {
     if let delegate = delegate, let message = textView.text {
-      delegate.sendWasTapped(message:  message)
+      delegate.sendWasTapped(content:  message)
       textView.text = ""
     }
   }

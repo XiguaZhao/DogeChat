@@ -72,30 +72,48 @@ class ChatRoomViewController: UIViewController {
 
 //MARK - Message Input Bar
 extension ChatRoomViewController: MessageInputDelegate {
-  func sendWasTapped(message: String) {
-    guard !message.isEmpty else { return }
-    let wrappedMessage = processMessageString(for: message)
+  func sendWasTapped(content: String) {
+    guard !content.isEmpty else { return }
+    let wrappedMessage = processMessageString(for: content)
     switch messageOption {
     case .toAll:
       manager.messagesGroup.append(wrappedMessage)
     case .toOne:
       manager.messagesSingle.add(wrappedMessage, for: friendName)
     }
-    manager.sendMessage(message, to: friendName, from: username, option: messageOption)
+    manager.sendMessage(content, to: friendName, from: username, option: messageOption, uuid: wrappedMessage.uuid)
 //    manager.notifyWatch(newMessage: wrappedMessage)
     insertNewMessageCell(wrappedMessage)
   }
   
   private func processMessageString(for string: String) -> Message {
-    return Message(message: string, messageSender: .ourself, username: username, messageType: .text, id: manager.maxId + 1)
+    return Message(message: string, messageSender: .ourself, username: username, messageType: .text, id: manager.maxId + 1, sendStatus: .fail)
   }
 }
 
 extension ChatRoomViewController: MessageDelegate {
   
-  func receiveMessage(_ message: Message, option: MessageOption) {
-    if option != messageOption  { return }
-    if option == .toOne && message.senderUsername != friendName { return }
+  func sendSuccess(uuid: String, correctId: Int) {
+    guard let index = messages.firstIndex(where: { $0.uuid == uuid }) else { return }
+    messages[index].id = correctId
+    messages[index].sendStatus = .success
+    if messageOption == .toAll { //在群聊中join也是一条消息
+      let messagesWithoutJoin = messages.filter { $0.messageType != .join }
+      guard let indexForAddToManager = messagesWithoutJoin.firstIndex(where: { $0.uuid == uuid }) else { return }
+      manager.messagesGroup[indexForAddToManager].id = correctId
+      manager.messagesGroup[indexForAddToManager].sendStatus = .success
+    } else {
+      manager.messagesSingle[friendName]![index].id = correctId
+      manager.messagesSingle[friendName]![index].sendStatus = .success
+    }
+    let indexPath = IndexPath(row: index, section: 0)
+    tableView.reloadRows(at: [indexPath], with: .none)
+    tableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
+  }
+  
+  func receiveMessage(_ message: Message, option: String) {
+    if option != messageOption.rawValue  { return }
+    if option == "toOne" && message.senderUsername != friendName { return }
     insertNewMessageCell(message)
   }
   func updateOnlineNumber(to newNumber: Int) {
@@ -171,9 +189,8 @@ extension ChatRoomViewController {
   
   func removeMessage(index: Int) {
     var updatedMessage = messages[index]
-    updatedMessage.message = "\(messages[index].senderUsername)撤回了一条消息"
-    updatedMessage.messageType = .join
-    messages[index] = updatedMessage
+    messages[index].message = "\(messages[index].senderUsername)撤回了一条消息"
+    messages[index].messageType = .join
     switch messageOption {
     case .toAll:
       manager.messagesGroup[index] = updatedMessage

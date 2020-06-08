@@ -12,17 +12,16 @@ import SwiftyJSON
 import Starscream
 import WatchConnectivity
 
-let url_pre = "https://procwq.top/"
-
-protocol MessageDelegate: class {
-  func receiveMessage(_ message: Message, option: MessageOption)
-  func updateOnlineNumber(to newNumber: Int)
-  func receiveMessages(_ messages: [Message], pages: Int)
-  func revokeMessage(_ id: Int)
-  func revokeSuccess(id: Int)
+@objc protocol MessageDelegate: class {
+  @objc optional func receiveMessage(_ message: Message, option: String)
+  @objc optional func updateOnlineNumber(to newNumber: Int)
+  @objc optional func receiveMessages(_ messages: [Message], pages: Int)
+  @objc func revokeMessage(_ id: Int)
+  @objc func revokeSuccess(id: Int)
+  @objc func sendSuccess(uuid: String, correctId: Int)
 }
 
-enum MessageOption {
+enum MessageOption: String {
   case toAll
   case toOne
 }
@@ -31,6 +30,7 @@ class WebSocketManager: NSObject {
     
   let session = AFHTTPSessionManager()
   var cookie = ""
+  let url_pre = "https://procwq.top/"
   let encrypt = EncryptMessage()
   var maxId: Int {
     get {
@@ -118,15 +118,15 @@ class WebSocketManager: NSObject {
     }, failure: nil)
   }
   
-  func sendMessage(_ content: String, to receiver: String = "", from sender: String = "xigua", option: MessageOption) {
+  func sendMessage(_ content: String, to receiver: String = "", from sender: String = "xigua", option: MessageOption, uuid: String) {
     UIApplication.shared.isNetworkActivityIndicatorVisible = true
     let paras: [String: Any]
     switch option {
     case .toAll:
-      paras = ["method": "sendToAll", "message": content, "receiver": receiver, "sender": sender]
+      paras = ["method": "sendToAll", "message": content, "receiver": receiver, "sender": sender, "uuid": uuid]
     case .toOne:
       let encryptedContent = encrypt.encryptMessage(content)
-      paras = ["method": "NewMessage", "message": ["content": encryptedContent, "receiver": receiver, "sender": sender]]
+      paras = ["method": "NewMessage", "message": ["content": encryptedContent, "receiver": receiver, "sender": sender], "uuid": uuid]
     }
     socket.write(string: makeJsonString(for: paras)) {
       print("已发送")
@@ -188,29 +188,34 @@ extension WebSocketManager: WebSocketDelegate {
       prepareEncrypt()
     case "sendToAllSuccess":
       UIApplication.shared.isNetworkActivityIndicatorVisible = false
-      maxId = max(maxId, json["id"].intValue)
+      let id = json["id"].intValue
+      maxId = max(maxId, id)
+      messageDelegate?.sendSuccess(uuid: json["uuid"].stringValue, correctId: id)
     case "sendMessageSuccess":
       UIApplication.shared.isNetworkActivityIndicatorVisible = false
-      maxId = max(maxId, json["data"]["messageId"].intValue)
+      let data = json["data"]
+      let id = data["messageId"].intValue
+      maxId = max(maxId, id)
+      messageDelegate?.sendSuccess(uuid: json["uuid"].stringValue, correctId: id)
     case "sendToAll":
       let content = json["message"].stringValue
       let sender = json["sender"].stringValue
       let id = json["id"].intValue
       maxId = max(maxId, id)
       let newMessage = Message(message: content, messageSender: .someoneElse, username: sender, messageType: .text, option: .toAll, id: id)
-      messageDelegate?.receiveMessage(newMessage, option: .toAll)
+      messageDelegate?.receiveMessage?(newMessage, option: "toAll")
       messagesGroup.append(newMessage)
 //      notifyWatch(newMessage: newMessage)
       postNotification(message: newMessage)
     case "join":
       let user = json["user"].stringValue
       let number = json["total"].intValue
-      messageDelegate?.updateOnlineNumber(to: number)
+      messageDelegate?.updateOnlineNumber?(to: number)
       let username = user.components(separatedBy: " ")[0]
       guard username != self.username else {
         return
       }
-      messageDelegate?.receiveMessage(Message(message: user, messageSender: .someoneElse, username: user, messageType: .join), option: .toAll)
+      messageDelegate?.receiveMessage?(Message(message: user, messageSender: .someoneElse, username: user, messageType: .join), option: "toAll")
     case "getUnreadMessage":
       let messages = json["messages"].arrayValue
       for message in messages {
@@ -218,7 +223,7 @@ extension WebSocketManager: WebSocketDelegate {
         maxId = max(maxId, id)
         let username = message["sender"].stringValue
         let newMessage = Message(message: message["content"].stringValue, messageSender: username == self.username ? .ourself : .someoneElse, username: username, messageType: .text, option: .toAll, id: id)
-        messageDelegate?.receiveMessage(newMessage, option: .toAll)
+        messageDelegate?.receiveMessage?(newMessage, option: "toAll")
         messagesGroup.append(newMessage)
         postNotification(message: newMessage)
 //        notifyWatch(newMessage: newMessage)
@@ -232,7 +237,7 @@ extension WebSocketManager: WebSocketDelegate {
         let date = msg["messageTime"].stringValue
         let id = msg["messageId"].intValue
         let newMessage = Message(message: decrypted, messageSender: .someoneElse, username: sender, messageType: .text, option: .toOne, id: id, date: date)
-        messageDelegate?.receiveMessage(newMessage, option: .toOne)
+        messageDelegate?.receiveMessage?(newMessage, option: "toOne")
         messagesSingle.add(newMessage, for: sender)
         postNotification(message: newMessage)
       }
@@ -249,7 +254,7 @@ extension WebSocketManager: WebSocketDelegate {
         let newMessage = Message(message: content, messageSender: (sender == self.username) ? .ourself : .someoneElse, username: sender, messageType: .text, id: id)
         result.append(newMessage)
       }
-      messageDelegate?.receiveMessages(result, pages: pages)
+      messageDelegate?.receiveMessages?(result, pages: pages)
     case "revokeMessageSuccess":
       if json["status"].intValue == 200 {
         let id = json["id"].intValue

@@ -27,6 +27,11 @@ class ContactsTableViewController: UITableViewController {
     barItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(presentSearchVC))
   }
   
+  override func viewWillAppear(_ animated: Bool) {
+    super.viewWillAppear(animated)
+    manager.messageDelegate = self
+  }
+  
   override func viewDidAppear(_ animated: Bool) {
     super.viewDidAppear(animated)
     navigationItem.rightBarButtonItem = barItem
@@ -170,6 +175,24 @@ extension ContactsTableViewController: UIViewControllerPreviewingDelegate {
     (previewingContext.sourceView as? UITableViewCell)?.accessoryView = nil
     navigationController?.pushViewController(viewControllerToCommit, animated: true)
   }
+}
+
+extension ContactsTableViewController: MessageDelegate {
+  func revokeMessage(_ id: Int) {
+    let messages = manager.messagesSingle
+    guard let index = messages.firstIndex(where: { $0.value.contains(where: {$0.id == id}) }) else { return }
+    let keyValue = messages[index]
+    guard let indexOfMessage = messages[keyValue.key]!.firstIndex(where: {$0.id == id}) else { return }
+    manager.messagesSingle[keyValue.key]![indexOfMessage].message = "\(keyValue.key)撤回了一条消息"
+    manager.messagesSingle[keyValue.key]![indexOfMessage].messageType = .join
+    self.receiveNewMessage(notification: Notification(name: .receiveNewMessage, object: manager.messagesSingle[keyValue.key]?[indexOfMessage], userInfo: nil))
+  }
   
+  func revokeSuccess(id: Int) {
+    
+  }
   
+  func sendSuccess(uuid: String, correctId: Int) {
+    
+  }
 }
