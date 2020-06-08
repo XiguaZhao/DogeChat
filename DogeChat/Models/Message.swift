@@ -43,6 +43,7 @@ struct Message {
   let date: String
   let option: MessageOption
   let id: Int
+  let uuid = UUID()
   
   init(message: String, messageSender: MessageSender, username: String, messageType: MessageType, option: MessageOption = .toOne, id: Int = 0, date: String = "") {
     self.message = message.withoutWhitespace()

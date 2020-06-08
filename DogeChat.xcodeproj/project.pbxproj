@@ -30,7 +30,6 @@
 		07C6AF93247D1AF70007222F /* NotificationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07C6AF92247D1AF70007222F /* NotificationController.swift */; };
 		07C6AF95247D1AF80007222F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 07C6AF94247D1AF80007222F /* Assets.xcassets */; };
 		07C6AF9A247D1AF80007222F /* ChatWatch.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 07C6AF7D247D1AF10007222F /* ChatWatch.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		07E001D8248BFA7D00D4A287 /* test.m4a in Resources */ = {isa = PBXBuildFile; fileRef = 07E001D5248BFA7D00D4A287 /* test.m4a */; };
 		07E001DA248CA56800D4A287 /* SelectShortcutTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07E001D9248CA56800D4A287 /* SelectShortcutTVC.swift */; };
 		AE28D6E51EC0AB9800E886B9 /* StringExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE28D6E41EC0AB9800E886B9 /* StringExtension.swift */; };
 		AE909BEB1EB54099009D9D95 /* MessageTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE909BEA1EB54099009D9D95 /* MessageTableViewCell.swift */; };
@@ -152,7 +151,6 @@
 		07C6AF94247D1AF80007222F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		07C6AF96247D1AF80007222F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		07C6AF97247D1AF80007222F /* PushNotificationPayload.apns */ = {isa = PBXFileReference; lastKnownFileType = text; path = PushNotificationPayload.apns; sourceTree = "<group>"; };
-		07E001D5248BFA7D00D4A287 /* test.m4a */ = {isa = PBXFileReference; lastKnownFileType = file; name = test.m4a; path = ../../../../Downloads/test.m4a; sourceTree = "<group>"; };
 		07E001D9248CA56800D4A287 /* SelectShortcutTVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectShortcutTVC.swift; sourceTree = "<group>"; };
 		0B69595E028EAB1E5EC8EA2E /* Pods-DogeChat.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DogeChat.release.xcconfig"; path = "Target Support Files/Pods-DogeChat/Pods-DogeChat.release.xcconfig"; sourceTree = "<group>"; };
 		11446107E0EC4769216E7331 /* Pods-DogeChat.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DogeChat.debug.xcconfig"; path = "Target Support Files/Pods-DogeChat/Pods-DogeChat.debug.xcconfig"; sourceTree = "<group>"; };
@@ -245,6 +243,55 @@
 			path = DogeChatTests;
 			sourceTree = "<group>";
 		};
+		078D413D248DF6E500E78605 /* ViewControllers */ = {
+			isa = PBXGroup;
+			children = (
+				070C41732489204F0035314A /* SearchViewController.swift */,
+				07E001D9248CA56800D4A287 /* SelectShortcutTVC.swift */,
+				0702F7E5247E62B200B22846 /* ContactsTableViewController.swift */,
+				AEC6BF501EAF345A007CA6E5 /* ChatRoomViewController.swift */,
+				AEC6BF401EAF320E007CA6E5 /* JoinChatViewController.swift */,
+				AEA5A1781EC362150041C7B4 /* ChatRoomViewController+Table.swift */,
+			);
+			path = ViewControllers;
+			sourceTree = "<group>";
+		};
+		078D413E248DF71700E78605 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				AE909BEA1EB54099009D9D95 /* MessageTableViewCell.swift */,
+				AE909BF01EB63FDB009D9D95 /* MessageInputView.swift */,
+				AEA5A1761EC3618C0041C7B4 /* Layouts.swift */,
+				AE909BEE1EB54C4B009D9D95 /* Label.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		078D413F248DF75B00E78605 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				073144A7245FF94500D915E8 /* WebSocketManager.swift */,
+				071F970D247D45C1000B3DBC /* WatchSession.swift */,
+				07513F8A2483FA7900EF68F8 /* Encrypt.swift */,
+				0772559423C1D3F600790339 /* ChatRoom.swift */,
+				078032832486B73900E370E0 /* RSAKeyEncoding.swift */,
+				AE909BEC1EB54B13009D9D95 /* Message.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		078D4140248DF79600E78605 /* SupportingFiles */ = {
+			isa = PBXGroup;
+			children = (
+				AEC6BF3E1EAF320E007CA6E5 /* AppDelegate.swift */,
+				AEC6BF451EAF320E007CA6E5 /* Assets.xcassets */,
+				AEC6BF471EAF320E007CA6E5 /* LaunchScreen.storyboard */,
+				AEFEAA4F1EAF37BC00889E76 /* Inconsolata-Bold.ttf */,
+				AEFEAA501EAF37BC00889E76 /* Inconsolata-Regular.ttf */,
+			);
+			path = SupportingFiles;
+			sourceTree = "<group>";
+		};
 		07C6AF7E247D1AF10007222F /* ChatWatch */ = {
 			isa = PBXGroup;
 			children = (
@@ -270,26 +317,10 @@
 			path = "ChatWatch Extension";
 			sourceTree = "<group>";
 		};
-		AE909BF21EB6C34B009D9D95 /* Other Stuff */ = {
-			isa = PBXGroup;
-			children = (
-				AEC6BF3E1EAF320E007CA6E5 /* AppDelegate.swift */,
-				AEC6BF401EAF320E007CA6E5 /* JoinChatViewController.swift */,
-				AE909BEA1EB54099009D9D95 /* MessageTableViewCell.swift */,
-				AE909BF01EB63FDB009D9D95 /* MessageInputView.swift */,
-				AE909BEC1EB54B13009D9D95 /* Message.swift */,
-				AE909BEE1EB54C4B009D9D95 /* Label.swift */,
-				AEA5A17A1EC3641C0041C7B4 /* Extensions */,
-			);
-			name = "Other Stuff";
-			sourceTree = "<group>";
-		};
 		AEA5A17A1EC3641C0041C7B4 /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
 				AE28D6E41EC0AB9800E886B9 /* StringExtension.swift */,
-				AEA5A1781EC362150041C7B4 /* ChatRoomViewController+Table.swift */,
-				AEA5A1761EC3618C0041C7B4 /* Layouts.swift */,
 				0711485923CEC3E900B6D63C /* Notification+Names.swift */,
 				070C417024879C440035314A /* Helper.swift */,
 			);
@@ -324,22 +355,12 @@
 		AEC6BF3D1EAF320E007CA6E5 /* DogeChat */ = {
 			isa = PBXGroup;
 			children = (
-				070C41732489204F0035314A /* SearchViewController.swift */,
-				07E001D9248CA56800D4A287 /* SelectShortcutTVC.swift */,
-				0702F7E5247E62B200B22846 /* ContactsTableViewController.swift */,
-				AEC6BF501EAF345A007CA6E5 /* ChatRoomViewController.swift */,
-				073144A7245FF94500D915E8 /* WebSocketManager.swift */,
-				071F970D247D45C1000B3DBC /* WatchSession.swift */,
-				07513F8A2483FA7900EF68F8 /* Encrypt.swift */,
-				0772559423C1D3F600790339 /* ChatRoom.swift */,
-				078032832486B73900E370E0 /* RSAKeyEncoding.swift */,
-				AE909BF21EB6C34B009D9D95 /* Other Stuff */,
-				AEC6BF451EAF320E007CA6E5 /* Assets.xcassets */,
-				AEC6BF471EAF320E007CA6E5 /* LaunchScreen.storyboard */,
 				AEC6BF4A1EAF320E007CA6E5 /* Info.plist */,
-				AEFEAA4F1EAF37BC00889E76 /* Inconsolata-Bold.ttf */,
-				AEFEAA501EAF37BC00889E76 /* Inconsolata-Regular.ttf */,
-				07E001D5248BFA7D00D4A287 /* test.m4a */,
+				078D413F248DF75B00E78605 /* Models */,
+				078D413E248DF71700E78605 /* Views */,
+				078D413D248DF6E500E78605 /* ViewControllers */,
+				AEA5A17A1EC3641C0041C7B4 /* Extensions */,
+				078D4140248DF79600E78605 /* SupportingFiles */,
 			);
 			path = DogeChat;
 			sourceTree = "<group>";
@@ -541,7 +562,6 @@
 				AEC6BF491EAF320E007CA6E5 /* LaunchScreen.storyboard in Resources */,
 				AEFEAA521EAF37BC00889E76 /* Inconsolata-Regular.ttf in Resources */,
 				AEFEAA511EAF37BC00889E76 /* Inconsolata-Bold.ttf in Resources */,
-				07E001D8248BFA7D00D4A287 /* test.m4a in Resources */,
 				AEC6BF461EAF320E007CA6E5 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

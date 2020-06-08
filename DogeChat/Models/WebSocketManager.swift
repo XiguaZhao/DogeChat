@@ -19,7 +19,7 @@ protocol MessageDelegate: class {
   func updateOnlineNumber(to newNumber: Int)
   func receiveMessages(_ messages: [Message], pages: Int)
   func revokeMessage(_ id: Int)
-  func revokeSuccess()
+  func revokeSuccess(id: Int)
 }
 
 enum MessageOption {
@@ -252,7 +252,8 @@ extension WebSocketManager: WebSocketDelegate {
       messageDelegate?.receiveMessages(result, pages: pages)
     case "revokeMessageSuccess":
       if json["status"].intValue == 200 {
-        messageDelegate?.revokeSuccess()
+        let id = json["id"].intValue
+        messageDelegate?.revokeSuccess(id: id)
       }
     case "revokeMessage":
       let messageId = json["id"].intValue

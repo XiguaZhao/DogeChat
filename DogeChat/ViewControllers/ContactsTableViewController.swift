@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import AudioToolbox
 
 class ContactsTableViewController: UITableViewController {
   
@@ -66,6 +67,8 @@ class ContactsTableViewController: UITableViewController {
   }
   
   @objc func receiveNewMessage(notification: Notification) {
+    AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
+    AudioServicesPlaySystemSound(1007)
     guard let message = notification.object as? Message,
       let height = tableView.cellForRow(at: IndexPath(row: 0, section: 0))?.contentView.frame.height
       else { return }

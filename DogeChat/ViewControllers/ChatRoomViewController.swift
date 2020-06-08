@@ -94,7 +94,8 @@ extension ChatRoomViewController: MessageInputDelegate {
 extension ChatRoomViewController: MessageDelegate {
   
   func receiveMessage(_ message: Message, option: MessageOption) {
-    if option != messageOption { return }
+    if option != messageOption  { return }
+    if option == .toOne && message.senderUsername != friendName { return }
     insertNewMessageCell(message)
   }
   func updateOnlineNumber(to newNumber: Int) {
@@ -148,7 +149,7 @@ extension ChatRoomViewController {
         UIPasteboard.general.string = text
       }
       var revokeAction: UIAction?
-      if self.messages[indexPath.row].messageSender == .ourself {
+      if self.messages[indexPath.row].messageSender == .ourself && self.messages[indexPath.row].messageType != .join {
         revokeAction = UIAction(title: "撤回") { (_) in
           self.revoke(indexPath: indexPath)
         }
@@ -161,11 +162,11 @@ extension ChatRoomViewController {
   func revoke(indexPath: IndexPath) {
     let id = messages[indexPath.row].id
     manager.revokeMessage(id: id)
-    removeMessage(index: indexPath.row)
   }
   
-  func revokeSuccess() {
-    
+  func revokeSuccess(id: Int) {
+    guard let index = messages.firstIndex(where: { $0.id == id }) else { return }
+    removeMessage(index: index)
   }
   
   func removeMessage(index: Int) {
