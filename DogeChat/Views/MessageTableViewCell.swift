@@ -41,7 +41,7 @@ class MessageTableViewCell: UITableViewCell {
   var sendStatus: SendStatus = .success
   let messageLabel = Label()
   let nameLabel = UILabel()
-  let indicator = UIActivityIndicatorView(style: .gray)
+  let indicator = UIActivityIndicatorView()
   
   func apply(message: Message) {
     nameLabel.text = message.senderUsername

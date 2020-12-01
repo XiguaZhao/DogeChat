@@ -59,6 +59,6 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate {
     tableView.beginUpdates()
     tableView.insertRows(at: [indexPath], with: .bottom)
     tableView.endUpdates()
-//    tableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
+    tableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
   }
 }

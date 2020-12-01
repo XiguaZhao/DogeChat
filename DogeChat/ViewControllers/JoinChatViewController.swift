@@ -37,11 +37,22 @@ class JoinChatViewController: UIViewController {
   let nameTextField = TextField()
   let passwordTextField = TextField()
   let manager = WebSocketManager.shared
+  let login = UIButton()
+  let signUp = UIButton()
   
   override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
-    view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard)))
   }
+  
+  @objc func loginTapped() {
+    guard let username = nameTextField.text, let password = passwordTextField.text else { return }
+    login(username: username, password: password)
+  }
+  
+  @objc func signUpTapped() {
+    navigationController?.pushViewController(SignUpViewController(), animated: true)
+  }
+  
   @objc func dismissKeyboard() {
     nameTextField.resignFirstResponder()
     passwordTextField.resignFirstResponder()
@@ -58,6 +69,11 @@ extension JoinChatViewController: UITextFieldDelegate {
   }
   
   func login(username: String, password: String) {
+    guard username.count != 0 && password.count != 0 else {
+      makeAlert(message: "信息不完整", detail: nil, showTime: 1, completion: nil)
+      return 
+    }
+    manager.username = username
     manager.login(username: username, password: password) { loginResult in
       if loginResult == "登录成功" {
         let contactsTVC = ContactsTableViewController()

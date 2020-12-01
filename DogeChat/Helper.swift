@@ -43,3 +43,14 @@ extension Dictionary where Value == [Message] {
   }
 }
 
+extension UIViewController {
+  func makeAlert(message: String, detail: String?, showTime: TimeInterval, completion: (() -> Void)?) {
+    DispatchQueue.main.async {
+      let alert = UIAlertController(title: message, message: detail, preferredStyle: .alert)
+      self.present(alert, animated: true)
+      Timer.scheduledTimer(withTimeInterval: showTime, repeats: false) { (_) in
+        alert.dismiss(animated: true, completion: completion)
+      }
+    }
+  }
+}

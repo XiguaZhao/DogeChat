@@ -96,19 +96,24 @@ extension JoinChatViewController {
     if #available(iOS 11.0, *) {
       navigationController?.navigationBar.prefersLargeTitles = true
     }
+    view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard)))
+    login.addTarget(self, action: #selector(loginTapped), for: .touchUpInside)
+    signUp.addTarget(self, action: #selector(signUpTapped), for: .touchUpInside)
     
     loadViews()
     
     nameTextField.textColor = .black
     passwordTextField.textColor = .black
     passwordTextField.isSecureTextEntry = true
+    login.setTitle("登录", for: .normal)
+    signUp.setTitle("注册", for: .normal)
     
     view.addSubview(shadowView)
     view.addSubview(logoImageView)
     view.addSubview(nameTextField)
     view.addSubview(passwordTextField)
-    nameTextField.text = "赵锡光"
-    passwordTextField.text = "1234567890"//"cwq980316"
+    view.addSubview(login)
+    view.addSubview(signUp)
   }
 
   func loadViews() {
@@ -152,6 +157,15 @@ extension JoinChatViewController {
     
     passwordTextField.bounds = CGRect(x: 0, y: 0, width: view.bounds.size.width - 40, height: 44)
     passwordTextField.center = CGPoint(x: view.bounds.size.width/2.0, y: logoImageView.center.y + logoImageView.bounds.size.height/2.0 + 20 + passwordTextField.frame.height + 50)
+    
+    login.translatesAutoresizingMaskIntoConstraints = false
+    signUp.translatesAutoresizingMaskIntoConstraints = false
+    NSLayoutConstraint.activate([
+      login.centerYAnchor.constraint(equalTo: signUp.centerYAnchor),
+      login.topAnchor.constraint(equalTo: passwordTextField.bottomAnchor, constant: 20),
+      login.centerXAnchor.constraint(equalTo: nameTextField.centerXAnchor),
+      signUp.trailingAnchor.constraint(equalTo: nameTextField.trailingAnchor, constant: -20)
+    ])
   }
 }
 

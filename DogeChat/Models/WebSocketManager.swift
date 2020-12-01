@@ -11,11 +11,14 @@ import AFNetworking
 import SwiftyJSON
 import Starscream
 import WatchConnectivity
+import CoreLocation
 
 @objc protocol MessageDelegate: class {
   @objc optional func receiveMessage(_ message: Message, option: String)
   @objc optional func updateOnlineNumber(to newNumber: Int)
   @objc optional func receiveMessages(_ messages: [Message], pages: Int)
+  @objc optional func newFriend()
+  @objc optional func newFriendRequest()
   @objc func revokeMessage(_ id: Int)
   @objc func revokeSuccess(id: Int)
   @objc func sendSuccess(uuid: String, correctId: Int)
@@ -53,6 +56,7 @@ class WebSocketManager: NSObject {
     session.requestSerializer = AFJSONRequestSerializer()
     super.init()
     WatchSession.shared.wcStatusDelegate = self
+    
   }
   
   func login(username: String, password: String, completion: @escaping (String)->Void) {
@@ -263,6 +267,10 @@ extension WebSocketManager: WebSocketDelegate {
     case "revokeMessage":
       let messageId = json["id"].intValue
       messageDelegate?.revokeMessage(messageId)
+    case "NewFriend":
+      messageDelegate?.newFriend?()
+    case "NewFriendRequest":
+      messageDelegate?.newFriendRequest?()
     default:
       return
     }
@@ -326,21 +334,20 @@ extension WebSocketManager {
     }, failure: nil)
   }
   
-  func inspectQuery(completion: @escaping (([String], [String])->Void)) {
+  func inspectQuery(completion: @escaping (([String], [String], [String])->Void)) {
     session.get("\(url_pre)friendRequest/query/-1", parameters: nil, progress: nil, success: { (task, response) in
       if let response = response {
         let infos = JSON(response).arrayValue
-        var result = [String]()
+        var names = [String]()
         var requestID = [String]()
+        var requestTime = [String]()
         print(infos)
         for info in infos {
-          var singleInfo = ""
-          singleInfo += info["friendRequester"].stringValue
-          singleInfo += (" " + info["requestTime"].stringValue)
+          names.append(info["friendRequester"].stringValue)
           requestID.append(info["friendRequestId"].stringValue)
-          result.append(singleInfo)
+          requestTime.append(info["requestTime"].stringValue)
         }
-        completion(result, requestID)
+        completion(names, requestTime, requestID)
       }
     }, failure: nil)
   }
@@ -353,6 +360,30 @@ extension WebSocketManager {
       }
     }, failure: nil)
   }
-
+  
+  //MARK: Sign Up
+  func sendValitionCode(to email: String, for purpose: Int, completion: @escaping (String) -> Void) {
+    let paras: [String : Any] = ["email": email, "sendFor": purpose]
+    session.post(url_pre+"auth/sendCode", parameters: paras, progress: nil, success: { (task, response) in
+      guard let data = response else { return }
+      print(JSON(data))
+      completion(JSON(data)["status"].stringValue)
+    }, failure: nil)
+  }
+  
+  func signUp(username: String, password: String, repeatPassword: String, email: String, validationCode: String, completion: @escaping (String) -> Void) {
+    let paras = ["username": username, "password": password, "repeatPassword": repeatPassword, "email": email, "validationCode": validationCode]
+    var request = URLRequest(url: URL(string: url_pre+"auth/signup")!)
+    request.httpMethod = "POST"
+    request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+    let jsonData = try! JSONSerialization.data(withJSONObject: paras, options: JSONSerialization.WritingOptions.prettyPrinted)
+    request.httpBody = jsonData
+    let task = URLSession.shared.dataTask(with: request) { (data, response, error) in
+      guard let data = data else { return }
+      let json = JSON(data)
+      completion(json["status"].stringValue)
+    }
+    task.resume()
+  }
 }
 

@@ -42,11 +42,7 @@ class ChatRoomViewController: UIViewController {
   
   var messages = [Message]()
   
-  var username = "" {
-    didSet {
-      manager.username = username
-    }
-  }
+  var username = ""
     
   override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
@@ -107,8 +103,7 @@ extension ChatRoomViewController: MessageDelegate {
       manager.messagesSingle[friendName]![index].sendStatus = .success
     }
     let indexPath = IndexPath(row: index, section: 0)
-    tableView.reloadRows(at: [indexPath], with: .none)
-    tableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
+    (tableView.cellForRow(at: indexPath) as? MessageTableViewCell)?.indicator.removeFromSuperview()
   }
   
   func receiveMessage(_ message: Message, option: String) {
@@ -116,10 +111,12 @@ extension ChatRoomViewController: MessageDelegate {
     if option == "toOne" && message.senderUsername != friendName { return }
     insertNewMessageCell(message)
   }
+  
   func updateOnlineNumber(to newNumber: Int) {
     guard messageOption == .toAll else { return }
     navigationItem.title = "Let's Chat!" + "(\(newNumber)人在线)"
   }
+  
   func receiveMessages(_ messages: [Message], pages: Int) {
     let minId = (self.messages.first?.id) ?? Int.max
     self.pagesAndCurNum.pages = pages
@@ -134,6 +131,12 @@ extension ChatRoomViewController: MessageDelegate {
       }
     }
     self.tableView.refreshControl?.endRefreshing()
+  }
+  
+  func newFriendRequest() {
+    guard let contactVC = navigationController?.viewControllers.filter({ $0 is ContactsTableViewController }).first as? ContactsTableViewController else { return }
+    navigationItem.rightBarButtonItem = contactVC.itemRequest
+    contactVC.playSound()
   }
 }
 
@@ -167,7 +170,7 @@ extension ChatRoomViewController {
         UIPasteboard.general.string = text
       }
       var revokeAction: UIAction?
-      if self.messages[indexPath.row].messageSender == .ourself && self.messages[indexPath.row].messageType != .join {
+      if self.messages[indexPath.row].messageSender == .ourself && self.messages[indexPath.row].messageType != .join && self.messageOption == .toOne {
         revokeAction = UIAction(title: "撤回") { (_) in
           self.revoke(indexPath: indexPath)
         }
@@ -188,9 +191,9 @@ extension ChatRoomViewController {
   }
   
   func removeMessage(index: Int) {
-    var updatedMessage = messages[index]
     messages[index].message = "\(messages[index].senderUsername)撤回了一条消息"
     messages[index].messageType = .join
+    let updatedMessage = messages[index]
     switch messageOption {
     case .toAll:
       manager.messagesGroup[index] = updatedMessage

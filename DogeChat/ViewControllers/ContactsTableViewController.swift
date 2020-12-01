@@ -15,26 +15,33 @@ class ContactsTableViewController: UITableViewController {
   var username = ""
   let manager = WebSocketManager.shared
   var barItem = UIBarButtonItem()
+  var itemRequest = UIBarButtonItem()
   
   override func viewDidLoad() {
     super.viewDidLoad()
     navigationItem.title = "联系人"
     tableView.register(UITableViewCell.self, forCellReuseIdentifier: "defaultCell")
+    tableView.separatorStyle = .none
     refreshContacts()
     manager.connect()
     NotificationCenter.default.addObserver(self, selector: #selector(receiveNewMessage(notification:)), name: .receiveNewMessage, object: nil)
     setupRefreshControl()
     barItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(presentSearchVC))
+    if #available(iOS 13.0, *) {
+      itemRequest = UIBarButtonItem(image: UIImage(systemName: "person.badge.plus"), style: .plain, target: self, action: #selector(presentSearchVC))
+    } else {
+      itemRequest = UIBarButtonItem(title: "新", style: .plain, target: self, action: #selector(presentSearchVC))
+    }
   }
   
   override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
+    navigationItem.rightBarButtonItem = barItem
     manager.messageDelegate = self
   }
   
   override func viewDidAppear(_ animated: Bool) {
     super.viewDidAppear(animated)
-    navigationItem.rightBarButtonItem = barItem
   }
   
   override func viewWillDisappear(_ animated: Bool) {
@@ -45,7 +52,9 @@ class ContactsTableViewController: UITableViewController {
   @objc func presentSearchVC() {
     let vc = SearchViewController()
     vc.username = self.username
-    present(vc, animated: true)
+    vc.usernames = self.usernames
+    vc.delegate = self
+    self.present(vc, animated: true)
   }
   
   @objc func refreshContacts() {
@@ -72,8 +81,7 @@ class ContactsTableViewController: UITableViewController {
   }
   
   @objc func receiveNewMessage(notification: Notification) {
-    AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
-    AudioServicesPlaySystemSound(1007)
+    playSound()
     guard let message = notification.object as? Message,
       let height = tableView.cellForRow(at: IndexPath(row: 0, section: 0))?.contentView.frame.height
       else { return }
@@ -103,7 +111,10 @@ class ContactsTableViewController: UITableViewController {
     cell?.accessoryView = label
   }
   
-  
+  func playSound() {
+    AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
+    AudioServicesPlaySystemSound(1007)
+  }
   
 
   // MARK: - Table view data source
@@ -177,7 +188,7 @@ extension ContactsTableViewController: UIViewControllerPreviewingDelegate {
   }
 }
 
-extension ContactsTableViewController: MessageDelegate {
+extension ContactsTableViewController: MessageDelegate, AddContactDelegate {
   func revokeMessage(_ id: Int) {
     let messages = manager.messagesSingle
     guard let index = messages.firstIndex(where: { $0.value.contains(where: {$0.id == id}) }) else { return }
@@ -188,11 +199,26 @@ extension ContactsTableViewController: MessageDelegate {
     self.receiveNewMessage(notification: Notification(name: .receiveNewMessage, object: manager.messagesSingle[keyValue.key]?[indexOfMessage], userInfo: nil))
   }
   
+  func newFriend() {
+    refreshContacts()
+  }
+  
+  func newFriendRequest() {
+    playSound()
+    if #available(iOS 13.0, *) {
+      navigationItem.rightBarButtonItem = itemRequest
+    }
+  }
+  
   func revokeSuccess(id: Int) {
     
   }
   
   func sendSuccess(uuid: String, correctId: Int) {
     
+  }
+  
+  func addSuccess() {
+    refreshContacts()
   }
 }

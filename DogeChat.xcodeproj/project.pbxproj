@@ -11,17 +11,19 @@
 		070C417124879C440035314A /* Helper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 070C417024879C440035314A /* Helper.swift */; };
 		070C41742489204F0035314A /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 070C41732489204F0035314A /* SearchViewController.swift */; };
 		0711485A23CEC3E900B6D63C /* Notification+Names.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0711485923CEC3E900B6D63C /* Notification+Names.swift */; };
+		071F248A2514F3DD0016DACA /* Starscream.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 07A740DF2514E7F50014880E /* Starscream.framework */; };
+		071F248B2514F3DD0016DACA /* Starscream.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 07A740DF2514E7F50014880E /* Starscream.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		071F9705247D22D1000B3DBC /* RowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 071F9704247D22D1000B3DBC /* RowController.swift */; };
 		071F9709247D24CA000B3DBC /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = 071F9708247D24CA000B3DBC /* Message.swift */; };
 		071F970C247D2592000B3DBC /* WatchSessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 071F970B247D2592000B3DBC /* WatchSessionManager.swift */; };
 		071F970E247D45C1000B3DBC /* WatchSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 071F970D247D45C1000B3DBC /* WatchSession.swift */; };
-		073144A4245FF83D00D915E8 /* Starscream.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 073144A0245FF82C00D915E8 /* Starscream.framework */; };
-		073144A6245FF8A900D915E8 /* Starscream.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 073144A0245FF82C00D915E8 /* Starscream.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		073144A8245FF94500D915E8 /* WebSocketManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 073144A7245FF94500D915E8 /* WebSocketManager.swift */; };
 		07513F8B2483FA7900EF68F8 /* Encrypt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07513F8A2483FA7900EF68F8 /* Encrypt.swift */; };
 		0772559523C1D3F600790339 /* ChatRoom.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0772559423C1D3F600790339 /* ChatRoom.swift */; };
 		0780327B2486B28C00E370E0 /* DogeChatTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0780327A2486B28C00E370E0 /* DogeChatTests.swift */; };
 		078032842486B73900E370E0 /* RSAKeyEncoding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 078032832486B73900E370E0 /* RSAKeyEncoding.swift */; };
+		07AB7B0B248F2A7A005306A1 /* SignUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07AB7B09248F2A7A005306A1 /* SignUpViewController.swift */; };
+		07AB7B0C248F2A7A005306A1 /* SignUpViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 07AB7B0A248F2A7A005306A1 /* SignUpViewController.xib */; };
 		07C6AF81247D1AF10007222F /* Interface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 07C6AF7F247D1AF10007222F /* Interface.storyboard */; };
 		07C6AF83247D1AF60007222F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 07C6AF82247D1AF60007222F /* Assets.xcassets */; };
 		07C6AF8A247D1AF70007222F /* ChatWatch Extension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 07C6AF89247D1AF70007222F /* ChatWatch Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -29,8 +31,8 @@
 		07C6AF91247D1AF70007222F /* ExtensionDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07C6AF90247D1AF70007222F /* ExtensionDelegate.swift */; };
 		07C6AF93247D1AF70007222F /* NotificationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07C6AF92247D1AF70007222F /* NotificationController.swift */; };
 		07C6AF95247D1AF80007222F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 07C6AF94247D1AF80007222F /* Assets.xcassets */; };
-		07C6AF9A247D1AF80007222F /* ChatWatch.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 07C6AF7D247D1AF10007222F /* ChatWatch.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		07E001DA248CA56800D4A287 /* SelectShortcutTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07E001D9248CA56800D4A287 /* SelectShortcutTVC.swift */; };
+		355B7BCF2FA5EEC2308A5779 /* Pods_DogeChat.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7CBE11CF0D4B9B7BC61E93CE /* Pods_DogeChat.framework */; };
 		AE28D6E51EC0AB9800E886B9 /* StringExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE28D6E41EC0AB9800E886B9 /* StringExtension.swift */; };
 		AE909BEB1EB54099009D9D95 /* MessageTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE909BEA1EB54099009D9D95 /* MessageTableViewCell.swift */; };
 		AE909BED1EB54B13009D9D95 /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE909BEC1EB54B13009D9D95 /* Message.swift */; };
@@ -45,30 +47,57 @@
 		AEC6BF511EAF345A007CA6E5 /* ChatRoomViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEC6BF501EAF345A007CA6E5 /* ChatRoomViewController.swift */; };
 		AEFEAA511EAF37BC00889E76 /* Inconsolata-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AEFEAA4F1EAF37BC00889E76 /* Inconsolata-Bold.ttf */; };
 		AEFEAA521EAF37BC00889E76 /* Inconsolata-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AEFEAA501EAF37BC00889E76 /* Inconsolata-Regular.ttf */; };
-		BC410D5913238142C50E01A8 /* Pods_DogeChat.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7CBE11CF0D4B9B7BC61E93CE /* Pods_DogeChat.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		0731449F245FF82C00D915E8 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 0731449A245FF82C00D915E8 /* Starscream.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 33CCF0921F5DDC030099B092;
-			remoteInfo = Starscream;
-		};
-		073144A1245FF82C00D915E8 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 0731449A245FF82C00D915E8 /* Starscream.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 335FA2021F5DF71D00F6D2EC;
-			remoteInfo = "Starscream Tests";
-		};
 		0780327D2486B28C00E370E0 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = AEC6BF331EAF320E007CA6E5 /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = AEC6BF3A1EAF320E007CA6E5;
 			remoteInfo = DogeChat;
+		};
+		079BCCEA2575FEE3009F1591 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 079BCCE52575FEE3009F1591 /* Starscream.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 33CCF0921F5DDC030099B092;
+			remoteInfo = Starscream;
+		};
+		079BCCEC2575FEE3009F1591 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 079BCCE52575FEE3009F1591 /* Starscream.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 335FA2021F5DF71D00F6D2EC;
+			remoteInfo = "Starscream Tests";
+		};
+		07A740BE2514E6090014880E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 07A740A82514E5E90014880E /* Starscream.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 33CCF0921F5DDC030099B092;
+			remoteInfo = Starscream;
+		};
+		07A740C02514E6090014880E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 07A740A82514E5E90014880E /* Starscream.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 335FA2021F5DF71D00F6D2EC;
+			remoteInfo = "Starscream Tests";
+		};
+		07A740DE2514E7F50014880E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 07A740D92514E7F50014880E /* Starscream.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 33CCF0921F5DDC030099B092;
+			remoteInfo = Starscream;
+		};
+		07A740E02514E7F50014880E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 07A740D92514E7F50014880E /* Starscream.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 335FA2021F5DF71D00F6D2EC;
+			remoteInfo = "Starscream Tests";
 		};
 		07C6AF8B247D1AF70007222F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -77,25 +106,18 @@
 			remoteGlobalIDString = 07C6AF88247D1AF70007222F;
 			remoteInfo = "ChatWatch Extension";
 		};
-		07C6AF98247D1AF80007222F /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = AEC6BF331EAF320E007CA6E5 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 07C6AF7C247D1AF10007222F;
-			remoteInfo = ChatWatch;
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		073144A5245FF88100D915E8 /* Copy Frameworks */ = {
+		071F248C2514F3DD0016DACA /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				073144A6245FF8A900D915E8 /* Starscream.framework in Copy Frameworks */,
+				071F248B2514F3DD0016DACA /* Starscream.framework in Embed Frameworks */,
 			);
-			name = "Copy Frameworks";
+			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		07C6AF9B247D1AF80007222F /* Embed Watch Content */ = {
@@ -104,7 +126,6 @@
 			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
 			dstSubfolderSpec = 16;
 			files = (
-				07C6AF9A247D1AF80007222F /* ChatWatch.app in Embed Watch Content */,
 			);
 			name = "Embed Watch Content";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -131,7 +152,6 @@
 		071F9708247D24CA000B3DBC /* Message.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
 		071F970B247D2592000B3DBC /* WatchSessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchSessionManager.swift; sourceTree = "<group>"; };
 		071F970D247D45C1000B3DBC /* WatchSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchSession.swift; sourceTree = "<group>"; };
-		0731449A245FF82C00D915E8 /* Starscream.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Starscream.xcodeproj; path = "../../../Downloads/Starscream-master/Starscream.xcodeproj"; sourceTree = "<group>"; };
 		073144A7245FF94500D915E8 /* WebSocketManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebSocketManager.swift; sourceTree = "<group>"; };
 		07513F8A2483FA7900EF68F8 /* Encrypt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Encrypt.swift; sourceTree = "<group>"; };
 		0772559423C1D3F600790339 /* ChatRoom.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatRoom.swift; sourceTree = "<group>"; };
@@ -140,6 +160,14 @@
 		0780327A2486B28C00E370E0 /* DogeChatTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DogeChatTests.swift; sourceTree = "<group>"; };
 		0780327C2486B28C00E370E0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		078032832486B73900E370E0 /* RSAKeyEncoding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RSAKeyEncoding.swift; sourceTree = "<group>"; };
+		079BCCE52575FEE3009F1591 /* Starscream.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Starscream.xcodeproj; path = ../Starscream/Starscream.xcodeproj; sourceTree = "<group>"; };
+		07A740A82514E5E90014880E /* Starscream.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Starscream.xcodeproj; path = "../../../DownloadedFromRaywenderlich/Starscream-master/Starscream.xcodeproj"; sourceTree = "<group>"; };
+		07A740D92514E7F50014880E /* Starscream.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Starscream.xcodeproj; path = "../../DownloadedFromRaywenderlich/Starscream-master/Starscream.xcodeproj"; sourceTree = "<group>"; };
+		07A740F82514E9490014880E /* SwiftyJSON.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SwiftyJSON.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		07A7410F2514E9C60014880E /* SwiftyJSON.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SwiftyJSON.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		07A741222514EE2C0014880E /* AFNetworking.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = AFNetworking.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		07AB7B09248F2A7A005306A1 /* SignUpViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpViewController.swift; sourceTree = "<group>"; };
+		07AB7B0A248F2A7A005306A1 /* SignUpViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SignUpViewController.xib; sourceTree = "<group>"; };
 		07C6AF7D247D1AF10007222F /* ChatWatch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ChatWatch.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		07C6AF80247D1AF10007222F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Interface.storyboard; sourceTree = "<group>"; };
 		07C6AF82247D1AF60007222F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -199,8 +227,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				073144A4245FF83D00D915E8 /* Starscream.framework in Frameworks */,
-				BC410D5913238142C50E01A8 /* Pods_DogeChat.framework in Frameworks */,
+				355B7BCF2FA5EEC2308A5779 /* Pods_DogeChat.framework in Frameworks */,
+				071F248A2514F3DD0016DACA /* Starscream.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -216,18 +244,12 @@
 			path = Model;
 			sourceTree = "<group>";
 		};
-		0731449B245FF82C00D915E8 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				073144A0245FF82C00D915E8 /* Starscream.framework */,
-				073144A2245FF82C00D915E8 /* Starscream Tests.xctest */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 		073144A3245FF83D00D915E8 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				07A741222514EE2C0014880E /* AFNetworking.framework */,
+				07A7410F2514E9C60014880E /* SwiftyJSON.framework */,
+				07A740F82514E9490014880E /* SwiftyJSON.framework */,
 				078032712486B13E00E370E0 /* XCTest.framework */,
 				7CBE11CF0D4B9B7BC61E93CE /* Pods_DogeChat.framework */,
 			);
@@ -252,6 +274,8 @@
 				AEC6BF501EAF345A007CA6E5 /* ChatRoomViewController.swift */,
 				AEC6BF401EAF320E007CA6E5 /* JoinChatViewController.swift */,
 				AEA5A1781EC362150041C7B4 /* ChatRoomViewController+Table.swift */,
+				07AB7B09248F2A7A005306A1 /* SignUpViewController.swift */,
+				07AB7B0A248F2A7A005306A1 /* SignUpViewController.xib */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -292,6 +316,33 @@
 			path = SupportingFiles;
 			sourceTree = "<group>";
 		};
+		079BCCE62575FEE3009F1591 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				079BCCEB2575FEE3009F1591 /* Starscream.framework */,
+				079BCCED2575FEE3009F1591 /* Starscream Tests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		07A740A92514E5E90014880E /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				07A740BF2514E6090014880E /* Starscream.framework */,
+				07A740C12514E6090014880E /* Starscream Tests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		07A740DA2514E7F50014880E /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				07A740DF2514E7F50014880E /* Starscream.framework */,
+				07A740E12514E7F50014880E /* Starscream Tests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		07C6AF7E247D1AF10007222F /* ChatWatch */ = {
 			isa = PBXGroup;
 			children = (
@@ -330,13 +381,14 @@
 		AEC6BF321EAF320E007CA6E5 = {
 			isa = PBXGroup;
 			children = (
+				079BCCE52575FEE3009F1591 /* Starscream.xcodeproj */,
 				AEC6BF3D1EAF320E007CA6E5 /* DogeChat */,
 				07C6AF7E247D1AF10007222F /* ChatWatch */,
 				07C6AF8D247D1AF70007222F /* ChatWatch Extension */,
 				078032792486B28C00E370E0 /* DogeChatTests */,
 				AEC6BF3C1EAF320E007CA6E5 /* Products */,
-				0731449A245FF82C00D915E8 /* Starscream.xcodeproj */,
 				073144A3245FF83D00D915E8 /* Frameworks */,
+				07A740D92514E7F50014880E /* Starscream.xcodeproj */,
 				B12E227B93FFC54FE5E82718 /* Pods */,
 			);
 			sourceTree = "<group>";
@@ -368,6 +420,7 @@
 		B12E227B93FFC54FE5E82718 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
+				07A740A82514E5E90014880E /* Starscream.xcodeproj */,
 				11446107E0EC4769216E7331 /* Pods-DogeChat.debug.xcconfig */,
 				0B69595E028EAB1E5EC8EA2E /* Pods-DogeChat.release.xcconfig */,
 			);
@@ -438,14 +491,13 @@
 				AEC6BF371EAF320E007CA6E5 /* Sources */,
 				AEC6BF381EAF320E007CA6E5 /* Frameworks */,
 				AEC6BF391EAF320E007CA6E5 /* Resources */,
-				073144A5245FF88100D915E8 /* Copy Frameworks */,
 				07D9E4BF9696AEDC60404E82 /* [CP] Embed Pods Frameworks */,
 				07C6AF9B247D1AF80007222F /* Embed Watch Content */,
+				071F248C2514F3DD0016DACA /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				07C6AF99247D1AF80007222F /* PBXTargetDependency */,
 			);
 			name = DogeChat;
 			productName = DogeChat;
@@ -459,7 +511,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 1140;
-				LastUpgradeCheck = 1110;
+				LastUpgradeCheck = 1200;
 				ORGANIZATIONNAME = "Luke Parham";
 				TargetAttributes = {
 					078032772486B28C00E370E0 = {
@@ -480,7 +532,7 @@
 					};
 					AEC6BF3A1EAF320E007CA6E5 = {
 						CreatedOnToolsVersion = 8.3.1;
-						DevelopmentTeam = U4X7QLGBPJ;
+						DevelopmentTeam = GK8TA3SVKG;
 						LastSwiftMigration = 1110;
 						ProvisioningStyle = Automatic;
 					};
@@ -499,8 +551,16 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = 0731449B245FF82C00D915E8 /* Products */;
-					ProjectRef = 0731449A245FF82C00D915E8 /* Starscream.xcodeproj */;
+					ProductGroup = 07A740DA2514E7F50014880E /* Products */;
+					ProjectRef = 07A740D92514E7F50014880E /* Starscream.xcodeproj */;
+				},
+				{
+					ProductGroup = 07A740A92514E5E90014880E /* Products */;
+					ProjectRef = 07A740A82514E5E90014880E /* Starscream.xcodeproj */;
+				},
+				{
+					ProductGroup = 079BCCE62575FEE3009F1591 /* Products */;
+					ProjectRef = 079BCCE52575FEE3009F1591 /* Starscream.xcodeproj */;
 				},
 			);
 			projectRoot = "";
@@ -514,18 +574,46 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
-		073144A0245FF82C00D915E8 /* Starscream.framework */ = {
+		079BCCEB2575FEE3009F1591 /* Starscream.framework */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.framework;
 			path = Starscream.framework;
-			remoteRef = 0731449F245FF82C00D915E8 /* PBXContainerItemProxy */;
+			remoteRef = 079BCCEA2575FEE3009F1591 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		073144A2245FF82C00D915E8 /* Starscream Tests.xctest */ = {
+		079BCCED2575FEE3009F1591 /* Starscream Tests.xctest */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.cfbundle;
 			path = "Starscream Tests.xctest";
-			remoteRef = 073144A1245FF82C00D915E8 /* PBXContainerItemProxy */;
+			remoteRef = 079BCCEC2575FEE3009F1591 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		07A740BF2514E6090014880E /* Starscream.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = Starscream.framework;
+			remoteRef = 07A740BE2514E6090014880E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		07A740C12514E6090014880E /* Starscream Tests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = "Starscream Tests.xctest";
+			remoteRef = 07A740C02514E6090014880E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		07A740DF2514E7F50014880E /* Starscream.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = Starscream.framework;
+			remoteRef = 07A740DE2514E7F50014880E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		07A740E12514E7F50014880E /* Starscream Tests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = "Starscream Tests.xctest";
+			remoteRef = 07A740E02514E7F50014880E /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -559,6 +647,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				07AB7B0C248F2A7A005306A1 /* SignUpViewController.xib in Resources */,
 				AEC6BF491EAF320E007CA6E5 /* LaunchScreen.storyboard in Resources */,
 				AEFEAA521EAF37BC00889E76 /* Inconsolata-Regular.ttf in Resources */,
 				AEFEAA511EAF37BC00889E76 /* Inconsolata-Bold.ttf in Resources */,
@@ -656,6 +745,7 @@
 				AEC6BF3F1EAF320E007CA6E5 /* AppDelegate.swift in Sources */,
 				AEA5A1771EC3618C0041C7B4 /* Layouts.swift in Sources */,
 				073144A8245FF94500D915E8 /* WebSocketManager.swift in Sources */,
+				07AB7B0B248F2A7A005306A1 /* SignUpViewController.swift in Sources */,
 				AEC6BF511EAF345A007CA6E5 /* ChatRoomViewController.swift in Sources */,
 				07513F8B2483FA7900EF68F8 /* Encrypt.swift in Sources */,
 				AEA5A1791EC362150041C7B4 /* ChatRoomViewController+Table.swift in Sources */,
@@ -676,11 +766,6 @@
 			isa = PBXTargetDependency;
 			target = 07C6AF88247D1AF70007222F /* ChatWatch Extension */;
 			targetProxy = 07C6AF8B247D1AF70007222F /* PBXContainerItemProxy */;
-		};
-		07C6AF99247D1AF80007222F /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 07C6AF7C247D1AF10007222F /* ChatWatch */;
-			targetProxy = 07C6AF98247D1AF80007222F /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -766,7 +851,7 @@
 				INFOPLIST_FILE = ChatWatch/Info.plist;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = con.pino.DogeChat2.watchkitapp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.scut.zhaoxiguang.dogeChat.watchkitapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
@@ -792,7 +877,7 @@
 				IBSC_MODULE = ChatWatch_Extension;
 				INFOPLIST_FILE = ChatWatch/Info.plist;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = con.pino.DogeChat2.watchkitapp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.scut.zhaoxiguang.dogeChat.watchkitapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
@@ -816,7 +901,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = con.pino.DogeChat2.watchkitapp.watchkitextension;
+				PRODUCT_BUNDLE_IDENTIFIER = com.scut.zhaoxiguang.dogeChat.watchkitapp.watchkitextension;
 				PRODUCT_NAME = "${TARGET_NAME}";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
@@ -839,7 +924,7 @@
 				INFOPLIST_FILE = "ChatWatch Extension/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = con.pino.DogeChat2.watchkitapp.watchkitextension;
+				PRODUCT_BUNDLE_IDENTIFIER = com.scut.zhaoxiguang.dogeChat.watchkitapp.watchkitextension;
 				PRODUCT_NAME = "${TARGET_NAME}";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
@@ -875,6 +960,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -899,7 +985,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -934,6 +1020,7 @@
 				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
 				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
 				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
 				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
@@ -952,7 +1039,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
@@ -968,10 +1055,10 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = U4X7QLGBPJ;
+				DEVELOPMENT_TEAM = GK8TA3SVKG;
 				INFOPLIST_FILE = DogeChat/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = con.pino.DogeChat2;
+				PRODUCT_BUNDLE_IDENTIFIER = com.scut.zhaoxiguang.dogeChat;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
@@ -986,8 +1073,8 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = U4X7QLGBPJ;
+				CODE_SIGN_STYLE = Manual;
+				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = DogeChat/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = con.pino.DogeChat2;

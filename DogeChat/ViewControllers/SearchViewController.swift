@@ -8,6 +8,10 @@
 
 import UIKit
 
+protocol AddContactDelegate: class {
+  func addSuccess()
+}
+
 class SearchViewController: UIViewController {
   
   enum Status {
@@ -20,9 +24,11 @@ class SearchViewController: UIViewController {
   
   var userInfos: [String] = []
   var username = ""
+  var usernames = [String]()
   let manager = WebSocketManager.shared
   var status: Status = .accept
   var requestID = [String]()
+  weak var delegate: AddContactDelegate?
   
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -85,8 +91,9 @@ extension SearchViewController: UITableViewDataSource, UITableViewDelegate, UISe
           self.present(alert, animated: true)
         }
         Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { (_) in
-          alert.dismiss(animated: true, completion: nil)
+          alert.dismiss(animated: true)
         }
+        self.delegate?.addSuccess()
       }
     }
   }
@@ -116,9 +123,13 @@ extension SearchViewController: UITableViewDataSource, UITableViewDelegate, UISe
   
   func lookupAddRequest() {
     status = .accept
-    manager.inspectQuery { (userInfos, requestID) in
-      self.userInfos = userInfos
-      self.requestID = requestID
+    manager.inspectQuery { (names, time, requestID) in
+      for i in 0..<names.count {
+        if !self.usernames.contains(names[i]) {
+          self.userInfos.append("\(names[i]) \(time[i])")
+          self.requestID.append(requestID[i])
+        }
+      }
       self.tableView.reloadData()
     }
   }
