@@ -8,5 +8,6 @@ pod 'AFNetworking'
 pod 'SwiftyJSON', :git => 'https://github.com/SwiftyJSON/SwiftyJSON.git'
 pod 'SwiftyRSA'
   # Pods for DogeChat
+pod 'Starscream', :git => 'https://github.com/daltoniam/Starscream.git'
 
 end
