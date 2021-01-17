@@ -31,82 +31,57 @@
 import UIKit
 
 protocol MessageInputDelegate: class {
-  func sendWasTapped(content: String)
+    func sendWasTapped(content: String)
 }
 
 class MessageInputView: UIView {
-  weak var delegate: MessageInputDelegate?
-  
-  let textView = UITextView()
-  let sendButton = UIButton()
-  
-  override init(frame: CGRect) {
-    super.init(frame: frame)
+    weak var delegate: MessageInputDelegate?
     
+    let textView = UITextView()
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        
         backgroundColor = UIColor(red: 247/255, green: 247/255, blue: 247/255, alpha: 1.0)
-    if #available(iOS 13.0, *) {
-      backgroundColor = .systemBackground
+        if #available(iOS 13.0, *) {
+            backgroundColor = .systemBackground
+        }
+        textView.translatesAutoresizingMaskIntoConstraints = false
+        textView.layer.cornerRadius = 4
+        textView.layer.borderColor = UIColor(red: 200/255, green: 200/255, blue: 200/255, alpha: 0.6).cgColor
+        textView.layer.borderWidth = 1
+        textView.font = UIFont.systemFont(ofSize: 18)
+        textView.returnKeyType = .send
+        
+        addSubview(textView)
+        NSLayoutConstraint.activate([
+            textView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 20),
+            textView.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -20),
+            textView.topAnchor.constraint(equalTo: self.topAnchor),
+            textView.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -20)
+        ])
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(textViewResign), name: NSNotification.Name.shouldResignFirstResponder, object: nil)
     }
     
-    textView.layer.cornerRadius = 4
-    textView.layer.borderColor = UIColor(red: 200/255, green: 200/255, blue: 200/255, alpha: 0.6).cgColor
-    textView.layer.borderWidth = 1
-    textView.font = UIFont.systemFont(ofSize: 18)
-    textView.returnKeyType = .send
-    textView.delegate = self
-    
-    sendButton.backgroundColor = UIColor(red: 8/255, green: 183/255, blue: 231/255, alpha: 1.0)
-    sendButton.layer.cornerRadius = 4
-    sendButton.setTitle("Send", for: .normal)
-    sendButton.isEnabled = true
-    
-    sendButton.addTarget(self, action: #selector(MessageInputView.sendTapped), for: .touchUpInside)
-    
-    addSubview(textView)
-    addSubview(sendButton)
-    
-    NotificationCenter.default.addObserver(self, selector: #selector(textViewResign), name: NSNotification.Name.shouldResignFirstResponder, object: nil)
-  }
-  
-  @objc func textViewResign() {
-    textView.resignFirstResponder()
-  }
-  
-  @objc func sendTapped() {
-    if let delegate = delegate, let message = textView.text {
-      delegate.sendWasTapped(content:  message)
-      textView.text = ""
+    @objc func textViewResign() {
+        textView.resignFirstResponder()
     }
-  }
-  
-  required init?(coder aDecoder: NSCoder) {
-    fatalError("init(coder:) has not been implemented")
-  }
-  
-  override func layoutSubviews() {
-    super.layoutSubviews()
     
-    let size = bounds.size
-    textView.bounds = CGRect(x: 0, y: 0, width: size.width - 32 - 8 - 60, height: 40)
-    sendButton.bounds = CGRect(x: 0, y: 0, width: 60, height: 44)
+    @objc func sendTapped() {
+        if let delegate = delegate, let message = textView.text {
+            delegate.sendWasTapped(content:  message)
+            textView.text = ""
+            textView.delegate?.textViewDidChange?(textView)
+        }
+    }
     
-    textView.center = CGPoint(x: textView.bounds.size.width/2.0 + 16, y: bounds.size.height/2.0)
-    sendButton.center = CGPoint(x: bounds.size.width - 30 - 16, y: bounds.size.height/2.0)
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
-  }
+    override func layoutSubviews() {
+        super.layoutSubviews()
+    }
 }
 
-extension MessageInputView: UITextViewDelegate {
-  func textViewShouldEndEditing(_ textView: UITextView) -> Bool {
-    return true
-  }
-  
-  func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
-    if text == "\n" {
-      sendTapped()
-      return false
-    }
-    return true
-  }
-  
-}

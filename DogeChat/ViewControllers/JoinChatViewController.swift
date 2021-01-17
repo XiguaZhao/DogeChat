@@ -78,7 +78,11 @@ extension JoinChatViewController: UITextFieldDelegate {
       if loginResult == "登录成功" {
         let contactsTVC = ContactsTableViewController()
         contactsTVC.username = username
-        self.navigationController?.pushViewController(contactsTVC, animated: true)
+        contactsTVC.navigationItem.title = username
+        self.navigationController?.setViewControllers([contactsTVC], animated: true)
+        contactsTVC.loginSuccess = true
+        UserDefaults.standard.setValue(username, forKey: "lastUsername")
+        UserDefaults.standard.setValue(password, forKey: "lastPassword")
       } else {
         let alert = UIAlertController(title: loginResult, message: "请重新检查输入", preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
@@ -86,6 +90,7 @@ extension JoinChatViewController: UITextFieldDelegate {
       }
     }
   }
+    
 }
 
 class TextField: UITextField {

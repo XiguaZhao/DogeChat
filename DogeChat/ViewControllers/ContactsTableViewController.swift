@@ -16,14 +16,28 @@ class ContactsTableViewController: UITableViewController {
   let manager = WebSocketManager.shared
   var barItem = UIBarButtonItem()
   var itemRequest = UIBarButtonItem()
+   var loginSuccess = false {
+        didSet {
+            let waitToProcessNotificationUsername = NotificationManager.shared.remoteNotificationUsername
+            if loginSuccess && waitToProcessNotificationUsername != ""{
+                if let index = usernames.firstIndex(of: waitToProcessNotificationUsername) {
+                    if self.navigationController?.topViewController?.navigationItem.title == waitToProcessNotificationUsername {
+                        return
+                    }
+                    tableView(self.tableView, didSelectRowAt: IndexPath(row: index, section: 0))
+                    NotificationManager.shared.remoteNotificationUsername = ""
+                }
+            }
+        }
+    }
   
   override func viewDidLoad() {
     super.viewDidLoad()
-    navigationItem.title = "联系人"
     tableView.register(UITableViewCell.self, forCellReuseIdentifier: "defaultCell")
     tableView.separatorStyle = .none
-    refreshContacts()
-    manager.connect()
+    if self.loginSuccess {
+        refreshContacts()
+    }
     NotificationCenter.default.addObserver(self, selector: #selector(receiveNewMessage(notification:)), name: .receiveNewMessage, object: nil)
     setupRefreshControl()
     barItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(presentSearchVC))
@@ -37,11 +51,11 @@ class ContactsTableViewController: UITableViewController {
   override func viewWillAppear(_ animated: Bool) {
     super.viewWillAppear(animated)
     navigationItem.rightBarButtonItem = barItem
-    manager.messageDelegate = self
   }
   
   override func viewDidAppear(_ animated: Bool) {
     super.viewDidAppear(animated)
+    manager.messageDelegate = self
   }
   
   override func viewWillDisappear(_ animated: Bool) {
@@ -64,6 +78,7 @@ class ContactsTableViewController: UITableViewController {
       self.usernames = usernames
       self.usernames.insert("群聊", at: 0)
       self.tableView.reloadData()
+      self.loginSuccess = true
     }
   }
   
@@ -89,6 +104,12 @@ class ContactsTableViewController: UITableViewController {
       if usernames[indexPath.row] == message.senderUsername && message.option == .toOne { return }
       if indexPath.row == 0 && message.option == .toAll { return }
     }
+    if self.navigationController?.topViewController?.navigationItem.title == message.senderUsername {
+        if let chatroomVC = self.navigationController?.topViewController as? ChatRoomViewController,
+           chatroomVC.messageOption == message.option {
+            return
+        }
+    }
     let offset: CGFloat = 10
     let adjustedWidth = height - 20
     let origin = offset / 2
@@ -97,7 +118,7 @@ class ContactsTableViewController: UITableViewController {
     label.layer.masksToBounds = true
     label.backgroundColor = .red
     label.textAlignment = .center
-    let cell: UITableViewCell?
+    let cell: UITableViewCell? // 不能直接这么使用
     switch message.option {
     case .toAll:
       cell = tableView.cellForRow(at: IndexPath(row: 0, section: 0))
@@ -142,14 +163,15 @@ class ContactsTableViewController: UITableViewController {
   
   
   override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-    let chatRoomVC = ChatroomVC(for: indexPath)
+    let chatRoomVC = chatroomVC(for: indexPath)
     tableView.cellForRow(at: indexPath)?.accessoryView = nil
-    self.navigationController?.pushViewController(chatRoomVC, animated: true)
+    self.navigationController?.setViewControllers([self, chatRoomVC], animated: true)
   }
   
-  private func ChatroomVC(for indexPath: IndexPath) -> ChatRoomViewController {
+  private func chatroomVC(for indexPath: IndexPath) -> ChatRoomViewController {
     let chatRoomVC = ChatRoomViewController()
     chatRoomVC.username = username
+    chatRoomVC.navigationItem.title = usernames[indexPath.row]
     switch indexPath.row {
     case 0:
       chatRoomVC.messages = manager.messagesGroup
@@ -170,7 +192,7 @@ extension ContactsTableViewController: UIViewControllerPreviewingDelegate {
   func previewingContext(_ previewingContext: UIViewControllerPreviewing, viewControllerForLocation location: CGPoint) -> UIViewController? {
     guard let cell = previewingContext.sourceView as? UITableViewCell,
       let indexPath = tableView.indexPath(for: cell) else { return nil }
-    let vc = ChatroomVC(for: indexPath)
+    let vc = chatroomVC(for: indexPath)
     let needGetHistory: Bool
     switch indexPath.row {
     case 0:

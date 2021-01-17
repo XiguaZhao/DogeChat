@@ -31,15 +31,6 @@
 import UIKit
 
 extension ChatRoomViewController {
-  override func viewDidLoad() {
-    super.viewDidLoad()
-    manager.messageDelegate = self
-    NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillChange(notification:)), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
-    
-    addRefreshController()
-    layoutViews()
-    loadViews()
-  }
   @objc func keyboardWillChange(notification: NSNotification) {
     if let userInfo = notification.userInfo {
       let endFrame = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)!.cgRectValue
@@ -58,10 +49,8 @@ extension ChatRoomViewController {
     }
   }
   func loadViews() {
-    navigationItem.title = (self.messageOption == .toOne) ? friendName : "Let's Chat!"
+    navigationItem.title = (self.messageOption == .toOne) ? friendName : "群聊"
     navigationItem.backBarButtonItem?.title = "Run!"
-    
-    view.backgroundColor = UIColor(red: 24/255, green: 180/255, blue: 128/255, alpha: 1.0)
     
     tableView.dataSource = self
     tableView.delegate = self
@@ -75,27 +64,17 @@ extension ChatRoomViewController {
   
   func layoutViews() {
     let messageBarHeight:CGFloat = 60.0
-    let size = view.bounds.size
+    let size = UIScreen.main.bounds.size
     tableView.frame = CGRect(x: 0, y: 0, width: size.width, height: size.height - messageBarHeight)
     messageInputBar.frame = CGRect(x: 0, y: size.height - messageBarHeight, width: size.width, height: messageBarHeight)
   }
-//  override func viewDidLayoutSubviews() {
-//    super.viewDidLayoutSubviews()
-//    let messageBarHeight:CGFloat = 60.0
-//    let size = view.bounds.size
-//    tableView.frame = CGRect(x: 0, y: 0, width: size.width, height: size.height - messageBarHeight)
-//    messageInputBar.frame = CGRect(x: 0, y: size.height - messageBarHeight, width: size.width, height: messageBarHeight)
-//  }
 }
 
 extension JoinChatViewController {
   override func viewDidLoad() {
     super.viewDidLoad()
-    self.title = "JoinChatVC"
+    self.navigationItem.title = "聊天室"
     
-    if #available(iOS 11.0, *) {
-      navigationController?.navigationBar.prefersLargeTitles = true
-    }
     view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard)))
     login.addTarget(self, action: #selector(loginTapped), for: .touchUpInside)
     signUp.addTarget(self, action: #selector(signUpTapped), for: .touchUpInside)

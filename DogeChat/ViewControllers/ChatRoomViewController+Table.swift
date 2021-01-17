@@ -42,6 +42,12 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate {
   }
   
   func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    if scrollBottom {
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime(uptimeNanoseconds: UInt64(0.005)*NSEC_PER_SEC)) {
+            guard !self.messages.isEmpty else { return }
+            self.tableView.scrollToRow(at: IndexPath(row: self.messages.count - 1, section: 0), at: .bottom, animated: false)
+        }
+    }
     return messages.count
   }
   

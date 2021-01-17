@@ -1,0 +1,153 @@
+/**
+ * Copyright (c) 2017 Razeware LLC
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * Notwithstanding the foregoing, you may not use, copy, modify, merge, publish,
+ * distribute, sublicense, create a derivative work, and/or sell copies of the
+ * Software in any work that is designed, intended, or marketed for pedagogical or
+ * instructional purposes related to programming, coding, application development,
+ * or information technology.  Permission for such use, copying, modification,
+ * merger, publication, distribution, sublicensing, creation of derivative works,
+ * or sale is expressly withheld.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+
+import UIKit
+import UserNotifications
+
+@UIApplicationMain
+class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate {
+    
+    var window: UIWindow?
+    var deviceToken: String?
+    let notificationManager = NotificationManager.shared
+    let socketManager = WebSocketManager.shared
+    var navigationController: UINavigationController!
+    var tabBarController: UITabBarController!
+    
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        
+        window = UIWindow(frame: UIScreen.main.bounds)
+        if #available(iOS 13.0, *) {
+            window?.backgroundColor = .systemBackground
+        } else {
+            window?.backgroundColor = .white
+        }
+        tabBarController = UIStoryboard(name: "main", bundle: .main).instantiateInitialViewController() as? UITabBarController
+        window?.rootViewController = tabBarController
+        login()
+        window?.makeKeyAndVisible()
+                
+        let notificationOptions = launchOptions?[.remoteNotification]
+        if let notification = notificationOptions as? [String: AnyObject],
+           let aps = notification["aps"] as? [String: AnyObject] {
+            notificationManager.processRemoteNotification(aps)
+        }
+        
+        registerNotification()
+        
+        return true
+    }
+    
+    func login() {
+        self.navigationController = self.tabBarController.viewControllers?.first as? UINavigationController
+        if let username = UserDefaults.standard.value(forKey: "lastUsername") as? String,
+           let password = UserDefaults.standard.value(forKey: "lastPassword") as? String {
+            let contactVC = ContactsTableViewController()
+            contactVC.navigationItem.title = username
+            self.navigationController.viewControllers = [contactVC]
+            socketManager.login(username: username, password: password) { (loginResult) in
+                guard loginResult == "登录成功" else { return }
+                contactVC.refreshContacts()
+                contactVC.loginSuccess = true
+                contactVC.username = username
+            }
+        } else {
+            self.navigationController.viewControllers = [JoinChatViewController()]
+        }
+    }
+    
+    func applicationDidBecomeActive(_ application: UIApplication) {
+        if (self.navigationController).topViewController?.title == "JoinChatVC" { return }
+        guard !WebSocketManager.shared.cookie.isEmpty else { return }
+        WebSocketManager.shared.connect()
+    }
+    
+    func application(_ application: UIApplication, performActionFor shortcutItem: UIApplicationShortcutItem, completionHandler: @escaping (Bool) -> Void) {
+        tabBarController.selectedViewController = navigationController
+        guard let nav = navigationController else { return }
+        switch shortcutItem.type {
+        case "add":
+            if nav.topViewController is SelectShortcutTVC { return }
+            nav.pushViewController(SelectShortcutTVC(), animated: true)
+        case "contact":
+            if !(nav.topViewController is JoinChatViewController) {
+                nav.popToRootViewController(animated: true)
+            }
+            guard let userInfo = shortcutItem.userInfo, let username = userInfo["username"] as? String,
+                  let password = userInfo["password"] as? String else { return }
+            guard let vc = nav.topViewController as? JoinChatViewController else { return }
+            vc.login(username: username, password: password)
+        default:
+            return
+        }
+    }
+    
+    // app 在前台运行中收到通知会调用
+    func application(
+        _ application: UIApplication,
+        didReceiveRemoteNotification userInfo: [AnyHashable: Any],
+        fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void
+    ) {
+        print(userInfo)
+    }
+    
+    func registerNotification() {
+        let center = UNUserNotificationCenter.current()
+        center.delegate = self
+        center .requestAuthorization(options: [.badge, .sound, .alert]) { (granted, error) in
+            if (error == nil && granted) {
+                DispatchQueue.main.async {
+                    UIApplication.shared.registerForRemoteNotifications();
+                }
+            } else {
+                print("请求通知权限被拒绝了")
+            }
+        }
+    }
+    
+    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        self.deviceToken = deviceToken.map { String(format: "%02.2hhx", arguments: [$0]) }.joined()
+        print(self.deviceToken!)
+        // TODO: 使用过程中收到消息弹窗
+    }
+        
+    func applicationDidEnterBackground(_ application: UIApplication) {
+        socketManager.disconnect()
+    }
+    
+    // 点击推送通知才会调用
+    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+        guard let userInfo = response.notification.request.content.userInfo as? [String: AnyObject],
+              let aps = userInfo["aps"] as? [String: AnyObject] else { return }
+        notificationManager.processRemoteNotification(aps)
+    }
+    
+}
+

@@ -1,29 +1,29 @@
 PODS:
-  - AFNetworking (3.2.1):
-    - AFNetworking/NSURLSession (= 3.2.1)
-    - AFNetworking/Reachability (= 3.2.1)
-    - AFNetworking/Security (= 3.2.1)
-    - AFNetworking/Serialization (= 3.2.1)
-    - AFNetworking/UIKit (= 3.2.1)
-  - AFNetworking/NSURLSession (3.2.1):
+  - AFNetworking (4.0.1):
+    - AFNetworking/NSURLSession (= 4.0.1)
+    - AFNetworking/Reachability (= 4.0.1)
+    - AFNetworking/Security (= 4.0.1)
+    - AFNetworking/Serialization (= 4.0.1)
+    - AFNetworking/UIKit (= 4.0.1)
+  - AFNetworking/NSURLSession (4.0.1):
     - AFNetworking/Reachability
     - AFNetworking/Security
     - AFNetworking/Serialization
-  - AFNetworking/Reachability (3.2.1)
-  - AFNetworking/Security (3.2.1)
-  - AFNetworking/Serialization (3.2.1)
-  - AFNetworking/UIKit (3.2.1):
+  - AFNetworking/Reachability (4.0.1)
+  - AFNetworking/Security (4.0.1)
+  - AFNetworking/Serialization (4.0.1)
+  - AFNetworking/UIKit (4.0.1):
     - AFNetworking/NSURLSession
   - Starscream (4.0.4)
-  - SwiftyJSON (5.0.0)
-  - SwiftyRSA (1.5.0):
-    - SwiftyRSA/ObjC (= 1.5.0)
-  - SwiftyRSA/ObjC (1.5.0)
+  - SwiftyJSON (4.3.0)
+  - SwiftyRSA (1.6.0):
+    - SwiftyRSA/ObjC (= 1.6.0)
+  - SwiftyRSA/ObjC (1.6.0)
 
 DEPENDENCIES:
   - AFNetworking
   - Starscream (from `https://github.com/daltoniam/Starscream.git`)
-  - SwiftyJSON (from `https://github.com/SwiftyJSON/SwiftyJSON.git`)
+  - SwiftyJSON (from `https://github.com/SwiftyJSON/SwiftyJSON.git`, commit `2b6054efa051565954e1d2b9da831680026cd768`)
   - SwiftyRSA
 
 SPEC REPOS:
@@ -35,6 +35,7 @@ EXTERNAL SOURCES:
   Starscream:
     :git: https://github.com/daltoniam/Starscream.git
   SwiftyJSON:
+    :commit: 2b6054efa051565954e1d2b9da831680026cd768
     :git: https://github.com/SwiftyJSON/SwiftyJSON.git
 
 CHECKOUT OPTIONS:
@@ -42,15 +43,15 @@ CHECKOUT OPTIONS:
     :commit: df8d82047f6654d8e4b655d1b1525c64e1059d21
     :git: https://github.com/daltoniam/Starscream.git
   SwiftyJSON:
-    :commit: cbf2d4955557abc1ed5debab21d20763e7ebc540
+    :commit: 2b6054efa051565954e1d2b9da831680026cd768
     :git: https://github.com/SwiftyJSON/SwiftyJSON.git
 
 SPEC CHECKSUMS:
-  AFNetworking: b6f891fdfaed196b46c7a83cf209e09697b94057
+  AFNetworking: 7864c38297c79aaca1500c33288e429c3451fdce
   Starscream: 5178aed56b316f13fa3bc55694e583d35dd414d9
-  SwiftyJSON: f0574c07d8ca1644050db687067209e3033a89a0
-  SwiftyRSA: 6e528fb1b1a87d5111c48081083b141d6d65f1cf
+  SwiftyJSON: 4e107719275086d9d9111e1a7ca6c484b6664574
+  SwiftyRSA: 3b9c9179744217951facc6a3e9ae8d8c97061ffa
 
-PODFILE CHECKSUM: c91fa7c5ecd3790dd4b5261726b14321f6d245c9
+PODFILE CHECKSUM: bd02a2cac98a3d788a0df295b936c8d4ef1358b5
 
-COCOAPODS: 1.9.3
+COCOAPODS: 1.10.1

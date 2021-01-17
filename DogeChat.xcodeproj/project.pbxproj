@@ -11,26 +11,16 @@
 		070C417124879C440035314A /* Helper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 070C417024879C440035314A /* Helper.swift */; };
 		070C41742489204F0035314A /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 070C41732489204F0035314A /* SearchViewController.swift */; };
 		0711485A23CEC3E900B6D63C /* Notification+Names.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0711485923CEC3E900B6D63C /* Notification+Names.swift */; };
-		071F9705247D22D1000B3DBC /* RowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 071F9704247D22D1000B3DBC /* RowController.swift */; };
-		071F9709247D24CA000B3DBC /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = 071F9708247D24CA000B3DBC /* Message.swift */; };
-		071F970C247D2592000B3DBC /* WatchSessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 071F970B247D2592000B3DBC /* WatchSessionManager.swift */; };
 		071F970E247D45C1000B3DBC /* WatchSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 071F970D247D45C1000B3DBC /* WatchSession.swift */; };
 		073144A8245FF94500D915E8 /* WebSocketManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 073144A7245FF94500D915E8 /* WebSocketManager.swift */; };
+		073FDF6A25B2A35000FE01CD /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 073FDF6925B2A35000FE01CD /* NotificationManager.swift */; };
 		07513F8B2483FA7900EF68F8 /* Encrypt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07513F8A2483FA7900EF68F8 /* Encrypt.swift */; };
 		0772559523C1D3F600790339 /* ChatRoom.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0772559423C1D3F600790339 /* ChatRoom.swift */; };
-		0780327B2486B28C00E370E0 /* DogeChatTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0780327A2486B28C00E370E0 /* DogeChatTests.swift */; };
 		078032842486B73900E370E0 /* RSAKeyEncoding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 078032832486B73900E370E0 /* RSAKeyEncoding.swift */; };
+		0799068625B3D44B0083C1B8 /* main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0799068525B3D44B0083C1B8 /* main.storyboard */; };
 		07AB7B0B248F2A7A005306A1 /* SignUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07AB7B09248F2A7A005306A1 /* SignUpViewController.swift */; };
 		07AB7B0C248F2A7A005306A1 /* SignUpViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 07AB7B0A248F2A7A005306A1 /* SignUpViewController.xib */; };
-		07C6AF81247D1AF10007222F /* Interface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 07C6AF7F247D1AF10007222F /* Interface.storyboard */; };
-		07C6AF83247D1AF60007222F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 07C6AF82247D1AF60007222F /* Assets.xcassets */; };
-		07C6AF8A247D1AF70007222F /* ChatWatch Extension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 07C6AF89247D1AF70007222F /* ChatWatch Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		07C6AF8F247D1AF70007222F /* InterfaceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07C6AF8E247D1AF70007222F /* InterfaceController.swift */; };
-		07C6AF91247D1AF70007222F /* ExtensionDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07C6AF90247D1AF70007222F /* ExtensionDelegate.swift */; };
-		07C6AF93247D1AF70007222F /* NotificationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07C6AF92247D1AF70007222F /* NotificationController.swift */; };
-		07C6AF95247D1AF80007222F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 07C6AF94247D1AF80007222F /* Assets.xcassets */; };
 		07E001DA248CA56800D4A287 /* SelectShortcutTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07E001D9248CA56800D4A287 /* SelectShortcutTVC.swift */; };
-		355B7BCF2FA5EEC2308A5779 /* Pods_DogeChat.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7CBE11CF0D4B9B7BC61E93CE /* Pods_DogeChat.framework */; };
 		AE28D6E51EC0AB9800E886B9 /* StringExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE28D6E41EC0AB9800E886B9 /* StringExtension.swift */; };
 		AE909BEB1EB54099009D9D95 /* MessageTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE909BEA1EB54099009D9D95 /* MessageTableViewCell.swift */; };
 		AE909BED1EB54B13009D9D95 /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE909BEC1EB54B13009D9D95 /* Message.swift */; };
@@ -45,16 +35,10 @@
 		AEC6BF511EAF345A007CA6E5 /* ChatRoomViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEC6BF501EAF345A007CA6E5 /* ChatRoomViewController.swift */; };
 		AEFEAA511EAF37BC00889E76 /* Inconsolata-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AEFEAA4F1EAF37BC00889E76 /* Inconsolata-Bold.ttf */; };
 		AEFEAA521EAF37BC00889E76 /* Inconsolata-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AEFEAA501EAF37BC00889E76 /* Inconsolata-Regular.ttf */; };
+		E52F38351E69F8D1B345D569 /* libPods-DogeChat.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CA29E1DB30A197FEE7773D92 /* libPods-DogeChat.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		0780327D2486B28C00E370E0 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = AEC6BF331EAF320E007CA6E5 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = AEC6BF3A1EAF320E007CA6E5;
-			remoteInfo = DogeChat;
-		};
 		07A740BE2514E6090014880E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 07A740A82514E5E90014880E /* Starscream.xcodeproj */;
@@ -69,16 +53,19 @@
 			remoteGlobalIDString = 335FA2021F5DF71D00F6D2EC;
 			remoteInfo = "Starscream Tests";
 		};
-		07C6AF8B247D1AF70007222F /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = AEC6BF331EAF320E007CA6E5 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 07C6AF88247D1AF70007222F;
-			remoteInfo = "ChatWatch Extension";
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		073FDF5E25B2871C00FE01CD /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+			);
+			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		07C6AF9B247D1AF80007222F /* Embed Watch Content */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -87,17 +74,6 @@
 			files = (
 			);
 			name = "Embed Watch Content";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		07C6AF9E247D1AF80007222F /* Embed App Extensions */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 13;
-			files = (
-				07C6AF8A247D1AF70007222F /* ChatWatch Extension.appex in Embed App Extensions */,
-			);
-			name = "Embed App Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
@@ -112,24 +88,30 @@
 		071F970B247D2592000B3DBC /* WatchSessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchSessionManager.swift; sourceTree = "<group>"; };
 		071F970D247D45C1000B3DBC /* WatchSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchSession.swift; sourceTree = "<group>"; };
 		073144A7245FF94500D915E8 /* WebSocketManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebSocketManager.swift; sourceTree = "<group>"; };
+		073FDF5425B2871C00FE01CD /* NotificationService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NotificationService.h; sourceTree = "<group>"; };
+		073FDF5525B2871C00FE01CD /* NotificationService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NotificationService.m; sourceTree = "<group>"; };
+		073FDF5725B2871C00FE01CD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		073FDF6525B289A800FE01CD /* DogeChat.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = DogeChat.entitlements; sourceTree = "<group>"; };
+		073FDF6925B2A35000FE01CD /* NotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationManager.swift; sourceTree = "<group>"; };
+		073FDF9F25B2F3BE00FE01CD /* DogeChat-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "DogeChat-Bridging-Header.h"; sourceTree = "<group>"; };
+		073FDFAC25B2F61500FE01CD /* libAFNetworking.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libAFNetworking.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		073FDFDE25B2FA3700FE01CD /* SwiftyJSON.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SwiftyJSON.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		07513F8A2483FA7900EF68F8 /* Encrypt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Encrypt.swift; sourceTree = "<group>"; };
 		0772559423C1D3F600790339 /* ChatRoom.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatRoom.swift; sourceTree = "<group>"; };
 		078032712486B13E00E370E0 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Platforms/iPhoneOS.platform/Developer/Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
-		078032782486B28C00E370E0 /* DogeChatTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DogeChatTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		0780327A2486B28C00E370E0 /* DogeChatTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DogeChatTests.swift; sourceTree = "<group>"; };
 		0780327C2486B28C00E370E0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		078032832486B73900E370E0 /* RSAKeyEncoding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RSAKeyEncoding.swift; sourceTree = "<group>"; };
+		0799068525B3D44B0083C1B8 /* main.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = main.storyboard; sourceTree = "<group>"; };
 		07A740A82514E5E90014880E /* Starscream.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Starscream.xcodeproj; path = "../../../DownloadedFromRaywenderlich/Starscream-master/Starscream.xcodeproj"; sourceTree = "<group>"; };
 		07A740F82514E9490014880E /* SwiftyJSON.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SwiftyJSON.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		07A7410F2514E9C60014880E /* SwiftyJSON.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SwiftyJSON.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		07A741222514EE2C0014880E /* AFNetworking.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = AFNetworking.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		07AB7B09248F2A7A005306A1 /* SignUpViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpViewController.swift; sourceTree = "<group>"; };
 		07AB7B0A248F2A7A005306A1 /* SignUpViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SignUpViewController.xib; sourceTree = "<group>"; };
-		07C6AF7D247D1AF10007222F /* ChatWatch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ChatWatch.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		07C6AF80247D1AF10007222F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Interface.storyboard; sourceTree = "<group>"; };
 		07C6AF82247D1AF60007222F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		07C6AF84247D1AF60007222F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		07C6AF89247D1AF70007222F /* ChatWatch Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "ChatWatch Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		07C6AF8E247D1AF70007222F /* InterfaceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterfaceController.swift; sourceTree = "<group>"; };
 		07C6AF90247D1AF70007222F /* ExtensionDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtensionDelegate.swift; sourceTree = "<group>"; };
 		07C6AF92247D1AF70007222F /* NotificationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationController.swift; sourceTree = "<group>"; };
@@ -139,7 +121,6 @@
 		07E001D9248CA56800D4A287 /* SelectShortcutTVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectShortcutTVC.swift; sourceTree = "<group>"; };
 		0B69595E028EAB1E5EC8EA2E /* Pods-DogeChat.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DogeChat.release.xcconfig"; path = "Target Support Files/Pods-DogeChat/Pods-DogeChat.release.xcconfig"; sourceTree = "<group>"; };
 		11446107E0EC4769216E7331 /* Pods-DogeChat.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DogeChat.debug.xcconfig"; path = "Target Support Files/Pods-DogeChat/Pods-DogeChat.debug.xcconfig"; sourceTree = "<group>"; };
-		7CBE11CF0D4B9B7BC61E93CE /* Pods_DogeChat.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_DogeChat.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		AE28D6E41EC0AB9800E886B9 /* StringExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StringExtension.swift; sourceTree = "<group>"; };
 		AE909BEA1EB54099009D9D95 /* MessageTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageTableViewCell.swift; sourceTree = "<group>"; };
 		AE909BEC1EB54B13009D9D95 /* Message.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
@@ -156,35 +137,15 @@
 		AEC6BF501EAF345A007CA6E5 /* ChatRoomViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChatRoomViewController.swift; sourceTree = "<group>"; };
 		AEFEAA4F1EAF37BC00889E76 /* Inconsolata-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Inconsolata-Bold.ttf"; sourceTree = "<group>"; };
 		AEFEAA501EAF37BC00889E76 /* Inconsolata-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Inconsolata-Regular.ttf"; sourceTree = "<group>"; };
+		CA29E1DB30A197FEE7773D92 /* libPods-DogeChat.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-DogeChat.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		078032752486B28C00E370E0 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		07C6AF86247D1AF70007222F /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		A0245E25D70041EB82834108 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		AEC6BF381EAF320E007CA6E5 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				355B7BCF2FA5EEC2308A5779 /* Pods_DogeChat.framework in Frameworks */,
+				E52F38351E69F8D1B345D569 /* libPods-DogeChat.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -203,13 +164,25 @@
 		073144A3245FF83D00D915E8 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				073FDFDE25B2FA3700FE01CD /* SwiftyJSON.framework */,
+				073FDFAC25B2F61500FE01CD /* libAFNetworking.a */,
 				07A741222514EE2C0014880E /* AFNetworking.framework */,
 				07A7410F2514E9C60014880E /* SwiftyJSON.framework */,
 				07A740F82514E9490014880E /* SwiftyJSON.framework */,
 				078032712486B13E00E370E0 /* XCTest.framework */,
-				7CBE11CF0D4B9B7BC61E93CE /* Pods_DogeChat.framework */,
+				CA29E1DB30A197FEE7773D92 /* libPods-DogeChat.a */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		073FDF5325B2871C00FE01CD /* notification */ = {
+			isa = PBXGroup;
+			children = (
+				073FDF5425B2871C00FE01CD /* NotificationService.h */,
+				073FDF5525B2871C00FE01CD /* NotificationService.m */,
+				073FDF5725B2871C00FE01CD /* Info.plist */,
+			);
+			path = notification;
 			sourceTree = "<group>";
 		};
 		078032792486B28C00E370E0 /* DogeChatTests */ = {
@@ -232,6 +205,7 @@
 				AEA5A1781EC362150041C7B4 /* ChatRoomViewController+Table.swift */,
 				07AB7B09248F2A7A005306A1 /* SignUpViewController.swift */,
 				07AB7B0A248F2A7A005306A1 /* SignUpViewController.xib */,
+				0799068525B3D44B0083C1B8 /* main.storyboard */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -256,6 +230,7 @@
 				0772559423C1D3F600790339 /* ChatRoom.swift */,
 				078032832486B73900E370E0 /* RSAKeyEncoding.swift */,
 				AE909BEC1EB54B13009D9D95 /* Message.swift */,
+				073FDF6925B2A35000FE01CD /* NotificationManager.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -263,7 +238,6 @@
 		078D4140248DF79600E78605 /* SupportingFiles */ = {
 			isa = PBXGroup;
 			children = (
-				AEC6BF3E1EAF320E007CA6E5 /* AppDelegate.swift */,
 				AEC6BF451EAF320E007CA6E5 /* Assets.xcassets */,
 				AEC6BF471EAF320E007CA6E5 /* LaunchScreen.storyboard */,
 				AEFEAA4F1EAF37BC00889E76 /* Inconsolata-Bold.ttf */,
@@ -323,6 +297,7 @@
 				07C6AF7E247D1AF10007222F /* ChatWatch */,
 				07C6AF8D247D1AF70007222F /* ChatWatch Extension */,
 				078032792486B28C00E370E0 /* DogeChatTests */,
+				073FDF5325B2871C00FE01CD /* notification */,
 				AEC6BF3C1EAF320E007CA6E5 /* Products */,
 				073144A3245FF83D00D915E8 /* Frameworks */,
 				B12E227B93FFC54FE5E82718 /* Pods */,
@@ -333,9 +308,6 @@
 			isa = PBXGroup;
 			children = (
 				AEC6BF3B1EAF320E007CA6E5 /* DogeChat.app */,
-				07C6AF7D247D1AF10007222F /* ChatWatch.app */,
-				07C6AF89247D1AF70007222F /* ChatWatch Extension.appex */,
-				078032782486B28C00E370E0 /* DogeChatTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -343,12 +315,15 @@
 		AEC6BF3D1EAF320E007CA6E5 /* DogeChat */ = {
 			isa = PBXGroup;
 			children = (
+				AEC6BF3E1EAF320E007CA6E5 /* AppDelegate.swift */,
+				073FDF6525B289A800FE01CD /* DogeChat.entitlements */,
 				AEC6BF4A1EAF320E007CA6E5 /* Info.plist */,
 				078D413F248DF75B00E78605 /* Models */,
 				078D413E248DF71700E78605 /* Views */,
 				078D413D248DF6E500E78605 /* ViewControllers */,
 				AEA5A17A1EC3641C0041C7B4 /* Extensions */,
 				078D4140248DF79600E78605 /* SupportingFiles */,
+				073FDF9F25B2F3BE00FE01CD /* DogeChat-Bridging-Header.h */,
 			);
 			path = DogeChat;
 			sourceTree = "<group>";
@@ -366,59 +341,6 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		078032772486B28C00E370E0 /* DogeChatTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 0780327F2486B28C00E370E0 /* Build configuration list for PBXNativeTarget "DogeChatTests" */;
-			buildPhases = (
-				078032742486B28C00E370E0 /* Sources */,
-				078032752486B28C00E370E0 /* Frameworks */,
-				078032762486B28C00E370E0 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				0780327E2486B28C00E370E0 /* PBXTargetDependency */,
-			);
-			name = DogeChatTests;
-			productName = DogeChatTests;
-			productReference = 078032782486B28C00E370E0 /* DogeChatTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
-		07C6AF7C247D1AF10007222F /* ChatWatch */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 07C6AFA4247D1AF80007222F /* Build configuration list for PBXNativeTarget "ChatWatch" */;
-			buildPhases = (
-				07C6AF7B247D1AF10007222F /* Resources */,
-				07C6AF9E247D1AF80007222F /* Embed App Extensions */,
-				A0245E25D70041EB82834108 /* Frameworks */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				07C6AF8C247D1AF70007222F /* PBXTargetDependency */,
-			);
-			name = ChatWatch;
-			productName = ChatWatch;
-			productReference = 07C6AF7D247D1AF10007222F /* ChatWatch.app */;
-			productType = "com.apple.product-type.application.watchapp2";
-		};
-		07C6AF88247D1AF70007222F /* ChatWatch Extension */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 07C6AFA3247D1AF80007222F /* Build configuration list for PBXNativeTarget "ChatWatch Extension" */;
-			buildPhases = (
-				07C6AF85247D1AF70007222F /* Sources */,
-				07C6AF86247D1AF70007222F /* Frameworks */,
-				07C6AF87247D1AF70007222F /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = "ChatWatch Extension";
-			productName = "ChatWatch Extension";
-			productReference = 07C6AF89247D1AF70007222F /* ChatWatch Extension.appex */;
-			productType = "com.apple.product-type.watchkit2-extension";
-		};
 		AEC6BF3A1EAF320E007CA6E5 /* DogeChat */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = AEC6BF4D1EAF320E007CA6E5 /* Build configuration list for PBXNativeTarget "DogeChat" */;
@@ -427,8 +349,8 @@
 				AEC6BF371EAF320E007CA6E5 /* Sources */,
 				AEC6BF381EAF320E007CA6E5 /* Frameworks */,
 				AEC6BF391EAF320E007CA6E5 /* Resources */,
-				07D9E4BF9696AEDC60404E82 /* [CP] Embed Pods Frameworks */,
 				07C6AF9B247D1AF80007222F /* Embed Watch Content */,
+				073FDF5E25B2871C00FE01CD /* Embed App Extensions */,
 			);
 			buildRules = (
 			);
@@ -449,27 +371,11 @@
 				LastUpgradeCheck = 1200;
 				ORGANIZATIONNAME = "Luke Parham";
 				TargetAttributes = {
-					078032772486B28C00E370E0 = {
-						CreatedOnToolsVersion = 11.4;
-						DevelopmentTeam = U4X7QLGBPJ;
-						ProvisioningStyle = Automatic;
-						TestTargetID = AEC6BF3A1EAF320E007CA6E5;
-					};
-					07C6AF7C247D1AF10007222F = {
-						CreatedOnToolsVersion = 11.4;
-						DevelopmentTeam = U4X7QLGBPJ;
-						ProvisioningStyle = Automatic;
-					};
-					07C6AF88247D1AF70007222F = {
-						CreatedOnToolsVersion = 11.4;
-						DevelopmentTeam = U4X7QLGBPJ;
-						ProvisioningStyle = Automatic;
-					};
 					AEC6BF3A1EAF320E007CA6E5 = {
 						CreatedOnToolsVersion = 8.3.1;
-						DevelopmentTeam = GK8TA3SVKG;
-						LastSwiftMigration = 1110;
-						ProvisioningStyle = Automatic;
+						DevelopmentTeam = HA4ZY58KNJ;
+						LastSwiftMigration = 1230;
+						ProvisioningStyle = Manual;
 					};
 				};
 			};
@@ -493,9 +399,6 @@
 			projectRoot = "";
 			targets = (
 				AEC6BF3A1EAF320E007CA6E5 /* DogeChat */,
-				07C6AF7C247D1AF10007222F /* ChatWatch */,
-				07C6AF88247D1AF70007222F /* ChatWatch Extension */,
-				078032772486B28C00E370E0 /* DogeChatTests */,
 			);
 		};
 /* End PBXProject section */
@@ -518,35 +421,12 @@
 /* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
-		078032762486B28C00E370E0 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		07C6AF7B247D1AF10007222F /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				07C6AF83247D1AF60007222F /* Assets.xcassets in Resources */,
-				07C6AF81247D1AF10007222F /* Interface.storyboard in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		07C6AF87247D1AF70007222F /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				07C6AF95247D1AF80007222F /* Assets.xcassets in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		AEC6BF391EAF320E007CA6E5 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				07AB7B0C248F2A7A005306A1 /* SignUpViewController.xib in Resources */,
+				0799068625B3D44B0083C1B8 /* main.storyboard in Resources */,
 				AEC6BF491EAF320E007CA6E5 /* LaunchScreen.storyboard in Resources */,
 				AEFEAA521EAF37BC00889E76 /* Inconsolata-Regular.ttf in Resources */,
 				AEFEAA511EAF37BC00889E76 /* Inconsolata-Bold.ttf in Resources */,
@@ -557,30 +437,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		07D9E4BF9696AEDC60404E82 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-DogeChat/Pods-DogeChat-frameworks.sh",
-				"${BUILT_PRODUCTS_DIR}/AFNetworking/AFNetworking.framework",
-				"${BUILT_PRODUCTS_DIR}/Starscream/Starscream.framework",
-				"${BUILT_PRODUCTS_DIR}/SwiftyJSON/SwiftyJSON.framework",
-				"${BUILT_PRODUCTS_DIR}/SwiftyRSA/SwiftyRSA.framework",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AFNetworking.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Starscream.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftyJSON.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftyRSA.framework",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-DogeChat/Pods-DogeChat-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		F1C0C8662FD77ABA1F11BFC8 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -606,27 +462,6 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		078032742486B28C00E370E0 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				0780327B2486B28C00E370E0 /* DogeChatTests.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		07C6AF85247D1AF70007222F /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				071F970C247D2592000B3DBC /* WatchSessionManager.swift in Sources */,
-				07C6AF93247D1AF70007222F /* NotificationController.swift in Sources */,
-				07C6AF91247D1AF70007222F /* ExtensionDelegate.swift in Sources */,
-				071F9709247D24CA000B3DBC /* Message.swift in Sources */,
-				071F9705247D22D1000B3DBC /* RowController.swift in Sources */,
-				07C6AF8F247D1AF70007222F /* InterfaceController.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		AEC6BF371EAF320E007CA6E5 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -639,6 +474,7 @@
 				AE909BEB1EB54099009D9D95 /* MessageTableViewCell.swift in Sources */,
 				070C417124879C440035314A /* Helper.swift in Sources */,
 				07E001DA248CA56800D4A287 /* SelectShortcutTVC.swift in Sources */,
+				073FDF6A25B2A35000FE01CD /* NotificationManager.swift in Sources */,
 				071F970E247D45C1000B3DBC /* WatchSession.swift in Sources */,
 				AE909BEF1EB54C4B009D9D95 /* Label.swift in Sources */,
 				AE909BED1EB54B13009D9D95 /* Message.swift in Sources */,
@@ -656,19 +492,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		0780327E2486B28C00E370E0 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = AEC6BF3A1EAF320E007CA6E5 /* DogeChat */;
-			targetProxy = 0780327D2486B28C00E370E0 /* PBXContainerItemProxy */;
-		};
-		07C6AF8C247D1AF70007222F /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 07C6AF88247D1AF70007222F /* ChatWatch Extension */;
-			targetProxy = 07C6AF8B247D1AF70007222F /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		07C6AF7F247D1AF10007222F /* Interface.storyboard */ = {
@@ -690,151 +513,6 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
-		078032802486B28C00E370E0 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = U4X7QLGBPJ;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				INFOPLIST_FILE = DogeChatTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
-				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = SouthChinaUniversityOfTechnology.DogeChatTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/DogeChat.app/DogeChat";
-			};
-			name = Debug;
-		};
-		078032812486B28C00E370E0 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = U4X7QLGBPJ;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				INFOPLIST_FILE = DogeChatTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.4;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = SouthChinaUniversityOfTechnology.DogeChatTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/DogeChat.app/DogeChat";
-			};
-			name = Release;
-		};
-		07C6AF9C247D1AF80007222F /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = U4X7QLGBPJ;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				IBSC_MODULE = ChatWatch_Extension;
-				INFOPLIST_FILE = ChatWatch/Info.plist;
-				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
-				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.scut.zhaoxiguang.dogeChat.watchkitapp;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = watchos;
-				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 4;
-				WATCHOS_DEPLOYMENT_TARGET = 6.2;
-			};
-			name = Debug;
-		};
-		07C6AF9D247D1AF80007222F /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = U4X7QLGBPJ;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				IBSC_MODULE = ChatWatch_Extension;
-				INFOPLIST_FILE = ChatWatch/Info.plist;
-				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.scut.zhaoxiguang.dogeChat.watchkitapp;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = watchos;
-				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 4;
-				WATCHOS_DEPLOYMENT_TARGET = 6.2;
-			};
-			name = Release;
-		};
-		07C6AF9F247D1AF80007222F /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_COMPLICATION_NAME = Complication;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = U4X7QLGBPJ;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				INFOPLIST_FILE = "ChatWatch Extension/Info.plist";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
-				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.scut.zhaoxiguang.dogeChat.watchkitapp.watchkitextension;
-				PRODUCT_NAME = "${TARGET_NAME}";
-				SDKROOT = watchos;
-				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 4;
-				WATCHOS_DEPLOYMENT_TARGET = 6.2;
-			};
-			name = Debug;
-		};
-		07C6AFA0247D1AF80007222F /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_COMPLICATION_NAME = Complication;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = U4X7QLGBPJ;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				INFOPLIST_FILE = "ChatWatch Extension/Info.plist";
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
-				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.scut.zhaoxiguang.dogeChat.watchkitapp.watchkitextension;
-				PRODUCT_NAME = "${TARGET_NAME}";
-				SDKROOT = watchos;
-				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 4;
-				WATCHOS_DEPLOYMENT_TARGET = 6.2;
-			};
-			name = Release;
-		};
 		AEC6BF4B1EAF320E007CA6E5 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -953,15 +631,20 @@
 			baseConfigurationReference = 11446107E0EC4769216E7331 /* Pods-DogeChat.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = DogeChat/DogeChat.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = GK8TA3SVKG;
+				CODE_SIGN_STYLE = Manual;
+				DEFINES_MODULE = NO;
+				DEVELOPMENT_TEAM = HA4ZY58KNJ;
 				INFOPLIST_FILE = DogeChat/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = com.scut.zhaoxiguang.dogeChat;
+				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.demo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
+				PROVISIONING_PROFILE_SPECIFIER = zhaoxiguangdemo;
+				SWIFT_OBJC_BRIDGING_HEADER = "DogeChat/DogeChat-Bridging-Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -972,15 +655,19 @@
 			baseConfigurationReference = 0B69595E028EAB1E5EC8EA2E /* Pods-DogeChat.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = DogeChat/DogeChat.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
+				DEFINES_MODULE = NO;
 				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = DogeChat/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = con.pino.DogeChat2;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				SWIFT_OBJC_BRIDGING_HEADER = "DogeChat/DogeChat-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -989,33 +676,6 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		0780327F2486B28C00E370E0 /* Build configuration list for PBXNativeTarget "DogeChatTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				078032802486B28C00E370E0 /* Debug */,
-				078032812486B28C00E370E0 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		07C6AFA3247D1AF80007222F /* Build configuration list for PBXNativeTarget "ChatWatch Extension" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				07C6AF9F247D1AF80007222F /* Debug */,
-				07C6AFA0247D1AF80007222F /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		07C6AFA4247D1AF80007222F /* Build configuration list for PBXNativeTarget "ChatWatch" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				07C6AF9C247D1AF80007222F /* Debug */,
-				07C6AF9D247D1AF80007222F /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 		AEC6BF361EAF320E007CA6E5 /* Build configuration list for PBXProject "DogeChat" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
