@@ -41,6 +41,7 @@ class ChatRoomViewController: UIViewController {
     var pagesAndCurNum = (pages: 1, curNum: 1)
     var originOfInputBar = CGPoint()
     var scrollBottom = true
+    var indexPathToInsert: IndexPath?
     
     var messages = [Message]()
     
@@ -63,6 +64,7 @@ class ChatRoomViewController: UIViewController {
         super.viewDidLoad()
         manager.messageDelegate = self
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillChange(notification:)), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(sendSuccess(notification:)), name: .sendSuccess, object: nil)
         addRefreshController()
         layoutViews()
         loadViews()
@@ -93,6 +95,22 @@ class ChatRoomViewController: UIViewController {
     @objc func tap() {
         NotificationCenter.default.post(name: NSNotification.Name.shouldResignFirstResponder, object: nil)
     }
+    
+    @objc func sendSuccess(notification: Notification) {
+        let userInfo = notification.userInfo
+        guard let message = userInfo?["message"] as? Message,
+              let correctId = userInfo?["correctId"] as? Int else { return }
+
+        guard let index = messages.firstIndex(of: message) else { return }
+        messages[index].id = correctId
+        messages[index].sendStatus = .success
+        guard message.receiver == friendName else {
+            return
+        }
+        let indexPath = IndexPath(row: index, section: 0)
+        (tableView.cellForRow(at: indexPath) as? MessageTableViewCell)?.indicator.stopAnimating()
+        (tableView.cellForRow(at: indexPath) as? MessageTableViewCell)?.indicator.removeFromSuperview()
+    }
 }
 
 //MARK - Message Input Bar
@@ -100,46 +118,29 @@ extension ChatRoomViewController: MessageInputDelegate {
     func sendWasTapped(content: String) {
         guard !content.isEmpty else { return }
         let wrappedMessage = processMessageString(for: content)
+        manager.notSendMessages.append(wrappedMessage)
         switch messageOption {
         case .toAll:
             manager.messagesGroup.append(wrappedMessage)
         case .toOne:
             manager.messagesSingle.add(wrappedMessage, for: friendName)
         }
+        insertNewMessageCell(wrappedMessage)
         manager.sendMessage(content, to: friendName, from: username, option: messageOption, uuid: wrappedMessage.uuid)
         //    manager.notifyWatch(newMessage: wrappedMessage)
-        insertNewMessageCell(wrappedMessage)
     }
     
     private func processMessageString(for string: String) -> Message {
-        return Message(message: string, messageSender: .ourself, username: username, messageType: .text, id: manager.maxId + 1, sendStatus: .fail)
+        return Message(message: string, messageSender: .ourself, receiver: friendName, username: username, messageType: .text, id: manager.maxId + 1, sendStatus: .fail)
     }
 }
 
 extension ChatRoomViewController: MessageDelegate {
     
-    func sendSuccess(uuid: String, correctId: Int) {
-        guard let index = messages.firstIndex(where: { $0.uuid == uuid }) else { return }
-        messages[index].id = correctId
-        messages[index].sendStatus = .success
-        if messageOption == .toAll { //在群聊中join也是一条消息
-            let messagesWithoutJoin = messages.filter { $0.messageType != .join }
-            guard let indexForAddToManager = messagesWithoutJoin.firstIndex(where: { $0.uuid == uuid }) else { return }
-            manager.messagesGroup[indexForAddToManager].id = correctId
-            manager.messagesGroup[indexForAddToManager].sendStatus = .success
-        } else {
-            manager.messagesSingle[friendName]![index].id = correctId
-            manager.messagesSingle[friendName]![index].sendStatus = .success
-        }
-        let indexPath = IndexPath(row: index, section: 0)
-        (tableView.cellForRow(at: indexPath) as? MessageTableViewCell)?.indicator.stopAnimating()
-        (tableView.cellForRow(at: indexPath) as? MessageTableViewCell)?.indicator.removeFromSuperview()
-    }
-    
     func receiveMessage(_ message: Message, option: String) {
         if option != messageOption.rawValue  { return }
         if option == "toOne" && message.senderUsername != friendName { return }
-        insertNewMessageCell(message)
+        insertNewMessageCell(message, invokeNow: true)
     }
     
     func updateOnlineNumber(to newNumber: Int) {
@@ -248,17 +249,28 @@ extension ChatRoomViewController: UITextViewDelegate {
         let oldLineCount = Int((oldFrame.height - 20) / lineHeight)
         let lineCountChanged = lineCount - oldLineCount
         let heightChanged = CGFloat(lineCountChanged) * lineHeight
-        if heightChanged == 0 {
-            return
-        }
         let frameOfTableView = tableView.frame
-        UIView.animate(withDuration: 0.4) {
-            self.messageInputBar.frame = CGRect(x: oldFrame.origin.x, y: oldFrame.origin.y-heightChanged, width: oldFrame.width, height: oldFrame.height+heightChanged)
-            self.tableView.frame = CGRect(origin: frameOfTableView.origin, size: CGSize(width: frameOfTableView.width, height: frameOfTableView.height-heightChanged))
-        } completion: { (finished) in
+        if heightChanged != 0 {
+            UIView.animate(withDuration: heightChanged != 0 ? 0.25 : 0) {
+                self.messageInputBar.frame = CGRect(x: oldFrame.origin.x, y: oldFrame.origin.y-heightChanged, width: oldFrame.width, height: oldFrame.height+heightChanged)
+                self.tableView.frame = CGRect(origin: frameOfTableView.origin, size: CGSize(width: frameOfTableView.width, height: frameOfTableView.height-heightChanged))
+            } completion: { [self] (_) in
+                checkIfShouldInsertNewCell(needScroll: true)
+            }
+        } else {
+            checkIfShouldInsertNewCell()
+        }
+    }
+    
+    private func checkIfShouldInsertNewCell(needScroll: Bool = false) {
+        guard messages.count > 0 else { return }
+        if let indexPath = indexPathToInsert {
+            self.tableView.insertRows(at: [indexPath], with: .bottom)
+            self.indexPathToInsert = nil
+            self.tableView.scrollToRow(at: self.lastIndexPath, at: .bottom, animated: true)
+        } else if needScroll {
             self.tableView.scrollToRow(at: self.lastIndexPath, at: .bottom, animated: true)
         }
-
     }
     
     func textViewShouldEndEditing(_ textView: UITextView) -> Bool {

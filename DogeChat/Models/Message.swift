@@ -31,34 +31,37 @@
 import Foundation
 
 enum MessageType: String{
-  case text
-  case join
+    case text
+    case join
 }
 
 enum SendStatus {
-  case success
-  case fail
+    case success
+    case fail
 }
 
 class Message: NSObject {
-  var message: String
-  let senderUsername: String
-  let messageSender: MessageSender
-  var messageType: MessageType
-  let date: String
-  let option: MessageOption
-  var id: Int
-  let uuid = UUID().uuidString
-  var sendStatus: SendStatus = .success
-  
-  init(message: String, messageSender: MessageSender, username: String, messageType: MessageType, option: MessageOption = .toOne, id: Int = 0, date: String = "", sendStatus: SendStatus = .success) {
-    self.message = message.withoutWhitespace()
-    self.messageSender = messageSender
-    self.senderUsername = username
-    self.messageType = messageType
-    self.option = option
-    self.id = id
-    self.date = date
-    self.sendStatus = sendStatus
-  }
+    var message: String
+    let senderUsername: String
+    let messageSender: MessageSender
+    var messageType: MessageType
+    let date: String
+    let option: MessageOption
+    var id: Int
+    var receiver = ""
+    let uuid = UUID().uuidString
+    
+    var sendStatus: SendStatus = .success
+    
+    init(message: String, messageSender: MessageSender, receiver: String = "", username: String, messageType: MessageType, option: MessageOption = .toOne, id: Int = 0, date: String = "", sendStatus: SendStatus = .success) {
+        self.message = message.withoutWhitespace()
+        self.messageSender = messageSender
+        self.senderUsername = username
+        self.messageType = messageType
+        self.option = option
+        self.id = id
+        self.date = date
+        self.sendStatus = sendStatus
+        self.receiver = receiver
+    }
 }

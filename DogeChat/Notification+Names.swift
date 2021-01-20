@@ -9,6 +9,7 @@
 import Foundation
 
 extension Notification.Name {
-  static let shouldResignFirstResponder = Notification.Name("shouldResignFirstResponder")
-  static let receiveNewMessage = Notification.Name("receiveNewMessage")
+    static let shouldResignFirstResponder = Notification.Name("shouldResignFirstResponder")
+    static let receiveNewMessage = Notification.Name("receiveNewMessage")
+    static let sendSuccess = Notification.Name("sendSuccseeNotification")
 }

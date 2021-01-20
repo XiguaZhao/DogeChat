@@ -8,9 +8,9 @@
 
 import Foundation
 import SwiftyJSON
-import Starscream
 import WatchConnectivity
 import CoreLocation
+import SwiftWebSocket
 
 @objc protocol MessageDelegate: class {
     @objc optional func receiveMessage(_ message: Message, option: String)
@@ -20,7 +20,6 @@ import CoreLocation
     @objc optional func newFriendRequest()
     @objc func revokeMessage(_ id: Int)
     @objc func revokeSuccess(id: Int)
-    @objc func sendSuccess(uuid: String, correctId: Int)
 }
 
 enum MessageOption: String {
@@ -48,6 +47,7 @@ class WebSocketManager: NSObject {
     weak var messageDelegate: MessageDelegate?
     var messagesGroup: [Message] = []
     var messagesSingle: [String: [Message]] = [:]
+    var notSendMessages = [Message]()
     
     static let shared: WebSocketManager = WebSocketManager()
     
@@ -83,17 +83,18 @@ class WebSocketManager: NSObject {
     
     func connect() {
         var request = URLRequest(url: URL(string: "wss://procwq.top/webSocket")!)
-        request.addValue(cookie, forHTTPHeaderField: "Cookie")
+//        var request = URLRequest(url: URL(string: "wss://47.102.114.94:8080/keyChat")!)
+        request.addValue("SESSION="+cookie, forHTTPHeaderField: "Cookie")
         socket = WebSocket(request: request)
         socket.delegate = self
-        socket.connect()
+        socket.open()
     }
     
     func disconnect() {
         guard socket != nil else {
             return
         }
-        socket.disconnect()
+        socket.close()
     }
     
     func makeJsonString(for dict: [String: Any]) -> String {
@@ -106,9 +107,7 @@ class WebSocketManager: NSObject {
         let publicKey = encrypt.getPublicKey()
         guard !publicKey.isEmpty else { return }
         let paras = ["method": "publicKey", "key": publicKey]
-        socket.write(string: makeJsonString(for: paras)) {
-            print("已发送公钥")
-        }
+        socket.send(text: makeJsonString(for: paras))
     }
     
     func getContacts(completion: @escaping ([String]) -> Void)  {
@@ -136,6 +135,10 @@ class WebSocketManager: NSObject {
     }
     
     func sendMessage(_ content: String, to receiver: String = "", from sender: String = "xigua", option: MessageOption, uuid: String) {
+        guard socket.readyState == .open else {
+            connect()
+            return
+        }
         UIApplication.shared.isNetworkActivityIndicatorVisible = true
         let paras: [String: Any]
         switch option {
@@ -145,9 +148,7 @@ class WebSocketManager: NSObject {
             let encryptedContent = encrypt.encryptMessage(content)
             paras = ["method": "NewMessage", "message": ["content": encryptedContent, "receiver": receiver, "sender": sender], "uuid": uuid]
         }
-        socket.write(string: makeJsonString(for: paras)) {
-            print("已发送")
-        }
+        socket.send(text: makeJsonString(for: paras))
     }
     
     func sendToken(_ token: String?) {
@@ -155,58 +156,61 @@ class WebSocketManager: NSObject {
             return
         }
         let params = ["method": "token", "token": token]
-        socket.write(string: makeJsonString(for: params))
+        socket.send(text: makeJsonString(for: params))
+    }
+    
+    func resendMessages() {
+        for message in self.notSendMessages {
+            let option: MessageOption = message.receiver == "" ? .toAll : .toOne
+            self.sendMessage(message.message, to: message.receiver, from: message.senderUsername, option: option, uuid: message.uuid)
+            print("重发消息: \(message.message)")
+        }
     }
     
     //MARK: History Messages
     func getUnreadMessage() {
         let paras: [String: Any] = ["method": "getUnreadMessage", "id": maxId]
-        socket.write(string: makeJsonString(for: paras)) {
-            print("获取未读消息请求")
-        }
+        socket.send(text: makeJsonString(for: paras))
     }
     
     func historyMessages(for name: String, pageNum: Int)  {
         let paras: [String: Any] = ["method": "getHistory", "friend": name, "pageNum": pageNum]
-        socket.write(string: makeJsonString(for: paras)) {
-            print("获取历史消息")
-        }
+        socket.send(text: makeJsonString(for: paras))
     }
     //MARK: Revoke
     func revokeMessage(id: Int) {
         let paras: [String: Any] = ["method": "revokeMessage", "id": id]
-        socket.write(string: makeJsonString(for: paras)) {
-            print("撤回消息")
-        }
+        socket.send(text: makeJsonString(for: paras))
     }
 }
 
-extension WebSocketManager: WebSocketDelegate {
+extension WebSocketManager: WebSocketDelegate  {
+    func webSocketOpen() {
+        print("websocket已经打开")
+        getUnreadMessage()
+        sendToken((UIApplication.shared.delegate as! AppDelegate).deviceToken)
+        resendMessages()
+    }
     
-    func didReceive(event: WebSocketEvent, client: WebSocket) {
-        switch event {
-        case .text(let text):
-            print("收到消息")
-            print(text)
-            parseReceivedMessage(text)
-        case .binary(let data):
-            print("收到消息")
-            let json = try! JSONSerialization.jsonObject(with: data, options: .mutableContainers)
-            print(json)
-        case .connected(_):
-            print("连接socket成功")
-            getUnreadMessage()
-            sendToken((UIApplication.shared.delegate as! AppDelegate).deviceToken)
-        case .disconnected(_, _):
-            print("socket已断开正在重连")
-            connect()
-        case .error(_):
-            getContacts { (contacts) in
-                print("retry")
-            }
-        default:
+    func webSocketClose(_ code: Int, reason: String, wasClean: Bool) {
+        print("websocket已关闭")
+        guard UIApplication.shared.applicationState == .active else {
             return
         }
+        connect()
+    }
+    
+    func webSocketError(_ error: NSError) {
+        print("error:=====\(error)")
+        getContacts { (contacts) in
+            print("retry")
+        }
+    }
+    
+    func webSocketMessageText(_ text: String) {
+        print("收到消息")
+        print(text)
+        parseReceivedMessage(text)
     }
     
     private func parseReceivedMessage(_ jsonString: String) {
@@ -220,14 +224,21 @@ extension WebSocketManager: WebSocketDelegate {
         case "sendToAllSuccess":
             UIApplication.shared.isNetworkActivityIndicatorVisible = false
             let id = json["id"].intValue
+            let uuid = json["uuid"].stringValue
             maxId = max(maxId, id)
-            messageDelegate?.sendSuccess(uuid: json["uuid"].stringValue, correctId: id)
+            guard let indexOfMessage = messagesGroup.firstIndex(where: { $0.uuid == uuid }) else { return }
+            let message = messagesGroup[indexOfMessage]
+            NotificationCenter.default.post(name: .sendSuccess, object: nil, userInfo: ["correctId": id, "toAll": true, "message": message])
         case "sendMessageSuccess":
             UIApplication.shared.isNetworkActivityIndicatorVisible = false
             let data = json["data"]
+            let uuid = json["uuid"].stringValue
             let id = data["messageId"].intValue
+            let receiver = data["receiver"].stringValue
             maxId = max(maxId, id)
-            messageDelegate?.sendSuccess(uuid: json["uuid"].stringValue, correctId: id)
+            guard let indexOfMessage = messagesSingle[receiver]?.firstIndex(where: { $0.uuid == uuid }),
+                  let message = messagesSingle[receiver]?[indexOfMessage] else { return }
+            NotificationCenter.default.post(name: .sendSuccess, object: nil, userInfo: ["correctId": id, "toAll": false, "message": message])
         case "sendToAll":
             let content = json["message"].stringValue
             let sender = json["sender"].stringValue
@@ -246,7 +257,6 @@ extension WebSocketManager: WebSocketDelegate {
             guard username != self.username else {
                 return
             }
-//            messageDelegate?.receiveMessage?(Message(message: user, messageSender: .someoneElse, username: user, messageType: .join), option: "toAll")
         case "getUnreadMessage":
             let messages = json["messages"].arrayValue
             for message in messages {

@@ -31,40 +31,44 @@
 import UIKit
 
 extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate {
-  func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-    let cell = MessageTableViewCell(style: .default, reuseIdentifier: "MessageCell")
-    cell.selectionStyle = .none
-    
-    let message = messages[indexPath.row]
-    cell.messageType = message.messageType
-    cell.apply(message: message)
-    return cell
-  }
-  
-  func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    if scrollBottom {
-        DispatchQueue.main.asyncAfter(deadline: DispatchTime(uptimeNanoseconds: UInt64(0.005)*NSEC_PER_SEC)) {
-            guard !self.messages.isEmpty else { return }
-            self.tableView.scrollToRow(at: IndexPath(row: self.messages.count - 1, section: 0), at: .bottom, animated: false)
-        }
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = MessageTableViewCell(style: .default, reuseIdentifier: "MessageCell")
+        cell.selectionStyle = .none
+        
+        let message = messages[indexPath.row]
+        cell.messageType = message.messageType
+        cell.apply(message: message)
+        return cell
     }
-    return messages.count
-  }
-  
-  func numberOfSections(in tableView: UITableView) -> Int {
-    return 1
-  }
-  
-  func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-    let height = MessageTableViewCell.height(for: messages[indexPath.row])
-    return height
-  }
-  func insertNewMessageCell(_ message: Message) {
-    messages.append(message)
-    let indexPath = IndexPath(row: messages.count - 1, section: 0)
-    tableView.beginUpdates()
-    tableView.insertRows(at: [indexPath], with: .bottom)
-    tableView.endUpdates()
-    tableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
-  }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if scrollBottom {
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime(uptimeNanoseconds: UInt64(0.005)*NSEC_PER_SEC)) {
+                guard !self.messages.isEmpty else { return }
+                self.tableView.scrollToRow(at: IndexPath(row: self.messages.count - 1, section: 0), at: .bottom, animated: false)
+            }
+        }
+        return messages.count
+    }
+    
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 1
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        let height = MessageTableViewCell.height(for: messages[indexPath.row])
+        return height
+    }
+    func insertNewMessageCell(_ message: Message, invokeNow: Bool = false) {
+        messages.append(message)
+        let indexPath = IndexPath(row: messages.count - 1, section: 0)
+        if invokeNow {
+            tableView.beginUpdates()
+            tableView.insertRows(at: [indexPath], with: .bottom)
+            tableView.endUpdates()
+            tableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
+            return
+        }
+        self.indexPathToInsert = indexPath
+    }
 }
