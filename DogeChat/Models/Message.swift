@@ -33,6 +33,8 @@ import Foundation
 enum MessageType: String{
     case text
     case join
+    case image
+    case video
 }
 
 enum SendStatus {
@@ -49,19 +51,24 @@ class Message: NSObject {
     let option: MessageOption
     var id: Int
     var receiver = ""
-    let uuid = UUID().uuidString
+    var uuid: String
+    var imageURL: String?
+    var videoURL: String?
     
     var sendStatus: SendStatus = .success
     
-    init(message: String, messageSender: MessageSender, receiver: String = "", username: String, messageType: MessageType, option: MessageOption = .toOne, id: Int = 0, date: String = "", sendStatus: SendStatus = .success) {
+    init(message: String, imageURL: String?=nil, videoURL: String?=nil, messageSender: MessageSender, receiver: String = "", uuid: String = UUID().uuidString, sender: String, messageType: MessageType, option: MessageOption = .toOne, id: Int = 0, date: String = "", sendStatus: SendStatus = .success) {
         self.message = message.withoutWhitespace()
         self.messageSender = messageSender
-        self.senderUsername = username
+        self.senderUsername = sender
         self.messageType = messageType
         self.option = option
         self.id = id
         self.date = date
         self.sendStatus = sendStatus
         self.receiver = receiver
+        self.imageURL = imageURL
+        self.videoURL = videoURL
+        self.uuid = uuid
     }
 }

@@ -48,13 +48,14 @@ class WebSocketManager: NSObject {
     var messagesGroup: [Message] = []
     var messagesSingle: [String: [Message]] = [:]
     var notSendMessages = [Message]()
+    var imageDict = [String: Any]()
     
     static let shared: WebSocketManager = WebSocketManager()
     
     private override init() {
         session.requestSerializer = AFJSONRequestSerializer()
         super.init()
-        WatchSession.shared.wcStatusDelegate = self
+//        WatchSession.shared.wcStatusDelegate = self
         
     }
     
@@ -83,10 +84,10 @@ class WebSocketManager: NSObject {
     
     func connect() {
         var request = URLRequest(url: URL(string: "wss://procwq.top/webSocket")!)
-//        var request = URLRequest(url: URL(string: "wss://47.102.114.94:8080/keyChat")!)
         request.addValue("SESSION="+cookie, forHTTPHeaderField: "Cookie")
         socket = WebSocket(request: request)
         socket.delegate = self
+        socket.services = [.Background, .VoIP]
         socket.open()
     }
     
@@ -123,30 +124,22 @@ class WebSocketManager: NSObject {
             self.connect()
             completion(usernames)
         }, failure: { (task, error) in
-            if let password = UserDefaults.standard.value(forKey: "lastPassword") as? String {
-                self.login(username: self.username, password: password) { (result) in
-                    guard result == "登录成功" else { return }
-                    self.getContacts { _ in
-                        
-                    }
-                }
-            }
         })
     }
     
-    func sendMessage(_ content: String, to receiver: String = "", from sender: String = "xigua", option: MessageOption, uuid: String) {
+    func sendMessage(_ content: String, to receiver: String = "", from sender: String = "xigua", option: MessageOption, uuid: String, type: String = "text") {
         guard socket.readyState == .open else {
             connect()
             return
         }
         UIApplication.shared.isNetworkActivityIndicatorVisible = true
-        let paras: [String: Any]
+        var paras: [String: Any]
         switch option {
         case .toAll:
-            paras = ["method": "sendToAll", "message": content, "receiver": receiver, "sender": sender, "uuid": uuid]
+            paras = ["method": "sendToAll", "message": content, "receiver": receiver, "sender": sender, "uuid": uuid, "type": type]
         case .toOne:
             let encryptedContent = encrypt.encryptMessage(content)
-            paras = ["method": "NewMessage", "message": ["content": encryptedContent, "receiver": receiver, "sender": sender], "uuid": uuid]
+            paras = ["method": "NewMessage", "message": ["content": encryptedContent, "receiver": receiver, "sender": sender], "uuid": uuid, "type": type]
         }
         socket.send(text: makeJsonString(for: paras))
     }
@@ -167,6 +160,21 @@ class WebSocketManager: NSObject {
         }
     }
     
+    func uploadPhoto(imageUrl: URL, message: Message, uploadProgress: @escaping((Progress) -> Void), success: @escaping((URLSessionTask, Any?) -> Void)) {
+        let isGif = imageUrl.absoluteString.hasSuffix(".gif")
+        session.post(url_pre+"message/uploadImg", parameters: nil, headers: ["Cookie": "SESSION="+cookie]) { (formData) in
+            try? formData.appendPart(withFileURL: imageUrl, name: "upload", fileName: (isGif ? "test.gif" : "test.jpeg"), mimeType: (isGif ? "image/gif" : "image/jpeg"))
+        } progress: { (progress) in
+            uploadProgress(progress)
+        } success: { (task, data) in
+            success(task, data)
+            NotificationCenter.default.post(name: .uploadSuccess, object: nil, userInfo: ["message": message, "data": data ?? [:]])
+        } failure: { (task, error) in
+            print(error)
+        }
+    }
+    
+
     //MARK: History Messages
     func getUnreadMessage() {
         let paras: [String: Any] = ["method": "getUnreadMessage", "id": maxId]
@@ -202,8 +210,16 @@ extension WebSocketManager: WebSocketDelegate  {
     
     func webSocketError(_ error: NSError) {
         print("error:=====\(error)")
-        getContacts { (contacts) in
-            print("retry")
+        guard let password = UserDefaults.standard.value(forKey: "lastPassword") as? String else { return }
+        login(username: username, password: password) { (result) in
+            guard let appDelegate = UIApplication.shared.delegate as? AppDelegate, result == "登录成功" else { return }
+            self.connect()
+            for vc in appDelegate.navigationController.viewControllers {
+                if let contactVC = vc as? ContactsTableViewController {
+                    contactVC.loginSuccess = true
+                    return
+                }
+            }
         }
     }
     
@@ -239,15 +255,15 @@ extension WebSocketManager: WebSocketDelegate  {
             guard let indexOfMessage = messagesSingle[receiver]?.firstIndex(where: { $0.uuid == uuid }),
                   let message = messagesSingle[receiver]?[indexOfMessage] else { return }
             NotificationCenter.default.post(name: .sendSuccess, object: nil, userInfo: ["correctId": id, "toAll": false, "message": message])
-        case "sendToAll":
+        case "sendToAll":  // 收到群聊消息
             let content = json["message"].stringValue
             let sender = json["sender"].stringValue
             let id = json["id"].intValue
+            let uuid = json["uuid"].stringValue
             maxId = max(maxId, id)
-            let newMessage = Message(message: content, messageSender: .someoneElse, username: sender, messageType: .text, option: .toAll, id: id)
-            messageDelegate?.receiveMessage?(newMessage, option: "toAll")
+            let newMessage = wrapMessage(content: content, option: .toAll, sender: sender, receiver: "", id: id, date: "", uuid: uuid)
+//            messageDelegate?.receiveMessage?(newMessage, option: "toAll")
             messagesGroup.append(newMessage)
-            //      notifyWatch(newMessage: newMessage)
             postNotification(message: newMessage)
         case "join":
             let user = json["user"].stringValue
@@ -257,19 +273,20 @@ extension WebSocketManager: WebSocketDelegate  {
             guard username != self.username else {
                 return
             }
-        case "getUnreadMessage":
+        case "getUnreadMessage": // 群聊未读消息,socket连接上后会获取
             let messages = json["messages"].arrayValue
             for message in messages {
                 let id = message["id"].intValue
                 maxId = max(maxId, id)
-                let username = message["sender"].stringValue
-                let newMessage = Message(message: message["content"].stringValue, messageSender: username == self.username ? .ourself : .someoneElse, username: username, messageType: .text, option: .toAll, id: id)
-                messageDelegate?.receiveMessage?(newMessage, option: "toAll")
+                let sender = message["sender"].stringValue
+                let content = message["content"].stringValue
+                let uuid = message["uuid"].stringValue
+                let newMessage = wrapMessage(content: content, option: .toAll, sender: sender, receiver: username, id: id, date: "", uuid: uuid)
+//                messageDelegate?.receiveMessage?(newMessage, option: "toAll")
                 messagesGroup.append(newMessage)
                 postNotification(message: newMessage)
-                //        notifyWatch(newMessage: newMessage)
             }
-        case "NewMessage":
+        case "NewMessage": // 收到私人消息
             let data = json["data"]["unread_messages"].arrayValue
             for msg in data {
                 let content = msg["messageContent"].stringValue
@@ -277,12 +294,13 @@ extension WebSocketManager: WebSocketDelegate  {
                 let sender = msg["messageSender"].stringValue
                 let date = msg["messageTime"].stringValue
                 let id = msg["messageId"].intValue
-                let newMessage = Message(message: decrypted, messageSender: .someoneElse, username: sender, messageType: .text, option: .toOne, id: id, date: date)
-                messageDelegate?.receiveMessage?(newMessage, option: "toOne")
+                let uuid = msg["uuid"].stringValue
+                let newMessage = wrapMessage(content: decrypted, option: .toOne, sender: sender, receiver: username, id: id, date: date, uuid: uuid)
+//                messageDelegate?.receiveMessage?(newMessage, option: "toOne")
                 messagesSingle.add(newMessage, for: sender)
                 postNotification(message: newMessage)
             }
-        case "getHistory":
+        case "getHistory":  // 获取群聊、个人历史记录
             let pages = json["data"]["pages"].intValue
             let messages = json["data"]["records"].arrayValue
             var result = [Message]()
@@ -291,8 +309,11 @@ extension WebSocketManager: WebSocketDelegate  {
                 var content = message["messageContent"].stringValue
                 content = encrypt.decryptMessage(content)
                 let sender = message["messageSender"].stringValue
-                let _ = message["messageReceiver"].stringValue
-                let newMessage = Message(message: content, messageSender: (sender == self.username) ? .ourself : .someoneElse, username: sender, messageType: .text, id: id)
+                let date = message["messageTime"].stringValue
+                let uuid = message["uuid"].stringValue
+                let receiver = message["messageReceiver"].stringValue
+                let option: MessageOption = (receiver == "PublicPino" ? .toAll : .toOne)
+                let newMessage = wrapMessage(content: content, option: option, sender: sender, receiver: receiver, id: id, date: date, uuid: uuid)
                 result.append(newMessage)
             }
             messageDelegate?.receiveMessages?(result, pages: pages)
@@ -311,6 +332,23 @@ extension WebSocketManager: WebSocketDelegate  {
         default:
             return
         }
+    }
+    
+    func wrapMessage(content: String, option: MessageOption, sender: String, receiver: String, id: Int, date: String, uuid: String) -> Message {
+        let isImageMessage = content.hasPrefix(url_pre+"/static/image")
+        let type: MessageType = isImageMessage ? .image : .text
+        return Message(message: (isImageMessage ? "" : content),
+                       imageURL: isImageMessage ? content : nil,
+                       videoURL: nil,
+                       messageSender: (sender == username ? .ourself : .someoneElse),
+                       receiver: receiver,
+                       uuid: uuid,
+                       sender: sender,
+                       messageType: type,
+                       option: option,
+                       id: id,
+                       date: date,
+                       sendStatus: (type == .image ? .fail : .success))
     }
     
     private func postNotification(message: Message) {

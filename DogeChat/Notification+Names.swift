@@ -12,4 +12,5 @@ extension Notification.Name {
     static let shouldResignFirstResponder = Notification.Name("shouldResignFirstResponder")
     static let receiveNewMessage = Notification.Name("receiveNewMessage")
     static let sendSuccess = Notification.Name("sendSuccseeNotification")
+    static let uploadSuccess = Notification.Name("uploadSuccessNotification")
 }

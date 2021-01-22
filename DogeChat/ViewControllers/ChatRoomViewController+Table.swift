@@ -37,6 +37,7 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate {
         
         let message = messages[indexPath.row]
         cell.messageType = message.messageType
+        cell.delegate = self
         cell.apply(message: message)
         return cell
     }
@@ -61,6 +62,12 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate {
     }
     func insertNewMessageCell(_ message: Message, invokeNow: Bool = false) {
         messages.append(message)
+        switch message.option {
+        case .toAll:
+            manager.messagesGroup.append(message)
+        case .toOne:
+            manager.messagesSingle.add(message, for: message.receiver)
+        }
         let indexPath = IndexPath(row: messages.count - 1, section: 0)
         if invokeNow {
             tableView.beginUpdates()

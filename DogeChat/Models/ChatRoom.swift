@@ -127,6 +127,6 @@ extension ChatRoom: StreamDelegate {
         return nil
     }
     let messageSender: MessageSender = name == self.username ? .ourself : .someoneElse
-    return Message(message: message, messageSender: messageSender, username: name, messageType: .text)
+    return Message(message: message, messageSender: messageSender, sender: name, messageType: .text)
   }
 }

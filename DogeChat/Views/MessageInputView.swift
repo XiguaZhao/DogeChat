@@ -32,12 +32,14 @@ import UIKit
 
 protocol MessageInputDelegate: class {
     func sendWasTapped(content: String)
+    func addButtonTapped()
 }
 
 class MessageInputView: UIView {
     weak var delegate: MessageInputDelegate?
     
     let textView = UITextView()
+    let addButton = UIButton()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -53,12 +55,31 @@ class MessageInputView: UIView {
         textView.font = UIFont.systemFont(ofSize: 18)
         textView.returnKeyType = .send
         
+        addButton.translatesAutoresizingMaskIntoConstraints = false
+        if #available(iOS 13.0, *) {
+            let largeConfig = UIImage.SymbolConfiguration(pointSize: 140, weight: .bold, scale: .large)
+            addButton.setImage(UIImage(systemName: "plus.circle", withConfiguration: largeConfig), for: .normal)
+        } else {
+            addButton.titleLabel?.text = "+"
+            addButton.titleLabel?.textAlignment = .center
+        }
+        addButton.addTarget(self, action: #selector(addButtonTapped), for: .touchUpInside)
         addSubview(textView)
+        addSubview(addButton)
+        let offset: CGFloat = 10
         NSLayoutConstraint.activate([
-            textView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 20),
-            textView.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -20),
+            textView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: offset),
+            textView.trailingAnchor.constraint(equalTo: self.addButton.leadingAnchor, constant: -offset),
             textView.topAnchor.constraint(equalTo: self.topAnchor),
             textView.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -20)
+        ])
+        
+        NSLayoutConstraint.activate([
+            addButton.bottomAnchor.constraint(equalTo: textView.bottomAnchor, constant: -offset+5),
+            addButton.leadingAnchor.constraint(equalTo: textView.trailingAnchor, constant: offset),
+            addButton.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -offset-10),
+            NSLayoutConstraint(item: addButton, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: 30),
+            NSLayoutConstraint(item: addButton, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: 30)
         ])
         
         NotificationCenter.default.addObserver(self, selector: #selector(textViewResign), name: NSNotification.Name.shouldResignFirstResponder, object: nil)
@@ -66,6 +87,10 @@ class MessageInputView: UIView {
     
     @objc func textViewResign() {
         textView.resignFirstResponder()
+    }
+    
+    @objc func addButtonTapped() {
+        delegate?.addButtonTapped()
     }
     
     @objc func sendTapped() {

@@ -22,10 +22,20 @@
 	<string></string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>曹惟乾你这个大傻逼！</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>发送照片</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Inconsolata-Regular</string>
 		<string>Inconsolata-Bold</string>
+	</array>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+		<string>remote-notification</string>
+		<string>voip</string>
 	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>

@@ -14,6 +14,11 @@ PODS:
   - AFNetworking/Serialization (4.0.1)
   - AFNetworking/UIKit (4.0.1):
     - AFNetworking/NSURLSession
+  - DACircularProgress (2.3.1)
+  - FLAnimatedImage (1.0.12)
+  - SDWebImage (5.10.2):
+    - SDWebImage/Core (= 5.10.2)
+  - SDWebImage/Core (5.10.2)
   - SwiftWebSocket (2.7.0)
   - SwiftyJSON (4.3.0)
   - SwiftyRSA (1.6.0):
@@ -22,6 +27,9 @@ PODS:
 
 DEPENDENCIES:
   - AFNetworking
+  - DACircularProgress
+  - FLAnimatedImage
+  - SDWebImage
   - SwiftWebSocket
   - SwiftyJSON (from `https://github.com/SwiftyJSON/SwiftyJSON.git`, commit `2b6054efa051565954e1d2b9da831680026cd768`)
   - SwiftyRSA
@@ -29,6 +37,9 @@ DEPENDENCIES:
 SPEC REPOS:
   trunk:
     - AFNetworking
+    - DACircularProgress
+    - FLAnimatedImage
+    - SDWebImage
     - SwiftWebSocket
     - SwiftyRSA
 
@@ -44,10 +55,13 @@ CHECKOUT OPTIONS:
 
 SPEC CHECKSUMS:
   AFNetworking: 7864c38297c79aaca1500c33288e429c3451fdce
+  DACircularProgress: 4dd437c0fc3da5161cb289e07ac449493d41db71
+  FLAnimatedImage: 4a0b56255d9b05f18b6dd7ee06871be5d3b89e31
+  SDWebImage: b969dcfc02c40a5da71eac0b03b8f1a0c794a86f
   SwiftWebSocket: 612c9729fd503cb6b0b8b45390c788686dac306f
   SwiftyJSON: 4e107719275086d9d9111e1a7ca6c484b6664574
   SwiftyRSA: 3b9c9179744217951facc6a3e9ae8d8c97061ffa
 
-PODFILE CHECKSUM: 7d52e3ff0c41089bcbd368e748c42083b2f2f9ac
+PODFILE CHECKSUM: 05a8216d516d0a97a7f8df0393d0a5b3ec0d603a
 
 COCOAPODS: 1.10.1

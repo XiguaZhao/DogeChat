@@ -13,6 +13,10 @@
 		0711485A23CEC3E900B6D63C /* Notification+Names.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0711485923CEC3E900B6D63C /* Notification+Names.swift */; };
 		071F970E247D45C1000B3DBC /* WatchSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 071F970D247D45C1000B3DBC /* WatchSession.swift */; };
 		073144A8245FF94500D915E8 /* WebSocketManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 073144A7245FF94500D915E8 /* WebSocketManager.swift */; };
+		0739FA2725B7F0C100B6A7AB /* PercentIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0739FA2625B7F0C100B6A7AB /* PercentIndicator.swift */; };
+		0739FA3E25B9557A00B6A7AB /* ImageBrowserViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0739FA3D25B9557900B6A7AB /* ImageBrowserViewController.swift */; };
+		0739FA4425BA829E00B6A7AB /* PushKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0739FA4325BA829D00B6A7AB /* PushKit.framework */; };
+		0739FA4825BA855A00B6A7AB /* CallKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0739FA4725BA855A00B6A7AB /* CallKit.framework */; };
 		073FDF6A25B2A35000FE01CD /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 073FDF6925B2A35000FE01CD /* NotificationManager.swift */; };
 		07513F8B2483FA7900EF68F8 /* Encrypt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07513F8A2483FA7900EF68F8 /* Encrypt.swift */; };
 		0772559523C1D3F600790339 /* ChatRoom.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0772559423C1D3F600790339 /* ChatRoom.swift */; };
@@ -88,6 +92,10 @@
 		071F970B247D2592000B3DBC /* WatchSessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchSessionManager.swift; sourceTree = "<group>"; };
 		071F970D247D45C1000B3DBC /* WatchSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchSession.swift; sourceTree = "<group>"; };
 		073144A7245FF94500D915E8 /* WebSocketManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebSocketManager.swift; sourceTree = "<group>"; };
+		0739FA2625B7F0C100B6A7AB /* PercentIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PercentIndicator.swift; sourceTree = "<group>"; };
+		0739FA3D25B9557900B6A7AB /* ImageBrowserViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageBrowserViewController.swift; sourceTree = "<group>"; };
+		0739FA4325BA829D00B6A7AB /* PushKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PushKit.framework; path = System/Library/Frameworks/PushKit.framework; sourceTree = SDKROOT; };
+		0739FA4725BA855A00B6A7AB /* CallKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CallKit.framework; path = System/Library/Frameworks/CallKit.framework; sourceTree = SDKROOT; };
 		073FDF5425B2871C00FE01CD /* NotificationService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NotificationService.h; sourceTree = "<group>"; };
 		073FDF5525B2871C00FE01CD /* NotificationService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NotificationService.m; sourceTree = "<group>"; };
 		073FDF5725B2871C00FE01CD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -145,6 +153,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0739FA4825BA855A00B6A7AB /* CallKit.framework in Frameworks */,
+				0739FA4425BA829E00B6A7AB /* PushKit.framework in Frameworks */,
 				E52F38351E69F8D1B345D569 /* libPods-DogeChat.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -164,6 +174,8 @@
 		073144A3245FF83D00D915E8 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				0739FA4725BA855A00B6A7AB /* CallKit.framework */,
+				0739FA4325BA829D00B6A7AB /* PushKit.framework */,
 				073FDFDE25B2FA3700FE01CD /* SwiftyJSON.framework */,
 				073FDFAC25B2F61500FE01CD /* libAFNetworking.a */,
 				07A741222514EE2C0014880E /* AFNetworking.framework */,
@@ -173,6 +185,13 @@
 				CA29E1DB30A197FEE7773D92 /* libPods-DogeChat.a */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		0739FA4C25BAA90800B6A7AB /* Call */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Call;
 			sourceTree = "<group>";
 		};
 		073FDF5325B2871C00FE01CD /* notification */ = {
@@ -206,6 +225,7 @@
 				07AB7B09248F2A7A005306A1 /* SignUpViewController.swift */,
 				07AB7B0A248F2A7A005306A1 /* SignUpViewController.xib */,
 				0799068525B3D44B0083C1B8 /* main.storyboard */,
+				0739FA3D25B9557900B6A7AB /* ImageBrowserViewController.swift */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -217,6 +237,7 @@
 				AE909BF01EB63FDB009D9D95 /* MessageInputView.swift */,
 				AEA5A1761EC3618C0041C7B4 /* Layouts.swift */,
 				AE909BEE1EB54C4B009D9D95 /* Label.swift */,
+				0739FA2625B7F0C100B6A7AB /* PercentIndicator.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -318,6 +339,7 @@
 				AEC6BF3E1EAF320E007CA6E5 /* AppDelegate.swift */,
 				073FDF6525B289A800FE01CD /* DogeChat.entitlements */,
 				AEC6BF4A1EAF320E007CA6E5 /* Info.plist */,
+				0739FA4C25BAA90800B6A7AB /* Call */,
 				078D413F248DF75B00E78605 /* Models */,
 				078D413E248DF71700E78605 /* Views */,
 				078D413D248DF6E500E78605 /* ViewControllers */,
@@ -476,6 +498,7 @@
 				07E001DA248CA56800D4A287 /* SelectShortcutTVC.swift in Sources */,
 				073FDF6A25B2A35000FE01CD /* NotificationManager.swift in Sources */,
 				071F970E247D45C1000B3DBC /* WatchSession.swift in Sources */,
+				0739FA3E25B9557A00B6A7AB /* ImageBrowserViewController.swift in Sources */,
 				AE909BEF1EB54C4B009D9D95 /* Label.swift in Sources */,
 				AE909BED1EB54B13009D9D95 /* Message.swift in Sources */,
 				AE28D6E51EC0AB9800E886B9 /* StringExtension.swift in Sources */,
@@ -488,6 +511,7 @@
 				AEA5A1791EC362150041C7B4 /* ChatRoomViewController+Table.swift in Sources */,
 				0772559523C1D3F600790339 /* ChatRoom.swift in Sources */,
 				078032842486B73900E370E0 /* RSAKeyEncoding.swift in Sources */,
+				0739FA2725B7F0C100B6A7AB /* PercentIndicator.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

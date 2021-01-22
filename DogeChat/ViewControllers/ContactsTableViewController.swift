@@ -8,9 +8,11 @@
 
 import UIKit
 import AudioToolbox
+import SwiftyJSON
 
 class ContactsTableViewController: UITableViewController {
     
+    var unreadMessage = [String: Int]()
     var usernames = [String]()
     var username = ""
     let manager = WebSocketManager.shared
@@ -21,6 +23,9 @@ class ContactsTableViewController: UITableViewController {
     }
     var loginSuccess = false {
         didSet {
+            if loginSuccess {
+                refreshContacts()
+            }
             let waitToProcessNotificationUsername = NotificationManager.shared.remoteNotificationUsername
             if loginSuccess && waitToProcessNotificationUsername != ""{
                 if let index = usernames.firstIndex(of: waitToProcessNotificationUsername) {
@@ -39,11 +44,9 @@ class ContactsTableViewController: UITableViewController {
         super.viewDidLoad()
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: "defaultCell")
         tableView.separatorStyle = .none
-        if self.loginSuccess {
-            refreshContacts()
-        }
         NotificationCenter.default.addObserver(self, selector: #selector(receiveNewMessage(notification:)), name: .receiveNewMessage, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(sendSuccess(notification:)), name: .sendSuccess, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(uploadSuccess(notification:)), name: .uploadSuccess, object: nil)
         setupRefreshControl()
         barItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(presentSearchVC))
         if #available(iOS 13.0, *) {
@@ -83,7 +86,6 @@ class ContactsTableViewController: UITableViewController {
             self.usernames = usernames
             self.usernames.insert("群聊", at: 0)
             self.tableView.reloadData()
-            self.loginSuccess = true
         }
     }
     
@@ -102,39 +104,33 @@ class ContactsTableViewController: UITableViewController {
     
     @objc func receiveNewMessage(notification: Notification) {
         playSound()
-        guard let message = notification.object as? Message,
-              let height = tableView.cellForRow(at: IndexPath(row: 0, section: 0))?.contentView.frame.height
-        else { return }
+        guard let message = notification.object as? Message else { return }
         if navigationController?.topViewController != self, let indexPath = tableView.indexPathForSelectedRow {
             if usernames[indexPath.row] == message.senderUsername && message.option == .toOne { return }
             if indexPath.row == 0 && message.option == .toAll { return }
         }
-        if self.navigationController?.topViewController?.navigationItem.title == message.senderUsername {
+        var index = 0
+        if message.option == .toOne {
+            index = usernames.firstIndex(of: message.senderUsername) ?? 0
+        }
+        if self.navigationController?.topViewController?.navigationItem.title == (message.receiver == "" ? "群聊" : message.senderUsername) {
             if let chatroomVC = self.navigationController?.topViewController as? ChatRoomViewController,
                chatroomVC.messageOption == message.option {
+                unreadMessage[(index == 0 ? "群聊" : message.senderUsername)] = 0
+                tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
                 return
             }
         }
-        let offset: CGFloat = 10
-        let adjustedWidth = height - 20
-        let origin = offset / 2
-        let label = UILabel(frame: CGRect(x: origin, y: origin, width: adjustedWidth, height: adjustedWidth))
-        label.layer.cornerRadius = label.frame.height / 2
-        label.layer.masksToBounds = true
-        label.backgroundColor = .red
-        label.textAlignment = .center
-        let cell: UITableViewCell? // 不能直接这么使用
-        switch message.option {
-        case .toAll:
-            cell = tableView.cellForRow(at: IndexPath(row: 0, section: 0))
-        case .toOne:
-            guard let _cell = cellForUsername(message.senderUsername) else { return }
-            cell = _cell
+        if message.option == .toOne {
+            if let originalNumber = unreadMessage[message.senderUsername] {
+                unreadMessage[message.senderUsername] = originalNumber + 1
+            } else {
+                unreadMessage[message.senderUsername] = 1
+            }
+        } else {
+            unreadMessage["群聊"] = (unreadMessage["群聊"] ?? 0) + 1
         }
-        let number = Int((cell?.accessoryView as? UILabel)?.text ?? "0")
-        let hh = number ?? 0
-        label.text = String(hh + 1)
-        cell?.accessoryView = label
+        tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
     }
     
     func playSound() {
@@ -163,6 +159,23 @@ class ContactsTableViewController: UITableViewController {
         }
     }
     
+    @objc func uploadSuccess(notification: Notification) {
+        guard let message = notification.userInfo?["message"] as? Message,
+              let data = notification.userInfo?["data"] else { return }
+        switch message.option {
+        case .toOne:
+            guard let index = manager.messagesSingle[message.receiver]?.firstIndex(of: message) else { return }
+            manager.messagesSingle[message.receiver]![index].sendStatus = .success
+        case .toAll:
+            guard let index = manager.messagesGroup.firstIndex(of: message) else { return }
+            manager.messagesGroup[index].sendStatus = .success
+        }
+        var remoteFilePath = JSON(data)["filePath"].stringValue
+        remoteFilePath = manager.encrypt.decryptMessage(remoteFilePath)
+        remoteFilePath = manager.url_pre + remoteFilePath
+        manager.sendMessage(remoteFilePath, to: message.receiver, from: message.senderUsername, option: message.option, uuid: message.uuid, type: "image")
+    }
+    
     
     // MARK: - Table view data source
     
@@ -176,12 +189,29 @@ class ContactsTableViewController: UITableViewController {
         return usernames.count
     }
     
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 50
+    }
+    
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "defaultCell", for: indexPath)
         cell.textLabel?.text = usernames[indexPath.row]
         if self.traitCollection.forceTouchCapability == .available {
             registerForPreviewing(with: self, sourceView: cell)
         }
+        let height = self.tableView(tableView, heightForRowAt: indexPath)
+        let offset: CGFloat = 10
+        let adjustedWidth = height - 20
+        let origin = offset / 2
+        let label = UILabel(frame: CGRect(x: origin, y: origin, width: adjustedWidth, height: adjustedWidth))
+        label.layer.cornerRadius = label.frame.height / 2
+        label.layer.masksToBounds = true
+        label.backgroundColor = .red
+        label.textAlignment = .center
+        if let number = unreadMessage[usernames[indexPath.row]], number > 0 {
+            label.text = String(number)
+            cell.accessoryView = label
+        } 
         return cell
     }
     
@@ -189,6 +219,7 @@ class ContactsTableViewController: UITableViewController {
     
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        unreadMessage[usernames[indexPath.row]] = 0
         let chatRoomVC = chatroomVC(for: indexPath)
         tableView.cellForRow(at: indexPath)?.accessoryView = nil
         self.navigationController?.setViewControllers([self, chatRoomVC], animated: true)

@@ -11,7 +11,6 @@
         <!--Navigation Controller-->
         <scene sceneID="52K-xt-9hQ">
             <objects>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="iPi-DN-La1" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
                 <navigationController id="73m-2C-Avi" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" systemItem="contacts" id="qFt-lo-DEp"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="03O-YF-ybZ">
@@ -19,6 +18,7 @@
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                 </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="iPi-DN-La1" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="750" y="-681"/>
         </scene>
@@ -67,6 +67,11 @@
                         <rect key="frame" x="0.0" y="0.0" width="428" height="926"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <button key="tableFooterView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" id="Evw-tW-nLJ">
+                            <rect key="frame" x="0.0" y="117" width="428" height="44"/>
+                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            <state key="normal" title="Button"/>
+                        </button>
                         <prototypes>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" rowHeight="61" id="iks-vY-QOh">
                                 <rect key="frame" x="0.0" y="28" width="428" height="61"/>

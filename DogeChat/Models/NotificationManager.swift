@@ -20,6 +20,7 @@ class NotificationManager: NSObject {
                 for vc in nav.viewControllers {
                     if vc.isKind(of: ContactsTableViewController.self) {
                         contactVC = (vc as! ContactsTableViewController)
+                        break
                     }
                 }
                 guard let contactViewController = contactVC else { return }

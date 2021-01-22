@@ -65,6 +65,8 @@ class ChatRoomViewController: UIViewController {
         manager.messageDelegate = self
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillChange(notification:)), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(sendSuccess(notification:)), name: .sendSuccess, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(uploadSuccess(notification:)), name: .uploadSuccess, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(receiveNewMessageNotification(_:)), name: .receiveNewMessage, object: nil)
         addRefreshController()
         layoutViews()
         loadViews()
@@ -111,31 +113,116 @@ class ChatRoomViewController: UIViewController {
         (tableView.cellForRow(at: indexPath) as? MessageTableViewCell)?.indicator.stopAnimating()
         (tableView.cellForRow(at: indexPath) as? MessageTableViewCell)?.indicator.removeFromSuperview()
     }
+    
+    @objc func uploadSuccess(notification: Notification) {
+        guard let message = notification.userInfo?["message"] as? Message else { return }
+        guard let index = messages.firstIndex(of: message) else { return }
+        messages[index].sendStatus = .success
+    }
+
 }
 
 //MARK - Message Input Bar
-extension ChatRoomViewController: MessageInputDelegate {
+extension ChatRoomViewController: MessageInputDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     func sendWasTapped(content: String) {
         guard !content.isEmpty else { return }
         let wrappedMessage = processMessageString(for: content)
         manager.notSendMessages.append(wrappedMessage)
-        switch messageOption {
-        case .toAll:
-            manager.messagesGroup.append(wrappedMessage)
-        case .toOne:
-            manager.messagesSingle.add(wrappedMessage, for: friendName)
-        }
         insertNewMessageCell(wrappedMessage)
         manager.sendMessage(content, to: friendName, from: username, option: messageOption, uuid: wrappedMessage.uuid)
-        //    manager.notifyWatch(newMessage: wrappedMessage)
+    }
+    
+    func addButtonTapped() {
+        let imagePicker = UIImagePickerController()
+        imagePicker.delegate = self
+        let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        actionSheet.addAction(UIAlertAction(title: "拍照", style: .default, handler: { [weak self] (action) in
+            imagePicker.sourceType = .camera
+            imagePicker.cameraCaptureMode = .photo
+            self?.present(imagePicker, animated: true, completion: nil)
+        }))
+        actionSheet.addAction(UIAlertAction(title: "从相册选择", style: .default, handler: { [weak self] (action) in
+            self?.present(imagePicker, animated: true) {
+                actionSheet.dismiss(animated: true, completion: nil)
+            }
+        }))
+        actionSheet.addAction(UIAlertAction(title: "取消", style: .cancel, handler: nil))
+        present(actionSheet, animated: true, completion: nil)
+    }
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        picker.dismiss(animated: true, completion: nil)
+        guard let image = info[.originalImage] as? UIImage else { return }
+        var isGif = false
+        var originalUrl: URL?
+        if let originalUrl_ = info[.imageURL] as? URL {
+            isGif = originalUrl_.absoluteString.hasSuffix(".gif")
+            originalUrl = originalUrl_
+        }
+        let (_, imageURL) = (isGif ? (nil, originalUrl!) : compressImage(image))
+        let message = Message(message: "", imageURL: imageURL.absoluteString, videoURL: nil, messageSender: .ourself, receiver: friendName, sender: username, messageType: .image, option: messageOption, date: NSData().description, sendStatus: .fail)
+        manager.imageDict[message.uuid] = imageURL
+        insertNewMessageCell(message, invokeNow: true)
+        manager.uploadPhoto(imageUrl: imageURL, message: message) { (progress) in
+            print(progress.fractionCompleted)
+            DispatchQueue.main.async {
+                self.updateUploadProgress(progress, message: message)
+            }
+        } success: { (task, data) in
+            
+        }
+
+    }
+    
+    func compressImage(_ image: UIImage) -> (image: UIImage, fileUrl: URL) {
+        var size = image.size
+        let ratio = size.width / size.height
+        let width: CGFloat = UIScreen.main.bounds.width
+        let height = width / ratio
+        size = CGSize(width: width, height: height)
+        UIGraphicsBeginImageContextWithOptions(size, false, UIScreen.main.scale)
+        image.draw(in: CGRect(x: 0, y: 0, width: width, height: height))
+        let result = UIGraphicsGetImageFromCurrentImageContext() ?? UIImage()
+        UIGraphicsEndImageContext()
+        let fileUrl = URL(string: "file://" + NSTemporaryDirectory() + UUID().uuidString + ".jpg")!
+        try? result.jpegData(compressionQuality: 0.3)?.write(to: fileUrl)
+        return (result, fileUrl)
+    }
+
+    func updateUploadProgress(_ progress: Progress, message: Message) {
+        let targetCell = tableView.visibleCells.filter { cell in
+            guard let cell = cell as? MessageTableViewCell else { return false }
+            return cell.message.uuid == message.uuid
+        }.first
+        guard let cell = targetCell as? MessageTableViewCell else { return }
+        cell.percentIndicator.setProgress(CGFloat(progress.fractionCompleted), animated: false)
+        if progress.fractionCompleted == 1 {
+            cell.percentIndicator.removeFromSuperview()
+        }
     }
     
     private func processMessageString(for string: String) -> Message {
-        return Message(message: string, messageSender: .ourself, receiver: friendName, username: username, messageType: .text, id: manager.maxId + 1, sendStatus: .fail)
+        return Message(message: string, messageSender: .ourself, receiver: friendName, sender: username, messageType: .text, option: messageOption, id: manager.maxId + 1, sendStatus: .fail)
+    }
+}
+
+extension ChatRoomViewController: MessageTableViewCellDelegate {
+    func imageViewTapped(_ cell: MessageTableViewCell, imageView: FLAnimatedImageView) {
+        let browser = ImageBrowserViewController()
+        browser.cellImageView = imageView
+        self.navigationController?.pushViewController(browser, animated: true)
     }
 }
 
 extension ChatRoomViewController: MessageDelegate {
+    
+    @objc func receiveNewMessageNotification(_ notification: Notification) {
+        guard let message = notification.object as? Message, message.option == messageOption else {
+            return
+        }
+        if message.option == .toOne && message.senderUsername != friendName { return }
+        insertNewMessageCell(message, invokeNow: true)
+    }
     
     func receiveMessage(_ message: Message, option: String) {
         if option != messageOption.rawValue  { return }

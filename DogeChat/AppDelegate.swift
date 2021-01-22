@@ -30,6 +30,7 @@
 
 import UIKit
 import UserNotifications
+import PushKit
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate {
@@ -61,6 +62,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
         
         registerNotification()
+        registerVoipNotification()
         
         return true
     }
@@ -74,7 +76,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             self.navigationController.viewControllers = [contactVC]
             socketManager.login(username: username, password: password) { (loginResult) in
                 guard loginResult == "登录成功" else { return }
-                contactVC.refreshContacts()
                 contactVC.loginSuccess = true
                 contactVC.username = username
             }
@@ -147,6 +148,41 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         guard let userInfo = response.notification.request.content.userInfo as? [String: AnyObject],
               let aps = userInfo["aps"] as? [String: AnyObject] else { return }
         notificationManager.processRemoteNotification(aps)
+    }
+    
+    
+//    -(void)registerVoipNotifications{
+//
+//        PKPushRegistry * voipRegistry = [[PKPushRegistry alloc]initWithQueue:dispatch_get_main_queue()];
+//
+//        voipRegistry.delegate = self;
+//        voipRegistry.desiredPushTypes = [NSSet setWithObject:PKPushTypeVoIP];
+//
+//        UIUserNotificationType types = (UIUserNotificationTypeBadge | UIUserNotificationTypeSound | UIUserNotificationTypeAlert);
+//
+//        UIUserNotificationSettings * notificationSettings = [UIUserNotificationSettings settingsForTypes:types categories:nil];
+//
+//        [[UIApplication sharedApplication]registerUserNotificationSettings:notificationSettings];
+//    }
+    private func registerVoipNotification() {
+        let voipRegistry = PKPushRegistry(queue: DispatchQueue.main)
+        voipRegistry.delegate = self
+        voipRegistry.desiredPushTypes = [.voIP]
+    }
+    
+}
+
+extension AppDelegate: PKPushRegistryDelegate {
+    
+    func pushRegistry(_ registry: PKPushRegistry, didUpdate pushCredentials: PKPushCredentials, for type: PKPushType) {
+        let device = NSData(data: pushCredentials.token)
+        let deviceId = device.description.replacingOccurrences(of:"<", with:"").replacingOccurrences(of:">", with:"").replacingOccurrences(of:" ", with:"")
+        print("pushkit设备token：" + deviceId)
+    }
+    
+    func pushRegistry(_ registry: PKPushRegistry, didReceiveIncomingPushWith payload: PKPushPayload, for type: PKPushType, completion: @escaping () -> Void) {
+        print("收到pushkit推送!")
+        print(payload.dictionaryPayload)
     }
     
 }
