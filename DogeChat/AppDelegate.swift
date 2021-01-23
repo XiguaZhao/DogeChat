@@ -41,6 +41,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     let socketManager = WebSocketManager.shared
     var navigationController: UINavigationController!
     var tabBarController: UITabBarController!
+    var providerDelegate: ProviderDelegate!
+    let callManager = CallManager()
+    class var shared: AppDelegate {
+        return UIApplication.shared.delegate as! AppDelegate
+    }
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         
@@ -54,6 +59,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         window?.rootViewController = tabBarController
         login()
         window?.makeKeyAndVisible()
+        
+        providerDelegate = ProviderDelegate(callManager: callManager)
                 
         let notificationOptions = launchOptions?[.remoteNotification]
         if let notification = notificationOptions as? [String: AnyObject],
@@ -149,21 +156,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
               let aps = userInfo["aps"] as? [String: AnyObject] else { return }
         notificationManager.processRemoteNotification(aps)
     }
-    
-    
-//    -(void)registerVoipNotifications{
-//
-//        PKPushRegistry * voipRegistry = [[PKPushRegistry alloc]initWithQueue:dispatch_get_main_queue()];
-//
-//        voipRegistry.delegate = self;
-//        voipRegistry.desiredPushTypes = [NSSet setWithObject:PKPushTypeVoIP];
-//
-//        UIUserNotificationType types = (UIUserNotificationTypeBadge | UIUserNotificationTypeSound | UIUserNotificationTypeAlert);
-//
-//        UIUserNotificationSettings * notificationSettings = [UIUserNotificationSettings settingsForTypes:types categories:nil];
-//
-//        [[UIApplication sharedApplication]registerUserNotificationSettings:notificationSettings];
-//    }
+        
     private func registerVoipNotification() {
         let voipRegistry = PKPushRegistry(queue: DispatchQueue.main)
         voipRegistry.delegate = self
@@ -175,9 +168,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 extension AppDelegate: PKPushRegistryDelegate {
     
     func pushRegistry(_ registry: PKPushRegistry, didUpdate pushCredentials: PKPushCredentials, for type: PKPushType) {
-        let device = NSData(data: pushCredentials.token)
-        let deviceId = device.description.replacingOccurrences(of:"<", with:"").replacingOccurrences(of:">", with:"").replacingOccurrences(of:" ", with:"")
-        print("pushkit设备token：" + deviceId)
+        let deviceTokenString = pushCredentials.token.map { String(format: "%02.2hhx", $0) }.joined()
+        print("deviceTokenString \(deviceTokenString)")
     }
     
     func pushRegistry(_ registry: PKPushRegistry, didReceiveIncomingPushWith payload: PKPushPayload, for type: PKPushType, completion: @escaping () -> Void) {

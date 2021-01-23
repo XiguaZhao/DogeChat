@@ -42,4 +42,6 @@ class NotificationManager: NSObject {
         UIApplication.shared.applicationIconBadgeNumber = 0
     }
     
+    var voipUsername = ""
+    
 }

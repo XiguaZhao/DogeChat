@@ -17,6 +17,12 @@
 		0739FA3E25B9557A00B6A7AB /* ImageBrowserViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0739FA3D25B9557900B6A7AB /* ImageBrowserViewController.swift */; };
 		0739FA4425BA829E00B6A7AB /* PushKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0739FA4325BA829D00B6A7AB /* PushKit.framework */; };
 		0739FA4825BA855A00B6A7AB /* CallKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0739FA4725BA855A00B6A7AB /* CallKit.framework */; };
+		0739FA4F25BAA9A300B6A7AB /* Call.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0739FA4E25BAA9A300B6A7AB /* Call.swift */; };
+		0739FA5225BAAAD300B6A7AB /* CallManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0739FA5125BAAAD300B6A7AB /* CallManager.swift */; };
+		0739FA5525BAACD400B6A7AB /* ProviderDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0739FA5425BAACD400B6A7AB /* ProviderDelegate.swift */; };
+		0739FA5825BAB00300B6A7AB /* Audio.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0739FA5725BAB00300B6A7AB /* Audio.swift */; };
+		0739FA6625BAD2AA00B6A7AB /* BNRAudioData.m in Sources */ = {isa = PBXBuildFile; fileRef = 0739FA6525BAD2A900B6A7AB /* BNRAudioData.m */; };
+		0739FA6A25BAD2CC00B6A7AB /* VoiceConvertHandle.m in Sources */ = {isa = PBXBuildFile; fileRef = 0739FA6925BAD2CC00B6A7AB /* VoiceConvertHandle.m */; };
 		073FDF6A25B2A35000FE01CD /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 073FDF6925B2A35000FE01CD /* NotificationManager.swift */; };
 		07513F8B2483FA7900EF68F8 /* Encrypt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07513F8A2483FA7900EF68F8 /* Encrypt.swift */; };
 		0772559523C1D3F600790339 /* ChatRoom.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0772559423C1D3F600790339 /* ChatRoom.swift */; };
@@ -96,6 +102,14 @@
 		0739FA3D25B9557900B6A7AB /* ImageBrowserViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageBrowserViewController.swift; sourceTree = "<group>"; };
 		0739FA4325BA829D00B6A7AB /* PushKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PushKit.framework; path = System/Library/Frameworks/PushKit.framework; sourceTree = SDKROOT; };
 		0739FA4725BA855A00B6A7AB /* CallKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CallKit.framework; path = System/Library/Frameworks/CallKit.framework; sourceTree = SDKROOT; };
+		0739FA4E25BAA9A300B6A7AB /* Call.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Call.swift; sourceTree = "<group>"; };
+		0739FA5125BAAAD300B6A7AB /* CallManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallManager.swift; sourceTree = "<group>"; };
+		0739FA5425BAACD400B6A7AB /* ProviderDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProviderDelegate.swift; sourceTree = "<group>"; };
+		0739FA5725BAB00300B6A7AB /* Audio.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Audio.swift; sourceTree = "<group>"; };
+		0739FA6425BAD2A900B6A7AB /* BNRAudioData.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BNRAudioData.h; path = VoiceManager/BNRAudioData.h; sourceTree = "<group>"; };
+		0739FA6525BAD2A900B6A7AB /* BNRAudioData.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = BNRAudioData.m; path = VoiceManager/BNRAudioData.m; sourceTree = "<group>"; };
+		0739FA6825BAD2CC00B6A7AB /* VoiceConvertHandle.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = VoiceConvertHandle.h; path = VoiceManager/VoiceConvertHandle.h; sourceTree = "<group>"; };
+		0739FA6925BAD2CC00B6A7AB /* VoiceConvertHandle.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = VoiceConvertHandle.m; path = VoiceManager/VoiceConvertHandle.m; sourceTree = "<group>"; };
 		073FDF5425B2871C00FE01CD /* NotificationService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NotificationService.h; sourceTree = "<group>"; };
 		073FDF5525B2871C00FE01CD /* NotificationService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NotificationService.m; sourceTree = "<group>"; };
 		073FDF5725B2871C00FE01CD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -190,6 +204,14 @@
 		0739FA4C25BAA90800B6A7AB /* Call */ = {
 			isa = PBXGroup;
 			children = (
+				0739FA4E25BAA9A300B6A7AB /* Call.swift */,
+				0739FA5125BAAAD300B6A7AB /* CallManager.swift */,
+				0739FA5425BAACD400B6A7AB /* ProviderDelegate.swift */,
+				0739FA5725BAB00300B6A7AB /* Audio.swift */,
+				0739FA6425BAD2A900B6A7AB /* BNRAudioData.h */,
+				0739FA6525BAD2A900B6A7AB /* BNRAudioData.m */,
+				0739FA6825BAD2CC00B6A7AB /* VoiceConvertHandle.h */,
+				0739FA6925BAD2CC00B6A7AB /* VoiceConvertHandle.m */,
 			);
 			path = Call;
 			sourceTree = "<group>";
@@ -488,8 +510,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0739FA5525BAACD400B6A7AB /* ProviderDelegate.swift in Sources */,
 				AEC6BF411EAF320E007CA6E5 /* JoinChatViewController.swift in Sources */,
 				0711485A23CEC3E900B6D63C /* Notification+Names.swift in Sources */,
+				0739FA4F25BAA9A300B6A7AB /* Call.swift in Sources */,
 				0702F7E6247E62B200B22846 /* ContactsTableViewController.swift in Sources */,
 				AE909BF11EB63FDB009D9D95 /* MessageInputView.swift in Sources */,
 				070C41742489204F0035314A /* SearchViewController.swift in Sources */,
@@ -504,8 +528,12 @@
 				AE28D6E51EC0AB9800E886B9 /* StringExtension.swift in Sources */,
 				AEC6BF3F1EAF320E007CA6E5 /* AppDelegate.swift in Sources */,
 				AEA5A1771EC3618C0041C7B4 /* Layouts.swift in Sources */,
+				0739FA6A25BAD2CC00B6A7AB /* VoiceConvertHandle.m in Sources */,
 				073144A8245FF94500D915E8 /* WebSocketManager.swift in Sources */,
 				07AB7B0B248F2A7A005306A1 /* SignUpViewController.swift in Sources */,
+				0739FA5825BAB00300B6A7AB /* Audio.swift in Sources */,
+				0739FA5225BAAAD300B6A7AB /* CallManager.swift in Sources */,
+				0739FA6625BAD2AA00B6A7AB /* BNRAudioData.m in Sources */,
 				AEC6BF511EAF345A007CA6E5 /* ChatRoomViewController.swift in Sources */,
 				07513F8B2483FA7900EF68F8 /* Encrypt.swift in Sources */,
 				AEA5A1791EC362150041C7B4 /* ChatRoomViewController+Table.swift in Sources */,

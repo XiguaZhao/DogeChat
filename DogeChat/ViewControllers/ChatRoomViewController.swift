@@ -146,6 +146,15 @@ extension ChatRoomViewController: MessageInputDelegate, UIImagePickerControllerD
                 actionSheet.dismiss(animated: true, completion: nil)
             }
         }))
+        actionSheet.addAction(UIAlertAction(title: "语音通话", style: .default, handler: { (action) in
+//            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+//                AppDelegate.shared.providerDelegate.reportIncomingCall(uuid: UUID(), handle: "赵锡光") { (error) in
+//            }
+//
+//            }
+            VoiceConvertHandle.shareInstance()?.delegate = self
+            VoiceConvertHandle.shareInstance()?.startRecord = !VoiceConvertHandle.shareInstance()!.startRecord
+        }))
         actionSheet.addAction(UIAlertAction(title: "取消", style: .cancel, handler: nil))
         present(actionSheet, animated: true, completion: nil)
     }
@@ -371,4 +380,12 @@ extension ChatRoomViewController: UITextViewDelegate {
         }
         return true
     }
+}
+
+extension ChatRoomViewController: VoiceConvertHandleDelegate {
+    func covertedData(_ data: Data!) {
+        VoiceConvertHandle.shareInstance()?.play(with: data)
+    }
+    
+    
 }
