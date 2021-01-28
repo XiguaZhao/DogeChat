@@ -12,6 +12,7 @@ class ImageBrowserViewController: UIViewController {
     
     var cellImageView: FLAnimatedImageView?
     let imageView = FLAnimatedImageView()
+    var scrollView: UIScrollView!
             
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -20,30 +21,47 @@ class ImageBrowserViewController: UIViewController {
         } else {
             view.backgroundColor = .white
         }
-        imageView.frame = view.frame
+        scrollView = UIScrollView(frame: view.frame)
+        scrollView.bounds = scrollView.frame
+        scrollView.minimumZoomScale = 1
+        scrollView.maximumZoomScale = 4
+        scrollView.contentInsetAdjustmentBehavior = .never
+        scrollView.delegate = self
+        view.addSubview(scrollView)
+        imageView.frame = scrollView.frame
         imageView.contentMode = .scaleAspectFit
         if cellImageView?.animatedImage != nil {
             imageView.animatedImage = cellImageView?.animatedImage
         } else {
             imageView.image = cellImageView?.image
         }
-        view.addSubview(imageView)
-        let tap = UITapGestureRecognizer(target: self, action: #selector(tapped))
-        self.view.addGestureRecognizer(tap)
+        scrollView.addSubview(imageView)
+        let swipeDownGesture = UISwipeGestureRecognizer(target: self, action: #selector(swipeDown))
+        swipeDownGesture.direction = .down
+        self.view.addGestureRecognizer(swipeDownGesture)
+    }
+        
+    @objc func swipeDown() {
+        self.dismiss(animated: true, completion: nil)
     }
     
-    @objc func tapped() {
-        self.navigationController?.popViewController(animated: true)
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        self.navigationController?.setNavigationBarHidden(true, animated: true)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        self.navigationController?.setNavigationBarHidden(false, animated: true)
     }
 
+}
+
+extension ImageBrowserViewController: UIScrollViewDelegate {
+    
+    func viewForZooming(in scrollView: UIScrollView) -> UIView? {
+        return imageView
+    }
 }

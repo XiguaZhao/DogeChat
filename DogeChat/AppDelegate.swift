@@ -31,18 +31,25 @@
 import UIKit
 import UserNotifications
 import PushKit
+import CallKit
+import Intents
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate {
     
     var window: UIWindow?
+    var pushWindow: FloatWindow!
+    var callWindow: FloatWindow!
     var deviceToken: String?
+    var pushKitToken: String?
     let notificationManager = NotificationManager.shared
     let socketManager = WebSocketManager.shared
     var navigationController: UINavigationController!
     var tabBarController: UITabBarController!
     var providerDelegate: ProviderDelegate!
     let callManager = CallManager()
+    let voipRegistry = PKPushRegistry(queue: DispatchQueue.main)
+    var lastAppEnterBackgroundTime = NSDate().timeIntervalSince1970
     class var shared: AppDelegate {
         return UIApplication.shared.delegate as! AppDelegate
     }
@@ -59,6 +66,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         window?.rootViewController = tabBarController
         login()
         window?.makeKeyAndVisible()
+        pushWindow = FloatWindow(type: .push, delegate: self)
+        callWindow = FloatWindow(type: .alwaysDisplay, delegate: self)
         
         providerDelegate = ProviderDelegate(callManager: callManager)
                 
@@ -69,7 +78,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         }
         
         registerNotification()
-        registerVoipNotification()
+        voipRegistry.delegate = self
+        voipRegistry.desiredPushTypes = [.voIP]
         
         return true
     }
@@ -92,9 +102,25 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
     
     func applicationDidBecomeActive(_ application: UIApplication) {
+        let nowTime = Date().timeIntervalSince1970
+        let shouldReLogin = nowTime - lastAppEnterBackgroundTime >= 20 * 60
+        if shouldReLogin, let password = UserDefaults.standard.value(forKey: "lastPassword") as? String {
+            socketManager.login(username: socketManager.username, password: password) { (result) in
+                guard result == "登录成功" else { return }
+                self.socketManager.connect()
+            }
+        }
         if (self.navigationController).topViewController?.title == "JoinChatVC" { return }
         guard !WebSocketManager.shared.cookie.isEmpty else { return }
-        WebSocketManager.shared.connect()
+        if !shouldReLogin {
+            WebSocketManager.shared.connect()
+        }
+    }
+    
+    func applicationDidEnterBackground(_ application: UIApplication) {
+        lastAppEnterBackgroundTime = NSDate().timeIntervalSince1970
+        guard !callManager.hasCall() else { return }
+        socketManager.disconnect()
     }
     
     func application(_ application: UIApplication, performActionFor shortcutItem: UIApplicationShortcutItem, completionHandler: @escaping (Bool) -> Void) {
@@ -146,23 +172,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         // TODO: 使用过程中收到消息弹窗
     }
         
-    func applicationDidEnterBackground(_ application: UIApplication) {
-        socketManager.disconnect()
-    }
-    
     // 点击推送通知才会调用
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
         guard let userInfo = response.notification.request.content.userInfo as? [String: AnyObject],
               let aps = userInfo["aps"] as? [String: AnyObject] else { return }
         notificationManager.processRemoteNotification(aps)
     }
-        
-    private func registerVoipNotification() {
-        let voipRegistry = PKPushRegistry(queue: DispatchQueue.main)
-        voipRegistry.delegate = self
-        voipRegistry.desiredPushTypes = [.voIP]
-    }
-    
+            
 }
 
 extension AppDelegate: PKPushRegistryDelegate {
@@ -170,12 +186,62 @@ extension AppDelegate: PKPushRegistryDelegate {
     func pushRegistry(_ registry: PKPushRegistry, didUpdate pushCredentials: PKPushCredentials, for type: PKPushType) {
         let deviceTokenString = pushCredentials.token.map { String(format: "%02.2hhx", $0) }.joined()
         print("deviceTokenString \(deviceTokenString)")
+        pushKitToken = deviceTokenString
     }
     
     func pushRegistry(_ registry: PKPushRegistry, didReceiveIncomingPushWith payload: PKPushPayload, for type: PKPushType, completion: @escaping () -> Void) {
         print("收到pushkit推送!")
-        print(payload.dictionaryPayload)
+        
+        guard let aps = payload.dictionaryPayload["aps"] as? [String: Any],
+              let alert = aps["alert"] as? [String: Any],
+              let caller = alert["title"] as? String,
+              let uuid = alert["uuid"] as? String
+              else { return }
+        let sender = String(caller)
+        print(sender + "打电话来啦")
+        let wrappedUUID = UUID(uuidString: uuid)
+        let finalUUID = wrappedUUID ?? UUID()
+        socketManager.nowCallUUID = finalUUID
+        providerDelegate.reportIncomingCall(uuid: finalUUID, handle: sender) { (error) in
+            guard error == nil else { return }
+            self.notificationManager.prepareVoiceChat(caller: sender, uuid: finalUUID)
+        }
+        completion()
+    }
+    
+    func pushRegistry(_ registry: PKPushRegistry, didInvalidatePushTokenFor type: PKPushType) {
+        print(type)
+    }
+    
+    func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
+        if callManager.hasCall() { return false }
+        guard let intent = userActivity.interaction?.intent as? INStartAudioCallIntent,
+              let name = intent.contacts?.first?.personHandle?.value else { return false }
+        let uuid = UUID().uuidString
+        socketManager.tapFromSystemPhoneInfo = (name, uuid)
+        return true
     }
     
 }
 
+extension AppDelegate: VoiceDelegate {
+    func time(toSend data: Data) {
+        socketManager.sendVoiceData(data)
+    }
+}
+
+extension AppDelegate: FloatWindowTouchDelegate {
+    func tapPush(_ window: FloatWindow!, sender: String, content: String) {
+        self.tabBarController.selectedViewController = navigationController
+        if let contactVC = navigationController.viewControllers.first as? ContactsTableViewController,
+           let index = contactVC.usernames.firstIndex(of: sender) {
+            contactVC.tableView(contactVC.tableView, didSelectRowAt: IndexPath(row: index, section: 0))
+        }
+    }
+    
+    func tapAlwaysDisplay(_ window: FloatWindow!, name: String) {
+        guard let call = callManager.callWithUUID(socketManager.nowCallUUID) else { return }
+        call.end()
+        callManager.end(call: call)
+    }
+}

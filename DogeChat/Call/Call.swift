@@ -25,6 +25,7 @@ class Call: NSObject {
     let uuid: UUID
     let outgoing: Bool
     let handle: String
+    var rejectBySelf = true
     
     var state: CallState = .ended {
         didSet {
@@ -52,10 +53,23 @@ class Call: NSObject {
     }
     
     func answer() {
+        WebSocketManager.shared.responseVoiceChat(to: handle, uuid: uuid.uuidString, response: "accept")
+        WebSocketManager.shared.nowCallUUID = uuid
+        AppDelegate.shared.callWindow.assignValueForAlwaysDisplay(name: handle)
         state = .active
+        rejectBySelf = false
+    }
+    
+    func cancelBySelf() {
+        WebSocketManager.shared.endCall(uuid: uuid.uuidString, with: handle)
+        state = .ended
+        rejectBySelf = true
     }
     
     func end() {
+        Recorder.sharedInstance().stopRecordAndPlay()
+        WebSocketManager.shared.endCall(uuid: uuid.uuidString, with: handle)
+        AppDelegate.shared.callWindow.nestedVC.tapped(nil)
         state = .ended
     }
     

@@ -13,7 +13,11 @@ class CallManager: NSObject {
     var callsChangedHandler: (() -> Void)?
     private let callController = CXCallController()
     
-    private(set) var calls: [Call] = []
+    var calls: [Call] = []
+    
+    func hasCall() -> Bool {
+        return !calls.isEmpty
+    }
     
     func callWithUUID(_ uuid: UUID) -> Call? {
         guard let index = calls.firstIndex(where: { $0.uuid == uuid }) else { return nil }
@@ -39,11 +43,12 @@ class CallManager: NSObject {
         callsChangedHandler?()
     }
     
-    func startCall(handle: String) {
-        let handle = CXHandle(type: .phoneNumber, value: handle)
-        let startCallAction = CXStartCallAction(call: UUID(), handle: handle)
+    func startCall(handle: String, uuid: String) {
+        guard let uuid = UUID(uuidString: uuid) else { return }
+        let handle = CXHandle(type: .generic, value: handle)
+        let startCallAction = CXStartCallAction(call: uuid, handle: handle)
         startCallAction.isVideo = false
-        
+        AppDelegate.shared.callWindow.assignValueForAlwaysDisplay(name: handle.value)
         let transaction = CXTransaction(action: startCallAction)
         requestTransition(transaction)
     }

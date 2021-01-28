@@ -146,17 +146,29 @@ extension ChatRoomViewController: MessageInputDelegate, UIImagePickerControllerD
                 actionSheet.dismiss(animated: true, completion: nil)
             }
         }))
-        actionSheet.addAction(UIAlertAction(title: "语音通话", style: .default, handler: { (action) in
-//            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-//                AppDelegate.shared.providerDelegate.reportIncomingCall(uuid: UUID(), handle: "赵锡光") { (error) in
-//            }
-//
-//            }
-            VoiceConvertHandle.shareInstance()?.delegate = self
-            VoiceConvertHandle.shareInstance()?.startRecord = !VoiceConvertHandle.shareInstance()!.startRecord
+        actionSheet.addAction(UIAlertAction(title: "语音通话", style: .default, handler: { [weak self] (action) in
+            guard let self = self else { return }
+            let uuid = UUID().uuidString
+            self.manager.sendCallRequst(to: self.friendName, uuid: uuid)
+            AppDelegate.shared.callManager.startCall(handle: self.friendName, uuid: uuid)
+        }))
+        actionSheet.addAction(UIAlertAction(title: "结束语音通话", style: .default, handler: { [weak self] (action) in
+            Recorder.sharedInstance().stopRecordAndPlay()
+            guard let self = self else { return }
+            self.manager.endCall(uuid: self.manager.nowCallUUID.uuidString, with: self.friendName)
+            guard let call = AppDelegate.shared.callManager.callWithUUID(self.manager.nowCallUUID) else { return }
+            AppDelegate.shared.callManager.end(call: call)
         }))
         actionSheet.addAction(UIAlertAction(title: "取消", style: .cancel, handler: nil))
         present(actionSheet, animated: true, completion: nil)
+    }
+    
+    func sendCallRequest() {
+        manager.sendCallRequst(to: friendName, uuid: UUID().uuidString)
+        DispatchQueue.global().asyncAfter(deadline: .now() + 2) {
+            let data = "hello world".data(using: .utf8)
+            self.manager.sendVoiceData(data)
+        }
     }
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
@@ -204,7 +216,7 @@ extension ChatRoomViewController: MessageInputDelegate, UIImagePickerControllerD
             return cell.message.uuid == message.uuid
         }.first
         guard let cell = targetCell as? MessageTableViewCell else { return }
-        cell.percentIndicator.setProgress(CGFloat(progress.fractionCompleted), animated: false)
+        cell.percentIndicator.setProgress(CGFloat(progress.fractionCompleted), animated: true)
         if progress.fractionCompleted == 1 {
             cell.percentIndicator.removeFromSuperview()
         }
@@ -219,7 +231,8 @@ extension ChatRoomViewController: MessageTableViewCellDelegate {
     func imageViewTapped(_ cell: MessageTableViewCell, imageView: FLAnimatedImageView) {
         let browser = ImageBrowserViewController()
         browser.cellImageView = imageView
-        self.navigationController?.pushViewController(browser, animated: true)
+        browser.modalPresentationStyle = .fullScreen
+        self.present(browser, animated: true, completion: nil)
     }
 }
 
@@ -382,10 +395,10 @@ extension ChatRoomViewController: UITextViewDelegate {
     }
 }
 
-extension ChatRoomViewController: VoiceConvertHandleDelegate {
-    func covertedData(_ data: Data!) {
-        VoiceConvertHandle.shareInstance()?.play(with: data)
-    }
+extension ChatRoomViewController: VoiceDelegate {
     
+    func time(toSend data: Data) {
+        manager.sendVoiceData(data)
+    }
     
 }

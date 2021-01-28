@@ -10,6 +10,7 @@ import UIKit
 
 class NotificationManager: NSObject {
     
+    let manager = WebSocketManager.shared
     static let shared = NotificationManager()
     var remoteNotificationUsername = "" {
         didSet {
@@ -42,6 +43,19 @@ class NotificationManager: NSObject {
         UIApplication.shared.applicationIconBadgeNumber = 0
     }
     
-    var voipUsername = ""
+    
+    func prepareVoiceChat(caller: String, uuid: UUID) {
+        guard let username = UserDefaults.standard.value(forKey: "lastUsername") as? String,
+              let password = UserDefaults.standard.value(forKey: "lastPassword") as? String else { return }
+        manager.login(username: username, password: password) { (result) in
+            guard result == "登录成功" else {
+                if let call = AppDelegate.shared.callManager.callWithUUID(uuid) {
+                    AppDelegate.shared.callManager.end(call: call)
+                }
+                return
+            }
+            self.manager.connect()
+        }
+    }
     
 }

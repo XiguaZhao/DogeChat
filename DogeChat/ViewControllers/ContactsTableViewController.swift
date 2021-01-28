@@ -80,12 +80,26 @@ class ContactsTableViewController: UITableViewController {
     }
     
     @objc func refreshContacts() {
-        manager.getContacts { usernames in
+        manager.getContacts { [weak self] usernames, error  in
+            guard let self = self else { return }
+            if error != nil {
+                self.navigationItem.title = "获取联系人失败"
+                self.refreshControl?.endRefreshing()
+                if let password = UserDefaults.standard.value(forKey: "lastPassword") as? String {
+                    self.manager.login(username: self.username, password: password) { (result) in
+                        if result == "登录成功" {
+                            self.refreshContacts()
+                        }
+                    }
+                }
+                return
+            }
             print(usernames)
             self.refreshControl?.endRefreshing()
             self.usernames = usernames
             self.usernames.insert("群聊", at: 0)
             self.tableView.reloadData()
+            self.navigationItem.title = self.username
         }
     }
     
@@ -130,6 +144,9 @@ class ContactsTableViewController: UITableViewController {
         } else {
             unreadMessage["群聊"] = (unreadMessage["群聊"] ?? 0) + 1
         }
+        let name = message.option == .toAll ? "群聊" : message.senderUsername
+        let content = message.option == .toAll ? "\(message.senderUsername)：\(message.message)" : message.message
+        AppDelegate.shared.pushWindow.assignValueForPush(sender: name, content: content)
         tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
     }
     

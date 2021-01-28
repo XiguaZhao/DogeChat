@@ -7,5 +7,4 @@
 #import <FLAnimatedImage/FLAnimatedImage.h>
 #import <SDWebImage/SDWebImageManager.h>
 #import <DACircularProgress/DACircularProgressView.h>
-#import "BNRAudioData.h"
-#import "VoiceConvertHandle.h"
+#import "Recorder.h"

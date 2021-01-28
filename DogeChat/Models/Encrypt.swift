@@ -56,11 +56,11 @@ class EncryptMessage {
         let encryptedMessage = try? EncryptedMessage(base64Encoded: content)
         let clear = try? encryptedMessage?.decrypted(with: privateKey, padding: .PKCS1)
         let utf8String = try? clear?.string(encoding: .utf8)
-        let result = (utf8String?.removingPercentEncoding) ?? ""
-        if result == "" {
-            debug(tag: 2)
+        if let result = (utf8String?.removingPercentEncoding) {
+            return result
+        } else {
+            return ""
         }
-        return result
     }
     
     func debug(tag: Int) {

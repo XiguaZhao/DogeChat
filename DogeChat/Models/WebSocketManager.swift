@@ -49,13 +49,18 @@ class WebSocketManager: NSObject {
     var messagesSingle: [String: [Message]] = [:]
     var notSendMessages = [Message]()
     var imageDict = [String: Any]()
+    var tapFromSystemPhoneInfo: (name: String, uuid: String)?
+    var nowCallUUID: UUID! {
+        didSet {
+            print("nowCallUUID set")
+        }
+    }
     
     static let shared: WebSocketManager = WebSocketManager()
     
     private override init() {
         session.requestSerializer = AFJSONRequestSerializer()
         super.init()
-//        WatchSession.shared.wcStatusDelegate = self
         
     }
     
@@ -70,8 +75,7 @@ class WebSocketManager: NSObject {
                 self.username = username
                 if let responseDetails = task.response as? HTTPURLResponse {
                     let headers = responseDetails.allHeaderFields
-                    if self.cookie.isEmpty {
-                        let cookieStr = headers["Set-Cookie"] as! String
+                    if let cookieStr = headers["Set-Cookie"] as? String {
                         self.cookie = cookieStr.components(separatedBy: ";")[0].components(separatedBy: "=")[1]
                     }
                 }
@@ -88,6 +92,14 @@ class WebSocketManager: NSObject {
         socket = WebSocket(request: request)
         socket.delegate = self
         socket.services = [.Background, .VoIP]
+        socket.event.message = { message in
+            guard var message = message as? [UInt8], message.count > 12 else { return }
+            if Recorder.sharedInstance().receivedData == nil {
+                Recorder.sharedInstance().receivedData = NSMutableData()
+            }
+            Recorder.sharedInstance().receivedData?.append(NSMutableData(bytes: &message, length: message.count) as Data)
+        }
+
         socket.open()
     }
     
@@ -111,19 +123,22 @@ class WebSocketManager: NSObject {
         socket.send(text: makeJsonString(for: paras))
     }
     
-    func getContacts(completion: @escaping ([String]) -> Void)  {
+    func getContacts(completion: @escaping ([String], Error?) -> Void)  {
         session.get(url_pre + "friendship/getAllFriends", parameters: nil, headers: nil, progress: nil, success: { (task, response) in
             guard let response = response else { return }
             let json = JSON(response)
-            guard json["status"].stringValue == "success" else { return }
+            guard json["status"].stringValue == "success" else {
+                return
+            }
             var usernames: [String] = []
             let friends = json["friends"].arrayValue
             for friend in friends {
                 usernames.append(friend["username"].stringValue)
             }
             self.connect()
-            completion(usernames)
+            completion(usernames, nil)
         }, failure: { (task, error) in
+            completion([], error)
         })
     }
     
@@ -152,6 +167,26 @@ class WebSocketManager: NSObject {
         socket.send(text: makeJsonString(for: params))
     }
     
+    func sendVoipToken(_ token: String?) {
+        guard let token = token, token.count > 0 else {
+            return
+        }
+        let params = ["method": "voipToken", "voipToken": token]
+        socket.send(text: makeJsonString(for: params))
+        print("发送voip token" + token)
+    }
+    
+    func endCall(uuid: String, with receiver: String) {
+        let params = ["method": "endVoiceChat", "sender": username, "receiver": receiver, "uuid": uuid]
+        socket.send(text: makeJsonString(for: params))
+    }
+    
+    func sendCallRequst(to receiver: String, uuid: String) {
+        let params = ["method": "voiceChat", "sender": username, "receiver": receiver, "uuid": uuid]
+        socket.send(text: makeJsonString(for: params))
+        nowCallUUID = UUID(uuidString: uuid)
+    }
+        
     func resendMessages() {
         for message in self.notSendMessages {
             let option: MessageOption = message.receiver == "" ? .toAll : .toOne
@@ -195,32 +230,34 @@ class WebSocketManager: NSObject {
 extension WebSocketManager: WebSocketDelegate  {
     func webSocketOpen() {
         print("websocket已经打开")
-        getUnreadMessage()
+        prepareEncrypt()
         sendToken((UIApplication.shared.delegate as! AppDelegate).deviceToken)
-        resendMessages()
+        sendVoipToken(AppDelegate.shared.pushKitToken)
+        if let (name, uuid) = tapFromSystemPhoneInfo {
+            sendCallRequst(to: name, uuid: uuid)
+            AppDelegate.shared.callManager.startCall(handle: name, uuid: uuid)
+            tapFromSystemPhoneInfo = nil
+        }
     }
     
     func webSocketClose(_ code: Int, reason: String, wasClean: Bool) {
         print("websocket已关闭")
-        guard UIApplication.shared.applicationState == .active else {
-            return
-        }
-        connect()
     }
     
     func webSocketError(_ error: NSError) {
         print("error:=====\(error)")
-        guard let password = UserDefaults.standard.value(forKey: "lastPassword") as? String else { return }
-        login(username: username, password: password) { (result) in
-            guard let appDelegate = UIApplication.shared.delegate as? AppDelegate, result == "登录成功" else { return }
-            self.connect()
-            for vc in appDelegate.navigationController.viewControllers {
-                if let contactVC = vc as? ContactsTableViewController {
-                    contactVC.loginSuccess = true
-                    return
-                }
-            }
-        }
+        AppDelegate.shared.navigationController.topViewController?.navigationItem.title = "遇到错误，重启吧。我再想办法"
+//        guard let password = UserDefaults.standard.value(forKey: "lastPassword") as? String else { return }
+//        login(username: username, password: password) { (result) in
+//            guard let appDelegate = UIApplication.shared.delegate as? AppDelegate, result == "登录成功" else { return }
+//            self.connect()
+//            for vc in appDelegate.navigationController.viewControllers {
+//                if let contactVC = vc as? ContactsTableViewController {
+//                    contactVC.loginSuccess = true
+//                    return
+//                }
+//            }
+//        }
     }
     
     func webSocketMessageText(_ text: String) {
@@ -228,7 +265,7 @@ extension WebSocketManager: WebSocketDelegate  {
         print(text)
         parseReceivedMessage(text)
     }
-    
+        
     private func parseReceivedMessage(_ jsonString: String) {
         let json = JSON(parseJSON: jsonString)
         let method = json["method"].stringValue
@@ -236,7 +273,8 @@ extension WebSocketManager: WebSocketDelegate  {
         case "publicKey":
             let key = json["key"].stringValue
             encrypt.key = key
-            prepareEncrypt()
+            getUnreadMessage()
+            resendMessages()
         case "sendToAllSuccess":
             UIApplication.shared.isNetworkActivityIndicatorVisible = false
             let id = json["id"].intValue
@@ -282,7 +320,6 @@ extension WebSocketManager: WebSocketDelegate  {
                 let content = message["content"].stringValue
                 let uuid = message["uuid"].stringValue
                 let newMessage = wrapMessage(content: content, option: .toAll, sender: sender, receiver: username, id: id, date: "", uuid: uuid)
-//                messageDelegate?.receiveMessage?(newMessage, option: "toAll")
                 messagesGroup.append(newMessage)
                 postNotification(message: newMessage)
             }
@@ -296,7 +333,6 @@ extension WebSocketManager: WebSocketDelegate  {
                 let id = msg["messageId"].intValue
                 let uuid = msg["uuid"].stringValue
                 let newMessage = wrapMessage(content: decrypted, option: .toOne, sender: sender, receiver: username, id: id, date: date, uuid: uuid)
-//                messageDelegate?.receiveMessage?(newMessage, option: "toOne")
                 messagesSingle.add(newMessage, for: sender)
                 postNotification(message: newMessage)
             }
@@ -329,9 +365,37 @@ extension WebSocketManager: WebSocketDelegate  {
             messageDelegate?.newFriend?()
         case "NewFriendRequest":
             messageDelegate?.newFriendRequest?()
+        case "voiceChat":
+            let _ = json["sender"].stringValue
+            let _ = json["uuid"].stringValue
+        case "responseVoiceChat":
+            let response = json["response"].stringValue
+            let _ = json["uuid"].stringValue
+            let _ = json["sender"].stringValue
+            if response == "accept" {
+                Recorder.sharedInstance().delegate = self
+                Recorder.sharedInstance().startRecordAndPlay()
+            }
+        case "endVoiceChat":
+            let _ = json["sender"].stringValue
+            let uuid = json["uuid"].stringValue
+            Recorder.sharedInstance().stopRecordAndPlay()
+            guard let _uuid = UUID(uuidString: uuid),
+                  let call = AppDelegate.shared.callManager.callWithUUID(_uuid) else { return }
+            AppDelegate.shared.callManager.end(call: call)
         default:
             return
         }
+    }
+    
+    func sendVoiceData(_ data: Data!) {
+        socket.send(data: data)
+    }
+    
+    func responseVoiceChat(to sender: String, uuid: String, response: String) {
+        let params = ["method": "receiveVoiceChat", "response": response, "sender": username, "receiver": sender, "uuid": uuid]
+        socket.send(text: makeJsonString(for: params))
+        print("发送了response：\(response)")
     }
     
     func wrapMessage(content: String, option: MessageOption, sender: String, receiver: String, id: Int, date: String, uuid: String) -> Message {
@@ -462,3 +526,8 @@ extension WebSocketManager {
     }
 }
 
+extension WebSocketManager: VoiceDelegate {
+    func time(toSend data: Data) {
+        sendVoiceData(data)
+    }
+}

@@ -21,8 +21,9 @@
 		0739FA5225BAAAD300B6A7AB /* CallManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0739FA5125BAAAD300B6A7AB /* CallManager.swift */; };
 		0739FA5525BAACD400B6A7AB /* ProviderDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0739FA5425BAACD400B6A7AB /* ProviderDelegate.swift */; };
 		0739FA5825BAB00300B6A7AB /* Audio.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0739FA5725BAB00300B6A7AB /* Audio.swift */; };
-		0739FA6625BAD2AA00B6A7AB /* BNRAudioData.m in Sources */ = {isa = PBXBuildFile; fileRef = 0739FA6525BAD2A900B6A7AB /* BNRAudioData.m */; };
-		0739FA6A25BAD2CC00B6A7AB /* VoiceConvertHandle.m in Sources */ = {isa = PBXBuildFile; fileRef = 0739FA6925BAD2CC00B6A7AB /* VoiceConvertHandle.m */; };
+		0739FA7725BBE67A00B6A7AB /* Recorder.m in Sources */ = {isa = PBXBuildFile; fileRef = 0739FA7625BBE67A00B6A7AB /* Recorder.m */; };
+		0739FA8D25BD103900B6A7AB /* Socket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0739FA8C25BD103800B6A7AB /* Socket.swift */; };
+		0739FABC25BEEF6B00B6A7AB /* FloatWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0739FABB25BEEF6B00B6A7AB /* FloatWindow.swift */; };
 		073FDF6A25B2A35000FE01CD /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 073FDF6925B2A35000FE01CD /* NotificationManager.swift */; };
 		07513F8B2483FA7900EF68F8 /* Encrypt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07513F8A2483FA7900EF68F8 /* Encrypt.swift */; };
 		0772559523C1D3F600790339 /* ChatRoom.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0772559423C1D3F600790339 /* ChatRoom.swift */; };
@@ -106,10 +107,10 @@
 		0739FA5125BAAAD300B6A7AB /* CallManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CallManager.swift; sourceTree = "<group>"; };
 		0739FA5425BAACD400B6A7AB /* ProviderDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProviderDelegate.swift; sourceTree = "<group>"; };
 		0739FA5725BAB00300B6A7AB /* Audio.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Audio.swift; sourceTree = "<group>"; };
-		0739FA6425BAD2A900B6A7AB /* BNRAudioData.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = BNRAudioData.h; path = VoiceManager/BNRAudioData.h; sourceTree = "<group>"; };
-		0739FA6525BAD2A900B6A7AB /* BNRAudioData.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = BNRAudioData.m; path = VoiceManager/BNRAudioData.m; sourceTree = "<group>"; };
-		0739FA6825BAD2CC00B6A7AB /* VoiceConvertHandle.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = VoiceConvertHandle.h; path = VoiceManager/VoiceConvertHandle.h; sourceTree = "<group>"; };
-		0739FA6925BAD2CC00B6A7AB /* VoiceConvertHandle.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = VoiceConvertHandle.m; path = VoiceManager/VoiceConvertHandle.m; sourceTree = "<group>"; };
+		0739FA7525BBE67A00B6A7AB /* Recorder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Recorder.h; sourceTree = "<group>"; };
+		0739FA7625BBE67A00B6A7AB /* Recorder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Recorder.m; sourceTree = "<group>"; };
+		0739FA8C25BD103800B6A7AB /* Socket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Socket.swift; sourceTree = "<group>"; };
+		0739FABB25BEEF6B00B6A7AB /* FloatWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatWindow.swift; sourceTree = "<group>"; };
 		073FDF5425B2871C00FE01CD /* NotificationService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NotificationService.h; sourceTree = "<group>"; };
 		073FDF5525B2871C00FE01CD /* NotificationService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NotificationService.m; sourceTree = "<group>"; };
 		073FDF5725B2871C00FE01CD /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -208,10 +209,8 @@
 				0739FA5125BAAAD300B6A7AB /* CallManager.swift */,
 				0739FA5425BAACD400B6A7AB /* ProviderDelegate.swift */,
 				0739FA5725BAB00300B6A7AB /* Audio.swift */,
-				0739FA6425BAD2A900B6A7AB /* BNRAudioData.h */,
-				0739FA6525BAD2A900B6A7AB /* BNRAudioData.m */,
-				0739FA6825BAD2CC00B6A7AB /* VoiceConvertHandle.h */,
-				0739FA6925BAD2CC00B6A7AB /* VoiceConvertHandle.m */,
+				0739FA7525BBE67A00B6A7AB /* Recorder.h */,
+				0739FA7625BBE67A00B6A7AB /* Recorder.m */,
 			);
 			path = Call;
 			sourceTree = "<group>";
@@ -260,6 +259,7 @@
 				AEA5A1761EC3618C0041C7B4 /* Layouts.swift */,
 				AE909BEE1EB54C4B009D9D95 /* Label.swift */,
 				0739FA2625B7F0C100B6A7AB /* PercentIndicator.swift */,
+				0739FABB25BEEF6B00B6A7AB /* FloatWindow.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -274,6 +274,7 @@
 				078032832486B73900E370E0 /* RSAKeyEncoding.swift */,
 				AE909BEC1EB54B13009D9D95 /* Message.swift */,
 				073FDF6925B2A35000FE01CD /* NotificationManager.swift */,
+				0739FA8C25BD103800B6A7AB /* Socket.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -512,6 +513,7 @@
 			files = (
 				0739FA5525BAACD400B6A7AB /* ProviderDelegate.swift in Sources */,
 				AEC6BF411EAF320E007CA6E5 /* JoinChatViewController.swift in Sources */,
+				0739FA8D25BD103900B6A7AB /* Socket.swift in Sources */,
 				0711485A23CEC3E900B6D63C /* Notification+Names.swift in Sources */,
 				0739FA4F25BAA9A300B6A7AB /* Call.swift in Sources */,
 				0702F7E6247E62B200B22846 /* ContactsTableViewController.swift in Sources */,
@@ -519,6 +521,7 @@
 				070C41742489204F0035314A /* SearchViewController.swift in Sources */,
 				AE909BEB1EB54099009D9D95 /* MessageTableViewCell.swift in Sources */,
 				070C417124879C440035314A /* Helper.swift in Sources */,
+				0739FA7725BBE67A00B6A7AB /* Recorder.m in Sources */,
 				07E001DA248CA56800D4A287 /* SelectShortcutTVC.swift in Sources */,
 				073FDF6A25B2A35000FE01CD /* NotificationManager.swift in Sources */,
 				071F970E247D45C1000B3DBC /* WatchSession.swift in Sources */,
@@ -528,18 +531,17 @@
 				AE28D6E51EC0AB9800E886B9 /* StringExtension.swift in Sources */,
 				AEC6BF3F1EAF320E007CA6E5 /* AppDelegate.swift in Sources */,
 				AEA5A1771EC3618C0041C7B4 /* Layouts.swift in Sources */,
-				0739FA6A25BAD2CC00B6A7AB /* VoiceConvertHandle.m in Sources */,
 				073144A8245FF94500D915E8 /* WebSocketManager.swift in Sources */,
 				07AB7B0B248F2A7A005306A1 /* SignUpViewController.swift in Sources */,
 				0739FA5825BAB00300B6A7AB /* Audio.swift in Sources */,
 				0739FA5225BAAAD300B6A7AB /* CallManager.swift in Sources */,
-				0739FA6625BAD2AA00B6A7AB /* BNRAudioData.m in Sources */,
 				AEC6BF511EAF345A007CA6E5 /* ChatRoomViewController.swift in Sources */,
 				07513F8B2483FA7900EF68F8 /* Encrypt.swift in Sources */,
 				AEA5A1791EC362150041C7B4 /* ChatRoomViewController+Table.swift in Sources */,
 				0772559523C1D3F600790339 /* ChatRoom.swift in Sources */,
 				078032842486B73900E370E0 /* RSAKeyEncoding.swift in Sources */,
 				0739FA2725B7F0C100B6A7AB /* PercentIndicator.swift in Sources */,
+				0739FABC25BEEF6B00B6A7AB /* FloatWindow.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -713,12 +715,12 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
 				DEFINES_MODULE = NO;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = HA4ZY58KNJ;
 				INFOPLIST_FILE = DogeChat/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = con.pino.DogeChat2;
+				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.demo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
+				PROVISIONING_PROFILE_SPECIFIER = zhaoxiguangdemo;
 				SWIFT_OBJC_BRIDGING_HEADER = "DogeChat/DogeChat-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
