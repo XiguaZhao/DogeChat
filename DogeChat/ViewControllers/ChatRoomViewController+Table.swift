@@ -32,11 +32,12 @@ import UIKit
 
 extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = MessageTableViewCell(style: .default, reuseIdentifier: "MessageCell")
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: MessageTableViewCell.textCellIdentifier, for: indexPath) as? MessageTableViewCell else {
+            return UITableViewCell()
+        }
         cell.selectionStyle = .none
         
         let message = messages[indexPath.row]
-        cell.messageType = message.messageType
         cell.delegate = self
         cell.apply(message: message)
         return cell
@@ -61,6 +62,7 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate {
         return height
     }
     func insertNewMessageCell(_ message: Message, invokeNow: Bool = false) {
+        guard !messages.contains(message) else { return }
         messages.append(message)
         if message.messageSender == .ourself {
             switch message.option {

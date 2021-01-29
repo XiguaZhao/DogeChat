@@ -155,11 +155,13 @@ static OSStatus RecordCallback(void *inRefCon,
     recordBufferList.mBuffers[0].mData = samples;
     recordBufferList.mBuffers[0].mNumberChannels = 1;
     recordBufferList.mBuffers[0].mDataByteSize = numSamples*sizeof(UInt16);
+    NSLog(@"record buffer size: %u", (unsigned int)recordBufferList.mBuffers[0].mDataByteSize);
     AudioUnitRender(_recordAudioUnit, ioActionFlags, inTimeStamp, inBusNumber, inNumberFrames, &recordBufferList);
     if (sharedInstace.isRecording) {
         NSData *pcmData = [NSData dataWithBytes:recordBufferList.mBuffers[0].mData length:recordBufferList.mBuffers[0].mDataByteSize];
         if (pcmData && pcmData.length > 0) {
             [sharedInstace.delegate timeToSendData:pcmData];
+            NSLog(@"发出去的dataLen:%lu", (unsigned long)pcmData.length);
         }
     }
     return noErr;
@@ -174,9 +176,13 @@ static OSStatus PlayCallback(void *inRefCon,
                              UInt32 inNumberFrames,
                              AudioBufferList *ioData) {
     UInt32 buffLen = ioData->mBuffers[0].mDataByteSize;
-    NSLog(@"buffLen: %i", buffLen);
+    NSUInteger receivedLen = sharedInstace.receivedData.length;
     if (sharedInstace.receivedData.length >= buffLen) {
-        NSLog(@"receivedLen: %lu", (unsigned long)sharedInstace.receivedData.length);
+        NSUInteger throttleLen = buffLen * 40;
+        if (receivedLen > throttleLen) {
+            [sharedInstace.receivedData replaceBytesInRange:NSMakeRange(0, receivedLen - buffLen) withBytes:NULL length:0];
+        }
+        
         NSData *data = [sharedInstace.receivedData subdataWithRange:NSMakeRange(0, buffLen)];
         AudioBuffer inBuffer = ioData->mBuffers[0];
         memcpy(inBuffer.mData, data.bytes, data.length);
@@ -224,8 +230,6 @@ static OSStatus PlayCallback(void *inRefCon,
     NSLog(@"开始录音");
     self.isRecording = YES;
     recordedData = [NSMutableData data];
-//    [self initAudioSession];
-    
 }
 
 - (void)stopRecord {

@@ -245,13 +245,7 @@ extension ChatRoomViewController: MessageDelegate {
         if message.option == .toOne && message.senderUsername != friendName { return }
         insertNewMessageCell(message, invokeNow: true)
     }
-    
-    func receiveMessage(_ message: Message, option: String) {
-        if option != messageOption.rawValue  { return }
-        if option == "toOne" && message.senderUsername != friendName { return }
-        insertNewMessageCell(message, invokeNow: true)
-    }
-    
+        
     func updateOnlineNumber(to newNumber: Int) {
         guard messageOption == .toAll else { return }
         navigationItem.title = "群聊"// + "(\(newNumber)人在线)"
@@ -276,7 +270,7 @@ extension ChatRoomViewController: MessageDelegate {
     func newFriendRequest() {
         guard let contactVC = navigationController?.viewControllers.filter({ $0 is ContactsTableViewController }).first as? ContactsTableViewController else { return }
         navigationItem.rightBarButtonItem = contactVC.itemRequest
-        contactVC.playSound()
+        manager.playSound()
     }
 }
 
@@ -393,12 +387,4 @@ extension ChatRoomViewController: UITextViewDelegate {
         }
         return true
     }
-}
-
-extension ChatRoomViewController: VoiceDelegate {
-    
-    func time(toSend data: Data) {
-        manager.sendVoiceData(data)
-    }
-    
 }

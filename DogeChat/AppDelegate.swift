@@ -95,6 +95,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 guard loginResult == "登录成功" else { return }
                 contactVC.loginSuccess = true
                 contactVC.username = username
+                self.socketManager.connect()
             }
         } else {
             self.navigationController.viewControllers = [JoinChatViewController()]

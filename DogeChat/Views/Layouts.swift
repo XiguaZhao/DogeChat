@@ -31,120 +31,121 @@
 import UIKit
 
 extension ChatRoomViewController {
-  @objc func keyboardWillChange(notification: NSNotification) {
-    if let userInfo = notification.userInfo {
-      let endFrame = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)!.cgRectValue
-      let messageBarHeight = self.messageInputBar.bounds.size.height
-      let point = CGPoint(x: self.messageInputBar.center.x, y: endFrame.origin.y - messageBarHeight/2.0)
-      let shouldDown = endFrame.origin.y == UIScreen.main.bounds.height
-      let inset = UIEdgeInsets(top: 0, left: 0, bottom: shouldDown ? 0 : endFrame.size.height, right: 0)
-      UIView.animate(withDuration: 0.25) {
-        self.messageInputBar.center = point
-        self.tableView.contentInset = inset
-      }
-      if !shouldDown {
-        guard tableView.numberOfRows(inSection: 0) != 0 else { return }
-        tableView.scrollToRow(at: IndexPath(row: tableView.numberOfRows(inSection: 0) - 1, section: 0), at: .bottom, animated: true)
-      }
+    @objc func keyboardWillChange(notification: NSNotification) {
+        if let userInfo = notification.userInfo {
+            let endFrame = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)!.cgRectValue
+            let messageBarHeight = self.messageInputBar.bounds.size.height
+            let point = CGPoint(x: self.messageInputBar.center.x, y: endFrame.origin.y - messageBarHeight/2.0)
+            let shouldDown = endFrame.origin.y == UIScreen.main.bounds.height
+            let inset = UIEdgeInsets(top: 0, left: 0, bottom: shouldDown ? 0 : endFrame.size.height, right: 0)
+            UIView.animate(withDuration: 0.25) {
+                self.messageInputBar.center = point
+                self.tableView.contentInset = inset
+            }
+            if !shouldDown {
+                guard tableView.numberOfRows(inSection: 0) != 0 else { return }
+                tableView.scrollToRow(at: IndexPath(row: tableView.numberOfRows(inSection: 0) - 1, section: 0), at: .bottom, animated: true)
+            }
+        }
     }
-  }
-  func loadViews() {
-    navigationItem.title = (self.messageOption == .toOne) ? friendName : "群聊"
-    navigationItem.backBarButtonItem?.title = "Run!"
+    func loadViews() {
+        navigationItem.title = (self.messageOption == .toOne) ? friendName : "群聊"
+        navigationItem.backBarButtonItem?.title = "Run!"
+        
+        tableView.dataSource = self
+        tableView.delegate = self
+        tableView.separatorStyle = .none
+        tableView.register(MessageTableViewCell.self, forCellReuseIdentifier: MessageTableViewCell.textCellIdentifier)
+        view.addSubview(tableView)
+        view.addSubview(messageInputBar)
+        
+        messageInputBar.delegate = self
+    }
     
-    tableView.dataSource = self
-    tableView.delegate = self
-    tableView.separatorStyle = .none
+    func layoutViews() {
+        let messageBarHeight:CGFloat = 60.0
+        let size = UIScreen.main.bounds.size
+        tableView.frame = CGRect(x: 0, y: 0, width: size.width, height: size.height - messageBarHeight)
+        messageInputBar.frame = CGRect(x: 0, y: size.height - messageBarHeight, width: size.width, height: messageBarHeight)
+    }
     
-    view.addSubview(tableView)
-    view.addSubview(messageInputBar)
-    
-    messageInputBar.delegate = self
-  }
-  
-  func layoutViews() {
-    let messageBarHeight:CGFloat = 60.0
-    let size = UIScreen.main.bounds.size
-    tableView.frame = CGRect(x: 0, y: 0, width: size.width, height: size.height - messageBarHeight)
-    messageInputBar.frame = CGRect(x: 0, y: size.height - messageBarHeight, width: size.width, height: messageBarHeight)
-  }
 }
 
 extension JoinChatViewController {
-  override func viewDidLoad() {
-    super.viewDidLoad()
-    self.navigationItem.title = "聊天室"
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        self.navigationItem.title = "聊天室"
+        
+        view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard)))
+        login.addTarget(self, action: #selector(loginTapped), for: .touchUpInside)
+        signUp.addTarget(self, action: #selector(signUpTapped), for: .touchUpInside)
+        
+        loadViews()
+        
+        nameTextField.textColor = .black
+        passwordTextField.textColor = .black
+        passwordTextField.isSecureTextEntry = true
+        login.setTitle("登录", for: .normal)
+        signUp.setTitle("注册", for: .normal)
+        
+        view.addSubview(shadowView)
+        view.addSubview(logoImageView)
+        view.addSubview(nameTextField)
+        view.addSubview(passwordTextField)
+        view.addSubview(login)
+        view.addSubview(signUp)
+    }
     
-    view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard)))
-    login.addTarget(self, action: #selector(loginTapped), for: .touchUpInside)
-    signUp.addTarget(self, action: #selector(signUpTapped), for: .touchUpInside)
+    func loadViews() {
+        view.backgroundColor = UIColor(red: 24/255, green: 180/255, blue: 128/255, alpha: 1.0)
+        navigationItem.title = "Doge Chat!"
+        
+        logoImageView.image = UIImage(named: "doge")
+        logoImageView.layer.cornerRadius = 4
+        logoImageView.clipsToBounds = true
+        
+        shadowView.layer.shadowColor = UIColor.black.cgColor
+        shadowView.layer.shadowRadius = 5
+        shadowView.layer.shadowOffset = CGSize(width: 0.0, height: 5.0)
+        shadowView.layer.shadowOpacity = 0.5
+        shadowView.backgroundColor = UIColor(red: 24/255, green: 180/255, blue: 128/255, alpha: 1.0)
+        
+        nameTextField.placeholder = "What's your username?"
+        nameTextField.backgroundColor = .white
+        nameTextField.layer.cornerRadius = 4
+        nameTextField.delegate = self
+        
+        passwordTextField.placeholder = "Input your password"
+        passwordTextField.backgroundColor = .white
+        passwordTextField.layer.cornerRadius = 4
+        passwordTextField.delegate = self
+        
+        let backItem = UIBarButtonItem()
+        backItem.title = "Run!"
+        navigationItem.backBarButtonItem = backItem
+    }
     
-    loadViews()
-    
-    nameTextField.textColor = .black
-    passwordTextField.textColor = .black
-    passwordTextField.isSecureTextEntry = true
-    login.setTitle("登录", for: .normal)
-    signUp.setTitle("注册", for: .normal)
-    
-    view.addSubview(shadowView)
-    view.addSubview(logoImageView)
-    view.addSubview(nameTextField)
-    view.addSubview(passwordTextField)
-    view.addSubview(login)
-    view.addSubview(signUp)
-  }
-
-  func loadViews() {
-    view.backgroundColor = UIColor(red: 24/255, green: 180/255, blue: 128/255, alpha: 1.0)
-    navigationItem.title = "Doge Chat!"
-    
-    logoImageView.image = UIImage(named: "doge")
-    logoImageView.layer.cornerRadius = 4
-    logoImageView.clipsToBounds = true
-    
-    shadowView.layer.shadowColor = UIColor.black.cgColor
-    shadowView.layer.shadowRadius = 5
-    shadowView.layer.shadowOffset = CGSize(width: 0.0, height: 5.0)
-    shadowView.layer.shadowOpacity = 0.5
-    shadowView.backgroundColor = UIColor(red: 24/255, green: 180/255, blue: 128/255, alpha: 1.0)
-    
-    nameTextField.placeholder = "What's your username?"
-    nameTextField.backgroundColor = .white
-    nameTextField.layer.cornerRadius = 4
-    nameTextField.delegate = self
-    
-    passwordTextField.placeholder = "Input your password"
-    passwordTextField.backgroundColor = .white
-    passwordTextField.layer.cornerRadius = 4
-    passwordTextField.delegate = self
-    
-    let backItem = UIBarButtonItem()
-    backItem.title = "Run!"
-    navigationItem.backBarButtonItem = backItem
-  }
-  
-  override func viewDidLayoutSubviews() {
-    super.viewDidLayoutSubviews()
-    
-    logoImageView.bounds = CGRect(x: 0, y: 0, width: 150, height: 150)
-    logoImageView.center = CGPoint(x: view.bounds.size.width/2.0, y: logoImageView.bounds.size.height/2.0 + view.bounds.size.height/4)
-    shadowView.frame = logoImageView.frame
-    
-    nameTextField.bounds = CGRect(x: 0, y: 0, width: view.bounds.size.width - 40, height: 44)
-    nameTextField.center = CGPoint(x: view.bounds.size.width/2.0, y: logoImageView.center.y + logoImageView.bounds.size.height/2.0 + 20 + 22)
-    
-    passwordTextField.bounds = CGRect(x: 0, y: 0, width: view.bounds.size.width - 40, height: 44)
-    passwordTextField.center = CGPoint(x: view.bounds.size.width/2.0, y: logoImageView.center.y + logoImageView.bounds.size.height/2.0 + 20 + passwordTextField.frame.height + 50)
-    
-    login.translatesAutoresizingMaskIntoConstraints = false
-    signUp.translatesAutoresizingMaskIntoConstraints = false
-    NSLayoutConstraint.activate([
-      login.centerYAnchor.constraint(equalTo: signUp.centerYAnchor),
-      login.topAnchor.constraint(equalTo: passwordTextField.bottomAnchor, constant: 20),
-      login.centerXAnchor.constraint(equalTo: nameTextField.centerXAnchor),
-      signUp.trailingAnchor.constraint(equalTo: nameTextField.trailingAnchor, constant: -20)
-    ])
-  }
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        
+        logoImageView.bounds = CGRect(x: 0, y: 0, width: 150, height: 150)
+        logoImageView.center = CGPoint(x: view.bounds.size.width/2.0, y: logoImageView.bounds.size.height/2.0 + view.bounds.size.height/4)
+        shadowView.frame = logoImageView.frame
+        
+        nameTextField.bounds = CGRect(x: 0, y: 0, width: view.bounds.size.width - 40, height: 44)
+        nameTextField.center = CGPoint(x: view.bounds.size.width/2.0, y: logoImageView.center.y + logoImageView.bounds.size.height/2.0 + 20 + 22)
+        
+        passwordTextField.bounds = CGRect(x: 0, y: 0, width: view.bounds.size.width - 40, height: 44)
+        passwordTextField.center = CGPoint(x: view.bounds.size.width/2.0, y: logoImageView.center.y + logoImageView.bounds.size.height/2.0 + 20 + passwordTextField.frame.height + 50)
+        
+        login.translatesAutoresizingMaskIntoConstraints = false
+        signUp.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            login.centerYAnchor.constraint(equalTo: signUp.centerYAnchor),
+            login.topAnchor.constraint(equalTo: passwordTextField.bottomAnchor, constant: 20),
+            login.centerXAnchor.constraint(equalTo: nameTextField.centerXAnchor),
+            signUp.trailingAnchor.constraint(equalTo: nameTextField.trailingAnchor, constant: -20)
+        ])
+    }
 }
 

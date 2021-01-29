@@ -11,9 +11,9 @@ import SwiftyJSON
 import WatchConnectivity
 import CoreLocation
 import SwiftWebSocket
+import AudioToolbox
 
 @objc protocol MessageDelegate: class {
-    @objc optional func receiveMessage(_ message: Message, option: String)
     @objc optional func updateOnlineNumber(to newNumber: Int)
     @objc optional func receiveMessages(_ messages: [Message], pages: Int)
     @objc optional func newFriend()
@@ -22,7 +22,7 @@ import SwiftWebSocket
     @objc func revokeSuccess(id: Int)
 }
 
-enum MessageOption: String {
+@objc enum MessageOption: Int {
     case toAll
     case toOne
 }
@@ -64,6 +64,13 @@ class WebSocketManager: NSObject {
         
     }
     
+    func playSound(needSound: Bool = true) {
+        AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
+        if needSound {
+            AudioServicesPlaySystemSound(1007)
+        }
+    }
+    
     func login(username: String, password: String, completion: @escaping (String)->Void) {
         let paras = ["username": username, "password": password]
         session.post(url_pre + "auth/login", parameters: paras, headers: nil, progress: nil, success: { (task, response) in
@@ -97,6 +104,7 @@ class WebSocketManager: NSObject {
             if Recorder.sharedInstance().receivedData == nil {
                 Recorder.sharedInstance().receivedData = NSMutableData()
             }
+            print("通过socket收到的len：\(message.count)")
             Recorder.sharedInstance().receivedData?.append(NSMutableData(bytes: &message, length: message.count) as Data)
         }
 
@@ -135,7 +143,6 @@ class WebSocketManager: NSObject {
             for friend in friends {
                 usernames.append(friend["username"].stringValue)
             }
-            self.connect()
             completion(usernames, nil)
         }, failure: { (task, error) in
             completion([], error)
@@ -143,7 +150,7 @@ class WebSocketManager: NSObject {
     }
     
     func sendMessage(_ content: String, to receiver: String = "", from sender: String = "xigua", option: MessageOption, uuid: String, type: String = "text") {
-        guard socket.readyState == .open else {
+        guard socket != nil, socket.readyState == .open else {
             connect()
             return
         }
@@ -247,17 +254,6 @@ extension WebSocketManager: WebSocketDelegate  {
     func webSocketError(_ error: NSError) {
         print("error:=====\(error)")
         AppDelegate.shared.navigationController.topViewController?.navigationItem.title = "遇到错误，重启吧。我再想办法"
-//        guard let password = UserDefaults.standard.value(forKey: "lastPassword") as? String else { return }
-//        login(username: username, password: password) { (result) in
-//            guard let appDelegate = UIApplication.shared.delegate as? AppDelegate, result == "登录成功" else { return }
-//            self.connect()
-//            for vc in appDelegate.navigationController.viewControllers {
-//                if let contactVC = vc as? ContactsTableViewController {
-//                    contactVC.loginSuccess = true
-//                    return
-//                }
-//            }
-//        }
     }
     
     func webSocketMessageText(_ text: String) {
@@ -300,7 +296,6 @@ extension WebSocketManager: WebSocketDelegate  {
             let uuid = json["uuid"].stringValue
             maxId = max(maxId, id)
             let newMessage = wrapMessage(content: content, option: .toAll, sender: sender, receiver: "", id: id, date: "", uuid: uuid)
-//            messageDelegate?.receiveMessage?(newMessage, option: "toAll")
             messagesGroup.append(newMessage)
             postNotification(message: newMessage)
         case "join":
@@ -375,6 +370,7 @@ extension WebSocketManager: WebSocketDelegate  {
             if response == "accept" {
                 Recorder.sharedInstance().delegate = self
                 Recorder.sharedInstance().startRecordAndPlay()
+                playSound(needSound: false)
             }
         case "endVoiceChat":
             let _ = json["sender"].stringValue

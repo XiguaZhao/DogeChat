@@ -44,7 +44,6 @@ class MessageTableViewCell: UITableViewCell {
     weak var delegate: MessageTableViewCellDelegate?
     var message: Message!
     var messageSender: MessageSender = .ourself
-    var messageType: MessageType = .text
     var sendStatus: SendStatus = .success
     let messageLabel = Label()
     let nameLabel = UILabel()
@@ -61,8 +60,28 @@ class MessageTableViewCell: UITableViewCell {
         return url.hasSuffix(".gif")
     }
     
+    static let textCellIdentifier = "MessageCell"
+    
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        textLabel?.removeFromSuperview()
+        messageLabel.removeFromSuperview()
+        indicator.removeFromSuperview()
+        animatedImageView.removeFromSuperview()
+        percentIndicator.removeFromSuperview()
+    }
+    
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        if #available(iOS 13.0, *) {
+            percentIndicator.progressTintColor = (UITraitCollection.current.userInterfaceStyle == .dark ? .white : .black)
+        }
+    }
+    
+    func apply(message: Message) {
         messageLabel.clipsToBounds = true
         messageLabel.textColor = .white
         messageLabel.numberOfLines = 0
@@ -72,6 +91,8 @@ class MessageTableViewCell: UITableViewCell {
         
         clipsToBounds = true
         
+        messageLabel.isHidden = true
+        nameLabel.isHidden = true
         contentView.addSubview(messageLabel)
         contentView.addSubview(nameLabel)
         contentView.addSubview(indicator)
@@ -91,21 +112,6 @@ class MessageTableViewCell: UITableViewCell {
         contentView.addSubview(percentIndicator)
         indicator.isHidden = true
         addGestureForImageView()
-
-    }
-    
-    override func prepareForReuse() {
-        super.prepareForReuse()
-        animatedImageView = nil
-    }
-    
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        if #available(iOS 13.0, *) {
-            percentIndicator.progressTintColor = (UITraitCollection.current.userInterfaceStyle == .dark ? .white : .black)
-        }
-    }
-    
-    func apply(message: Message) {
         self.message = message
         nameLabel.text = message.senderUsername
         messageLabel.text = message.message
@@ -114,7 +120,7 @@ class MessageTableViewCell: UITableViewCell {
         if message.imageURL != nil {
             self.addConstraintsForImageMessage()
         }
-        setNeedsLayout()
+        updateViews()
         guard let imageUrl = message.imageURL else { return }
         if imageUrl.hasPrefix("file://") {
             DispatchQueue.global().async {
@@ -163,6 +169,7 @@ class MessageTableViewCell: UITableViewCell {
                 return
             }
             capturedMessage.sendStatus = .success
+            self.percentIndicator.removeFromSuperview()
             DispatchQueue.main.async {
                 self.animatedImageView.image = image
             }
@@ -227,10 +234,9 @@ class MessageTableViewCell: UITableViewCell {
 }
 
 extension MessageTableViewCell {
-    override func layoutSubviews() {
-        super.layoutSubviews()
+    func updateViews() {
         
-        switch messageType {
+        switch message.messageType {
         case .join:
             layoutForJoinMessage()
         case .text:
@@ -263,6 +269,8 @@ extension MessageTableViewCell {
     }
     
     func layoutForTextMessage() {
+        messageLabel.isHidden = false
+        nameLabel.isHidden = false
         messageLabel.font = UIFont(name: "Helvetica", size: 17) //UIFont.systemFont(ofSize: 17)
         messageLabel.textColor = .white
         

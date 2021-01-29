@@ -45,7 +45,7 @@ class ChatRoom: NSObject {
     let data = "\(username) has joined".data(using: .utf8)!
     self.username = username
     
-    _ = data.withUnsafeBytes {
+    data.withUnsafeBytes {
       guard let pointer = $0.baseAddress?.assumingMemoryBound(to: UInt8.self) else {
         print("Error joining chat")
         return
@@ -56,7 +56,7 @@ class ChatRoom: NSObject {
   
   func sendMessage(_ message: Message) {
     let data = "\(message.senderUsername):\(message.message)".data(using: .utf8)!
-    _ = data.withUnsafeBytes {
+    data.withUnsafeBytes {
       guard let pointer = $0.baseAddress?.assumingMemoryBound(to: UInt8.self) else {
         print("Error send message")
         return
@@ -75,7 +75,7 @@ class ChatRoom: NSObject {
       print("------")
       guard let url = Bundle.main.url(forResource: "test", withExtension: "m4a") else { return }
       guard let data = try? Data(contentsOf: url) else { return }
-      _ = data.withUnsafeBytes {
+        data.withUnsafeBytes {
         guard let pointer = $0.baseAddress?.assumingMemoryBound(to: UInt8.self) else { return }
         print(self.outputStream.write(pointer, maxLength: data.count))
       }

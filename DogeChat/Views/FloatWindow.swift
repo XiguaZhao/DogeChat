@@ -38,6 +38,7 @@ class NestedViewController: UIViewController {
     }
     
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+        guard type == .alwaysDisplay else { return }
         let mainWindow = AppDelegate.shared.window
         if let point = touches.first?.location(in: mainWindow) {
             self.window?.center = point
@@ -45,6 +46,7 @@ class NestedViewController: UIViewController {
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        guard type == .alwaysDisplay else { return }
         if var point = touches.first?.location(in: AppDelegate.shared.window) {
             let isLeft = point.x < UIScreen.main.bounds.width / 2
             guard let window = window else { return }

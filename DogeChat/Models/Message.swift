@@ -37,7 +37,7 @@ enum MessageType: String{
     case video
 }
 
-enum SendStatus {
+enum SendStatus: Int {
     case success
     case fail
 }

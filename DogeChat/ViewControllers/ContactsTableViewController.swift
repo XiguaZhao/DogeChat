@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import AudioToolbox
 import SwiftyJSON
 
 class ContactsTableViewController: UITableViewController {
@@ -117,7 +116,7 @@ class ContactsTableViewController: UITableViewController {
     }
     
     @objc func receiveNewMessage(notification: Notification) {
-        playSound()
+        manager.playSound()
         guard let message = notification.object as? Message else { return }
         if navigationController?.topViewController != self, let indexPath = tableView.indexPathForSelectedRow {
             if usernames[indexPath.row] == message.senderUsername && message.option == .toOne { return }
@@ -148,11 +147,6 @@ class ContactsTableViewController: UITableViewController {
         let content = message.option == .toAll ? "\(message.senderUsername)：\(message.message)" : message.message
         AppDelegate.shared.pushWindow.assignValueForPush(sender: name, content: content)
         tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
-    }
-    
-    func playSound() {
-        AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
-        AudioServicesPlaySystemSound(1007)
     }
     
     @objc func sendSuccess(notification: Notification) {
@@ -300,7 +294,7 @@ extension ContactsTableViewController: MessageDelegate, AddContactDelegate {
     }
     
     func newFriendRequest() {
-        playSound()
+        manager.playSound()
         if #available(iOS 13.0, *) {
             navigationItem.rightBarButtonItem = itemRequest
         }

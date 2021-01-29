@@ -39,8 +39,10 @@ class ImageBrowserViewController: UIViewController {
         let swipeDownGesture = UISwipeGestureRecognizer(target: self, action: #selector(swipeDown))
         swipeDownGesture.direction = .down
         self.view.addGestureRecognizer(swipeDownGesture)
+        let tap = UITapGestureRecognizer(target: self, action: #selector(swipeDown))
+        self.view.addGestureRecognizer(tap)
     }
-        
+            
     @objc func swipeDown() {
         self.dismiss(animated: true, completion: nil)
     }
