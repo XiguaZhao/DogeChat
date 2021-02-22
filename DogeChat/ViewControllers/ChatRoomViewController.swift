@@ -42,6 +42,7 @@ class ChatRoomViewController: UIViewController {
     var originOfInputBar = CGPoint()
     var scrollBottom = true
     var indexPathToInsert: IndexPath?
+    var latestPickedImageInfo: (image: UIImage?, url: URL)?
     
     var messages = [Message]()
     
@@ -67,6 +68,7 @@ class ChatRoomViewController: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(sendSuccess(notification:)), name: .sendSuccess, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(uploadSuccess(notification:)), name: .uploadSuccess, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(receiveNewMessageNotification(_:)), name: .receiveNewMessage, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(confirmSendPhoto), name: .confirmSendPhoto, object: nil)
         addRefreshController()
         layoutViews()
         loadViews()
@@ -172,7 +174,6 @@ extension ChatRoomViewController: MessageInputDelegate, UIImagePickerControllerD
     }
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        picker.dismiss(animated: true, completion: nil)
         guard let image = info[.originalImage] as? UIImage else { return }
         var isGif = false
         var originalUrl: URL?
@@ -180,7 +181,24 @@ extension ChatRoomViewController: MessageInputDelegate, UIImagePickerControllerD
             isGif = originalUrl_.absoluteString.hasSuffix(".gif")
             originalUrl = originalUrl_
         }
-        let (_, imageURL) = (isGif ? (nil, originalUrl!) : compressImage(image))
+        self.latestPickedImageInfo = (isGif ? (nil, originalUrl!) : compressImage(image))
+        picker.dismiss(animated: true) {
+            guard !isGif else {
+                self.confirmSendPhoto()
+                return
+            }
+            let vc = ImageConfirmViewController()
+            if let image = self.latestPickedImageInfo?.image {
+                vc.image = image
+            } else {
+                vc.image = image
+            }
+            self.navigationController?.pushViewController(vc, animated: true)
+        }
+    }
+    
+    @objc func confirmSendPhoto() {
+        guard let (_, imageURL) = self.latestPickedImageInfo else { return }
         let message = Message(message: "", imageURL: imageURL.absoluteString, videoURL: nil, messageSender: .ourself, receiver: friendName, sender: username, messageType: .image, option: messageOption, date: NSData().description, sendStatus: .fail)
         manager.imageDict[message.uuid] = imageURL
         insertNewMessageCell(message, invokeNow: true)
@@ -192,7 +210,7 @@ extension ChatRoomViewController: MessageInputDelegate, UIImagePickerControllerD
         } success: { (task, data) in
             
         }
-
+        self.latestPickedImageInfo = nil
     }
     
     func compressImage(_ image: UIImage) -> (image: UIImage, fileUrl: URL) {

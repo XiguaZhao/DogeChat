@@ -77,7 +77,13 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate {
             tableView.beginUpdates()
             tableView.insertRows(at: [indexPath], with: .bottom)
             tableView.endUpdates()
-            tableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
+            var scrollToBottom = !tableView.isDragging
+            if let lastIndexPathVisible = tableView.indexPathsForVisibleRows?.contains(IndexPath(row: messages.count-1, section: 0)) {
+                scrollToBottom = scrollToBottom && lastIndexPathVisible
+            }
+            if scrollToBottom {
+                tableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
+            }
             return
         }
         self.indexPathToInsert = indexPath

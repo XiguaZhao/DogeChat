@@ -13,4 +13,5 @@ extension Notification.Name {
     static let receiveNewMessage = Notification.Name("receiveNewMessage")
     static let sendSuccess = Notification.Name("sendSuccseeNotification")
     static let uploadSuccess = Notification.Name("uploadSuccessNotification")
+    static let confirmSendPhoto = Notification.Name("confirmSendPhotoNotification")
 }
