@@ -1,0 +1,6 @@
+module Pods_DogeChat {
+  umbrella header "Pods-DogeChat-umbrella.h"
+
+  export *
+  module * { export * }
+}

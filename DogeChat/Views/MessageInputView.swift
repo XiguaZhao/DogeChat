@@ -38,8 +38,11 @@ protocol MessageInputDelegate: class {
 class MessageInputView: UIView {
     weak var delegate: MessageInputDelegate?
     
+    static let ratioOfEmojiView: CGFloat = 0.45
+    static var becauseEmojiTapped = false
     let textView = UITextView()
     let addButton = UIButton()
+    let emojiButton = UIButton()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -56,30 +59,45 @@ class MessageInputView: UIView {
         textView.returnKeyType = .send
         
         addButton.translatesAutoresizingMaskIntoConstraints = false
+        emojiButton.translatesAutoresizingMaskIntoConstraints = false
         if #available(iOS 13.0, *) {
             let largeConfig = UIImage.SymbolConfiguration(pointSize: 140, weight: .bold, scale: .large)
             addButton.setImage(UIImage(systemName: "plus.circle", withConfiguration: largeConfig), for: .normal)
+            emojiButton.setImage(UIImage(systemName: "smiley", withConfiguration: largeConfig), for: .normal)
         } else {
             addButton.titleLabel?.text = "+"
             addButton.titleLabel?.textAlignment = .center
+            emojiButton.titleLabel?.text = "表情"
+            emojiButton.titleLabel?.textAlignment = .center
         }
         addButton.addTarget(self, action: #selector(addButtonTapped), for: .touchUpInside)
+        emojiButton.addTarget(self, action: #selector(emojiButtonTapped), for: .touchUpInside)
         addSubview(textView)
         addSubview(addButton)
+        addSubview(emojiButton)
         let offset: CGFloat = 10
         NSLayoutConstraint.activate([
             textView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: offset),
-            textView.trailingAnchor.constraint(equalTo: self.addButton.leadingAnchor, constant: -offset),
+            textView.trailingAnchor.constraint(equalTo: self.emojiButton.leadingAnchor, constant: -offset),
             textView.topAnchor.constraint(equalTo: self.topAnchor),
             textView.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -20)
         ])
         
         NSLayoutConstraint.activate([
             addButton.bottomAnchor.constraint(equalTo: textView.bottomAnchor, constant: -offset+5),
-            addButton.leadingAnchor.constraint(equalTo: textView.trailingAnchor, constant: offset),
+            addButton.leadingAnchor.constraint(equalTo: emojiButton.trailingAnchor, constant: offset),
             addButton.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -offset-10),
             NSLayoutConstraint(item: addButton, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: 30),
             NSLayoutConstraint(item: addButton, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: 30)
+        ])
+        
+        NSLayoutConstraint.activate([
+            emojiButton.leadingAnchor.constraint(equalTo: textView.trailingAnchor, constant: offset),
+            emojiButton.topAnchor.constraint(equalTo: addButton.topAnchor),
+            emojiButton.bottomAnchor.constraint(equalTo: addButton.bottomAnchor),
+            emojiButton.trailingAnchor.constraint(equalTo: addButton.leadingAnchor, constant: -offset),
+            NSLayoutConstraint(item: emojiButton, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: 30),
+            NSLayoutConstraint(item: emojiButton, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: 30)
         ])
         
         NotificationCenter.default.addObserver(self, selector: #selector(textViewResign), name: NSNotification.Name.shouldResignFirstResponder, object: nil)
@@ -87,10 +105,33 @@ class MessageInputView: UIView {
     
     @objc func textViewResign() {
         textView.resignFirstResponder()
+        let screenSize = UIScreen.main.bounds.size
+        let userInfo = [UIResponder.keyboardFrameEndUserInfoKey: NSValue(cgRect: CGRect(x: 0, y: screenSize.height, width: screenSize.width, height: screenSize.height))]
+        NotificationCenter.default.post(name: UIResponder.keyboardWillChangeFrameNotification, object: nil, userInfo: userInfo)
     }
     
     @objc func addButtonTapped() {
         delegate?.addButtonTapped()
+    }
+    
+    @objc func emojiButtonTapped() {
+        let block = {
+            let screenSize = UIScreen.main.bounds.size
+            let ratio: CGFloat = MessageInputView.ratioOfEmojiView
+            let userInfo = [UIResponder.keyboardFrameEndUserInfoKey: NSValue(cgRect: CGRect(x: 0, y: (1-ratio)*screenSize.height, width: screenSize.width, height: ratio*screenSize.height))]
+            NotificationCenter.default.post(name: UIResponder.keyboardWillChangeFrameNotification, object: nil, userInfo: userInfo)
+        }
+        if textView.isFirstResponder {
+            MessageInputView.becauseEmojiTapped = true
+            self.textView.resignFirstResponder()
+            DispatchQueue.main.async {
+                NotificationCenter.default.post(name: .emojiButtonTapped, object: nil)
+                block()
+            }
+        } else {
+            NotificationCenter.default.post(name: .emojiButtonTapped, object: nil)
+            block()
+        }
     }
     
     @objc func sendTapped() {

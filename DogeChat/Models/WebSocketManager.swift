@@ -10,7 +10,6 @@ import Foundation
 import SwiftyJSON
 import WatchConnectivity
 import CoreLocation
-import SwiftWebSocket
 import AudioToolbox
 
 @objc protocol MessageDelegate: class {
@@ -42,13 +41,14 @@ class WebSocketManager: NSObject {
         }
     }
     var username = ""
-    var socket: WebSocket!
+    var socket: SRWebSocket!
     var toBeUpdatedMessages = [Message]()
     weak var messageDelegate: MessageDelegate?
     var messagesGroup: [Message] = []
     var messagesSingle: [String: [Message]] = [:]
     var notSendMessages = [Message]()
     var imageDict = [String: Any]()
+    var emojiPaths = [String]()
     var tapFromSystemPhoneInfo: (name: String, uuid: String)?
     var nowCallUUID: UUID! {
         didSet {
@@ -61,7 +61,7 @@ class WebSocketManager: NSObject {
     private override init() {
         session.requestSerializer = AFJSONRequestSerializer()
         super.init()
-        
+        SDImageCache.shared.config.shouldCacheImagesInMemory = false
     }
     
     func playSound(needSound: Bool = true) {
@@ -96,18 +96,8 @@ class WebSocketManager: NSObject {
     func connect() {
         var request = URLRequest(url: URL(string: "wss://procwq.top/webSocket")!)
         request.addValue("SESSION="+cookie, forHTTPHeaderField: "Cookie")
-        socket = WebSocket(request: request)
+        socket = SRWebSocket(urlRequest: request)
         socket.delegate = self
-        socket.services = [.Background, .VoIP]
-        socket.event.message = { message in
-            guard var message = message as? [UInt8], message.count > 12 else { return }
-            if Recorder.sharedInstance().receivedData == nil {
-                Recorder.sharedInstance().receivedData = NSMutableData()
-            }
-            print("通过socket收到的len：\(message.count)")
-            Recorder.sharedInstance().receivedData?.append(NSMutableData(bytes: &message, length: message.count) as Data)
-        }
-
         socket.open()
     }
     
@@ -116,6 +106,14 @@ class WebSocketManager: NSObject {
             return
         }
         socket.close()
+    }
+    
+    func send(_ message: Any!) {
+        if socket != nil, socket.readyState == .OPEN {
+            socket.send(message)
+        } else {
+            print("socket未连接")
+        }
     }
     
     func makeJsonString(for dict: [String: Any]) -> String {
@@ -128,7 +126,7 @@ class WebSocketManager: NSObject {
         let publicKey = encrypt.getPublicKey()
         guard !publicKey.isEmpty else { return }
         let paras = ["method": "publicKey", "key": publicKey]
-        socket.send(text: makeJsonString(for: paras))
+        send(makeJsonString(for: paras))
     }
     
     func getContacts(completion: @escaping ([String], Error?) -> Void)  {
@@ -150,7 +148,7 @@ class WebSocketManager: NSObject {
     }
     
     func sendMessage(_ content: String, to receiver: String = "", from sender: String = "xigua", option: MessageOption, uuid: String, type: String = "text") {
-        guard socket != nil, socket.readyState == .open else {
+        guard socket != nil, socket.readyState == .OPEN else {
             connect()
             return
         }
@@ -163,7 +161,7 @@ class WebSocketManager: NSObject {
             let encryptedContent = encrypt.encryptMessage(content)
             paras = ["method": "NewMessage", "message": ["content": encryptedContent, "receiver": receiver, "sender": sender], "uuid": uuid, "type": type]
         }
-        socket.send(text: makeJsonString(for: paras))
+        send(makeJsonString(for: paras))
     }
     
     func sendToken(_ token: String?) {
@@ -171,7 +169,7 @@ class WebSocketManager: NSObject {
             return
         }
         let params = ["method": "token", "token": token]
-        socket.send(text: makeJsonString(for: params))
+        send(makeJsonString(for: params))
     }
     
     func sendVoipToken(_ token: String?) {
@@ -179,18 +177,18 @@ class WebSocketManager: NSObject {
             return
         }
         let params = ["method": "voipToken", "voipToken": token]
-        socket.send(text: makeJsonString(for: params))
+        send(makeJsonString(for: params))
         print("发送voip token" + token)
     }
     
     func endCall(uuid: String, with receiver: String) {
         let params = ["method": "endVoiceChat", "sender": username, "receiver": receiver, "uuid": uuid]
-        socket.send(text: makeJsonString(for: params))
+        send(makeJsonString(for: params))
     }
     
     func sendCallRequst(to receiver: String, uuid: String) {
         let params = ["method": "voiceChat", "sender": username, "receiver": receiver, "uuid": uuid]
-        socket.send(text: makeJsonString(for: params))
+        send(makeJsonString(for: params))
         nowCallUUID = UUID(uuidString: uuid)
     }
         
@@ -216,26 +214,62 @@ class WebSocketManager: NSObject {
         }
     }
     
+    func compressEmojis(_ image: UIImage, needBig: Bool = false) -> Data {
+        if needBig {
+            return image.pngData()!
+        }
+        let width: CGFloat = 100
+        let size = CGSize(width: width, height: image.size.height * (width / image.size.width))
+        UIGraphicsBeginImageContextWithOptions(size, false, 0.0)
+        image.draw(in: CGRect(x: 0, y: 0, width: size.width, height: size.height))
+        let image = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        return image!.pngData()!
+    }
+    
+    //MARK: 表情包
+    func getEmojis(completion: @escaping ([String]) -> Void) {
+        session.get(url_pre+"star/getStar", parameters: nil, headers: ["Cookie": "SESSION="+cookie], progress: nil, success: { (task, response) in
+            let json = JSON(response as Any)
+            let emojisData = json["data"].arrayValue
+            var filePaths = [String]()
+            for emojiData in emojisData {
+                filePaths.append(self.encrypt.decryptMessage(emojiData["content"].stringValue))
+            }
+            completion(filePaths)
+        }, failure: nil)
+    }
+    
+    func starAndUploadEmoji(filePath: String, isGif: Bool) {
+        let paras = ["content": encrypt.encryptMessage(filePath), "starType": "file"]
+        session.post(url_pre+"star/saveStar", parameters: paras, headers: ["Cookie": "SESSION="+cookie], progress: nil) { (task, data) in
+            print(JSON(data as Any))
+        } failure: { (task, error) in
+            
+        }
+
+
+    }
 
     //MARK: History Messages
     func getUnreadMessage() {
         let paras: [String: Any] = ["method": "getUnreadMessage", "id": maxId]
-        socket.send(text: makeJsonString(for: paras))
+        send(makeJsonString(for: paras))
     }
     
     func historyMessages(for name: String, pageNum: Int)  {
         let paras: [String: Any] = ["method": "getHistory", "friend": name, "pageNum": pageNum]
-        socket.send(text: makeJsonString(for: paras))
+        send(makeJsonString(for: paras))
     }
     //MARK: Revoke
     func revokeMessage(id: Int) {
         let paras: [String: Any] = ["method": "revokeMessage", "id": id]
-        socket.send(text: makeJsonString(for: paras))
+        send(makeJsonString(for: paras))
     }
 }
 
-extension WebSocketManager: WebSocketDelegate  {
-    func webSocketOpen() {
+extension WebSocketManager: SRWebSocketDelegate  {
+    func webSocketDidOpen(_ webSocket: SRWebSocket!) {
         print("websocket已经打开")
         prepareEncrypt()
         sendToken((UIApplication.shared.delegate as! AppDelegate).deviceToken)
@@ -245,21 +279,30 @@ extension WebSocketManager: WebSocketDelegate  {
             AppDelegate.shared.callManager.startCall(handle: name, uuid: uuid)
             tapFromSystemPhoneInfo = nil
         }
+        self.getEmojis { (paths) in
+            self.emojiPaths = paths
+        }
     }
     
-    func webSocketClose(_ code: Int, reason: String, wasClean: Bool) {
-        print("websocket已关闭")
+    func webSocket(_ webSocket: SRWebSocket!, didCloseWithCode code: Int, reason: String!, wasClean: Bool) {
+        print("websocket已关闭: \(String(describing: reason))")
     }
     
-    func webSocketError(_ error: NSError) {
-        print("error:=====\(error)")
-        AppDelegate.shared.navigationController.topViewController?.navigationItem.title = "遇到错误，重启吧。我再想办法"
+    func webSocket(_ webSocket: SRWebSocket!, didFailWithError error: Error!) {
+        print("error:=====\(String(describing: error))")
     }
     
-    func webSocketMessageText(_ text: String) {
-        print("收到消息")
-        print(text)
-        parseReceivedMessage(text)
+    func webSocket(_ webSocket: SRWebSocket!, didReceiveMessage message: Any!) {
+        if let message = message as? NSData, message.count > 12 {
+            if Recorder.sharedInstance().receivedData == nil {
+                Recorder.sharedInstance().receivedData = NSMutableData()
+            }
+            Recorder.sharedInstance().receivedData?.append(message as Data)
+        } else if let text = message as? String {
+            print("收到消息")
+            print(text)
+            parseReceivedMessage(text)
+        }
     }
         
     private func parseReceivedMessage(_ jsonString: String) {
@@ -308,6 +351,7 @@ extension WebSocketManager: WebSocketDelegate  {
             }
         case "getUnreadMessage": // 群聊未读消息,socket连接上后会获取
             let messages = json["messages"].arrayValue
+            var newMessages = [Message]()
             for message in messages {
                 let id = message["id"].intValue
                 maxId = max(maxId, id)
@@ -316,10 +360,20 @@ extension WebSocketManager: WebSocketDelegate  {
                 let uuid = message["uuid"].stringValue
                 let newMessage = wrapMessage(content: content, option: .toAll, sender: sender, receiver: username, id: id, date: "", uuid: uuid)
                 messagesGroup.append(newMessage)
-                postNotification(message: newMessage)
+                newMessages.append(newMessage)
             }
+            if let chatVC = AppDelegate.shared.navigationController.topViewController as? ChatRoomViewController, chatVC.navigationItem.title == "群聊" {
+                chatVC.insertNewMessageCell(newMessages)
+                playSound()
+            } else {
+                for message in newMessages {
+                    postNotification(message: message)
+                }
+            }
+            
         case "NewMessage": // 收到私人消息
             let data = json["data"]["unread_messages"].arrayValue
+            var messages = [Message]()
             for msg in data {
                 let content = msg["messageContent"].stringValue
                 let decrypted = encrypt.decryptMessage(content)
@@ -329,7 +383,15 @@ extension WebSocketManager: WebSocketDelegate  {
                 let uuid = msg["uuid"].stringValue
                 let newMessage = wrapMessage(content: decrypted, option: .toOne, sender: sender, receiver: username, id: id, date: date, uuid: uuid)
                 messagesSingle.add(newMessage, for: sender)
-                postNotification(message: newMessage)
+                messages.append(newMessage)
+            }
+            if let chatVC = AppDelegate.shared.navigationController.topViewController as? ChatRoomViewController, messages.first?.senderUsername == chatVC.navigationItem.title {
+                chatVC.insertNewMessageCell(messages)
+                playSound()
+            } else {
+                for message in messages {
+                    postNotification(message: message)
+                }
             }
         case "getHistory":  // 获取群聊、个人历史记录
             let pages = json["data"]["pages"].intValue
@@ -385,12 +447,12 @@ extension WebSocketManager: WebSocketDelegate  {
     }
     
     func sendVoiceData(_ data: Data!) {
-        socket.send(data: data)
+        send(data)
     }
     
     func responseVoiceChat(to sender: String, uuid: String, response: String) {
         let params = ["method": "receiveVoiceChat", "response": response, "sender": username, "receiver": sender, "uuid": uuid]
-        socket.send(text: makeJsonString(for: params))
+        send(makeJsonString(for: params))
         print("发送了response：\(response)")
     }
     

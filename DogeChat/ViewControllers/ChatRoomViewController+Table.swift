@@ -39,6 +39,7 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate {
         
         let message = messages[indexPath.row]
         cell.delegate = self
+        cell.cache = cache
         cell.apply(message: message)
         return cell
     }
@@ -61,31 +62,41 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate {
         let height = MessageTableViewCell.height(for: messages[indexPath.row])
         return height
     }
-    func insertNewMessageCell(_ message: Message, invokeNow: Bool = false) {
-        guard !messages.contains(message) else { return }
-        messages.append(message)
-        if message.messageSender == .ourself {
-            switch message.option {
-            case .toAll:
-                manager.messagesGroup.append(message)
-            case .toOne:
-                manager.messagesSingle.add(message, for: message.receiver)
+    func insertNewMessageCell(_ messages: [Message]) {
+        let filtered = messages.filter { !self.messages.contains($0) }
+        DispatchQueue.main.async { [self] in
+            var indexPaths: [IndexPath] = []
+            for message in filtered {
+                if message.messageSender == .ourself {
+                    switch message.option {
+                    case .toAll:
+                        manager.messagesGroup.append(message)
+                    case .toOne:
+                        manager.messagesSingle.add(message, for: message.receiver)
+                    }
+                }
+                indexPaths.append(IndexPath(row: self.messages.count, section: 0))
+                self.messages.append(message)
             }
-        }
-        let indexPath = IndexPath(row: messages.count - 1, section: 0)
-        if invokeNow {
             tableView.beginUpdates()
-            tableView.insertRows(at: [indexPath], with: .bottom)
+            tableView.insertRows(at: indexPaths, with: .none)
             tableView.endUpdates()
             var scrollToBottom = !tableView.isDragging
-            if let lastIndexPathVisible = tableView.indexPathsForVisibleRows?.contains(IndexPath(row: messages.count-1, section: 0)) {
-                scrollToBottom = scrollToBottom && lastIndexPathVisible
+            let contentHeight = tableView.contentSize.height
+            if contentHeight - tableView.contentOffset.y > self.view.bounds.height {
+                scrollToBottom = false
             }
-            if scrollToBottom {
+            scrollToBottom = scrollToBottom || (messages.count == 1 && messages[0].messageSender == .ourself)
+            if scrollToBottom, let indexPath = indexPaths.last {
                 tableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
             }
+        }
+    }
+    
+    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        guard scrollView == tableView else {
             return
         }
-        self.indexPathToInsert = indexPath
+        messageInputBar.textView.resignFirstResponder()
     }
 }

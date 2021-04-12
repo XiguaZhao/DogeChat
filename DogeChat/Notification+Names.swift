@@ -14,4 +14,5 @@ extension Notification.Name {
     static let sendSuccess = Notification.Name("sendSuccseeNotification")
     static let uploadSuccess = Notification.Name("uploadSuccessNotification")
     static let confirmSendPhoto = Notification.Name("confirmSendPhotoNotification")
+    static let emojiButtonTapped = Notification.Name("emojiButtonTapped")
 }

@@ -27,6 +27,12 @@ class ImageConfirmViewController: UIViewController {
     }
     
     @IBAction func cancelTapped(_ sender: UIButton) {
+        guard let navigationController = self.navigationController else { return }
+        for vc in navigationController.viewControllers {
+            if vc.isKind(of: ChatRoomViewController.self) {
+                (vc as! ChatRoomViewController).latestPickedImageInfo = nil
+            }
+        }
         self.navigationController?.popViewController(animated: true)
     }
     

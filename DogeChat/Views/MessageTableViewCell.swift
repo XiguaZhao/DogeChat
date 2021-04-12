@@ -37,7 +37,7 @@ enum MessageSender {
 }
 
 protocol MessageTableViewCellDelegate: class {
-    func imageViewTapped(_ cell: MessageTableViewCell, imageView: FLAnimatedImageView)
+    func imageViewTapped(_ cell: MessageTableViewCell, imageView: FLAnimatedImageView, path: String)
 }
 
 class MessageTableViewCell: UITableViewCell {
@@ -59,6 +59,7 @@ class MessageTableViewCell: UITableViewCell {
         }
         return url.hasSuffix(".gif")
     }
+    var cache: NSCache<NSString, NSData>!
     
     static let textCellIdentifier = "MessageCell"
     
@@ -72,6 +73,8 @@ class MessageTableViewCell: UITableViewCell {
         messageLabel.removeFromSuperview()
         indicator.removeFromSuperview()
         animatedImageView.removeFromSuperview()
+        animatedImageView.image = nil
+        animatedImageView.animatedImage = nil
         percentIndicator.removeFromSuperview()
     }
     
@@ -141,22 +144,47 @@ class MessageTableViewCell: UITableViewCell {
         // 接下来进入下载操作
         let capturedMessage = message
         if isGif {
-            DispatchQueue.global().async {
-                guard let url = URL(string: imageUrl), let data = try? Data(contentsOf: url) else { return }
-                let fileUrl = URL(string: "file://" + NSTemporaryDirectory() + UUID().uuidString + ".gif")!
-                try? data.write(to: fileUrl)
-                WebSocketManager.shared.imageDict[message.uuid] = fileUrl
-                capturedMessage.imageURL = fileUrl.absoluteString
-                capturedMessage.sendStatus = .success
-                DispatchQueue.main.async {
-                    guard message.imageURL == capturedMessage.imageURL else { return }
-                    self.animatedImageView.animatedImage = FLAnimatedImage(gifData: data)
-                    self.percentIndicator.removeFromSuperview()
-                }
+            //            DispatchQueue.global().async {
+            //                guard let url = URL(string: imageUrl) else { return }
+            //                let _data: Data?
+            //                let path = NSTemporaryDirectory() + (imageUrl as NSString).lastPathComponent
+            //                if FileManager.default.fileExists(atPath: path) {
+            //                    _data = try? Data(contentsOf: URL(string: "file://" + path)!)
+            //                } else {
+            //                    _data = try? Data(contentsOf: url)
+            //                }
+            //                guard let data = _data else { return }
+            //                let fileUrl: URL
+            //                if WebSocketManager.shared.imageDict[message.uuid] == nil {
+            //                    fileUrl = URL(string: "file://" + path)!
+            //                    try? data.write(to: fileUrl)
+            //                } else {
+            //                    fileUrl = WebSocketManager.shared.imageDict[message.uuid] as! URL
+            //                }
+            //                WebSocketManager.shared.imageDict[message.uuid] = fileUrl
+            //                capturedMessage.imageURL = fileUrl.absoluteString
+            //                capturedMessage.filePathOfGif = imageUrl
+            //                capturedMessage.sendStatus = .success
+            //                DispatchQueue.main.async {
+            //                    guard message.imageURL == capturedMessage.imageURL else {
+            //                        return
+            //                    }
+            //                    self.animatedImageView.animatedImage = FLAnimatedImage(gifData: data)
+            //                    self.percentIndicator.removeFromSuperview()
+            //                }
+            //            }
+            //            return
+        }
+        if let data = cache.object(forKey: imageUrl as NSString) {
+            if !isGif {
+                self.animatedImageView.image = UIImage(data: data as Data)
+            } else {
+                self.animatedImageView.animatedImage = FLAnimatedImage(gifData: data as Data)
             }
             return
         }
-        imageDownloader.loadImage(with: URL(string: imageUrl), options: .allowInvalidSSLCertificates) { (received, total, url) in
+        
+        imageDownloader.loadImage(with: URL(string: imageUrl), options: .avoidDecodeImage) { (received, total, url) in
             DispatchQueue.main.async {
                 let percent = CGFloat(received) / CGFloat(total)
                 self.percentIndicator.setProgress(percent, animated: true)
@@ -164,15 +192,22 @@ class MessageTableViewCell: UITableViewCell {
                     self.percentIndicator.removeFromSuperview()
                 }
             }
-        } completed: { (image, data, error, cacheType, finished, url) in
+        } completed: { [self] (image, data, error, cacheType, finished, url) in
             guard capturedMessage.imageURL == message.imageURL else {
                 return
             }
+            if !isGif, let image = image { // is photo
+                let compressed = WebSocketManager.shared.compressEmojis(image)
+                animatedImageView.image = UIImage(data: compressed)
+                cache.setObject(compressed as NSData, forKey: imageUrl as NSString)
+            } else { // gif图处理
+                animatedImageView.animatedImage = FLAnimatedImage(gifData: data)
+                if let data = data {
+                    cache.setObject(data as NSData, forKey: imageUrl as NSString)
+                }
+            }
             capturedMessage.sendStatus = .success
             self.percentIndicator.removeFromSuperview()
-            DispatchQueue.main.async {
-                self.animatedImageView.image = image
-            }
         }
     }
     
@@ -183,13 +218,13 @@ class MessageTableViewCell: UITableViewCell {
     }
     
     @objc func imageTapped() {
-        delegate?.imageViewTapped(self, imageView: animatedImageView)
+        delegate?.imageViewTapped(self, imageView: animatedImageView, path: message.imageURL ?? "")
     }
-        
+    
     func addConstraintsForImageMessage() {
         let offsetTop: CGFloat = 8
         imageConstraint = NSLayoutConstraint(item: animatedImageView!, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: contentView.bounds.width/2)
-
+        
         NSLayoutConstraint.activate([
             animatedImageView.topAnchor.constraint(equalTo: (messageSender == .ourself ? contentView.topAnchor : nameLabel.bottomAnchor), constant: offsetTop),
             animatedImageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -offsetTop),
@@ -308,7 +343,7 @@ extension MessageTableViewCell {
         messageLabel.isHidden = true
         animatedImageView.isHidden = false
         percentIndicator.isHidden = message.sendStatus == .success
-
+        
     }
     
     func layoutForVideoMessage() {

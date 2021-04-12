@@ -1,0 +1,115 @@
+//
+//  EmojiSelectView.swift
+//  DogeChat
+//
+//  Created by 赵锡光 on 2021/2/23.
+//  Copyright © 2021 Luke Parham. All rights reserved.
+//
+
+import UIKit
+
+protocol EmojiViewDelegate: class {
+    func didSelectEmoji(filePath: String)
+}
+
+class EmojiSelectView: UIView {
+
+    weak var delegate: EmojiViewDelegate?
+    let collectionView: UICollectionView!
+    var emojis: [String] = WebSocketManager.shared.emojiPaths {
+        didSet {
+            self.isHidden = false
+            if emojis != oldValue {
+                collectionView.reloadData()
+                WebSocketManager.shared.emojiPaths = emojis
+            }
+        }
+    }
+    let cache = NSCache<NSString, NSData>()
+    
+    override init(frame: CGRect) {
+        collectionView = UICollectionView(frame: frame, collectionViewLayout: UICollectionViewFlowLayout())
+        super.init(frame: frame)
+        addSubview(collectionView)
+        collectionView.register(EmojiCollectionViewCell.self, forCellWithReuseIdentifier: EmojiCollectionViewCell.cellID)
+        collectionView.delegate = self
+        collectionView.dataSource = self
+        collectionView.prefetchDataSource = self
+        configure()
+    }
+    
+    deinit {
+        SDWebImageManager.shared.imageCache.clear(with: .memory, completion: nil)
+    }
+    
+    private func configure() {
+        collectionView.translatesAutoresizingMaskIntoConstraints = false;
+        if #available(iOS 13.0, *) {
+            collectionView.backgroundColor = .systemBackground
+        } else {
+            collectionView.backgroundColor = .white
+        }
+        NSLayoutConstraint.activate([
+            collectionView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
+            collectionView.trailingAnchor.constraint(equalTo: self.trailingAnchor),
+            collectionView.topAnchor.constraint(equalTo: self.topAnchor),
+            collectionView.bottomAnchor.constraint(equalTo: self.bottomAnchor),
+
+        ])
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+}
+
+extension EmojiSelectView: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UICollectionViewDelegate, UICollectionViewDataSourcePrefetching {
+    
+    func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
+        for indexPath in indexPaths {
+            let imageLink = emojis[indexPath.item]
+            if cache.object(forKey: imageLink as NSString) == nil {
+                SDWebImageManager.shared.loadImage(with: URL(string: imageLink), options: .avoidDecodeImage, context: [SDWebImageContextOption.imageCache: SDImageCacheType.memory], progress: nil) { [self] (image, data, error, cacheType, finished, url) in
+                    guard error == nil else { return }
+                    DispatchQueue.global().async {
+                        if let data = data,
+                              let image = UIImage(data: data) {
+                            let compressed = WebSocketManager.shared.compressEmojis(image)
+                            cache.setObject(compressed as NSData, forKey: (imageLink as NSString))
+                        } else if let image = image,
+                                  let compressed = image.pngData() {
+                            cache.setObject(compressed as NSData, forKey: imageLink as NSString)
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return emojis.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        let width = UIScreen.main.bounds.width / 4 - 2
+        return CGSize(width: width, height: width)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
+        return 0
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: EmojiCollectionViewCell.cellID, for: indexPath) as? EmojiCollectionViewCell else {
+            return UICollectionViewCell()
+        }
+        cell.cache = cache
+        cell.displayEmoji(urlString: emojis[indexPath.item])
+        return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        delegate?.didSelectEmoji(filePath: emojis[indexPath.item])
+    }
+}

@@ -29,21 +29,21 @@
  */
 
 import UIKit
-
+import SwiftyJSON
 
 class ChatRoomViewController: UIViewController {
     
     let manager = WebSocketManager.shared
     let tableView = UITableView()
+//    let emojiPickerView = EmojiSelectView()
     let messageInputBar = MessageInputView()
     var messageOption: MessageOption = .toAll
     var friendName = ""
     var pagesAndCurNum = (pages: 1, curNum: 1)
     var originOfInputBar = CGPoint()
     var scrollBottom = true
-    var indexPathToInsert: IndexPath?
     var latestPickedImageInfo: (image: UIImage?, url: URL)?
-    
+    let emojiSelectView = EmojiSelectView()
     var messages = [Message]()
     
     var username = ""
@@ -51,6 +51,8 @@ class ChatRoomViewController: UIViewController {
     var lastIndexPath: IndexPath {
         return IndexPath(row: messages.count-1, section: 0)
     }
+    
+    let cache = NSCache<NSString, NSData>()
     
     init() {
         super.init(nibName: nil, bundle: nil)
@@ -69,11 +71,13 @@ class ChatRoomViewController: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(uploadSuccess(notification:)), name: .uploadSuccess, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(receiveNewMessageNotification(_:)), name: .receiveNewMessage, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(confirmSendPhoto), name: .confirmSendPhoto, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(emojiButtonTapped), name: .emojiButtonTapped, object: nil)
         addRefreshController()
         layoutViews()
         loadViews()
         let recognizer = UITapGestureRecognizer(target: self, action: #selector(tap))
         tableView.addGestureRecognizer(recognizer)
+        configureEmojiView()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -130,7 +134,7 @@ extension ChatRoomViewController: MessageInputDelegate, UIImagePickerControllerD
         guard !content.isEmpty else { return }
         let wrappedMessage = processMessageString(for: content)
         manager.notSendMessages.append(wrappedMessage)
-        insertNewMessageCell(wrappedMessage)
+        insertNewMessageCell([wrappedMessage])
         manager.sendMessage(content, to: friendName, from: username, option: messageOption, uuid: wrappedMessage.uuid)
     }
     
@@ -144,6 +148,7 @@ extension ChatRoomViewController: MessageInputDelegate, UIImagePickerControllerD
             self?.present(imagePicker, animated: true, completion: nil)
         }))
         actionSheet.addAction(UIAlertAction(title: "从相册选择", style: .default, handler: { [weak self] (action) in
+            self?.messageInputBar.textView.resignFirstResponder()
             self?.present(imagePicker, animated: true) {
                 actionSheet.dismiss(animated: true, completion: nil)
             }
@@ -201,14 +206,20 @@ extension ChatRoomViewController: MessageInputDelegate, UIImagePickerControllerD
         guard let (_, imageURL) = self.latestPickedImageInfo else { return }
         let message = Message(message: "", imageURL: imageURL.absoluteString, videoURL: nil, messageSender: .ourself, receiver: friendName, sender: username, messageType: .image, option: messageOption, date: NSData().description, sendStatus: .fail)
         manager.imageDict[message.uuid] = imageURL
-        insertNewMessageCell(message, invokeNow: true)
+        insertNewMessageCell([message])
+        DispatchQueue.main.async { [self] in
+            tableView.scrollToRow(at: IndexPath(row: messages.count-1, section: 0), at: .bottom, animated: true)
+        }
         manager.uploadPhoto(imageUrl: imageURL, message: message) { (progress) in
             print(progress.fractionCompleted)
             DispatchQueue.main.async {
                 self.updateUploadProgress(progress, message: message)
             }
         } success: { (task, data) in
-            
+            let json = JSON(data as Any)
+            var filePath = json["filePath"].stringValue
+            filePath = WebSocketManager.shared.encrypt.decryptMessage(filePath)
+            message.imageURL = WebSocketManager.shared.url_pre + filePath
         }
         self.latestPickedImageInfo = nil
     }
@@ -243,15 +254,41 @@ extension ChatRoomViewController: MessageInputDelegate, UIImagePickerControllerD
     private func processMessageString(for string: String) -> Message {
         return Message(message: string, messageSender: .ourself, receiver: friendName, sender: username, messageType: .text, option: messageOption, id: manager.maxId + 1, sendStatus: .fail)
     }
+    
+    private func configureEmojiView() {
+        view.addSubview(emojiSelectView)
+        emojiSelectView.delegate = self
+        let height: CGFloat = MessageInputView.ratioOfEmojiView * UIScreen.main.bounds.height
+        emojiSelectView.frame = CGRect(x: 0, y: UIScreen.main.bounds.height, width: UIScreen.main.bounds.width, height: height)
+    }
+    
+    @objc func emojiButtonTapped() {
+        manager.getEmojis { [self] (paths) in
+            emojiSelectView.emojis = paths
+        }
+    }
+}
+
+extension ChatRoomViewController: EmojiViewDelegate {
+    func didSelectEmoji(filePath: String) {
+        let message = Message(message: "", imageURL: filePath, videoURL: nil, messageSender: .ourself, receiver: friendName, sender: username, messageType: .image, option: messageOption, id: manager.maxId+1, date: Date().description, sendStatus: .fail)
+        manager.sendMessage(filePath, to: friendName, from: username, option: messageOption, uuid: message.uuid, type: "image")
+        insertNewMessageCell([message])
+    }
 }
 
 extension ChatRoomViewController: MessageTableViewCellDelegate {
-    func imageViewTapped(_ cell: MessageTableViewCell, imageView: FLAnimatedImageView) {
+    func imageViewTapped(_ cell: MessageTableViewCell, imageView: FLAnimatedImageView, path: String) {
         let browser = ImageBrowserViewController()
-        browser.cellImageView = imageView
+        browser.imagePath = path
         browser.modalPresentationStyle = .fullScreen
+//        if let data = cache.object(forKey: path as NSString) {
+//            browser.imageData = data as Data
+//        }
+        browser.cache = cache
         self.present(browser, animated: true, completion: nil)
     }
+    
 }
 
 extension ChatRoomViewController: MessageDelegate {
@@ -261,7 +298,7 @@ extension ChatRoomViewController: MessageDelegate {
             return
         }
         if message.option == .toOne && message.senderUsername != friendName { return }
-        insertNewMessageCell(message, invokeNow: true)
+        insertNewMessageCell([message])
     }
         
     func updateOnlineNumber(to newNumber: Int) {
@@ -322,12 +359,22 @@ extension ChatRoomViewController {
                 UIPasteboard.general.string = text
             }
             var revokeAction: UIAction?
+            var starEmojiAction: UIAction?
             if self.messages[indexPath.row].messageSender == .ourself && self.messages[indexPath.row].messageType != .join && self.messageOption == .toOne {
                 revokeAction = UIAction(title: "撤回") { (_) in
                     self.revoke(indexPath: indexPath)
                 }
             }
-            let menu = UIMenu(title: "", image: nil, children: (revokeAction == nil) ? [copyAction] : [copyAction, revokeAction!])
+            if let imageUrl = cell.message.imageURL {
+                starEmojiAction = UIAction(title: "收藏表情") { (_) in
+                    let isGif = imageUrl.hasSuffix(".gif")
+                    self.manager.starAndUploadEmoji(filePath: imageUrl, isGif: isGif)
+                }
+            }
+            var children: [UIAction] = [copyAction]
+            if revokeAction != nil { children.append(revokeAction!) }
+            if starEmojiAction != nil { children.append(starEmojiAction!) }
+            let menu = UIMenu(title: "", image: nil, children: children)
             return menu
         }
     }
@@ -376,22 +423,15 @@ extension ChatRoomViewController: UITextViewDelegate {
                 self.messageInputBar.frame = CGRect(x: oldFrame.origin.x, y: oldFrame.origin.y-heightChanged, width: oldFrame.width, height: oldFrame.height+heightChanged)
                 self.tableView.frame = CGRect(origin: frameOfTableView.origin, size: CGSize(width: frameOfTableView.width, height: frameOfTableView.height-heightChanged))
             } completion: { [self] (_) in
-                checkIfShouldInsertNewCell(needScroll: true)
+                guard tableView.numberOfRows(inSection: 0) > 0 else { return }
+                tableView.scrollToRow(at: IndexPath(row: tableView.numberOfRows(inSection: 0)-1, section: 0), at: .bottom, animated: true)
             }
-        } else {
-            checkIfShouldInsertNewCell()
-        }
+        } 
     }
     
-    private func checkIfShouldInsertNewCell(needScroll: Bool = false) {
-        guard messages.count > 0 else { return }
-        if let indexPath = indexPathToInsert {
-            self.tableView.insertRows(at: [indexPath], with: .bottom)
-            self.indexPathToInsert = nil
-            self.tableView.scrollToRow(at: self.lastIndexPath, at: .bottom, animated: true)
-        } else if needScroll {
-            self.tableView.scrollToRow(at: self.lastIndexPath, at: .bottom, animated: true)
-        }
+    func textViewShouldBeginEditing(_ textView: UITextView) -> Bool {
+        emojiSelectView.isHidden = true
+        return true
     }
     
     func textViewShouldEndEditing(_ textView: UITextView) -> Bool {

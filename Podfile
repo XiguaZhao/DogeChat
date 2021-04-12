@@ -12,5 +12,5 @@ pod 'SDWebImage'
 pod 'DACircularProgress'
   # Pods for DogeChat
 #pod 'Starscream', :git => 'https://github.com/daltoniam/Starscream.git'
-pod 'SwiftWebSocket'
+pod 'SocketRocket'
 end

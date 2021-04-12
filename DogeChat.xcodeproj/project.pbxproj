@@ -21,10 +21,16 @@
 		0739FA5525BAACD400B6A7AB /* ProviderDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0739FA5425BAACD400B6A7AB /* ProviderDelegate.swift */; };
 		0739FA5825BAB00300B6A7AB /* Audio.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0739FA5725BAB00300B6A7AB /* Audio.swift */; };
 		0739FA7725BBE67A00B6A7AB /* Recorder.m in Sources */ = {isa = PBXBuildFile; fileRef = 0739FA7625BBE67A00B6A7AB /* Recorder.m */; };
-		0739FA8D25BD103900B6A7AB /* Socket.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0739FA8C25BD103800B6A7AB /* Socket.swift */; };
 		0739FABC25BEEF6B00B6A7AB /* FloatWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0739FABB25BEEF6B00B6A7AB /* FloatWindow.swift */; };
 		073FDF6A25B2A35000FE01CD /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 073FDF6925B2A35000FE01CD /* NotificationManager.swift */; };
+		0749E65F25E521420058EC30 /* EmojiSelectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0749E65E25E521420058EC30 /* EmojiSelectView.swift */; };
+		0749E66225E601690058EC30 /* EmojiCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0749E66125E601690058EC30 /* EmojiCollectionViewCell.swift */; };
 		07513F8B2483FA7900EF68F8 /* Encrypt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07513F8A2483FA7900EF68F8 /* Encrypt.swift */; };
+		0760E10125E74BD30030337E /* HJOpenGLView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0760E0FE25E74BD30030337E /* HJOpenGLView.m */; };
+		0760E10225E74BD30030337E /* HJH264Encoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 0760E0FF25E74BD30030337E /* HJH264Encoder.m */; };
+		0760E10625E74C410030337E /* HJH264Decoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 0760E10425E74C410030337E /* HJH264Decoder.m */; };
+		0760E10A25E74C7E0030337E /* VideoChatViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0760E10825E74C7E0030337E /* VideoChatViewController.swift */; };
+		0760E10B25E74C7E0030337E /* VideoChatViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0760E10925E74C7E0030337E /* VideoChatViewController.xib */; };
 		0772559523C1D3F600790339 /* ChatRoom.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0772559423C1D3F600790339 /* ChatRoom.swift */; };
 		078032842486B73900E370E0 /* RSAKeyEncoding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 078032832486B73900E370E0 /* RSAKeyEncoding.swift */; };
 		0799068625B3D44B0083C1B8 /* main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0799068525B3D44B0083C1B8 /* main.storyboard */; };
@@ -109,7 +115,6 @@
 		0739FA5725BAB00300B6A7AB /* Audio.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Audio.swift; sourceTree = "<group>"; };
 		0739FA7525BBE67A00B6A7AB /* Recorder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Recorder.h; sourceTree = "<group>"; };
 		0739FA7625BBE67A00B6A7AB /* Recorder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Recorder.m; sourceTree = "<group>"; };
-		0739FA8C25BD103800B6A7AB /* Socket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Socket.swift; sourceTree = "<group>"; };
 		0739FABB25BEEF6B00B6A7AB /* FloatWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatWindow.swift; sourceTree = "<group>"; };
 		073FDF5425B2871C00FE01CD /* NotificationService.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NotificationService.h; sourceTree = "<group>"; };
 		073FDF5525B2871C00FE01CD /* NotificationService.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NotificationService.m; sourceTree = "<group>"; };
@@ -119,7 +124,17 @@
 		073FDF9F25B2F3BE00FE01CD /* DogeChat-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "DogeChat-Bridging-Header.h"; sourceTree = "<group>"; };
 		073FDFAC25B2F61500FE01CD /* libAFNetworking.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libAFNetworking.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		073FDFDE25B2FA3700FE01CD /* SwiftyJSON.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SwiftyJSON.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		0749E65E25E521420058EC30 /* EmojiSelectView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiSelectView.swift; sourceTree = "<group>"; };
+		0749E66125E601690058EC30 /* EmojiCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiCollectionViewCell.swift; sourceTree = "<group>"; };
 		07513F8A2483FA7900EF68F8 /* Encrypt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Encrypt.swift; sourceTree = "<group>"; };
+		0760E0FD25E74BD30030337E /* HJH264Encoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HJH264Encoder.h; sourceTree = "<group>"; };
+		0760E0FE25E74BD30030337E /* HJOpenGLView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HJOpenGLView.m; sourceTree = "<group>"; };
+		0760E0FF25E74BD30030337E /* HJH264Encoder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HJH264Encoder.m; sourceTree = "<group>"; };
+		0760E10025E74BD30030337E /* HJOpenGLView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HJOpenGLView.h; sourceTree = "<group>"; };
+		0760E10425E74C410030337E /* HJH264Decoder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HJH264Decoder.m; sourceTree = "<group>"; };
+		0760E10525E74C410030337E /* HJH264Decoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HJH264Decoder.h; sourceTree = "<group>"; };
+		0760E10825E74C7E0030337E /* VideoChatViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoChatViewController.swift; sourceTree = "<group>"; };
+		0760E10925E74C7E0030337E /* VideoChatViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = VideoChatViewController.xib; sourceTree = "<group>"; };
 		0772559423C1D3F600790339 /* ChatRoom.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatRoom.swift; sourceTree = "<group>"; };
 		078032712486B13E00E370E0 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Platforms/iPhoneOS.platform/Developer/Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		0780327A2486B28C00E370E0 /* DogeChatTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DogeChatTests.swift; sourceTree = "<group>"; };
@@ -227,6 +242,19 @@
 			path = notification;
 			sourceTree = "<group>";
 		};
+		0760E0FC25E74BD30030337E /* Video */ = {
+			isa = PBXGroup;
+			children = (
+				0760E10525E74C410030337E /* HJH264Decoder.h */,
+				0760E10425E74C410030337E /* HJH264Decoder.m */,
+				0760E0FD25E74BD30030337E /* HJH264Encoder.h */,
+				0760E0FE25E74BD30030337E /* HJOpenGLView.m */,
+				0760E0FF25E74BD30030337E /* HJH264Encoder.m */,
+				0760E10025E74BD30030337E /* HJOpenGLView.h */,
+			);
+			path = Video;
+			sourceTree = "<group>";
+		};
 		078032792486B28C00E370E0 /* DogeChatTests */ = {
 			isa = PBXGroup;
 			children = (
@@ -251,6 +279,8 @@
 				0739FA3D25B9557900B6A7AB /* ImageBrowserViewController.swift */,
 				07C9632D25E3B53900C2BF4C /* ImageConfirmViewController.swift */,
 				07C9632E25E3B53900C2BF4C /* ImageConfirmViewController.xib */,
+				0760E10825E74C7E0030337E /* VideoChatViewController.swift */,
+				0760E10925E74C7E0030337E /* VideoChatViewController.xib */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -263,6 +293,8 @@
 				AEA5A1761EC3618C0041C7B4 /* Layouts.swift */,
 				AE909BEE1EB54C4B009D9D95 /* Label.swift */,
 				0739FABB25BEEF6B00B6A7AB /* FloatWindow.swift */,
+				0749E65E25E521420058EC30 /* EmojiSelectView.swift */,
+				0749E66125E601690058EC30 /* EmojiCollectionViewCell.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -270,6 +302,7 @@
 		078D413F248DF75B00E78605 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				0760E0FC25E74BD30030337E /* Video */,
 				073144A7245FF94500D915E8 /* WebSocketManager.swift */,
 				071F970D247D45C1000B3DBC /* WatchSession.swift */,
 				07513F8A2483FA7900EF68F8 /* Encrypt.swift */,
@@ -277,7 +310,6 @@
 				078032832486B73900E370E0 /* RSAKeyEncoding.swift */,
 				AE909BEC1EB54B13009D9D95 /* Message.swift */,
 				073FDF6925B2A35000FE01CD /* NotificationManager.swift */,
-				0739FA8C25BD103800B6A7AB /* Socket.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -475,6 +507,7 @@
 			files = (
 				07AB7B0C248F2A7A005306A1 /* SignUpViewController.xib in Resources */,
 				0799068625B3D44B0083C1B8 /* main.storyboard in Resources */,
+				0760E10B25E74C7E0030337E /* VideoChatViewController.xib in Resources */,
 				AEC6BF491EAF320E007CA6E5 /* LaunchScreen.storyboard in Resources */,
 				07C9633025E3B53900C2BF4C /* ImageConfirmViewController.xib in Resources */,
 				AEFEAA521EAF37BC00889E76 /* Inconsolata-Regular.ttf in Resources */,
@@ -517,9 +550,11 @@
 			files = (
 				0739FA5525BAACD400B6A7AB /* ProviderDelegate.swift in Sources */,
 				AEC6BF411EAF320E007CA6E5 /* JoinChatViewController.swift in Sources */,
-				0739FA8D25BD103900B6A7AB /* Socket.swift in Sources */,
+				0760E10125E74BD30030337E /* HJOpenGLView.m in Sources */,
 				07C9632F25E3B53900C2BF4C /* ImageConfirmViewController.swift in Sources */,
+				0760E10A25E74C7E0030337E /* VideoChatViewController.swift in Sources */,
 				0711485A23CEC3E900B6D63C /* Notification+Names.swift in Sources */,
+				0760E10225E74BD30030337E /* HJH264Encoder.m in Sources */,
 				0739FA4F25BAA9A300B6A7AB /* Call.swift in Sources */,
 				0702F7E6247E62B200B22846 /* ContactsTableViewController.swift in Sources */,
 				AE909BF11EB63FDB009D9D95 /* MessageInputView.swift in Sources */,
@@ -531,6 +566,7 @@
 				073FDF6A25B2A35000FE01CD /* NotificationManager.swift in Sources */,
 				071F970E247D45C1000B3DBC /* WatchSession.swift in Sources */,
 				0739FA3E25B9557A00B6A7AB /* ImageBrowserViewController.swift in Sources */,
+				0749E66225E601690058EC30 /* EmojiCollectionViewCell.swift in Sources */,
 				AE909BEF1EB54C4B009D9D95 /* Label.swift in Sources */,
 				AE909BED1EB54B13009D9D95 /* Message.swift in Sources */,
 				AE28D6E51EC0AB9800E886B9 /* StringExtension.swift in Sources */,
@@ -546,6 +582,8 @@
 				0772559523C1D3F600790339 /* ChatRoom.swift in Sources */,
 				078032842486B73900E370E0 /* RSAKeyEncoding.swift in Sources */,
 				0739FABC25BEEF6B00B6A7AB /* FloatWindow.swift in Sources */,
+				0760E10625E74C410030337E /* HJH264Decoder.m in Sources */,
+				0749E65F25E521420058EC30 /* EmojiSelectView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -694,6 +732,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEFINES_MODULE = NO;
 				DEVELOPMENT_TEAM = HA4ZY58KNJ;
 				INFOPLIST_FILE = DogeChat/Info.plist;

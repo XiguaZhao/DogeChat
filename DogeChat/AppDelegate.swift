@@ -81,6 +81,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         voipRegistry.delegate = self
         voipRegistry.desiredPushTypes = [.voIP]
         
+        DispatchQueue.global().async {
+            guard let files = try? FileManager.default.contentsOfDirectory(atPath: NSTemporaryDirectory()) else { return }
+            for fileName in files {
+                if fileName.hasSuffix(".gif") || fileName.hasSuffix(".png") || fileName.hasSuffix(".jpg") || fileName.hasSuffix("jpeg") {
+                    try? FileManager.default.removeItem(atPath: NSTemporaryDirectory() + fileName)
+                }
+            }
+        }
+
         return true
     }
     

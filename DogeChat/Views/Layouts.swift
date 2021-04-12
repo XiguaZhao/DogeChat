@@ -32,22 +32,30 @@ import UIKit
 
 extension ChatRoomViewController {
     @objc func keyboardWillChange(notification: NSNotification) {
+        if MessageInputView.becauseEmojiTapped {
+            MessageInputView.becauseEmojiTapped = false
+            return
+        }
         if let userInfo = notification.userInfo {
             let endFrame = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)!.cgRectValue
             let messageBarHeight = self.messageInputBar.bounds.size.height
             let point = CGPoint(x: self.messageInputBar.center.x, y: endFrame.origin.y - messageBarHeight/2.0)
             let shouldDown = endFrame.origin.y == UIScreen.main.bounds.height
             let inset = UIEdgeInsets(top: 0, left: 0, bottom: shouldDown ? 0 : endFrame.size.height, right: 0)
-            UIView.animate(withDuration: 0.25) {
+            let offsetY = point.y - messageInputBar.center.y
+            UIView.animate(withDuration: 0.25) { [self] in
                 self.messageInputBar.center = point
+                self.emojiSelectView.alpha = (shouldDown ? 0 : 1)
+                self.emojiSelectView.center = CGPoint(x: self.emojiSelectView.center.x, y: self.emojiSelectView.center.y + offsetY)
                 self.tableView.contentInset = inset
-            }
-            if !shouldDown {
-                guard tableView.numberOfRows(inSection: 0) != 0 else { return }
-                tableView.scrollToRow(at: IndexPath(row: tableView.numberOfRows(inSection: 0) - 1, section: 0), at: .bottom, animated: true)
+                if !shouldDown {
+                    guard tableView.numberOfRows(inSection: 0) != 0 else { return }
+                    tableView.scrollToRow(at: IndexPath(row: tableView.numberOfRows(inSection: 0) - 1, section: 0), at: .bottom, animated: false)
+                }
             }
         }
     }
+    
     func loadViews() {
         navigationItem.title = (self.messageOption == .toOne) ? friendName : "群聊"
         navigationItem.backBarButtonItem?.title = "Run!"

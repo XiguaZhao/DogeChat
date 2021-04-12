@@ -10,9 +10,11 @@ import UIKit
 
 class ImageBrowserViewController: UIViewController {
     
-    var cellImageView: FLAnimatedImageView?
+    var imagePath: String!
     let imageView = FLAnimatedImageView()
     var scrollView: UIScrollView!
+    var imageData: Data!
+    var cache: NSCache<NSString, NSData>!
             
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -30,10 +32,23 @@ class ImageBrowserViewController: UIViewController {
         view.addSubview(scrollView)
         imageView.frame = scrollView.frame
         imageView.contentMode = .scaleAspectFit
-        if cellImageView?.animatedImage != nil {
-            imageView.animatedImage = cellImageView?.animatedImage
+        if let data = imageData {
+            if imagePath.hasSuffix(".gif") {
+                imageView.animatedImage = FLAnimatedImage(gifData: data)
+            } else {
+                imageView.image = UIImage(data: data)
+            }
         } else {
-            imageView.image = cellImageView?.image
+            SDWebImageManager.shared.loadImage(with: URL(string: imagePath), options: .avoidDecodeImage, progress: nil) { [self] (image, data, error, cacheType, finished, url) in
+                if let data = data {
+                    cache.setObject(data as NSData, forKey: imagePath as NSString)
+                    if imagePath.hasSuffix(".gif") {
+                        imageView.animatedImage = FLAnimatedImage(gifData: data)
+                    } else  {
+                        imageView.image = UIImage(data: data)
+                    }
+                }
+            }
         }
         scrollView.addSubview(imageView)
         let swipeDownGesture = UISwipeGestureRecognizer(target: self, action: #selector(swipeDown))
