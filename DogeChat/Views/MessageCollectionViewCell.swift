@@ -37,12 +37,16 @@ enum MessageSender {
 }
 
 protocol MessageTableViewCellDelegate: class {
-    func imageViewTapped(_ cell: MessageTableViewCell, imageView: FLAnimatedImageView, path: String)
+    func imageViewTapped(_ cell: MessageCollectionViewCell, imageView: FLAnimatedImageView, path: String)
+    func needReload(indexPath: [IndexPath], newHeight: CGFloat)
+    func emojiOutBounds(from cell: MessageCollectionViewCell, gesture: UIGestureRecognizer)
+    func emojiInfoDidChange(from oldInfo: EmojiInfo?, to newInfo: EmojiInfo?, cell: MessageCollectionViewCell)
 }
 
-class MessageTableViewCell: UITableViewCell {
+class MessageCollectionViewCell: UICollectionViewCell {
     weak var delegate: MessageTableViewCellDelegate?
     var message: Message!
+    var indexPath: IndexPath!
     var messageSender: MessageSender = .ourself
     var sendStatus: SendStatus = .success
     let messageLabel = Label()
@@ -51,8 +55,10 @@ class MessageTableViewCell: UITableViewCell {
     var animatedImageView: FLAnimatedImageView!
     var videoView: AVPlayer!
     let imageDownloader = SDWebImageManager.shared
-    var percentIndicator: DACircularProgressView!
     var imageConstraint: NSLayoutConstraint!
+    var emojis = [EmojiInfo: FLAnimatedImageView]()
+    var contentSize: CGSize = CGSize.zero
+    static let emojiWidth: CGFloat = 150
     var isGif: Bool {
         guard let url = message.imageURL else {
             return false
@@ -63,25 +69,21 @@ class MessageTableViewCell: UITableViewCell {
     
     static let textCellIdentifier = "MessageCell"
     
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
+    override init(frame: CGRect) {
+        super.init(frame: frame)
     }
     
     override func prepareForReuse() {
         super.prepareForReuse()
-        textLabel?.removeFromSuperview()
-        messageLabel.removeFromSuperview()
-        indicator.removeFromSuperview()
-        animatedImageView.removeFromSuperview()
-        animatedImageView.image = nil
-        animatedImageView.animatedImage = nil
-        percentIndicator.removeFromSuperview()
+        for view in contentView.subviews {
+            view.removeFromSuperview()
+        }
     }
     
-    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
-        if #available(iOS 13.0, *) {
-            percentIndicator.progressTintColor = (UITraitCollection.current.userInterfaceStyle == .dark ? .white : .black)
-        }
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        self.layer.masksToBounds = false
+        updateViews()
     }
     
     func apply(message: Message) {
@@ -101,18 +103,11 @@ class MessageTableViewCell: UITableViewCell {
         contentView.addSubview(indicator)
         
         animatedImageView = FLAnimatedImageView()
-        percentIndicator = DACircularProgressView()
         
-        if #available(iOS 13.0, *) {
-            percentIndicator.progressTintColor = (UITraitCollection.current.userInterfaceStyle == .dark ? .white : .black)
-        }
         animatedImageView.translatesAutoresizingMaskIntoConstraints = false
-        percentIndicator.translatesAutoresizingMaskIntoConstraints = false
         animatedImageView.isHidden = true
-        percentIndicator.isHidden = true
         animatedImageView.contentMode = .scaleAspectFit
         contentView.addSubview(animatedImageView)
-        contentView.addSubview(percentIndicator)
         indicator.isHidden = true
         addGestureForImageView()
         self.message = message
@@ -123,7 +118,8 @@ class MessageTableViewCell: UITableViewCell {
         if message.imageURL != nil {
             self.addConstraintsForImageMessage()
         }
-        updateViews()
+        layoutEmojis()
+        layoutIfNeeded()
         guard let imageUrl = message.imageURL else { return }
         if imageUrl.hasPrefix("file://") {
             DispatchQueue.global().async {
@@ -143,38 +139,6 @@ class MessageTableViewCell: UITableViewCell {
         }
         // 接下来进入下载操作
         let capturedMessage = message
-        if isGif {
-            //            DispatchQueue.global().async {
-            //                guard let url = URL(string: imageUrl) else { return }
-            //                let _data: Data?
-            //                let path = NSTemporaryDirectory() + (imageUrl as NSString).lastPathComponent
-            //                if FileManager.default.fileExists(atPath: path) {
-            //                    _data = try? Data(contentsOf: URL(string: "file://" + path)!)
-            //                } else {
-            //                    _data = try? Data(contentsOf: url)
-            //                }
-            //                guard let data = _data else { return }
-            //                let fileUrl: URL
-            //                if WebSocketManager.shared.imageDict[message.uuid] == nil {
-            //                    fileUrl = URL(string: "file://" + path)!
-            //                    try? data.write(to: fileUrl)
-            //                } else {
-            //                    fileUrl = WebSocketManager.shared.imageDict[message.uuid] as! URL
-            //                }
-            //                WebSocketManager.shared.imageDict[message.uuid] = fileUrl
-            //                capturedMessage.imageURL = fileUrl.absoluteString
-            //                capturedMessage.filePathOfGif = imageUrl
-            //                capturedMessage.sendStatus = .success
-            //                DispatchQueue.main.async {
-            //                    guard message.imageURL == capturedMessage.imageURL else {
-            //                        return
-            //                    }
-            //                    self.animatedImageView.animatedImage = FLAnimatedImage(gifData: data)
-            //                    self.percentIndicator.removeFromSuperview()
-            //                }
-            //            }
-            //            return
-        }
         if let data = cache.object(forKey: imageUrl as NSString) {
             if !isGif {
                 self.animatedImageView.image = UIImage(data: data as Data)
@@ -185,13 +149,6 @@ class MessageTableViewCell: UITableViewCell {
         }
         
         imageDownloader.loadImage(with: URL(string: imageUrl), options: .avoidDecodeImage) { (received, total, url) in
-            DispatchQueue.main.async {
-                let percent = CGFloat(received) / CGFloat(total)
-                self.percentIndicator.setProgress(percent, animated: true)
-                if percent == 1 {
-                    self.percentIndicator.removeFromSuperview()
-                }
-            }
         } completed: { [self] (image, data, error, cacheType, finished, url) in
             guard capturedMessage.imageURL == message.imageURL else {
                 return
@@ -207,7 +164,6 @@ class MessageTableViewCell: UITableViewCell {
                 }
             }
             capturedMessage.sendStatus = .success
-            self.percentIndicator.removeFromSuperview()
         }
     }
     
@@ -226,31 +182,36 @@ class MessageTableViewCell: UITableViewCell {
         imageConstraint = NSLayoutConstraint(item: animatedImageView!, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: contentView.bounds.width/2)
         
         NSLayoutConstraint.activate([
-            animatedImageView.topAnchor.constraint(equalTo: (messageSender == .ourself ? contentView.topAnchor : nameLabel.bottomAnchor), constant: offsetTop),
+            animatedImageView.topAnchor.constraint(equalTo: (messageSender == .ourself ? contentView.topAnchor : contentView.topAnchor), constant: offsetTop + nameLabel.bounds.height + offsetTop),
             animatedImageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -offsetTop),
             imageConstraint,
             (messageSender == .ourself ? animatedImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -offsetTop) : animatedImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: offsetTop))
         ])
-        NSLayoutConstraint.activate([
-            NSLayoutConstraint(item: percentIndicator!, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: 30),
-            NSLayoutConstraint(item: percentIndicator!, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: 30),
-            percentIndicator.centerYAnchor.constraint(equalTo: animatedImageView.centerYAnchor),
-            (messageSender == .ourself ? percentIndicator.trailingAnchor.constraint(equalTo: animatedImageView.leadingAnchor, constant: -offsetTop) : percentIndicator.leadingAnchor.constraint(equalTo: animatedImageView.trailingAnchor, constant: offsetTop))
-        ])
     }
     
+    // 计算高度
     class func height(for message: Message) -> CGFloat {
         let maxSize = CGSize(width: 2*(UIScreen.main.bounds.size.width/3), height: CGFloat.greatestFiniteMagnitude)
         let nameHeight = message.messageSender == .ourself ? 0 : (height(forText: message.senderUsername, fontSize: 10, maxSize: maxSize) + 4 )
         let messageHeight = height(forText: message.message, fontSize: 17, maxSize: maxSize)
+        var height: CGFloat
+        let screenWidth = UIScreen.main.bounds.width
         switch message.messageType {
         case .join, .text:
-            return nameHeight + messageHeight + 32 + 16
+            height = nameHeight + messageHeight + 32 + 16
         case .image:
-            return nameHeight + 150
+            height = nameHeight + 150
         case .video:
-            return nameHeight + 180
+            height = nameHeight + 180
         }
+        var wholeFrame = CGRect(x: 0, y: 0, width: screenWidth, height: height)
+        for emojiInfo in message.emojisInfo {
+            let size = CGSize(width: emojiWidth * emojiInfo.scale, height: emojiWidth * emojiInfo.scale)
+            let point = CGPoint(x: screenWidth * emojiInfo.x - size.width / 2, y: height * emojiInfo.y - size.height / 2)
+            let frame = CGRect(origin: point, size: size)
+            wholeFrame = wholeFrame.union(frame)
+        }
+        return wholeFrame.height
     }
     
     private class func height(forText text: String, fontSize: CGFloat, maxSize: CGSize) -> CGFloat {
@@ -268,7 +229,7 @@ class MessageTableViewCell: UITableViewCell {
     
 }
 
-extension MessageTableViewCell {
+extension MessageCollectionViewCell {
     func updateViews() {
         
         switch message.messageType {
@@ -285,7 +246,8 @@ extension MessageTableViewCell {
         if messageSender == .someoneElse {
             nameLabel.isHidden = false
             nameLabel.sizeToFit()
-            nameLabel.center = CGPoint(x: nameLabel.bounds.size.width/2.0 + 16 + 4, y: nameLabel.bounds.size.height/2.0 + 4)
+        } else {
+            nameLabel.isHidden = true
         }
         
         messageLabel.layer.cornerRadius = min(messageLabel.bounds.size.height/2.0, 20)
@@ -293,13 +255,11 @@ extension MessageTableViewCell {
     
     func layoutForJoinMessage() {
         animatedImageView.isHidden = true
-        percentIndicator.isHidden = true
         messageLabel.font = UIFont.systemFont(ofSize: 10)
         messageLabel.textColor = .lightGray
         messageLabel.backgroundColor = UIColor(red: 247/255, green: 247/255, blue: 247/255, alpha: 1.0)
         
-        let size = messageLabel.sizeThatFits(CGSize(width: 2*(bounds.size.width/3), height: CGFloat.greatestFiniteMagnitude))
-        messageLabel.frame = CGRect(x: 0, y: 0, width: size.width + 32, height: size.height + 16)
+        let _ = messageLabel.sizeThatFits(CGSize(width: 2*(bounds.size.width/3), height: CGFloat.greatestFiniteMagnitude))
         messageLabel.center = CGPoint(x: bounds.size.width/2, y: bounds.size.height/2.0)
     }
     
@@ -332,18 +292,17 @@ extension MessageTableViewCell {
         } else {
             nameLabel.isHidden = false
             nameLabel.sizeToFit()
-            nameLabel.center = CGPoint(x: nameLabel.bounds.size.width/2.0 + 16 + 4, y: nameLabel.bounds.size.height/2.0 + 4)
-            
-            messageLabel.center = CGPoint(x: messageLabel.bounds.size.width/2.0 + 16, y: messageLabel.bounds.size.height/2.0 + nameLabel.bounds.size.height + 8)
             messageLabel.backgroundColor = .lightGray
+
+            messageLabel.center = CGPoint(x: messageLabel.bounds.size.width/2.0 + 16, y: contentView.center.y + (nameLabel.bounds.size.height + 8)/2)
+            nameLabel.frame = CGRect(x: messageLabel.frame.origin.x, y: messageLabel.frame.origin.y - 8 - nameLabel.bounds.height, width: nameLabel.bounds.width, height: nameLabel.bounds.height)
         }
     }
     
     func layoutForImageMessage() {
         messageLabel.isHidden = true
         animatedImageView.isHidden = false
-        percentIndicator.isHidden = message.sendStatus == .success
-        
+        nameLabel.frame = CGRect(x: 16, y: animatedImageView.frame.origin.y - nameLabel.bounds.height - 8, width: nameLabel.bounds.width, height: nameLabel.bounds.height)
     }
     
     func layoutForVideoMessage() {
@@ -358,4 +317,136 @@ extension MessageTableViewCell {
         }
         return false
     }
+}
+
+// drop
+extension MessageCollectionViewCell {
+    func didDrop(imageLink: String, image: UIImage, point: CGPoint, cache: NSCache<NSString, NSData>) {
+        let width: CGFloat = MessageCollectionViewCell.emojiWidth
+        let emojiInfo = EmojiInfo(x: point.x/self.contentSize.width, y: point.y/self.contentSize.height, rotation: 0, scale: 1, imageLink: imageLink)
+        message.emojisInfo.append(emojiInfo)
+        let frame = CGRect(x: point.x - width / 2, y: point.y - width / 2, width: width, height: width)
+        let contentBounds = CGRect(origin: CGPoint(x: 0, y: 0), size: self.contentSize)
+        if !contentBounds.contains(frame) {
+            delegate?.needReload(indexPath: [self.indexPath], newHeight: contentBounds.union(frame).height)
+            return
+        }
+        let imageView = FLAnimatedImageView(frame: frame)
+        imageView.contentMode = .scaleAspectFit
+        contentView.addSubview(imageView)
+        if let data = self.cache.object(forKey: imageLink as NSString) {
+            contentView.layer.masksToBounds = false
+            if imageLink.hasSuffix(".gif") {
+                imageView.animatedImage = FLAnimatedImage(gifData: data as Data)
+            } else {
+                imageView.image = UIImage(data: data as Data)
+            }
+        } else if (!imageLink.hasSuffix(".gif")), let imageData = cache.object(forKey: imageLink as NSString) {
+            imageView.image = UIImage(data: imageData as Data)
+        } else { // 到这里就需要来加载gif图了
+            SDWebImageManager.shared.loadImage(with: URL(string: imageLink), options: .avoidDecodeImage, progress: nil) { (image, data, error, _, _, _) in
+                guard error == nil, let data = data else { return }
+                imageView.animatedImage = FLAnimatedImage(gifData: data)
+                DispatchQueue.global().async {
+                    self.cache.setObject(data as NSData, forKey: imageLink as NSString)
+                }
+            }
+        }
+    }
+    
+    func layoutEmojis() {
+        for emojiInfo in message.emojisInfo {
+            let width = emojiInfo.scale * MessageCollectionViewCell.emojiWidth
+            let contentSize = self.contentSize
+            let size = CGSize(width: width, height: width)
+            let origin = CGPoint(x: emojiInfo.x * contentSize.width - size.width / 2, y: emojiInfo.y * contentSize.height - size.height / 2)
+            let imageView = FLAnimatedImageView(frame: CGRect(origin: origin, size: size))
+            imageView.contentMode = .scaleAspectFit
+            contentView.addSubview(imageView)
+            emojis[emojiInfo] = imageView
+            WebSocketManager.shared.getCacheImage(from: cache, path: emojiInfo.imageLink) { (image, data) in
+                if let data = data {
+                    if emojiInfo.imageLink.hasSuffix(".gif") {
+                        imageView.animatedImage = FLAnimatedImage(gifData: data)
+                    } else {
+                        imageView.image = UIImage(data: data)
+                    }
+                }
+            }
+            imageView.isUserInteractionEnabled = true
+            let deleteGes = UITapGestureRecognizer(target: self, action: #selector(deleteGes(_:)))
+            deleteGes.numberOfTapsRequired = 2
+            imageView.addGestureRecognizer(deleteGes)
+            let pinchGes = UIPinchGestureRecognizer(target: self, action: #selector(pinchGes(_:)))
+            imageView.addGestureRecognizer(pinchGes)
+            let moveGes = UIPanGestureRecognizer(target: self, action: #selector(moveGes(_:)))
+            imageView.addGestureRecognizer(moveGes)
+        }
+    }
+    
+    func getIndex(for gesture: UIGestureRecognizer) -> (emojiInfo: EmojiInfo?, messageIndex: Int?, dictIndex: Dictionary<EmojiInfo, FLAnimatedImageView>.Index?)? {
+        var res: (emojiInfo: EmojiInfo?, messageIndex: Int?, dictIndex: Dictionary<EmojiInfo, FLAnimatedImageView>.Index?)? = (nil, nil, nil)
+        let emojiView = gesture.view
+        for (emojiInfo, view) in emojis {
+            if view == emojiView {
+                if let index = message.emojisInfo.firstIndex(of: emojiInfo) {
+                    res?.messageIndex = index
+                    res?.emojiInfo = emojiInfo
+                }
+                res?.dictIndex = emojis.index(forKey: emojiInfo)!
+                break
+            }
+        }
+        return res
+    }
+    
+    @objc func deleteGes(_ ges: UITapGestureRecognizer) {
+        if let emojiView = ges.view {
+            emojiView.removeFromSuperview()
+            if let (_emojiInfo, _messageIndex, _dictIndex) = getIndex(for: ges),
+               let emojiInfo = _emojiInfo,
+               let messageIndex = _messageIndex,
+               let dictIndex = _dictIndex {
+                message.emojisInfo.remove(at: messageIndex)
+                emojis.remove(at: dictIndex)
+                // 发送更新的通知
+                delegate?.emojiInfoDidChange(from: emojiInfo, to: nil, cell: self)
+
+            }
+        }
+    }
+    
+    @objc func pinchGes(_ ges: UIPinchGestureRecognizer) {
+        let scale = ges.scale
+        guard let emojiView = ges.view else { return }
+        emojiView.transform = CGAffineTransform(scaleX: scale, y: scale)
+        guard ges.state == .ended else { return }
+        if let (_emojiInfo, _messageIndex, _) = getIndex(for: ges),
+           let emojiInfo = _emojiInfo,
+           let messageIndex = _messageIndex {
+            message.emojisInfo[messageIndex].scale = scale
+            guard let copy = emojiInfo.copy() as? EmojiInfo else { return }
+            emojiInfo.scale = scale
+            delegate?.emojiInfoDidChange(from: copy, to: emojiInfo, cell: self)
+        }
+    }
+    
+    @objc func moveGes(_ ges: UIPanGestureRecognizer) {
+        guard let emojiView = ges.view else { return }
+        let point = ges.location(in: contentView)
+        emojiView.center = point
+        guard ges.state == .ended else { return }
+        if !contentView.bounds.contains(point) { //超出当前cell了，要更换indexPath了
+            delegate?.emojiOutBounds(from: self, gesture: ges)
+        } else {
+            if let (_emojiInfo, _, _) = getIndex(for: ges),
+               let emojiInfo = _emojiInfo {
+                guard let copy = emojiInfo.copy() as? EmojiInfo else { return }
+                emojiInfo.x = point.x / UIScreen.main.bounds.width
+                emojiInfo.y = point.y / contentSize.height
+                delegate?.emojiInfoDidChange(from: copy, to: emojiInfo, cell: self)
+            }
+        }
+    }
+    
 }

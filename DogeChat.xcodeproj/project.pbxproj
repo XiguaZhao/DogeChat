@@ -36,11 +36,12 @@
 		0799068625B3D44B0083C1B8 /* main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0799068525B3D44B0083C1B8 /* main.storyboard */; };
 		07AB7B0B248F2A7A005306A1 /* SignUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07AB7B09248F2A7A005306A1 /* SignUpViewController.swift */; };
 		07AB7B0C248F2A7A005306A1 /* SignUpViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 07AB7B0A248F2A7A005306A1 /* SignUpViewController.xib */; };
+		07B3F5D4262470D70016B5C9 /* ChatRoomViewController+Drop.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07B3F5D3262470D70016B5C9 /* ChatRoomViewController+Drop.swift */; };
 		07C9632F25E3B53900C2BF4C /* ImageConfirmViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07C9632D25E3B53900C2BF4C /* ImageConfirmViewController.swift */; };
 		07C9633025E3B53900C2BF4C /* ImageConfirmViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 07C9632E25E3B53900C2BF4C /* ImageConfirmViewController.xib */; };
 		07E001DA248CA56800D4A287 /* SelectShortcutTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07E001D9248CA56800D4A287 /* SelectShortcutTVC.swift */; };
 		AE28D6E51EC0AB9800E886B9 /* StringExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE28D6E41EC0AB9800E886B9 /* StringExtension.swift */; };
-		AE909BEB1EB54099009D9D95 /* MessageTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE909BEA1EB54099009D9D95 /* MessageTableViewCell.swift */; };
+		AE909BEB1EB54099009D9D95 /* MessageCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE909BEA1EB54099009D9D95 /* MessageCollectionViewCell.swift */; };
 		AE909BED1EB54B13009D9D95 /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE909BEC1EB54B13009D9D95 /* Message.swift */; };
 		AE909BEF1EB54C4B009D9D95 /* Label.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE909BEE1EB54C4B009D9D95 /* Label.swift */; };
 		AE909BF11EB63FDB009D9D95 /* MessageInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE909BF01EB63FDB009D9D95 /* MessageInputView.swift */; };
@@ -147,6 +148,7 @@
 		07A741222514EE2C0014880E /* AFNetworking.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = AFNetworking.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		07AB7B09248F2A7A005306A1 /* SignUpViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpViewController.swift; sourceTree = "<group>"; };
 		07AB7B0A248F2A7A005306A1 /* SignUpViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SignUpViewController.xib; sourceTree = "<group>"; };
+		07B3F5D3262470D70016B5C9 /* ChatRoomViewController+Drop.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChatRoomViewController+Drop.swift"; sourceTree = "<group>"; };
 		07C6AF80247D1AF10007222F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Interface.storyboard; sourceTree = "<group>"; };
 		07C6AF82247D1AF60007222F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		07C6AF84247D1AF60007222F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -162,7 +164,7 @@
 		0B69595E028EAB1E5EC8EA2E /* Pods-DogeChat.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DogeChat.release.xcconfig"; path = "Target Support Files/Pods-DogeChat/Pods-DogeChat.release.xcconfig"; sourceTree = "<group>"; };
 		11446107E0EC4769216E7331 /* Pods-DogeChat.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DogeChat.debug.xcconfig"; path = "Target Support Files/Pods-DogeChat/Pods-DogeChat.debug.xcconfig"; sourceTree = "<group>"; };
 		AE28D6E41EC0AB9800E886B9 /* StringExtension.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StringExtension.swift; sourceTree = "<group>"; };
-		AE909BEA1EB54099009D9D95 /* MessageTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageTableViewCell.swift; sourceTree = "<group>"; };
+		AE909BEA1EB54099009D9D95 /* MessageCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageCollectionViewCell.swift; sourceTree = "<group>"; };
 		AE909BEC1EB54B13009D9D95 /* Message.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
 		AE909BEE1EB54C4B009D9D95 /* Label.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Label.swift; sourceTree = "<group>"; };
 		AE909BF01EB63FDB009D9D95 /* MessageInputView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageInputView.swift; sourceTree = "<group>"; };
@@ -267,18 +269,19 @@
 		078D413D248DF6E500E78605 /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
-				070C41732489204F0035314A /* SearchViewController.swift */,
-				07E001D9248CA56800D4A287 /* SelectShortcutTVC.swift */,
-				0702F7E5247E62B200B22846 /* ContactsTableViewController.swift */,
 				AEC6BF501EAF345A007CA6E5 /* ChatRoomViewController.swift */,
-				AEC6BF401EAF320E007CA6E5 /* JoinChatViewController.swift */,
+				07B3F5D3262470D70016B5C9 /* ChatRoomViewController+Drop.swift */,
 				AEA5A1781EC362150041C7B4 /* ChatRoomViewController+Table.swift */,
-				07AB7B09248F2A7A005306A1 /* SignUpViewController.swift */,
-				07AB7B0A248F2A7A005306A1 /* SignUpViewController.xib */,
-				0799068525B3D44B0083C1B8 /* main.storyboard */,
+				0702F7E5247E62B200B22846 /* ContactsTableViewController.swift */,
 				0739FA3D25B9557900B6A7AB /* ImageBrowserViewController.swift */,
 				07C9632D25E3B53900C2BF4C /* ImageConfirmViewController.swift */,
 				07C9632E25E3B53900C2BF4C /* ImageConfirmViewController.xib */,
+				AEC6BF401EAF320E007CA6E5 /* JoinChatViewController.swift */,
+				0799068525B3D44B0083C1B8 /* main.storyboard */,
+				070C41732489204F0035314A /* SearchViewController.swift */,
+				07E001D9248CA56800D4A287 /* SelectShortcutTVC.swift */,
+				07AB7B09248F2A7A005306A1 /* SignUpViewController.swift */,
+				07AB7B0A248F2A7A005306A1 /* SignUpViewController.xib */,
 				0760E10825E74C7E0030337E /* VideoChatViewController.swift */,
 				0760E10925E74C7E0030337E /* VideoChatViewController.xib */,
 			);
@@ -288,7 +291,7 @@
 		078D413E248DF71700E78605 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				AE909BEA1EB54099009D9D95 /* MessageTableViewCell.swift */,
+				AE909BEA1EB54099009D9D95 /* MessageCollectionViewCell.swift */,
 				AE909BF01EB63FDB009D9D95 /* MessageInputView.swift */,
 				AEA5A1761EC3618C0041C7B4 /* Layouts.swift */,
 				AE909BEE1EB54C4B009D9D95 /* Label.swift */,
@@ -559,7 +562,8 @@
 				0702F7E6247E62B200B22846 /* ContactsTableViewController.swift in Sources */,
 				AE909BF11EB63FDB009D9D95 /* MessageInputView.swift in Sources */,
 				070C41742489204F0035314A /* SearchViewController.swift in Sources */,
-				AE909BEB1EB54099009D9D95 /* MessageTableViewCell.swift in Sources */,
+				07B3F5D4262470D70016B5C9 /* ChatRoomViewController+Drop.swift in Sources */,
+				AE909BEB1EB54099009D9D95 /* MessageCollectionViewCell.swift in Sources */,
 				070C417124879C440035314A /* Helper.swift in Sources */,
 				0739FA7725BBE67A00B6A7AB /* Recorder.m in Sources */,
 				07E001DA248CA56800D4A287 /* SelectShortcutTVC.swift in Sources */,

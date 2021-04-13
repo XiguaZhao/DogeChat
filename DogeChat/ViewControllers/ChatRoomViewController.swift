@@ -34,8 +34,7 @@ import SwiftyJSON
 class ChatRoomViewController: UIViewController {
     
     let manager = WebSocketManager.shared
-    let tableView = UITableView()
-//    let emojiPickerView = EmojiSelectView()
+    let collectionView = UICollectionView(frame: CGRect.zero, collectionViewLayout: UICollectionViewFlowLayout())
     let messageInputBar = MessageInputView()
     var messageOption: MessageOption = .toAll
     var friendName = ""
@@ -76,7 +75,7 @@ class ChatRoomViewController: UIViewController {
         layoutViews()
         loadViews()
         let recognizer = UITapGestureRecognizer(target: self, action: #selector(tap))
-        tableView.addGestureRecognizer(recognizer)
+        collectionView.addGestureRecognizer(recognizer)
         configureEmojiView()
     }
     
@@ -116,8 +115,8 @@ class ChatRoomViewController: UIViewController {
             return
         }
         let indexPath = IndexPath(row: index, section: 0)
-        (tableView.cellForRow(at: indexPath) as? MessageTableViewCell)?.indicator.stopAnimating()
-        (tableView.cellForRow(at: indexPath) as? MessageTableViewCell)?.indicator.removeFromSuperview()
+        (collectionView.cellForItem(at: indexPath) as? MessageCollectionViewCell)?.indicator.stopAnimating()
+        (collectionView.cellForItem(at: indexPath) as? MessageCollectionViewCell)?.indicator.removeFromSuperview()
     }
     
     @objc func uploadSuccess(notification: Notification) {
@@ -208,7 +207,7 @@ extension ChatRoomViewController: MessageInputDelegate, UIImagePickerControllerD
         manager.imageDict[message.uuid] = imageURL
         insertNewMessageCell([message])
         DispatchQueue.main.async { [self] in
-            tableView.scrollToRow(at: IndexPath(row: messages.count-1, section: 0), at: .bottom, animated: true)
+            collectionView.scrollToItem(at: IndexPath(row: messages.count-1, section: 0), at: .bottom, animated: true)
         }
         manager.uploadPhoto(imageUrl: imageURL, message: message) { (progress) in
             print(progress.fractionCompleted)
@@ -240,15 +239,11 @@ extension ChatRoomViewController: MessageInputDelegate, UIImagePickerControllerD
     }
 
     func updateUploadProgress(_ progress: Progress, message: Message) {
-        let targetCell = tableView.visibleCells.filter { cell in
-            guard let cell = cell as? MessageTableViewCell else { return false }
+        let targetCell = collectionView.visibleCells.filter { cell in
+            guard let cell = cell as? MessageCollectionViewCell else { return false }
             return cell.message.uuid == message.uuid
         }.first
-        guard let cell = targetCell as? MessageTableViewCell else { return }
-        cell.percentIndicator.setProgress(CGFloat(progress.fractionCompleted), animated: true)
-        if progress.fractionCompleted == 1 {
-            cell.percentIndicator.removeFromSuperview()
-        }
+        guard let cell = targetCell as? MessageCollectionViewCell else { return }
     }
     
     private func processMessageString(for string: String) -> Message {
@@ -278,13 +273,10 @@ extension ChatRoomViewController: EmojiViewDelegate {
 }
 
 extension ChatRoomViewController: MessageTableViewCellDelegate {
-    func imageViewTapped(_ cell: MessageTableViewCell, imageView: FLAnimatedImageView, path: String) {
+    func imageViewTapped(_ cell: MessageCollectionViewCell, imageView: FLAnimatedImageView, path: String) {
         let browser = ImageBrowserViewController()
         browser.imagePath = path
         browser.modalPresentationStyle = .fullScreen
-//        if let data = cache.object(forKey: path as NSString) {
-//            browser.imageData = data as Data
-//        }
         browser.cache = cache
         self.present(browser, animated: true, completion: nil)
     }
@@ -312,14 +304,14 @@ extension ChatRoomViewController: MessageDelegate {
         let filtered = messages.filter { $0.id < minId }
         for message in filtered {
             self.messages.insert(message, at: 0)
-            self.tableView.insertRows(at: [IndexPath(row: 0, section: 0)], with: .automatic)
+            self.collectionView.insertItems(at: [IndexPath(row: 0, section: 0)])
             if messageOption == .toAll {
                 manager.messagesGroup.insert(message, at: 0)
             } else {
                 manager.messagesSingle.insert(message, at: 0, for: friendName)
             }
         }
-        self.tableView.refreshControl?.endRefreshing()
+        self.collectionView.refreshControl?.endRefreshing()
     }
     
     func newFriendRequest() {
@@ -334,12 +326,12 @@ extension ChatRoomViewController {
     func addRefreshController() {
         let controller = UIRefreshControl()
         controller.addTarget(self, action: #selector(displayHistory), for: .valueChanged)
-        tableView.refreshControl = controller
+        collectionView.refreshControl = controller
     }
     
     @objc func displayHistory() {
         guard pagesAndCurNum.curNum <= pagesAndCurNum.pages else {
-            self.tableView.refreshControl?.endRefreshing()
+            self.collectionView.refreshControl?.endRefreshing()
             return
         }
         pagesAndCurNum.curNum = (self.messages.count / 10) + 1
@@ -349,8 +341,8 @@ extension ChatRoomViewController {
     
     //MARK: ContextMune
     @available(iOS 13.0, *)
-    func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
-        let cell = tableView.cellForRow(at: indexPath) as! MessageTableViewCell
+    func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+        let cell = collectionView.cellForItem(at: indexPath) as! MessageCollectionViewCell
         let identifier = "\(indexPath.row)" as NSString
         return UIContextMenuConfiguration(identifier: identifier, previewProvider: nil
         ) { (menuElement) -> UIMenu? in
@@ -399,7 +391,7 @@ extension ChatRoomViewController {
         case .toOne:
             manager.messagesSingle.update(at: index, for: friendName, with: updatedMessage)
         }
-        tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .automatic)
+        collectionView.reloadItems(at: [IndexPath(row: index, section: 0)])
     }
     
     func revokeMessage(_ id: Int) {
@@ -417,14 +409,14 @@ extension ChatRoomViewController: UITextViewDelegate {
         let oldLineCount = Int((oldFrame.height - 20) / lineHeight)
         let lineCountChanged = lineCount - oldLineCount
         let heightChanged = CGFloat(lineCountChanged) * lineHeight
-        let frameOfTableView = tableView.frame
+        let frameOfTableView = collectionView.frame
         if heightChanged != 0 {
             UIView.animate(withDuration: heightChanged != 0 ? 0.25 : 0) {
                 self.messageInputBar.frame = CGRect(x: oldFrame.origin.x, y: oldFrame.origin.y-heightChanged, width: oldFrame.width, height: oldFrame.height+heightChanged)
-                self.tableView.frame = CGRect(origin: frameOfTableView.origin, size: CGSize(width: frameOfTableView.width, height: frameOfTableView.height-heightChanged))
+                self.collectionView.frame = CGRect(origin: frameOfTableView.origin, size: CGSize(width: frameOfTableView.width, height: frameOfTableView.height-heightChanged))
             } completion: { [self] (_) in
-                guard tableView.numberOfRows(inSection: 0) > 0 else { return }
-                tableView.scrollToRow(at: IndexPath(row: tableView.numberOfRows(inSection: 0)-1, section: 0), at: .bottom, animated: true)
+                guard collectionView.numberOfItems(inSection: 0) > 0 else { return }
+                collectionView.scrollToItem(at: IndexPath(row: collectionView.numberOfItems(inSection: 0)-1, section: 0), at: .bottom, animated: true)
             }
         } 
     }

@@ -35,6 +35,8 @@ class EmojiSelectView: UIView {
         collectionView.delegate = self
         collectionView.dataSource = self
         collectionView.prefetchDataSource = self
+        collectionView.dragDelegate = self
+        collectionView.dragInteractionEnabled = true
         configure()
     }
     
@@ -113,3 +115,27 @@ extension EmojiSelectView: UICollectionViewDataSource, UICollectionViewDelegateF
         delegate?.didSelectEmoji(filePath: emojis[indexPath.item])
     }
 }
+
+extension EmojiSelectView: UICollectionViewDragDelegate {
+    
+    func collectionView(_ collectionView: UICollectionView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
+        session.localContext = collectionView
+        guard let cell = collectionView.cellForItem(at: indexPath) as? EmojiCollectionViewCell, let image = cell.emojiView.image else { return [] }
+        let dragItem = UIDragItem(itemProvider: NSItemProvider(object: image))
+        dragItem.localObject = [cell.url?.absoluteString, cache]
+        return [dragItem]
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, dragPreviewParametersForItemAt indexPath: IndexPath) -> UIDragPreviewParameters? {
+        let preview = UIDragPreviewParameters()
+        guard let cell = collectionView.cellForItem(at: indexPath) as? EmojiCollectionViewCell, let image = cell.emojiView.image else { return nil }
+        let viewSize = cell.contentView.bounds.size
+        var rect = AVMakeRect(aspectRatio: image.size, insideRect: cell.emojiView.bounds)
+        rect = CGRect(x:((viewSize.width - rect.width) / 2), y: ((viewSize.height - rect.height) / 2), width: rect.width, height: rect.height)
+        let path = UIBezierPath(rect: rect)
+        preview.visiblePath = path
+        return preview
+    }
+    
+}
+

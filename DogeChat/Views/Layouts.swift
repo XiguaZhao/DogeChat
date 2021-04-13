@@ -47,10 +47,10 @@ extension ChatRoomViewController {
                 self.messageInputBar.center = point
                 self.emojiSelectView.alpha = (shouldDown ? 0 : 1)
                 self.emojiSelectView.center = CGPoint(x: self.emojiSelectView.center.x, y: self.emojiSelectView.center.y + offsetY)
-                self.tableView.contentInset = inset
+                self.collectionView.contentInset = inset
                 if !shouldDown {
-                    guard tableView.numberOfRows(inSection: 0) != 0 else { return }
-                    tableView.scrollToRow(at: IndexPath(row: tableView.numberOfRows(inSection: 0) - 1, section: 0), at: .bottom, animated: false)
+                    guard collectionView.numberOfItems(inSection: 0) != 0 else { return }
+                    collectionView.scrollToItem(at: IndexPath(row: collectionView.numberOfItems(inSection: 0) - 1, section: 0), at: .bottom, animated: false)
                 }
             }
         }
@@ -59,12 +59,16 @@ extension ChatRoomViewController {
     func loadViews() {
         navigationItem.title = (self.messageOption == .toOne) ? friendName : "群聊"
         navigationItem.backBarButtonItem?.title = "Run!"
-        
-        tableView.dataSource = self
-        tableView.delegate = self
-        tableView.separatorStyle = .none
-        tableView.register(MessageTableViewCell.self, forCellReuseIdentifier: MessageTableViewCell.textCellIdentifier)
-        view.addSubview(tableView)
+        if #available(iOS 13.0, *) {
+            collectionView.backgroundColor = .systemBackground
+        } else {
+            collectionView.backgroundColor = .white
+        }
+        collectionView.dataSource = self
+        collectionView.delegate = self
+        collectionView.dropDelegate = self
+        collectionView.register(MessageCollectionViewCell.self, forCellWithReuseIdentifier: MessageCollectionViewCell.textCellIdentifier)
+        view.addSubview(collectionView)
         view.addSubview(messageInputBar)
         
         messageInputBar.delegate = self
@@ -73,7 +77,7 @@ extension ChatRoomViewController {
     func layoutViews() {
         let messageBarHeight:CGFloat = 60.0
         let size = UIScreen.main.bounds.size
-        tableView.frame = CGRect(x: 0, y: 0, width: size.width, height: size.height - messageBarHeight)
+        collectionView.frame = CGRect(x: 0, y: 0, width: size.width, height: size.height - messageBarHeight)
         messageInputBar.frame = CGRect(x: 0, y: size.height - messageBarHeight, width: size.width, height: messageBarHeight)
     }
     

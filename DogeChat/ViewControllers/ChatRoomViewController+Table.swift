@@ -30,38 +30,37 @@
 
 import UIKit
 
-extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate {
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: MessageTableViewCell.textCellIdentifier, for: indexPath) as? MessageTableViewCell else {
-            return UITableViewCell()
-        }
-        cell.selectionStyle = .none
-        
-        let message = messages[indexPath.row]
-        cell.delegate = self
-        cell.cache = cache
-        cell.apply(message: message)
-        return cell
-    }
+extension ChatRoomViewController: UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
     
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         if scrollBottom {
             DispatchQueue.main.asyncAfter(deadline: DispatchTime(uptimeNanoseconds: UInt64(0.005)*NSEC_PER_SEC)) {
                 guard !self.messages.isEmpty else { return }
-                self.tableView.scrollToRow(at: IndexPath(row: self.messages.count - 1, section: 0), at: .bottom, animated: false)
+                self.collectionView.scrollToItem(at: IndexPath(row: self.messages.count - 1, section: 0), at: .bottom, animated: false)
             }
         }
         return messages.count
     }
     
-    func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MessageCollectionViewCell.textCellIdentifier, for: indexPath) as? MessageCollectionViewCell else {
+            return UICollectionViewCell()
+        }
+        
+        let message = messages[indexPath.row]
+        cell.indexPath = indexPath
+        cell.delegate = self
+        cell.cache = cache
+        cell.contentSize = self.collectionView(collectionView, layout: collectionView.collectionViewLayout, sizeForItemAt: indexPath)
+        cell.apply(message: message)
+        return cell
+    }
+        
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        return CGSize(width: self.view.bounds.width, height: MessageCollectionViewCell.height(for: messages[indexPath.item]))
     }
     
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        let height = MessageTableViewCell.height(for: messages[indexPath.row])
-        return height
-    }
     func insertNewMessageCell(_ messages: [Message]) {
         let filtered = messages.filter { !self.messages.contains($0) }
         DispatchQueue.main.async { [self] in
@@ -78,25 +77,50 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate {
                 indexPaths.append(IndexPath(row: self.messages.count, section: 0))
                 self.messages.append(message)
             }
-            tableView.beginUpdates()
-            tableView.insertRows(at: indexPaths, with: .none)
-            tableView.endUpdates()
-            var scrollToBottom = !tableView.isDragging
-            let contentHeight = tableView.contentSize.height
-            if contentHeight - tableView.contentOffset.y > self.view.bounds.height {
+            collectionView.insertItems(at: indexPaths)
+            var scrollToBottom = !collectionView.isDragging
+            let contentHeight = collectionView.contentSize.height
+            if contentHeight - collectionView.contentOffset.y > self.view.bounds.height {
                 scrollToBottom = false
             }
             scrollToBottom = scrollToBottom || (messages.count == 1 && messages[0].messageSender == .ourself)
             if scrollToBottom, let indexPath = indexPaths.last {
-                tableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
+                collectionView.scrollToItem(at: indexPath, at: .bottom, animated: true)
             }
         }
     }
     
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-        guard scrollView == tableView else {
+        guard scrollView == collectionView else {
             return
         }
         messageInputBar.textView.resignFirstResponder()
     }
+    
+    func emojiOutBounds(from cell: MessageCollectionViewCell, gesture: UIGestureRecognizer) {
+        let point = gesture.location(in: collectionView)
+        guard let newIndexPath = collectionView.indexPathForItem(at: point),
+              let oldIndexPath = cell.indexPath else { return }
+        if let (_emojiInfo, _messageIndex, _) = cell.getIndex(for: gesture),
+           let emojiInfo = _emojiInfo,
+           let messageIndex = _messageIndex {
+            messages[oldIndexPath.item].emojisInfo.remove(at: messageIndex)
+            let newPoint = gesture.location(in: collectionView.cellForItem(at: newIndexPath)?.contentView)
+            emojiInfo.x = newPoint.x / UIScreen.main.bounds.width
+            emojiInfo.y = newPoint.y / MessageCollectionViewCell.height(for: messages[newIndexPath.item])
+            messages[newIndexPath.item].emojisInfo.append(emojiInfo)
+            needReload(indexPath: [newIndexPath, oldIndexPath], newHeight: 0)
+        }
+    }
+    
+    func emojiInfoDidChange(from oldInfo: EmojiInfo?, to newInfo: EmojiInfo?, cell: MessageCollectionViewCell) {
+        if let indexPahth = collectionView.indexPath(for: cell) {
+            needReload(indexPath: [indexPahth], newHeight: 0)
+        }
+    }
+    
+    func needReload(indexPath: [IndexPath], newHeight: CGFloat) {
+        collectionView.reloadItems(at: indexPath)
+    }
+    
 }

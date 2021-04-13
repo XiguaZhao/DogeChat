@@ -54,10 +54,11 @@ class Message: NSObject {
     var uuid: String
     var imageURL: String?
     var videoURL: String?
+    var emojisInfo = [EmojiInfo]()
     
     var sendStatus: SendStatus = .success
     
-    init(message: String, imageURL: String?=nil, videoURL: String?=nil, messageSender: MessageSender, receiver: String = "", uuid: String = UUID().uuidString, sender: String, messageType: MessageType, option: MessageOption = .toOne, id: Int = 0, date: String = "", sendStatus: SendStatus = .success) {
+    init(message: String, imageURL: String?=nil, videoURL: String?=nil, messageSender: MessageSender, receiver: String = "", uuid: String = UUID().uuidString, sender: String, messageType: MessageType, option: MessageOption = .toOne, id: Int = 0, date: String = "", sendStatus: SendStatus = .success, emojisInfo: [EmojiInfo] = []) {
         self.message = message.withoutWhitespace()
         self.messageSender = messageSender
         self.senderUsername = sender
@@ -70,5 +71,26 @@ class Message: NSObject {
         self.imageURL = imageURL
         self.videoURL = videoURL
         self.uuid = uuid
+        self.emojisInfo = emojisInfo
+    }
+}
+
+class EmojiInfo: NSObject, NSCopying {
+    func copy(with zone: NSZone? = nil) -> Any {
+        return EmojiInfo(x: self.x, y: self.y, rotation: self.rotation, scale: self.scale, imageLink: self.imageLink)
+    }
+    
+    var x: CGFloat
+    var y: CGFloat
+    var imageLink: String
+    var rotation: CGFloat
+    var scale: CGFloat
+    
+    init(x: CGFloat, y: CGFloat, rotation: CGFloat, scale: CGFloat, imageLink: String) {
+        self.x = x
+        self.y = y
+        self.rotation = rotation
+        self.scale = scale
+        self.imageLink = imageLink
     }
 }

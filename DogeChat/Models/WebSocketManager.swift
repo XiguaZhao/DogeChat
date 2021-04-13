@@ -227,6 +227,20 @@ class WebSocketManager: NSObject {
         return image!.pngData()!
     }
     
+    func getCacheImage(from cache: NSCache<NSString, NSData>, path: String, completion: @escaping ((_ image: UIImage?, _ data: Data?) -> Void)) {
+        if let data = cache.object(forKey: path as NSString) {
+            completion(nil, data as Data)
+        } else {
+            SDWebImageManager.shared.loadImage(with: URL(string: path), options: .avoidDecodeImage, progress: nil) { (image, data, error, _, _, _) in
+                guard error == nil else { return }
+                if let data = data {
+                    cache.setObject(data as NSData, forKey: path as NSString)
+                    completion(image, data)
+                }
+            }
+        }
+    }
+    
     //MARK: 表情包
     func getEmojis(completion: @escaping ([String]) -> Void) {
         session.get(url_pre+"star/getStar", parameters: nil, headers: ["Cookie": "SESSION="+cookie], progress: nil, success: { (task, response) in
