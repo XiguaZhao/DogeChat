@@ -33,8 +33,9 @@ import SwiftyJSON
 
 class ChatRoomViewController: UIViewController {
     
+    static let numberOfHistory = 10
     let manager = WebSocketManager.shared
-    let collectionView = UICollectionView(frame: CGRect.zero, collectionViewLayout: UICollectionViewFlowLayout())
+    let collectionView = UICollectionView(frame: CGRect.zero, collectionViewLayout: ChatRootCollectionViewLayout())
     let messageInputBar = MessageInputView()
     var messageOption: MessageOption = .toAll
     var friendName = ""
@@ -44,6 +45,8 @@ class ChatRoomViewController: UIViewController {
     var latestPickedImageInfo: (image: UIImage?, url: URL)?
     let emojiSelectView = EmojiSelectView()
     var messages = [Message]()
+    var isAutoGetHistory = false
+    var isFirstTimeGetHistory = false
     
     var username = ""
     
@@ -71,6 +74,7 @@ class ChatRoomViewController: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(receiveNewMessageNotification(_:)), name: .receiveNewMessage, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(confirmSendPhoto), name: .confirmSendPhoto, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(emojiButtonTapped), name: .emojiButtonTapped, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(receiveEmojiInfoChangedNotification(_:)), name: .emojiInfoChanged, object: nil)
         addRefreshController()
         layoutViews()
         loadViews()
@@ -82,7 +86,6 @@ class ChatRoomViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         messageInputBar.textView.delegate = self
-//        [self.tableView setContentOffset:CGPointMake(0, self.tableView.contentSize.height - self.tableView.frame.size.height) animated:YES];
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -93,6 +96,10 @@ class ChatRoomViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         scrollBottom = false
+        if collectionView.contentSize.height < view.bounds.height {
+            displayHistory()
+            isFirstTimeGetHistory = true
+        }
     }
     
     deinit {
@@ -100,7 +107,7 @@ class ChatRoomViewController: UIViewController {
     }
     
     @objc func tap() {
-        NotificationCenter.default.post(name: NSNotification.Name.shouldResignFirstResponder, object: nil)
+        messageInputBar.textViewResign()
     }
     
     @objc func sendSuccess(notification: Notification) {
@@ -301,17 +308,25 @@ extension ChatRoomViewController: MessageDelegate {
     func receiveMessages(_ messages: [Message], pages: Int) {
         let minId = (self.messages.first?.id) ?? Int.max
         self.pagesAndCurNum.pages = pages
-        let filtered = messages.filter { $0.id < minId }
-        for message in filtered {
-            self.messages.insert(message, at: 0)
-            self.collectionView.insertItems(at: [IndexPath(row: 0, section: 0)])
-            if messageOption == .toAll {
-                manager.messagesGroup.insert(message, at: 0)
-            } else {
-                manager.messagesSingle.insert(message, at: 0, for: friendName)
-            }
+        let filtered = messages.filter { $0.id < minId }.reversed() as [Message]
+        let oldIndexPath = IndexPath(item: min(self.messages.count, ChatRoomViewController.numberOfHistory), section: 0)
+        self.messages.insert(contentsOf: filtered, at: 0)
+        let indexPaths = [Int](0..<messages.count).map{ IndexPath(item: $0, section: 0) }
+        UIView.performWithoutAnimation {
+            self.collectionView.insertItems(at: indexPaths)
+        }
+        if messageOption == .toAll {
+            manager.messagesGroup.insert(contentsOf: filtered, at: 0)
+        } else {
+            manager.messagesSingle.insert(filtered, at: 0, for: friendName)
         }
         self.collectionView.refreshControl?.endRefreshing()
+        if isAutoGetHistory {
+            collectionView.scrollToItem(at: oldIndexPath, at: .top, animated: false)
+            isAutoGetHistory = false
+        } else if isFirstTimeGetHistory {
+            collectionView.scrollToItem(at: IndexPath(item: max(0, self.messages.count-1), section: 0), at: .bottom, animated: true)
+        }
     }
     
     func newFriendRequest() {
@@ -326,7 +341,7 @@ extension ChatRoomViewController {
     func addRefreshController() {
         let controller = UIRefreshControl()
         controller.addTarget(self, action: #selector(displayHistory), for: .valueChanged)
-        collectionView.refreshControl = controller
+//        collectionView.refreshControl = controller
     }
     
     @objc func displayHistory() {
@@ -334,7 +349,7 @@ extension ChatRoomViewController {
             self.collectionView.refreshControl?.endRefreshing()
             return
         }
-        pagesAndCurNum.curNum = (self.messages.count / 10) + 1
+        pagesAndCurNum.curNum = (self.messages.count / ChatRoomViewController.numberOfHistory) + 1
         manager.historyMessages(for: (messageOption == .toAll) ? "chatRoom" : friendName, pageNum: pagesAndCurNum.curNum)
         pagesAndCurNum.curNum += 1
     }
@@ -422,7 +437,6 @@ extension ChatRoomViewController: UITextViewDelegate {
     }
     
     func textViewShouldBeginEditing(_ textView: UITextView) -> Bool {
-        emojiSelectView.isHidden = true
         return true
     }
     

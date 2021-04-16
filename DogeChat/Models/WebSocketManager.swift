@@ -248,10 +248,24 @@ class WebSocketManager: NSObject {
             let emojisData = json["data"].arrayValue
             var filePaths = [String]()
             for emojiData in emojisData {
-                filePaths.append(self.encrypt.decryptMessage(emojiData["content"].stringValue))
+                let id = emojiData["starId"].stringValue
+                let path = self.encrypt.decryptMessage(emojiData["content"].stringValue)
+                filePaths.append(path)
+                EmojiSelectView.emojiPathToId[path] = id
             }
             completion(filePaths)
         }, failure: nil)
+    }
+    
+    func deleteEmoji(_ path: String, completion: @escaping (() -> Void)) {
+        if let id = EmojiSelectView.emojiPathToId[path] {
+            session.post(url_pre + "star/delStar?starId=\(id)", parameters: nil, headers: nil, progress: nil) { (task, response) in
+                if JSON(response)["status"] == "success" {
+                    completion()
+                }
+            } failure: { (task, error) in
+            }
+        }
     }
     
     func starAndUploadEmoji(filePath: String, isGif: Bool) {
@@ -261,8 +275,66 @@ class WebSocketManager: NSObject {
         } failure: { (task, error) in
             
         }
-
-
+    }
+    
+    func sendEmojiInfos(_ messages: [Message]) {
+        for message in messages {
+            var infos = [[String: String]]()
+            for emojiInfo in message.emojisInfo {
+                let singleEmoji = [
+                    "path": emojiInfo.imageLink,
+                    "locationX": "\(emojiInfo.x)",
+                    "locationY": "\(emojiInfo.y)",
+                    "scale": "\(emojiInfo.scale)",
+                    "rotate": "\(emojiInfo.rotation)"
+                ]
+                infos.append(singleEmoji)
+            }
+            let dict = ["method": "emoji", "message": ["receiver": message.receiver, "lastModifiedBy": username, "uuid": message.uuid, "emojis": infos]] as [String : Any]
+            send(makeJsonString(for: dict))
+        }
+    }
+    
+    func processEmojiInfoChanges(json: JSON) {
+        let messageJson = json["message"]
+        let emojis = messageJson["emojis"].arrayValue
+        let uuid = messageJson["uuid"].stringValue
+        let receiver = messageJson["receiver"].stringValue
+        let lastModifiedBy = messageJson["lastModifiedBy"].stringValue
+        var message: Message?
+        if receiver == "PublicPino" {
+            if let index = messagesGroup.firstIndex(where: { $0.uuid == uuid }) {
+                message = messagesGroup[index]
+            }
+        } else {
+            if let index = messagesSingle[lastModifiedBy]?.firstIndex(where: { $0.uuid == uuid }) {
+                message = messagesSingle[lastModifiedBy]![index]
+            }
+        }
+        if let message = message {
+            processEmojiInfo(emojis, for: message)
+            NotificationCenter.default.post(name: .emojiInfoChanged, object: (receiver, lastModifiedBy), userInfo: ["message": message])
+        }
+    }
+    
+    func stringToCGFloat(_ str: String) -> CGFloat {
+        if let number = NumberFormatter().number(from: str) {
+            return CGFloat(truncating: number)
+        } else {
+            return 0
+        }
+    }
+    
+    func processEmojiInfo(_ infos: [JSON], for message: Message) {
+        var emojiInfos = [EmojiInfo]()
+        for emoji in infos {
+            let newInfo = EmojiInfo(x: stringToCGFloat(emoji["locationX"].stringValue), y: stringToCGFloat(emoji["locationY"].stringValue), rotation: stringToCGFloat(emoji["rotate"].stringValue), scale: stringToCGFloat(emoji["scale"].stringValue), imageLink: emoji["path"].stringValue, lastModifiedBy: emoji["lastModifiedBy"].stringValue)
+            if newInfo.lastModifiedBy != username {
+                newInfo.x = 1 - newInfo.x
+            }
+            emojiInfos.append(newInfo)
+        }
+        message.emojisInfo = emojiInfos
     }
 
     //MARK: History Messages
@@ -355,6 +427,7 @@ extension WebSocketManager: SRWebSocketDelegate  {
             let newMessage = wrapMessage(content: content, option: .toAll, sender: sender, receiver: "", id: id, date: "", uuid: uuid)
             messagesGroup.append(newMessage)
             postNotification(message: newMessage)
+            playSound()
         case "join":
             let user = json["user"].stringValue
             let number = json["total"].intValue
@@ -383,6 +456,7 @@ extension WebSocketManager: SRWebSocketDelegate  {
                 for message in newMessages {
                     postNotification(message: message)
                 }
+                playSound()
             }
             
         case "NewMessage": // 收到私人消息
@@ -406,6 +480,7 @@ extension WebSocketManager: SRWebSocketDelegate  {
                 for message in messages {
                     postNotification(message: message)
                 }
+                playSound()
             }
         case "getHistory":  // 获取群聊、个人历史记录
             let pages = json["data"]["pages"].intValue
@@ -421,6 +496,7 @@ extension WebSocketManager: SRWebSocketDelegate  {
                 let receiver = message["messageReceiver"].stringValue
                 let option: MessageOption = (receiver == "PublicPino" ? .toAll : .toOne)
                 let newMessage = wrapMessage(content: content, option: option, sender: sender, receiver: receiver, id: id, date: date, uuid: uuid)
+                processEmojiInfo(message["emojis"].arrayValue, for: newMessage)
                 result.append(newMessage)
             }
             messageDelegate?.receiveMessages?(result, pages: pages)
@@ -455,6 +531,8 @@ extension WebSocketManager: SRWebSocketDelegate  {
             guard let _uuid = UUID(uuidString: uuid),
                   let call = AppDelegate.shared.callManager.callWithUUID(_uuid) else { return }
             AppDelegate.shared.callManager.end(call: call)
+        case "emoji":
+            processEmojiInfoChanges(json: json)
         default:
             return
         }

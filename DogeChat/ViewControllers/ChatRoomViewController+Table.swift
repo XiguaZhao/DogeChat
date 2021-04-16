@@ -61,6 +61,17 @@ extension ChatRoomViewController: UICollectionViewDataSource, UICollectionViewDe
         return CGSize(width: self.view.bounds.width, height: MessageCollectionViewCell.height(for: messages[indexPath.item]))
     }
     
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        guard scrollView == collectionView, scrollView.contentOffset.y == -collectionView.safeAreaInsets.top else {
+            return
+        }
+        if scrollBottom {
+            return
+        }
+        displayHistory()
+        isAutoGetHistory = true
+    }
+    
     func insertNewMessageCell(_ messages: [Message]) {
         let filtered = messages.filter { !self.messages.contains($0) }
         DispatchQueue.main.async { [self] in
@@ -99,8 +110,11 @@ extension ChatRoomViewController: UICollectionViewDataSource, UICollectionViewDe
     
     func emojiOutBounds(from cell: MessageCollectionViewCell, gesture: UIGestureRecognizer) {
         let point = gesture.location(in: collectionView)
-        guard let newIndexPath = collectionView.indexPathForItem(at: point),
-              let oldIndexPath = cell.indexPath else { return }
+        guard let oldIndexPath = cell.indexPath else { return }
+        guard let newIndexPath = collectionView.indexPathForItem(at: point) else {
+            needReload(indexPath: [oldIndexPath])
+            return
+        }
         if let (_emojiInfo, _messageIndex, _) = cell.getIndex(for: gesture),
            let emojiInfo = _emojiInfo,
            let messageIndex = _messageIndex {
@@ -109,18 +123,33 @@ extension ChatRoomViewController: UICollectionViewDataSource, UICollectionViewDe
             emojiInfo.x = newPoint.x / UIScreen.main.bounds.width
             emojiInfo.y = newPoint.y / MessageCollectionViewCell.height(for: messages[newIndexPath.item])
             messages[newIndexPath.item].emojisInfo.append(emojiInfo)
-            needReload(indexPath: [newIndexPath, oldIndexPath], newHeight: 0)
+            needReload(indexPath: [newIndexPath, oldIndexPath])
+            manager.sendEmojiInfos([messages[oldIndexPath.item], messages[newIndexPath.item]])
         }
     }
     
     func emojiInfoDidChange(from oldInfo: EmojiInfo?, to newInfo: EmojiInfo?, cell: MessageCollectionViewCell) {
         if let indexPahth = collectionView.indexPath(for: cell) {
-            needReload(indexPath: [indexPahth], newHeight: 0)
+            needReload(indexPath: [indexPahth])
+            manager.sendEmojiInfos([messages[indexPahth.item]])
         }
     }
     
-    func needReload(indexPath: [IndexPath], newHeight: CGFloat) {
+    func needReload(indexPath: [IndexPath]) {
         collectionView.reloadItems(at: indexPath)
     }
     
+    @objc func receiveEmojiInfoChangedNotification(_ noti: Notification) {
+        guard let (receiver, lastModifiedBy) = noti.object as? (String, String), let message = noti.userInfo?["message"] as? Message else { return }
+        if (receiver == "PublicPino" && navigationItem.title == "群聊") || lastModifiedBy == friendName {
+            if let index = messages.firstIndex(of: message) { // 消息存在
+                let indexPath = IndexPath(item: index, section: 0)
+                collectionView.reloadItems(at: [indexPath])
+            } else { // 最好就是加载到这条消息为止
+                
+            }
+        } else { // 弹窗通知
+            
+        }
+    }
 }

@@ -38,7 +38,6 @@ enum MessageSender {
 
 protocol MessageTableViewCellDelegate: class {
     func imageViewTapped(_ cell: MessageCollectionViewCell, imageView: FLAnimatedImageView, path: String)
-    func needReload(indexPath: [IndexPath], newHeight: CGFloat)
     func emojiOutBounds(from cell: MessageCollectionViewCell, gesture: UIGestureRecognizer)
     func emojiInfoDidChange(from oldInfo: EmojiInfo?, to newInfo: EmojiInfo?, cell: MessageCollectionViewCell)
 }
@@ -58,6 +57,7 @@ class MessageCollectionViewCell: UICollectionViewCell {
     var imageConstraint: NSLayoutConstraint!
     var emojis = [EmojiInfo: FLAnimatedImageView]()
     var contentSize: CGSize = CGSize.zero
+    var activeEmojiView: UIView?
     static let emojiWidth: CGFloat = 150
     var isGif: Bool {
         guard let url = message.imageURL else {
@@ -77,6 +77,11 @@ class MessageCollectionViewCell: UICollectionViewCell {
         super.prepareForReuse()
         for view in contentView.subviews {
             view.removeFromSuperview()
+        }
+        if let gestures = contentView.gestureRecognizers {
+            for ges in gestures {
+                contentView.removeGestureRecognizer(ges)
+            }
         }
     }
     
@@ -145,6 +150,7 @@ class MessageCollectionViewCell: UICollectionViewCell {
             } else {
                 self.animatedImageView.animatedImage = FLAnimatedImage(gifData: data as Data)
             }
+            layoutIfNeeded()
             return
         }
         
@@ -163,6 +169,7 @@ class MessageCollectionViewCell: UICollectionViewCell {
                     cache.setObject(data as NSData, forKey: imageUrl as NSString)
                 }
             }
+            layoutIfNeeded()
             capturedMessage.sendStatus = .success
         }
     }
@@ -323,12 +330,12 @@ extension MessageCollectionViewCell {
 extension MessageCollectionViewCell {
     func didDrop(imageLink: String, image: UIImage, point: CGPoint, cache: NSCache<NSString, NSData>) {
         let width: CGFloat = MessageCollectionViewCell.emojiWidth
-        let emojiInfo = EmojiInfo(x: point.x/self.contentSize.width, y: point.y/self.contentSize.height, rotation: 0, scale: 1, imageLink: imageLink)
+        let emojiInfo = EmojiInfo(x: max(0, point.x/self.contentSize.width), y: max(0, point.y/self.contentSize.height), rotation: 0, scale: 1, imageLink: imageLink, lastModifiedBy: WebSocketManager.shared.username)
         message.emojisInfo.append(emojiInfo)
         let frame = CGRect(x: point.x - width / 2, y: point.y - width / 2, width: width, height: width)
         let contentBounds = CGRect(origin: CGPoint(x: 0, y: 0), size: self.contentSize)
         if !contentBounds.contains(frame) {
-            delegate?.needReload(indexPath: [self.indexPath], newHeight: contentBounds.union(frame).height)
+            delegate?.emojiInfoDidChange(from: nil, to: emojiInfo, cell: self)
             return
         }
         let imageView = FLAnimatedImageView(frame: frame)
@@ -359,10 +366,11 @@ extension MessageCollectionViewCell {
             let width = emojiInfo.scale * MessageCollectionViewCell.emojiWidth
             let contentSize = self.contentSize
             let size = CGSize(width: width, height: width)
-            let origin = CGPoint(x: emojiInfo.x * contentSize.width - size.width / 2, y: emojiInfo.y * contentSize.height - size.height / 2)
+            let origin = CGPoint(x: emojiInfo.x * contentSize.width - size.width / 2, y: max(0, emojiInfo.y) * contentSize.height - size.height / 2)
             let imageView = FLAnimatedImageView(frame: CGRect(origin: origin, size: size))
             imageView.contentMode = .scaleAspectFit
             contentView.addSubview(imageView)
+            imageView.alpha = 0
             emojis[emojiInfo] = imageView
             WebSocketManager.shared.getCacheImage(from: cache, path: emojiInfo.imageLink) { (image, data) in
                 if let data = data {
@@ -371,22 +379,30 @@ extension MessageCollectionViewCell {
                     } else {
                         imageView.image = UIImage(data: data)
                     }
+                    UIView.animate(withDuration: 0.2) {
+                        imageView.alpha = 1
+                    }
                 }
             }
             imageView.isUserInteractionEnabled = true
+            let beginReceiveGes = UITapGestureRecognizer(target: self, action: #selector(beginReceiveGes(_:)))
+            beginReceiveGes.numberOfTapsRequired = 1
+            imageView.addGestureRecognizer(beginReceiveGes)
             let deleteGes = UITapGestureRecognizer(target: self, action: #selector(deleteGes(_:)))
             deleteGes.numberOfTapsRequired = 2
             imageView.addGestureRecognizer(deleteGes)
-            let pinchGes = UIPinchGestureRecognizer(target: self, action: #selector(pinchGes(_:)))
-            imageView.addGestureRecognizer(pinchGes)
             let moveGes = UIPanGestureRecognizer(target: self, action: #selector(moveGes(_:)))
             imageView.addGestureRecognizer(moveGes)
+            moveGes.isEnabled = false
         }
     }
     
     func getIndex(for gesture: UIGestureRecognizer) -> (emojiInfo: EmojiInfo?, messageIndex: Int?, dictIndex: Dictionary<EmojiInfo, FLAnimatedImageView>.Index?)? {
         var res: (emojiInfo: EmojiInfo?, messageIndex: Int?, dictIndex: Dictionary<EmojiInfo, FLAnimatedImageView>.Index?)? = (nil, nil, nil)
-        let emojiView = gesture.view
+        var emojiView = gesture.view
+        if gesture.isKind(of: UIPinchGestureRecognizer.self) {
+            emojiView = activeEmojiView
+        }
         for (emojiInfo, view) in emojis {
             if view == emojiView {
                 if let index = message.emojisInfo.firstIndex(of: emojiInfo) {
@@ -400,6 +416,27 @@ extension MessageCollectionViewCell {
         return res
     }
     
+    @objc func beginReceiveGes(_ ges: UITapGestureRecognizer) {
+        if let view = ges.view, let gestures = view.gestureRecognizers {
+            activeEmojiView = view
+            for gesture in gestures {
+                if gesture.isKind(of: UIPanGestureRecognizer.self) {
+                    gesture.isEnabled = true
+                    if let gesturesOfContentView = contentView.gestureRecognizers {
+                        for gestureOfContentView in gesturesOfContentView {
+                            if gestureOfContentView.isKind(of: UIPinchGestureRecognizer.self) {
+                                gestureOfContentView.isEnabled = true
+                                return
+                            }
+                        }
+                    }
+                    let pinchGes = UIPinchGestureRecognizer(target: self, action: #selector(pinchGes(_:)))
+                    contentView.addGestureRecognizer(pinchGes)
+                }
+            }
+        }
+    }
+    
     @objc func deleteGes(_ ges: UITapGestureRecognizer) {
         if let emojiView = ges.view {
             emojiView.removeFromSuperview()
@@ -411,23 +448,23 @@ extension MessageCollectionViewCell {
                 emojis.remove(at: dictIndex)
                 // 发送更新的通知
                 delegate?.emojiInfoDidChange(from: emojiInfo, to: nil, cell: self)
-
             }
         }
     }
     
     @objc func pinchGes(_ ges: UIPinchGestureRecognizer) {
         let scale = ges.scale
-        guard let emojiView = ges.view else { return }
+        guard let emojiView = activeEmojiView else { return }
         emojiView.transform = CGAffineTransform(scaleX: scale, y: scale)
         guard ges.state == .ended else { return }
+        ges.isEnabled = false
         if let (_emojiInfo, _messageIndex, _) = getIndex(for: ges),
            let emojiInfo = _emojiInfo,
            let messageIndex = _messageIndex {
-            message.emojisInfo[messageIndex].scale = scale
+            message.emojisInfo[messageIndex].scale *= scale
             guard let copy = emojiInfo.copy() as? EmojiInfo else { return }
-            emojiInfo.scale = scale
             delegate?.emojiInfoDidChange(from: copy, to: emojiInfo, cell: self)
+            activeEmojiView = nil
         }
     }
     

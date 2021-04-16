@@ -8,8 +8,9 @@
 
 import UIKit
 
-protocol EmojiViewDelegate: class {
-    func didSelectEmoji(filePath: String)
+@objc protocol EmojiViewDelegate: class {
+    @objc optional func didSelectEmoji(filePath: String)
+    @objc optional func deleteEmoji(cell: EmojiCollectionViewCell)
 }
 
 class EmojiSelectView: UIView {
@@ -25,6 +26,7 @@ class EmojiSelectView: UIView {
             }
         }
     }
+    static var emojiPathToId: [String: String] = [:]
     let cache = NSCache<NSString, NSData>()
     
     override init(frame: CGRect) {
@@ -66,10 +68,20 @@ class EmojiSelectView: UIView {
     
 }
 
-extension EmojiSelectView: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UICollectionViewDelegate, UICollectionViewDataSourcePrefetching {
+extension EmojiSelectView: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UICollectionViewDelegate, UICollectionViewDataSourcePrefetching, EmojiViewDelegate {
     
+    func deleteEmoji(cell: EmojiCollectionViewCell) {
+        if let indexPath = cell.indexPath {
+            WebSocketManager.shared.deleteEmoji(emojis[indexPath.item]) { [self] in
+                collectionView.deleteItems(at: [indexPath])
+                emojis.remove(at: indexPath.item)
+            }
+        }
+    }
+        
     func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
         for indexPath in indexPaths {
+            if indexPath.item >= emojis.count { continue }
             let imageLink = emojis[indexPath.item]
             if cache.object(forKey: imageLink as NSString) == nil {
                 SDWebImageManager.shared.loadImage(with: URL(string: imageLink), options: .avoidDecodeImage, context: [SDWebImageContextOption.imageCache: SDImageCacheType.memory], progress: nil) { [self] (image, data, error, cacheType, finished, url) in
@@ -102,18 +114,33 @@ extension EmojiSelectView: UICollectionViewDataSource, UICollectionViewDelegateF
         return 0
     }
     
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        delegate?.didSelectEmoji?(filePath: emojis[indexPath.item])
+    }
+    
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: EmojiCollectionViewCell.cellID, for: indexPath) as? EmojiCollectionViewCell else {
             return UICollectionViewCell()
         }
+        cell.indexPath = indexPath
+        cell.path = emojis[indexPath.item]
+        cell.delegate = self
         cell.cache = cache
         cell.displayEmoji(urlString: emojis[indexPath.item])
         return cell
     }
     
-    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        delegate?.didSelectEmoji(filePath: emojis[indexPath.item])
+    @available(iOS 13.0, *)
+    func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+        guard let cell = collectionView.cellForItem(at: indexPath) as? EmojiCollectionViewCell else { return nil }
+        let identifier = "\(indexPath.row)" as NSString
+        return .init(identifier: identifier, previewProvider: nil) { (menu) -> UIMenu? in
+            return UIMenu(title: "", image: nil, children: [UIAction(title: "删除") { _ in
+                self.deleteEmoji(cell: cell)
+            }])
+        }
     }
+    
 }
 
 extension EmojiSelectView: UICollectionViewDragDelegate {
@@ -122,7 +149,7 @@ extension EmojiSelectView: UICollectionViewDragDelegate {
         session.localContext = collectionView
         guard let cell = collectionView.cellForItem(at: indexPath) as? EmojiCollectionViewCell, let image = cell.emojiView.image else { return [] }
         let dragItem = UIDragItem(itemProvider: NSItemProvider(object: image))
-        dragItem.localObject = [cell.url?.absoluteString, cache]
+        dragItem.localObject = [cell.url?.absoluteString ?? "", cache]
         return [dragItem]
     }
     

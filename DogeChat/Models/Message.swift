@@ -77,7 +77,7 @@ class Message: NSObject {
 
 class EmojiInfo: NSObject, NSCopying {
     func copy(with zone: NSZone? = nil) -> Any {
-        return EmojiInfo(x: self.x, y: self.y, rotation: self.rotation, scale: self.scale, imageLink: self.imageLink)
+        return EmojiInfo(x: self.x, y: self.y, rotation: self.rotation, scale: self.scale, imageLink: self.imageLink, lastModifiedBy: self.lastModifiedBy)
     }
     
     var x: CGFloat
@@ -85,12 +85,14 @@ class EmojiInfo: NSObject, NSCopying {
     var imageLink: String
     var rotation: CGFloat
     var scale: CGFloat
+    var lastModifiedBy: String
     
-    init(x: CGFloat, y: CGFloat, rotation: CGFloat, scale: CGFloat, imageLink: String) {
+    init(x: CGFloat, y: CGFloat, rotation: CGFloat, scale: CGFloat, imageLink: String, lastModifiedBy: String) {
         self.x = x
         self.y = y
         self.rotation = rotation
         self.scale = scale
         self.imageLink = imageLink
+        self.lastModifiedBy = lastModifiedBy
     }
 }

@@ -8,6 +8,7 @@
 
 import UIKit
 
+
 class EmojiCollectionViewCell: UICollectionViewCell {
     
     static let cellID = "EmojiCollectionViewCell"
@@ -15,6 +16,9 @@ class EmojiCollectionViewCell: UICollectionViewCell {
     let imageDownloader = SDWebImageManager.shared
     var url: URL?
     var cache: NSCache<NSString, NSData>?
+    weak var delegate: EmojiViewDelegate?
+    var indexPath: IndexPath!
+    var path: String!
     
     override func layoutSubviews() {
         super.layoutSubviews()
@@ -37,8 +41,11 @@ class EmojiCollectionViewCell: UICollectionViewCell {
         super.prepareForReuse()
     }
     
+    @objc func tapTwice(_ ges: UITapGestureRecognizer) {
+        delegate?.deleteEmoji?(cell: self)
+    }
+        
     func displayEmoji(urlString: String) {
-        contentView.addSubview(emojiView)
         guard let url = URL(string: urlString) else { return }
         self.url = url
         let capturedUrl = url
@@ -67,3 +74,4 @@ class EmojiCollectionViewCell: UICollectionViewCell {
     }
     
 }
+

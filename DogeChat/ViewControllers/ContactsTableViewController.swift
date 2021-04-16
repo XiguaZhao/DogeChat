@@ -116,7 +116,6 @@ class ContactsTableViewController: UITableViewController {
     }
     
     @objc func receiveNewMessage(notification: Notification) {
-        manager.playSound()
         guard let message = notification.object as? Message else { return }
         if navigationController?.topViewController != self, let indexPath = tableView.indexPathForSelectedRow {
             if usernames[indexPath.row] == message.senderUsername && message.option == .toOne { return }

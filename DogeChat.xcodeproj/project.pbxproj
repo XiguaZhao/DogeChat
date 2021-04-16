@@ -37,6 +37,7 @@
 		07AB7B0B248F2A7A005306A1 /* SignUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07AB7B09248F2A7A005306A1 /* SignUpViewController.swift */; };
 		07AB7B0C248F2A7A005306A1 /* SignUpViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 07AB7B0A248F2A7A005306A1 /* SignUpViewController.xib */; };
 		07B3F5D4262470D70016B5C9 /* ChatRoomViewController+Drop.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07B3F5D3262470D70016B5C9 /* ChatRoomViewController+Drop.swift */; };
+		07B3F5F22627E65B0016B5C9 /* ChatRoomCollectionViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07B3F5F12627E65B0016B5C9 /* ChatRoomCollectionViewLayout.swift */; };
 		07C9632F25E3B53900C2BF4C /* ImageConfirmViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07C9632D25E3B53900C2BF4C /* ImageConfirmViewController.swift */; };
 		07C9633025E3B53900C2BF4C /* ImageConfirmViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 07C9632E25E3B53900C2BF4C /* ImageConfirmViewController.xib */; };
 		07E001DA248CA56800D4A287 /* SelectShortcutTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07E001D9248CA56800D4A287 /* SelectShortcutTVC.swift */; };
@@ -149,6 +150,7 @@
 		07AB7B09248F2A7A005306A1 /* SignUpViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpViewController.swift; sourceTree = "<group>"; };
 		07AB7B0A248F2A7A005306A1 /* SignUpViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SignUpViewController.xib; sourceTree = "<group>"; };
 		07B3F5D3262470D70016B5C9 /* ChatRoomViewController+Drop.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChatRoomViewController+Drop.swift"; sourceTree = "<group>"; };
+		07B3F5F12627E65B0016B5C9 /* ChatRoomCollectionViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatRoomCollectionViewLayout.swift; sourceTree = "<group>"; };
 		07C6AF80247D1AF10007222F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Interface.storyboard; sourceTree = "<group>"; };
 		07C6AF82247D1AF60007222F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		07C6AF84247D1AF60007222F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -269,6 +271,7 @@
 		078D413D248DF6E500E78605 /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
+				07B3F5F12627E65B0016B5C9 /* ChatRoomCollectionViewLayout.swift */,
 				AEC6BF501EAF345A007CA6E5 /* ChatRoomViewController.swift */,
 				07B3F5D3262470D70016B5C9 /* ChatRoomViewController+Drop.swift */,
 				AEA5A1781EC362150041C7B4 /* ChatRoomViewController+Table.swift */,
@@ -584,6 +587,7 @@
 				07513F8B2483FA7900EF68F8 /* Encrypt.swift in Sources */,
 				AEA5A1791EC362150041C7B4 /* ChatRoomViewController+Table.swift in Sources */,
 				0772559523C1D3F600790339 /* ChatRoom.swift in Sources */,
+				07B3F5F22627E65B0016B5C9 /* ChatRoomCollectionViewLayout.swift in Sources */,
 				078032842486B73900E370E0 /* RSAKeyEncoding.swift in Sources */,
 				0739FABC25BEEF6B00B6A7AB /* FloatWindow.swift in Sources */,
 				0760E10625E74C410030337E /* HJH264Decoder.m in Sources */,

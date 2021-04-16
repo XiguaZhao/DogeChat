@@ -100,7 +100,6 @@ class MessageInputView: UIView {
             NSLayoutConstraint(item: emojiButton, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: 30)
         ])
         
-        NotificationCenter.default.addObserver(self, selector: #selector(textViewResign), name: NSNotification.Name.shouldResignFirstResponder, object: nil)
     }
     
     @objc func textViewResign() {

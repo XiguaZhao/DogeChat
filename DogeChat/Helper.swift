@@ -24,11 +24,11 @@ extension Dictionary where Value == [Message] {
     }
   }
   
-  mutating func insert(_ element: Message, at index: Int, for key: Key) {
+  mutating func insert(_ elements: [Message], at index: Int, for key: Key) {
     if self[key] == nil {
-      self[key] = [element]
+      self[key] = elements
     } else {
-      self[key]!.insert(element, at: index)
+      self[key]!.insert(contentsOf: elements, at: index)
     }
   }
   
