@@ -32,6 +32,24 @@ import UIKit
 
 extension ChatRoomViewController: UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
     
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        guard let splitVC = self.splitViewController else { return }
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime(uptimeNanoseconds: UInt64(0.005)*NSEC_PER_SEC)) { 
+//            layoutViews(size: view.bounds.size)
+//            collectionView.reloadData()
+            if let contactVC = ((splitVC.viewControllers.first as? UITabBarController)?.viewControllers?.first as? UINavigationController)?.viewControllers.first as? ContactsTableViewController, let indexPath = contactVC.selectedIndexPath {
+                contactVC.tableView(contactVC.tableView, didSelectRowAt: indexPath)
+            }
+        }
+        if !splitVC.isCollapsed {
+            if self.tabBarController != nil { // masterVC
+                self.navigationController?.popToRootViewController(animated: true) 
+            }
+        }
+        
+    }
+    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         if scrollBottom {
             DispatchQueue.main.asyncAfter(deadline: DispatchTime(uptimeNanoseconds: UInt64(0.005)*NSEC_PER_SEC)) {
@@ -58,7 +76,7 @@ extension ChatRoomViewController: UICollectionViewDataSource, UICollectionViewDe
     }
         
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: self.view.bounds.width, height: MessageCollectionViewCell.height(for: messages[indexPath.item]))
+        return CGSize(width: collectionView.bounds.width, height: MessageCollectionViewCell.height(for: messages[indexPath.item]))
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
@@ -122,16 +140,18 @@ extension ChatRoomViewController: UICollectionViewDataSource, UICollectionViewDe
             let newPoint = gesture.location(in: collectionView.cellForItem(at: newIndexPath)?.contentView)
             emojiInfo.x = newPoint.x / UIScreen.main.bounds.width
             emojiInfo.y = newPoint.y / MessageCollectionViewCell.height(for: messages[newIndexPath.item])
+            emojiInfo.lastModifiedBy = manager.myName
             messages[newIndexPath.item].emojisInfo.append(emojiInfo)
             needReload(indexPath: [newIndexPath, oldIndexPath])
-            manager.sendEmojiInfos([messages[oldIndexPath.item], messages[newIndexPath.item]])
+            manager.sendEmojiInfos([messages[oldIndexPath.item], messages[newIndexPath.item]], receiver: friendName)
         }
     }
     
     func emojiInfoDidChange(from oldInfo: EmojiInfo?, to newInfo: EmojiInfo?, cell: MessageCollectionViewCell) {
         if let indexPahth = collectionView.indexPath(for: cell) {
             needReload(indexPath: [indexPahth])
-            manager.sendEmojiInfos([messages[indexPahth.item]])
+            newInfo?.lastModifiedBy = manager.myName
+            manager.sendEmojiInfos([messages[indexPahth.item]], receiver: friendName)
         }
     }
     
@@ -140,8 +160,8 @@ extension ChatRoomViewController: UICollectionViewDataSource, UICollectionViewDe
     }
     
     @objc func receiveEmojiInfoChangedNotification(_ noti: Notification) {
-        guard let (receiver, lastModifiedBy) = noti.object as? (String, String), let message = noti.userInfo?["message"] as? Message else { return }
-        if (receiver == "PublicPino" && navigationItem.title == "群聊") || lastModifiedBy == friendName {
+        guard let (receiver, sender) = noti.object as? (String, String), let message = noti.userInfo?["message"] as? Message else { return }
+        if (receiver == "PublicPino" && navigationItem.title == "群聊") || sender == friendName {
             if let index = messages.firstIndex(of: message) { // 消息存在
                 let indexPath = IndexPath(item: index, section: 0)
                 collectionView.reloadItems(at: [indexPath])

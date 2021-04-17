@@ -73,7 +73,7 @@ extension JoinChatViewController: UITextFieldDelegate {
       makeAlert(message: "信息不完整", detail: nil, showTime: 1, completion: nil)
       return 
     }
-    manager.username = username
+    manager.myName = username
     manager.login(username: username, password: password) { loginResult in
       if loginResult == "登录成功" {
         let contactsTVC = ContactsTableViewController()

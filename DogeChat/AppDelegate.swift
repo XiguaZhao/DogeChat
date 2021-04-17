@@ -46,6 +46,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     let socketManager = WebSocketManager.shared
     var navigationController: UINavigationController!
     var tabBarController: UITabBarController!
+    var splitViewController: UISplitViewController!
     var providerDelegate: ProviderDelegate!
     let callManager = CallManager()
     let voipRegistry = PKPushRegistry(queue: DispatchQueue.main)
@@ -62,9 +63,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         } else {
             window?.backgroundColor = .white
         }
-        tabBarController = UIStoryboard(name: "main", bundle: .main).instantiateInitialViewController() as? UITabBarController
-        window?.rootViewController = tabBarController
-        login()
+        
+        splitViewController = UIStoryboard(name: "main", bundle: .main).instantiateInitialViewController() as? UISplitViewController
+        splitViewController.preferredDisplayMode = .allVisible
+        tabBarController = splitViewController.viewControllers[0] as? UITabBarController
+        splitViewController.preferredPrimaryColumnWidthFraction = 0.35
+        if #available(iOS 13.0, *) {
+            splitViewController.view.backgroundColor = .systemBackground
+        } else {
+            splitViewController.view.backgroundColor = .white
+        }
+        window?.rootViewController = splitViewController
+
         window?.makeKeyAndVisible()
         pushWindow = FloatWindow(type: .push, delegate: self)
         callWindow = FloatWindow(type: .alwaysDisplay, delegate: self)
@@ -89,8 +99,24 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 }
             }
         }
-
+        login()
         return true
+    }
+    
+//    func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {
+//        if AppDelegate.isPad() {
+//            return .all
+//        } else {
+//            return .portrait
+//        }
+//    }
+    
+    class func isLandscape() -> Bool {
+        return UIDevice.current.orientation == .landscapeLeft || UIDevice.current.orientation == .landscapeRight
+    }
+    
+    class func isPad() -> Bool {
+        return UIDevice.current.userInterfaceIdiom == .pad
     }
     
     func login() {
@@ -104,7 +130,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 guard loginResult == "登录成功" else { return }
                 contactVC.loginSuccess = true
                 contactVC.username = username
-                self.socketManager.connect()
+                if AppDelegate.isPad() && !self.splitViewController.isCollapsed {
+                    if let contactVC = (AppDelegate.shared.navigationController.topViewController as? ContactsTableViewController) {
+                    }
+                    return
+                }
+//                self.socketManager.connect()
             }
         } else {
             self.navigationController.viewControllers = [JoinChatViewController()]
@@ -115,7 +146,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         let nowTime = Date().timeIntervalSince1970
         let shouldReLogin = nowTime - lastAppEnterBackgroundTime >= 20 * 60
         if shouldReLogin, let password = UserDefaults.standard.value(forKey: "lastPassword") as? String {
-            socketManager.login(username: socketManager.username, password: password) { (result) in
+            socketManager.login(username: socketManager.myName, password: password) { (result) in
                 guard result == "登录成功" else { return }
                 self.socketManager.connect()
             }
@@ -128,9 +159,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
     
     func applicationDidEnterBackground(_ application: UIApplication) {
+        AppDelegate.shared.navigationController.topViewController?.navigationItem.title = "background"
+
         lastAppEnterBackgroundTime = NSDate().timeIntervalSince1970
         guard !callManager.hasCall() else { return }
         socketManager.disconnect()
+
     }
     
     func application(_ application: UIApplication, performActionFor shortcutItem: UIApplicationShortcutItem, completionHandler: @escaping (Bool) -> Void) {

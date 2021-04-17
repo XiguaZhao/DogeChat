@@ -10,7 +10,6 @@ pod 'SwiftyRSA'
 pod 'FLAnimatedImage'
 pod 'SDWebImage'
 pod 'DACircularProgress'
-  # Pods for DogeChat
-#pod 'Starscream', :git => 'https://github.com/daltoniam/Starscream.git'
 pod 'SocketRocket'
+pod 'Masonry'
 end

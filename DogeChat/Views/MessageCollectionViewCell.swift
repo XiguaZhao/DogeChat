@@ -186,13 +186,13 @@ class MessageCollectionViewCell: UICollectionViewCell {
     
     func addConstraintsForImageMessage() {
         let offsetTop: CGFloat = 8
-        imageConstraint = NSLayoutConstraint(item: animatedImageView!, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: contentView.bounds.width/2)
+        imageConstraint = NSLayoutConstraint(item: animatedImageView!, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: 200)
         
         NSLayoutConstraint.activate([
             animatedImageView.topAnchor.constraint(equalTo: (messageSender == .ourself ? contentView.topAnchor : contentView.topAnchor), constant: offsetTop + nameLabel.bounds.height + offsetTop),
             animatedImageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -offsetTop),
             imageConstraint,
-            (messageSender == .ourself ? animatedImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -offsetTop) : animatedImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: offsetTop))
+            (messageSender == .ourself ? animatedImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -offsetTop-safeAreaInsets.right) : animatedImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: offsetTop+safeAreaInsets.left))
         ])
     }
     
@@ -290,7 +290,7 @@ extension MessageCollectionViewCell {
                 indicator.removeFromSuperview()
             }
             
-            messageLabel.center = CGPoint(x: bounds.size.width - messageLabel.bounds.size.width/2.0 - 16, y: bounds.size.height/2.0)
+            messageLabel.center = CGPoint(x: bounds.size.width - messageLabel.bounds.size.width/2.0 - 16 - safeAreaInsets.right, y: bounds.size.height/2.0)
             messageLabel.backgroundColor = UIColor(red: 24/255, green: 180/255, blue: 128/255, alpha: 1.0)
             
             indicator.frame = CGRect(x: 0, y: 0, width: 30, height: 30)
@@ -330,7 +330,7 @@ extension MessageCollectionViewCell {
 extension MessageCollectionViewCell {
     func didDrop(imageLink: String, image: UIImage, point: CGPoint, cache: NSCache<NSString, NSData>) {
         let width: CGFloat = MessageCollectionViewCell.emojiWidth
-        let emojiInfo = EmojiInfo(x: max(0, point.x/self.contentSize.width), y: max(0, point.y/self.contentSize.height), rotation: 0, scale: 1, imageLink: imageLink, lastModifiedBy: WebSocketManager.shared.username)
+        let emojiInfo = EmojiInfo(x: max(0, point.x/self.contentSize.width), y: max(0, point.y/self.contentSize.height), rotation: 0, scale: 1, imageLink: imageLink, lastModifiedBy: WebSocketManager.shared.myName)
         message.emojisInfo.append(emojiInfo)
         let frame = CGRect(x: point.x - width / 2, y: point.y - width / 2, width: width, height: width)
         let contentBounds = CGRect(origin: CGPoint(x: 0, y: 0), size: self.contentSize)
@@ -370,7 +370,6 @@ extension MessageCollectionViewCell {
             let imageView = FLAnimatedImageView(frame: CGRect(origin: origin, size: size))
             imageView.contentMode = .scaleAspectFit
             contentView.addSubview(imageView)
-            imageView.alpha = 0
             emojis[emojiInfo] = imageView
             WebSocketManager.shared.getCacheImage(from: cache, path: emojiInfo.imageLink) { (image, data) in
                 if let data = data {
@@ -378,9 +377,6 @@ extension MessageCollectionViewCell {
                         imageView.animatedImage = FLAnimatedImage(gifData: data)
                     } else {
                         imageView.image = UIImage(data: data)
-                    }
-                    UIView.animate(withDuration: 0.2) {
-                        imageView.alpha = 1
                     }
                 }
             }

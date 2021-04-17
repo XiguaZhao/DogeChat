@@ -47,6 +47,7 @@ class ChatRoomViewController: UIViewController {
     var messages = [Message]()
     var isAutoGetHistory = false
     var isFirstTimeGetHistory = false
+    let messageBarHeight:CGFloat = 60.0
     
     var username = ""
     
@@ -75,17 +76,23 @@ class ChatRoomViewController: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(confirmSendPhoto), name: .confirmSendPhoto, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(emojiButtonTapped), name: .emojiButtonTapped, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(receiveEmojiInfoChangedNotification(_:)), name: .emojiInfoChanged, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(receiveHistoryMessages(_:)), name: .receiveHistoryMessages, object: nil)
         addRefreshController()
-        layoutViews()
+//        layoutViews(size: view.bounds.size)
         loadViews()
+        configureEmojiView()
+        layoutViews(size: view.bounds.size)
         let recognizer = UITapGestureRecognizer(target: self, action: #selector(tap))
         collectionView.addGestureRecognizer(recognizer)
-        configureEmojiView()
     }
+    
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         messageInputBar.textView.delegate = self
+        UIView.performWithoutAnimation {
+            messageInputBar.textView.resignFirstResponder()
+        }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -95,10 +102,14 @@ class ChatRoomViewController: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        scrollBottom = false
-        if collectionView.contentSize.height < view.bounds.height {
-            displayHistory()
-            isFirstTimeGetHistory = true
+        layoutViews(size: view.bounds.size)
+        collectionView.reloadData()
+        DispatchQueue.main.async { [self] in
+            scrollBottom = false
+            if collectionView.contentSize.height < view.bounds.height {
+                displayHistory()
+                isFirstTimeGetHistory = true
+            }
         }
     }
     
@@ -148,6 +159,9 @@ extension ChatRoomViewController: MessageInputDelegate, UIImagePickerControllerD
         let imagePicker = UIImagePickerController()
         imagePicker.delegate = self
         let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        let popover = actionSheet.popoverPresentationController
+        popover?.sourceView = messageInputBar.addButton
+        popover?.sourceRect = CGRect(x: 0, y: 0, width: 100, height: 100)
         actionSheet.addAction(UIAlertAction(title: "拍照", style: .default, handler: { [weak self] (action) in
             imagePicker.sourceType = .camera
             imagePicker.cameraCaptureMode = .photo
@@ -258,10 +272,8 @@ extension ChatRoomViewController: MessageInputDelegate, UIImagePickerControllerD
     }
     
     private func configureEmojiView() {
-        view.addSubview(emojiSelectView)
         emojiSelectView.delegate = self
-        let height: CGFloat = MessageInputView.ratioOfEmojiView * UIScreen.main.bounds.height
-        emojiSelectView.frame = CGRect(x: 0, y: UIScreen.main.bounds.height, width: UIScreen.main.bounds.width, height: height)
+        view.addSubview(emojiSelectView)
     }
     
     @objc func emojiButtonTapped() {
@@ -305,7 +317,9 @@ extension ChatRoomViewController: MessageDelegate {
         navigationItem.title = "群聊"// + "(\(newNumber)人在线)"
     }
     
-    func receiveMessages(_ messages: [Message], pages: Int) {
+    @objc func receiveHistoryMessages(_ noti: Notification) {
+        AppDelegate.shared.navigationController.topViewController?.navigationItem.title = "call notification"
+        guard let messages = noti.userInfo?["messages"] as? [Message], let pages = noti.userInfo?["pages"] as? Int else { return }
         let minId = (self.messages.first?.id) ?? Int.max
         self.pagesAndCurNum.pages = pages
         let filtered = messages.filter { $0.id < minId }.reversed() as [Message]

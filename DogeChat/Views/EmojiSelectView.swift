@@ -106,7 +106,10 @@ extension EmojiSelectView: UICollectionViewDataSource, UICollectionViewDelegateF
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        let width = UIScreen.main.bounds.width / 4 - 2
+        var width = collectionView.bounds.width / 4 - 2
+        if UIDevice.current.userInterfaceIdiom == .pad || AppDelegate.isLandscape(){
+            width = 150
+        }
         return CGSize(width: width, height: width)
     }
     

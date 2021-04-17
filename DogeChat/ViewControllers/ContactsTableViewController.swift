@@ -17,6 +17,8 @@ class ContactsTableViewController: UITableViewController {
     let manager = WebSocketManager.shared
     var barItem = UIBarButtonItem()
     var itemRequest = UIBarButtonItem()
+    var selectedIndexPath: IndexPath?
+    static var poppedChatVC: [UIViewController]?
     var appDelegate: AppDelegate {
         return UIApplication.shared.delegate as! AppDelegate
     }
@@ -226,13 +228,17 @@ class ContactsTableViewController: UITableViewController {
     }
     
     //MARK: -Table view delegate
-    
-    
+        
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         unreadMessage[usernames[indexPath.row]] = 0
         let chatRoomVC = chatroomVC(for: indexPath)
+        selectedIndexPath = indexPath
         tableView.cellForRow(at: indexPath)?.accessoryView = nil
-        self.navigationController?.setViewControllers([self, chatRoomVC], animated: true)
+        if let splitVC = self.splitViewController, !splitVC.isCollapsed {
+            (self.splitViewController?.viewControllers[1] as? UINavigationController)?.setViewControllers([chatRoomVC], animated: false)
+        } else {
+            self.navigationController?.setViewControllers([self, chatRoomVC], animated: true)
+        }
     }
     
     private func chatroomVC(for indexPath: IndexPath) -> ChatRoomViewController {

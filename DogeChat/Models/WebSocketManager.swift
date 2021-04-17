@@ -40,7 +40,8 @@ class WebSocketManager: NSObject {
             UserDefaults.standard.set(newValue, forKey: "maxID")
         }
     }
-    var username = ""
+    var myName = ""
+    private var _pingTimer: Timer?
     var socket: SRWebSocket!
     var toBeUpdatedMessages = [Message]()
     weak var messageDelegate: MessageDelegate?
@@ -79,7 +80,7 @@ class WebSocketManager: NSObject {
             print(json)
             let loginResult = json["message"].stringValue
             if loginResult == "登录成功" {
-                self.username = username
+                self.myName = username
                 if let responseDetails = task.response as? HTTPURLResponse {
                     let headers = responseDetails.allHeaderFields
                     if let cookieStr = headers["Set-Cookie"] as? String {
@@ -93,6 +94,17 @@ class WebSocketManager: NSObject {
         }, failure: nil)
     }
     
+    func pingTimer() -> Timer? {
+        if self._pingTimer == nil {
+            _pingTimer = Timer.scheduledTimer(withTimeInterval: 3, repeats: true, block: { [weak self] (_) in
+                if self?.socket != nil && self?.socket.readyState == .OPEN {
+                    self?.socket.sendPing(Data())
+                }
+            })
+        }
+        return self._pingTimer
+    }
+    
     func connect() {
         var request = URLRequest(url: URL(string: "wss://procwq.top/webSocket")!)
         request.addValue("SESSION="+cookie, forHTTPHeaderField: "Cookie")
@@ -102,6 +114,7 @@ class WebSocketManager: NSObject {
     }
     
     func disconnect() {
+        AppDelegate.shared.navigationController.topViewController?.navigationItem.title = "disconnet"
         guard socket != nil else {
             return
         }
@@ -113,6 +126,9 @@ class WebSocketManager: NSObject {
             socket.send(message)
         } else {
             print("socket未连接")
+            AppDelegate.shared.navigationController.topViewController?.navigationItem.title = "未连接"
+
+            connect()
         }
     }
     
@@ -141,6 +157,7 @@ class WebSocketManager: NSObject {
             for friend in friends {
                 usernames.append(friend["username"].stringValue)
             }
+            self.connect()
             completion(usernames, nil)
         }, failure: { (task, error) in
             completion([], error)
@@ -182,12 +199,12 @@ class WebSocketManager: NSObject {
     }
     
     func endCall(uuid: String, with receiver: String) {
-        let params = ["method": "endVoiceChat", "sender": username, "receiver": receiver, "uuid": uuid]
+        let params = ["method": "endVoiceChat", "sender": myName, "receiver": receiver, "uuid": uuid]
         send(makeJsonString(for: params))
     }
     
     func sendCallRequst(to receiver: String, uuid: String) {
-        let params = ["method": "voiceChat", "sender": username, "receiver": receiver, "uuid": uuid]
+        let params = ["method": "voiceChat", "sender": myName, "receiver": receiver, "uuid": uuid]
         send(makeJsonString(for: params))
         nowCallUUID = UUID(uuidString: uuid)
     }
@@ -277,7 +294,7 @@ class WebSocketManager: NSObject {
         }
     }
     
-    func sendEmojiInfos(_ messages: [Message]) {
+    func sendEmojiInfos(_ messages: [Message], receiver: String) {
         for message in messages {
             var infos = [[String: String]]()
             for emojiInfo in message.emojisInfo {
@@ -286,11 +303,12 @@ class WebSocketManager: NSObject {
                     "locationX": "\(emojiInfo.x)",
                     "locationY": "\(emojiInfo.y)",
                     "scale": "\(emojiInfo.scale)",
-                    "rotate": "\(emojiInfo.rotation)"
+                    "rotate": "\(emojiInfo.rotation)",
+                    "lastModifiedBy": "\(emojiInfo.lastModifiedBy)"
                 ]
                 infos.append(singleEmoji)
             }
-            let dict = ["method": "emoji", "message": ["receiver": message.receiver, "lastModifiedBy": username, "uuid": message.uuid, "emojis": infos]] as [String : Any]
+            let dict = ["method": "emoji", "message": ["receiver": message.receiver == "PublicPino" ? message.receiver : receiver, "sender": myName, "uuid": message.uuid, "emojis": infos]] as [String : Any]
             send(makeJsonString(for: dict))
         }
     }
@@ -300,20 +318,20 @@ class WebSocketManager: NSObject {
         let emojis = messageJson["emojis"].arrayValue
         let uuid = messageJson["uuid"].stringValue
         let receiver = messageJson["receiver"].stringValue
-        let lastModifiedBy = messageJson["lastModifiedBy"].stringValue
+        let sender = messageJson["sender"].stringValue
         var message: Message?
         if receiver == "PublicPino" {
             if let index = messagesGroup.firstIndex(where: { $0.uuid == uuid }) {
                 message = messagesGroup[index]
             }
         } else {
-            if let index = messagesSingle[lastModifiedBy]?.firstIndex(where: { $0.uuid == uuid }) {
-                message = messagesSingle[lastModifiedBy]![index]
+            if let index = messagesSingle[sender]?.firstIndex(where: { $0.uuid == uuid }) {
+                message = messagesSingle[sender]![index]
             }
         }
         if let message = message {
             processEmojiInfo(emojis, for: message)
-            NotificationCenter.default.post(name: .emojiInfoChanged, object: (receiver, lastModifiedBy), userInfo: ["message": message])
+            NotificationCenter.default.post(name: .emojiInfoChanged, object: (receiver, sender), userInfo: ["message": message])
         }
     }
     
@@ -329,8 +347,14 @@ class WebSocketManager: NSObject {
         var emojiInfos = [EmojiInfo]()
         for emoji in infos {
             let newInfo = EmojiInfo(x: stringToCGFloat(emoji["locationX"].stringValue), y: stringToCGFloat(emoji["locationY"].stringValue), rotation: stringToCGFloat(emoji["rotate"].stringValue), scale: stringToCGFloat(emoji["scale"].stringValue), imageLink: emoji["path"].stringValue, lastModifiedBy: emoji["lastModifiedBy"].stringValue)
-            if newInfo.lastModifiedBy != username {
-                newInfo.x = 1 - newInfo.x
+            if message.option == .toOne { // 私聊
+                if (newInfo.lastModifiedBy != myName && message.messageSender == .someoneElse) || (message.messageSender == .ourself && newInfo.lastModifiedBy != myName) {
+                    newInfo.x = 1 - newInfo.x
+                }
+            } else { // 群聊
+                if (message.messageSender == .ourself && newInfo.lastModifiedBy != myName) || (message.senderUsername == newInfo.lastModifiedBy && message.senderUsername != myName) {
+                    newInfo.x = 1 - newInfo.x
+                }
             }
             emojiInfos.append(newInfo)
         }
@@ -344,6 +368,7 @@ class WebSocketManager: NSObject {
     }
     
     func historyMessages(for name: String, pageNum: Int)  {
+        AppDelegate.shared.navigationController.topViewController?.navigationItem.title = "request history"
         let paras: [String: Any] = ["method": "getHistory", "friend": name, "pageNum": pageNum]
         send(makeJsonString(for: paras))
     }
@@ -368,6 +393,7 @@ extension WebSocketManager: SRWebSocketDelegate  {
         self.getEmojis { (paths) in
             self.emojiPaths = paths
         }
+//        pingTimer()?.fire()
     }
     
     func webSocket(_ webSocket: SRWebSocket!, didCloseWithCode code: Int, reason: String!, wasClean: Bool) {
@@ -433,7 +459,7 @@ extension WebSocketManager: SRWebSocketDelegate  {
             let number = json["total"].intValue
             messageDelegate?.updateOnlineNumber?(to: number)
             let username = user.components(separatedBy: " ")[0]
-            guard username != self.username else {
+            guard username != self.myName else {
                 return
             }
         case "getUnreadMessage": // 群聊未读消息,socket连接上后会获取
@@ -445,17 +471,18 @@ extension WebSocketManager: SRWebSocketDelegate  {
                 let sender = message["sender"].stringValue
                 let content = message["content"].stringValue
                 let uuid = message["uuid"].stringValue
-                let newMessage = wrapMessage(content: content, option: .toAll, sender: sender, receiver: username, id: id, date: "", uuid: uuid)
+                let newMessage = wrapMessage(content: content, option: .toAll, sender: sender, receiver: myName, id: id, date: "", uuid: uuid)
                 messagesGroup.append(newMessage)
                 newMessages.append(newMessage)
             }
             if let chatVC = AppDelegate.shared.navigationController.topViewController as? ChatRoomViewController, chatVC.navigationItem.title == "群聊" {
                 chatVC.insertNewMessageCell(newMessages)
-                playSound()
             } else {
                 for message in newMessages {
                     postNotification(message: message)
                 }
+            }
+            if newMessages.count != 0 {
                 playSound()
             }
             
@@ -469,7 +496,7 @@ extension WebSocketManager: SRWebSocketDelegate  {
                 let date = msg["messageTime"].stringValue
                 let id = msg["messageId"].intValue
                 let uuid = msg["uuid"].stringValue
-                let newMessage = wrapMessage(content: decrypted, option: .toOne, sender: sender, receiver: username, id: id, date: date, uuid: uuid)
+                let newMessage = wrapMessage(content: decrypted, option: .toOne, sender: sender, receiver: myName, id: id, date: date, uuid: uuid)
                 messagesSingle.add(newMessage, for: sender)
                 messages.append(newMessage)
             }
@@ -486,6 +513,7 @@ extension WebSocketManager: SRWebSocketDelegate  {
             let pages = json["data"]["pages"].intValue
             let messages = json["data"]["records"].arrayValue
             var result = [Message]()
+            AppDelegate.shared.navigationController.topViewController?.navigationItem.title = "\(messages.count)"
             for message in messages {
                 let id = message["messageId"].intValue
                 var content = message["messageContent"].stringValue
@@ -499,7 +527,10 @@ extension WebSocketManager: SRWebSocketDelegate  {
                 processEmojiInfo(message["emojis"].arrayValue, for: newMessage)
                 result.append(newMessage)
             }
-            messageDelegate?.receiveMessages?(result, pages: pages)
+            AppDelegate.shared.navigationController.topViewController?.navigationItem.title = "post"
+
+            NotificationCenter.default.post(name: .receiveHistoryMessages, object: nil, userInfo: ["messages": result, "pages": pages])
+//            messageDelegate?.receiveMessages?(result, pages: pages)
         case "revokeMessageSuccess":
             if json["status"].intValue == 200 {
                 let id = json["id"].intValue
@@ -543,7 +574,7 @@ extension WebSocketManager: SRWebSocketDelegate  {
     }
     
     func responseVoiceChat(to sender: String, uuid: String, response: String) {
-        let params = ["method": "receiveVoiceChat", "response": response, "sender": username, "receiver": sender, "uuid": uuid]
+        let params = ["method": "receiveVoiceChat", "response": response, "sender": myName, "receiver": sender, "uuid": uuid]
         send(makeJsonString(for: params))
         print("发送了response：\(response)")
     }
@@ -554,7 +585,7 @@ extension WebSocketManager: SRWebSocketDelegate  {
         return Message(message: (isImageMessage ? "" : content),
                        imageURL: isImageMessage ? content : nil,
                        videoURL: nil,
-                       messageSender: (sender == username ? .ourself : .someoneElse),
+                       messageSender: (sender == myName ? .ourself : .someoneElse),
                        receiver: receiver,
                        uuid: uuid,
                        sender: sender,

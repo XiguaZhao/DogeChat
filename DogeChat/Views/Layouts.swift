@@ -43,7 +43,11 @@ extension ChatRoomViewController {
             let shouldDown = endFrame.origin.y == UIScreen.main.bounds.height
             let inset = UIEdgeInsets(top: 0, left: 0, bottom: shouldDown ? 0 : endFrame.size.height, right: 0)
             let offsetY = point.y - messageInputBar.center.y
-            UIView.animate(withDuration: 0.25) { [self] in
+            var duration = 0.25
+            if let _duration = userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? Int, _duration == 0 {
+                duration = 0
+            }
+            UIView.animate(withDuration: duration) { [self] in
                 self.messageInputBar.center = point
                 self.emojiSelectView.alpha = (shouldDown ? 0 : 1)
                 self.emojiSelectView.center = CGPoint(x: self.emojiSelectView.center.x, y: self.emojiSelectView.center.y + offsetY)
@@ -51,6 +55,7 @@ extension ChatRoomViewController {
                 if !shouldDown {
                     guard collectionView.numberOfItems(inSection: 0) != 0 else { return }
                     collectionView.scrollToItem(at: IndexPath(row: collectionView.numberOfItems(inSection: 0) - 1, section: 0), at: .bottom, animated: false)
+                    
                 }
             }
         }
@@ -74,11 +79,35 @@ extension ChatRoomViewController {
         messageInputBar.delegate = self
     }
     
-    func layoutViews() {
-        let messageBarHeight:CGFloat = 60.0
-        let size = UIScreen.main.bounds.size
+    func layoutViews(size: CGSize) {
         collectionView.frame = CGRect(x: 0, y: 0, width: size.width, height: size.height - messageBarHeight)
         messageInputBar.frame = CGRect(x: 0, y: size.height - messageBarHeight, width: size.width, height: messageBarHeight)
+        let emojiViewHeight: CGFloat = MessageInputView.ratioOfEmojiView * view.bounds.height
+        emojiSelectView.frame = CGRect(x: 0, y: messageInputBar.frame.maxY, width: size.width, height: emojiViewHeight)
+//        collectionView.translatesAutoresizingMaskIntoConstraints = false
+//        messageInputBar.translatesAutoresizingMaskIntoConstraints = false
+//        emojiSelectView.translatesAutoresizingMaskIntoConstraints = false
+//        weak var wself = self
+//        collectionView.mas_makeConstraints { (make) in
+//            make?.leading.equalTo()(wself?.view.mas_leading)
+//            make?.trailing.equalTo()(wself?.view.mas_trailing)
+//            make?.top.equalTo()(wself?.view.mas_top)
+//            make?.bottom.equalTo()(wself?.messageInputBar.mas_top)
+//            make?.height.equalTo()((wself?.view.bounds.height)! - messageBarHeight)
+//        }
+//        messageInputBar.mas_makeConstraints { (make) in
+//            make?.leading.equalTo()(wself?.view.mas_leading)
+//            make?.trailing.equalTo()(wself?.view.mas_trailing)
+//            make?.bottom.equalTo()(wself?.emojiSelectView.mas_top)
+//            make?.top.equalTo()(wself?.collectionView.mas_bottom)
+//            make?.height.greaterThanOrEqualTo()(wself?.messageBarHeight)
+//        }
+//        emojiSelectView.mas_makeConstraints { (make) in
+//            make?.leading.equalTo()(wself?.view.mas_leading)
+//            make?.trailing.equalTo()(wself?.view.mas_trailing)
+//            make?.top.equalTo()(wself?.messageInputBar.mas_bottom)
+//            make?.height.equalTo()(emojiViewHeight)
+//        }
     }
     
 }

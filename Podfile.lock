@@ -16,6 +16,7 @@ PODS:
     - AFNetworking/NSURLSession
   - DACircularProgress (2.3.1)
   - FLAnimatedImage (1.0.12)
+  - Masonry (1.1.0)
   - SDWebImage (5.10.2):
     - SDWebImage/Core (= 5.10.2)
   - SDWebImage/Core (5.10.2)
@@ -29,6 +30,7 @@ DEPENDENCIES:
   - AFNetworking
   - DACircularProgress
   - FLAnimatedImage
+  - Masonry
   - SDWebImage
   - SocketRocket
   - SwiftyJSON (from `https://github.com/SwiftyJSON/SwiftyJSON.git`, commit `2b6054efa051565954e1d2b9da831680026cd768`)
@@ -39,6 +41,7 @@ SPEC REPOS:
     - AFNetworking
     - DACircularProgress
     - FLAnimatedImage
+    - Masonry
     - SDWebImage
     - SocketRocket
     - SwiftyRSA
@@ -57,11 +60,12 @@ SPEC CHECKSUMS:
   AFNetworking: 7864c38297c79aaca1500c33288e429c3451fdce
   DACircularProgress: 4dd437c0fc3da5161cb289e07ac449493d41db71
   FLAnimatedImage: 4a0b56255d9b05f18b6dd7ee06871be5d3b89e31
+  Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
   SDWebImage: b969dcfc02c40a5da71eac0b03b8f1a0c794a86f
   SocketRocket: d57c7159b83c3c6655745cd15302aa24b6bae531
   SwiftyJSON: 4e107719275086d9d9111e1a7ca6c484b6664574
   SwiftyRSA: 3b9c9179744217951facc6a3e9ae8d8c97061ffa
 
-PODFILE CHECKSUM: 57a67ddf65e3fe89101164348a9d3c929f1fdd49
+PODFILE CHECKSUM: 2075d831e59a769f8712be1369e730e11d0fa8e2
 
 COCOAPODS: 1.10.1
