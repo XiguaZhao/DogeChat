@@ -3,12 +3,13 @@
 //  DogeChat
 //
 //  Created by 赵锡光 on 2021/2/23.
-//  Copyright © 2021 Luke Parham. All rights reserved.
+//  Copyright © 2021 Xiguang Zhao. All rights reserved.
 //
 
 import UIKit
+import YPTransition
 
-@objc protocol EmojiViewDelegate: class {
+@objc protocol EmojiViewDelegate: AnyObject {
     @objc optional func didSelectEmoji(filePath: String)
     @objc optional func deleteEmoji(cell: EmojiCollectionViewCell)
 }
@@ -71,8 +72,8 @@ class EmojiSelectView: UIView {
 extension EmojiSelectView: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UICollectionViewDelegate, UICollectionViewDataSourcePrefetching, EmojiViewDelegate {
     
     func deleteEmoji(cell: EmojiCollectionViewCell) {
-        if let indexPath = cell.indexPath {
-            WebSocketManager.shared.deleteEmoji(emojis[indexPath.item]) { [self] in
+        if let indexPath = cell.indexPath, let id = EmojiSelectView.emojiPathToId[emojis[indexPath.item]] {
+            WebSocketManager.shared.deleteEmoji(emojis[indexPath.item], id: id) { [self] in
                 collectionView.deleteItems(at: [indexPath])
                 emojis.remove(at: indexPath.item)
             }

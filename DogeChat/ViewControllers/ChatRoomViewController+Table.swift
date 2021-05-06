@@ -29,27 +29,31 @@
  */
 
 import UIKit
+import YPTransition
 
 extension ChatRoomViewController: UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
-        guard let splitVC = self.splitViewController else { return }
-        DispatchQueue.main.asyncAfter(deadline: DispatchTime(uptimeNanoseconds: UInt64(0.005)*NSEC_PER_SEC)) { 
-//            layoutViews(size: view.bounds.size)
-//            collectionView.reloadData()
-            if let contactVC = ((splitVC.viewControllers.first as? UITabBarController)?.viewControllers?.first as? UINavigationController)?.viewControllers.first as? ContactsTableViewController, let indexPath = contactVC.selectedIndexPath {
-                contactVC.tableView(contactVC.tableView, didSelectRowAt: indexPath)
-            }
-        }
+
+        guard let splitVC = self.splitViewController,
+              let contactVC = ((splitVC.viewControllers.first as? UITabBarController)?.viewControllers?.first as? UINavigationController)?.viewControllers.first as? ContactsTableViewController else { return }
         if !splitVC.isCollapsed {
-            if self.tabBarController != nil { // masterVC
-                self.navigationController?.popToRootViewController(animated: true) 
+            ContactsTableViewController.poppedChatVC = contactVC.navigationController?.popToRootViewController(animated: false)
+            if let popped = ContactsTableViewController.poppedChatVC, popped.count > 0 {
+                splitVC.showDetailViewController(UINavigationController(rootViewController: popped[0]), sender: nil)
+                return
             }
+            if splitVC.viewControllers.count > 1, let chatroomVC = (splitVC.viewControllers[1] as? UINavigationController)?.topViewController as? ChatRoomViewController {
+                DispatchQueue.main.async {
+                    chatroomVC.layoutViews(size: size)
+                    chatroomVC.collectionView.reloadData()
+                }
+            }
+            ContactsTableViewController.poppedChatVC = nil
         }
-        
     }
-    
+        
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         if scrollBottom {
             DispatchQueue.main.asyncAfter(deadline: DispatchTime(uptimeNanoseconds: UInt64(0.005)*NSEC_PER_SEC)) {

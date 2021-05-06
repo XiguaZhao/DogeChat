@@ -30,11 +30,7 @@
 
 import UIKit
 import AVFoundation
-
-enum MessageSender {
-    case ourself
-    case someoneElse
-}
+import YPTransition
 
 protocol MessageTableViewCellDelegate: class {
     func imageViewTapped(_ cell: MessageCollectionViewCell, imageView: FLAnimatedImageView, path: String)
@@ -98,7 +94,7 @@ class MessageCollectionViewCell: UICollectionViewCell {
         
         nameLabel.textColor = .lightGray
         nameLabel.font = UIFont(name: "Helvetica", size: 10) //UIFont.systemFont(ofSize: 10)
-        
+        nameLabel.translatesAutoresizingMaskIntoConstraints = true
         clipsToBounds = true
         
         messageLabel.isHidden = true
@@ -187,9 +183,11 @@ class MessageCollectionViewCell: UICollectionViewCell {
     func addConstraintsForImageMessage() {
         let offsetTop: CGFloat = 8
         imageConstraint = NSLayoutConstraint(item: animatedImageView!, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: 200)
-        
+        nameLabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            animatedImageView.topAnchor.constraint(equalTo: (messageSender == .ourself ? contentView.topAnchor : contentView.topAnchor), constant: offsetTop + nameLabel.bounds.height + offsetTop),
+            nameLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            nameLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: offsetTop),
+            animatedImageView.topAnchor.constraint(equalTo: (messageSender == .ourself ? contentView.topAnchor : nameLabel.topAnchor), constant: offsetTop + nameLabel.bounds.height + offsetTop),
             animatedImageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -offsetTop),
             imageConstraint,
             (messageSender == .ourself ? animatedImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -offsetTop-safeAreaInsets.right) : animatedImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: offsetTop+safeAreaInsets.left))
@@ -256,18 +254,24 @@ extension MessageCollectionViewCell {
         } else {
             nameLabel.isHidden = true
         }
-        
+        if message.messageType == .join {
+            nameLabel.isHidden = true
+        }
         messageLabel.layer.cornerRadius = min(messageLabel.bounds.size.height/2.0, 20)
     }
     
     func layoutForJoinMessage() {
         animatedImageView.isHidden = true
+        messageLabel.isHidden = false
         messageLabel.font = UIFont.systemFont(ofSize: 10)
         messageLabel.textColor = .lightGray
         messageLabel.backgroundColor = UIColor(red: 247/255, green: 247/255, blue: 247/255, alpha: 1.0)
-        
-        let _ = messageLabel.sizeThatFits(CGSize(width: 2*(bounds.size.width/3), height: CGFloat.greatestFiniteMagnitude))
-        messageLabel.center = CGPoint(x: bounds.size.width/2, y: bounds.size.height/2.0)
+        messageLabel.textAlignment = .center
+        var size = messageLabel.sizeThatFits(CGSize.zero)
+        size.width += 50
+        size.height += 10
+        let center = CGPoint(x: bounds.size.width/2, y: bounds.size.height/2.0)
+        messageLabel.frame = .init(center: center, size: size)
     }
     
     func layoutForTextMessage() {
@@ -309,7 +313,6 @@ extension MessageCollectionViewCell {
     func layoutForImageMessage() {
         messageLabel.isHidden = true
         animatedImageView.isHidden = false
-        nameLabel.frame = CGRect(x: 16, y: animatedImageView.frame.origin.y - nameLabel.bounds.height - 8, width: nameLabel.bounds.width, height: nameLabel.bounds.height)
     }
     
     func layoutForVideoMessage() {

@@ -30,6 +30,7 @@
 
 import UIKit
 import UserNotifications
+import YPTransition
 
 class JoinChatViewController: UIViewController {
   let logoImageView = UIImageView()

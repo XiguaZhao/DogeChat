@@ -3,7 +3,7 @@
 //  DogeChat
 //
 //  Created by 赵锡光 on 2020/5/4.
-//  Copyright © 2020 Luke Parham. All rights reserved.
+//  Copyright © 2020 Xiguang Zhao. All rights reserved.
 //
 
 import Foundation
@@ -11,6 +11,7 @@ import SwiftyJSON
 import WatchConnectivity
 import CoreLocation
 import AudioToolbox
+import YPTransition
 
 @objc protocol MessageDelegate: class {
     @objc optional func updateOnlineNumber(to newNumber: Int)
@@ -21,10 +22,10 @@ import AudioToolbox
     @objc func revokeSuccess(id: Int)
 }
 
-@objc enum MessageOption: Int {
-    case toAll
-    case toOne
-}
+//@objc enum MessageOption: Int {
+//    case toAll
+//    case toOne
+//}
 
 class WebSocketManager: NSObject {
     
@@ -42,15 +43,18 @@ class WebSocketManager: NSObject {
     }
     var myName = ""
     private var _pingTimer: Timer?
+    private var _checkNotSendTimer: Timer?
     var socket: SRWebSocket!
     var toBeUpdatedMessages = [Message]()
     weak var messageDelegate: MessageDelegate?
     var messagesGroup: [Message] = []
     var messagesSingle: [String: [Message]] = [:]
-    var notSendMessages = [Message]()
+    var notSendContent = [NSObject]() // 这个是任何要发送的内容
     var imageDict = [String: Any]()
     var emojiPaths = [String]()
+    var connected = false
     var tapFromSystemPhoneInfo: (name: String, uuid: String)?
+    var backgroundTasks = [UIBackgroundTaskIdentifier]()
     var nowCallUUID: UUID! {
         didSet {
             print("nowCallUUID set")
@@ -66,9 +70,11 @@ class WebSocketManager: NSObject {
     }
     
     func playSound(needSound: Bool = true) {
-        AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
-        if needSound {
-            AudioServicesPlaySystemSound(1007)
+        if UIApplication.shared.applicationState == .active {
+            AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
+            if needSound {
+                AudioServicesPlaySystemSound(1007)
+            }
         }
     }
     
@@ -91,13 +97,16 @@ class WebSocketManager: NSObject {
             } else {
                 completion(loginResult)
             }
-        }, failure: nil)
+        }, failure: { task, error in
+            completion("fail")
+        })
     }
     
     func pingTimer() -> Timer? {
         if self._pingTimer == nil {
             _pingTimer = Timer.scheduledTimer(withTimeInterval: 3, repeats: true, block: { [weak self] (_) in
                 if self?.socket != nil && self?.socket.readyState == .OPEN {
+                    print("发送ping")
                     self?.socket.sendPing(Data())
                 }
             })
@@ -105,16 +114,35 @@ class WebSocketManager: NSObject {
         return self._pingTimer
     }
     
+    func invalidatePingTimer() {
+        if _pingTimer == nil { return }
+        _pingTimer?.invalidate()
+        _pingTimer = nil
+    }
+    
+    func checkNotSendTimer() -> Timer? {
+        if self._checkNotSendTimer == nil {
+            _pingTimer = Timer.scheduledTimer(withTimeInterval: 5, repeats: true, block: { [weak self] (_) in
+                if let self = self {
+                    self.resendAnyContents()
+                }
+            })
+        }
+        return self._checkNotSendTimer
+    }
+    
     func connect() {
         var request = URLRequest(url: URL(string: "wss://procwq.top/webSocket")!)
         request.addValue("SESSION="+cookie, forHTTPHeaderField: "Cookie")
+        if connected {
+            return
+        }
         socket = SRWebSocket(urlRequest: request)
         socket.delegate = self
         socket.open()
     }
     
     func disconnect() {
-        AppDelegate.shared.navigationController.topViewController?.navigationItem.title = "disconnet"
         guard socket != nil else {
             return
         }
@@ -124,10 +152,14 @@ class WebSocketManager: NSObject {
     func send(_ message: Any!) {
         if socket != nil, socket.readyState == .OPEN {
             socket.send(message)
+            print("发送\(message ?? "")")
         } else {
-            print("socket未连接")
-            AppDelegate.shared.navigationController.topViewController?.navigationItem.title = "未连接"
-
+            print("socket未连接 \(message ?? "")")
+            if let message = message as? NSObject{
+                notSendContent.append(message)
+            } else if let message = message as? String {
+                notSendContent.append(message as NSString)
+            }
             connect()
         }
     }
@@ -209,11 +241,25 @@ class WebSocketManager: NSObject {
         nowCallUUID = UUID(uuidString: uuid)
     }
         
-    func resendMessages() {
-        for message in self.notSendMessages {
-            let option: MessageOption = message.receiver == "" ? .toAll : .toOne
-            self.sendMessage(message.message, to: message.receiver, from: message.senderUsername, option: option, uuid: message.uuid)
-            print("重发消息: \(message.message)")
+    func resendAnyContents() {
+        for (_, _notSentContent) in self.notSendContent.enumerated() {
+            if let message = _notSentContent as? Message {
+                let option: MessageOption = message.receiver == "" ? .toAll : .toOne
+                self.sendMessage(message.message, to: message.receiver, from: message.senderUsername, option: option, uuid: message.uuid)
+                print("重发消息: \(message.message)")
+            } else if let notSend = _notSentContent as? NSString {
+                self.send(notSend as String)
+                if let index = self.notSendContent.firstIndex(of: notSend) {
+                    self.notSendContent.remove(at: index)
+                }
+            }
+        }
+    }
+    
+    func sortMessages() {
+        messagesGroup.sort(by: { $0.id < $1.id })
+        for (friendName, _) in messagesSingle {
+            messagesSingle[friendName]?.sort(by: { $0.id < $1.id })
         }
     }
     
@@ -277,7 +323,8 @@ class WebSocketManager: NSObject {
     func deleteEmoji(_ path: String, completion: @escaping (() -> Void)) {
         if let id = EmojiSelectView.emojiPathToId[path] {
             session.post(url_pre + "star/delStar?starId=\(id)", parameters: nil, headers: nil, progress: nil) { (task, response) in
-                if JSON(response)["status"] == "success" {
+                guard let response = response else { return }
+                if JSON(response)["status"].stringValue == "success" {
                     completion()
                 }
             } failure: { (task, error) in
@@ -368,7 +415,6 @@ class WebSocketManager: NSObject {
     }
     
     func historyMessages(for name: String, pageNum: Int)  {
-        AppDelegate.shared.navigationController.topViewController?.navigationItem.title = "request history"
         let paras: [String: Any] = ["method": "getHistory", "friend": name, "pageNum": pageNum]
         send(makeJsonString(for: paras))
     }
@@ -382,6 +428,7 @@ class WebSocketManager: NSObject {
 extension WebSocketManager: SRWebSocketDelegate  {
     func webSocketDidOpen(_ webSocket: SRWebSocket!) {
         print("websocket已经打开")
+        connected = true
         prepareEncrypt()
         sendToken((UIApplication.shared.delegate as! AppDelegate).deviceToken)
         sendVoipToken(AppDelegate.shared.pushKitToken)
@@ -390,14 +437,22 @@ extension WebSocketManager: SRWebSocketDelegate  {
             AppDelegate.shared.callManager.startCall(handle: name, uuid: uuid)
             tapFromSystemPhoneInfo = nil
         }
-        self.getEmojis { (paths) in
-            self.emojiPaths = paths
+        if !AppDelegate.shared.launchedByPushAction {
+            self.getEmojis { (paths) in
+                self.emojiPaths = paths
+            }
         }
-//        pingTimer()?.fire()
+        AppDelegate.shared.navigationController.viewControllers.first?.navigationItem.title = "已连接"
+        DispatchQueue.main.asyncAfter(deadline: .now()+2) {
+            AppDelegate.shared.navigationController.viewControllers.first?.navigationItem.title = self.myName
+        }
+        pingTimer()?.fire()
+        print("开始ping")
     }
     
     func webSocket(_ webSocket: SRWebSocket!, didCloseWithCode code: Int, reason: String!, wasClean: Bool) {
         print("websocket已关闭: \(String(describing: reason))")
+        connected = false
     }
     
     func webSocket(_ webSocket: SRWebSocket!, didFailWithError error: Error!) {
@@ -425,7 +480,7 @@ extension WebSocketManager: SRWebSocketDelegate  {
             let key = json["key"].stringValue
             encrypt.key = key
             getUnreadMessage()
-            resendMessages()
+            resendAnyContents()
         case "sendToAllSuccess":
             UIApplication.shared.isNetworkActivityIndicatorVisible = false
             let id = json["id"].intValue
@@ -513,7 +568,6 @@ extension WebSocketManager: SRWebSocketDelegate  {
             let pages = json["data"]["pages"].intValue
             let messages = json["data"]["records"].arrayValue
             var result = [Message]()
-            AppDelegate.shared.navigationController.topViewController?.navigationItem.title = "\(messages.count)"
             for message in messages {
                 let id = message["messageId"].intValue
                 var content = message["messageContent"].stringValue
@@ -527,7 +581,6 @@ extension WebSocketManager: SRWebSocketDelegate  {
                 processEmojiInfo(message["emojis"].arrayValue, for: newMessage)
                 result.append(newMessage)
             }
-            AppDelegate.shared.navigationController.topViewController?.navigationItem.title = "post"
 
             NotificationCenter.default.post(name: .receiveHistoryMessages, object: nil, userInfo: ["messages": result, "pages": pages])
 //            messageDelegate?.receiveMessages?(result, pages: pages)

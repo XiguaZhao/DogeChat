@@ -29,6 +29,7 @@
  */
 
 import UIKit
+import YPTransition
 
 protocol MessageInputDelegate: class {
     func sendWasTapped(content: String)

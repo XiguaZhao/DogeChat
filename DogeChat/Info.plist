@@ -4,6 +4,8 @@
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
+	<key>CFBundleDisplayName</key>
+	<string>聊天室</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -28,6 +30,8 @@
 	<string>语音通话</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>发送照片</string>
+	<key>NSSiriUsageDescription</key>
+	<string>发送消息</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Inconsolata-Regular</string>
@@ -35,6 +39,7 @@
 	</array>
 	<key>UIBackgroundModes</key>
 	<array>
+		<string>processing</string>
 		<string>remote-notification</string>
 		<string>voip</string>
 	</array>

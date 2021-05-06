@@ -30,6 +30,11 @@
 
 import UIKit
 import SwiftyJSON
+import YPTransition
+
+protocol ChatRoomVCDelegate: class {
+    
+}
 
 class ChatRoomViewController: UIViewController {
     
@@ -63,7 +68,7 @@ class ChatRoomViewController: UIViewController {
     }
     
     required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        super.init(coder: coder)
     }
     
     override func viewDidLoad() {
@@ -92,6 +97,7 @@ class ChatRoomViewController: UIViewController {
         messageInputBar.textView.delegate = self
         UIView.performWithoutAnimation {
             messageInputBar.textView.resignFirstResponder()
+            collectionView.contentInset = .zero
         }
     }
     
@@ -150,7 +156,7 @@ extension ChatRoomViewController: MessageInputDelegate, UIImagePickerControllerD
     func sendWasTapped(content: String) {
         guard !content.isEmpty else { return }
         let wrappedMessage = processMessageString(for: content)
-        manager.notSendMessages.append(wrappedMessage)
+        manager.notSendContent.append(wrappedMessage)
         insertNewMessageCell([wrappedMessage])
         manager.sendMessage(content, to: friendName, from: username, option: messageOption, uuid: wrappedMessage.uuid)
     }
@@ -238,6 +244,7 @@ extension ChatRoomViewController: MessageInputDelegate, UIImagePickerControllerD
         } success: { (task, data) in
             let json = JSON(data as Any)
             var filePath = json["filePath"].stringValue
+            print(filePath)
             filePath = WebSocketManager.shared.encrypt.decryptMessage(filePath)
             message.imageURL = WebSocketManager.shared.url_pre + filePath
         }
@@ -264,7 +271,7 @@ extension ChatRoomViewController: MessageInputDelegate, UIImagePickerControllerD
             guard let cell = cell as? MessageCollectionViewCell else { return false }
             return cell.message.uuid == message.uuid
         }.first
-        guard let cell = targetCell as? MessageCollectionViewCell else { return }
+        guard let _ = targetCell as? MessageCollectionViewCell else { return }
     }
     
     private func processMessageString(for string: String) -> Message {
@@ -318,14 +325,13 @@ extension ChatRoomViewController: MessageDelegate {
     }
     
     @objc func receiveHistoryMessages(_ noti: Notification) {
-        AppDelegate.shared.navigationController.topViewController?.navigationItem.title = "call notification"
         guard let messages = noti.userInfo?["messages"] as? [Message], let pages = noti.userInfo?["pages"] as? Int else { return }
         let minId = (self.messages.first?.id) ?? Int.max
         self.pagesAndCurNum.pages = pages
         let filtered = messages.filter { $0.id < minId }.reversed() as [Message]
         let oldIndexPath = IndexPath(item: min(self.messages.count, ChatRoomViewController.numberOfHistory), section: 0)
         self.messages.insert(contentsOf: filtered, at: 0)
-        let indexPaths = [Int](0..<messages.count).map{ IndexPath(item: $0, section: 0) }
+        let indexPaths = [Int](0..<filtered.count).map{ IndexPath(item: $0, section: 0) }
         UIView.performWithoutAnimation {
             self.collectionView.insertItems(at: indexPaths)
         }
@@ -346,7 +352,7 @@ extension ChatRoomViewController: MessageDelegate {
     func newFriendRequest() {
         guard let contactVC = navigationController?.viewControllers.filter({ $0 is ContactsTableViewController }).first as? ContactsTableViewController else { return }
         navigationItem.rightBarButtonItem = contactVC.itemRequest
-        manager.playSound()
+        WebSocketManagerAdapter.shared.playSound()
     }
 }
 

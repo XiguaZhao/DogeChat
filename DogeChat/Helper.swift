@@ -3,16 +3,23 @@
 //  DogeChat
 //
 //  Created by 赵锡光 on 2020/6/3.
-//  Copyright © 2020 Luke Parham. All rights reserved.
+//  Copyright © 2020 Xiguang Zhao. All rights reserved.
 //
 
 import UIKit
+import YPTransition
 
 extension ContactsTableViewController {
   func cellForUsername(_ username: String) -> UITableViewCell? {
     guard let index = usernames.lastIndex(of: username) else { return nil }
     return tableView.cellForRow(at: IndexPath(row: index, section: 0))
   }
+}
+
+extension CGRect {
+    init(center: CGPoint, size: CGSize) {
+        self.init(x: center.x - size.width / 2, y: center.y - size.height / 2, width: size.width, height: size.height)
+    }
 }
 
 extension Dictionary where Value == [Message] {

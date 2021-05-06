@@ -3,7 +3,7 @@
 //  DogeChat
 //
 //  Created by 赵锡光 on 2020/1/5.
-//  Copyright © 2020 Luke Parham. All rights reserved.
+//  Copyright © 2020 Xiguang Zhao. All rights reserved.
 //
 
 import UIKit

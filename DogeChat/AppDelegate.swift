@@ -33,15 +33,17 @@ import UserNotifications
 import PushKit
 import CallKit
 import Intents
+import YPTransition
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate {
     
     var window: UIWindow?
     var pushWindow: FloatWindow!
     var callWindow: FloatWindow!
     var deviceToken: String?
     var pushKitToken: String?
+    var launchedByPushAction = false
     let notificationManager = NotificationManager.shared
     let socketManager = WebSocketManager.shared
     var navigationController: UINavigationController!
@@ -51,12 +53,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     let callManager = CallManager()
     let voipRegistry = PKPushRegistry(queue: DispatchQueue.main)
     var lastAppEnterBackgroundTime = NSDate().timeIntervalSince1970
+    let webSocketAdapter = WebSocketManagerAdapter.shared
     class var shared: AppDelegate {
         return UIApplication.shared.delegate as! AppDelegate
     }
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        
+        registerPushAction()
         window = UIWindow(frame: UIScreen.main.bounds)
         if #available(iOS 13.0, *) {
             window?.backgroundColor = .systemBackground
@@ -67,13 +70,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         splitViewController = UIStoryboard(name: "main", bundle: .main).instantiateInitialViewController() as? UISplitViewController
         splitViewController.preferredDisplayMode = .allVisible
         tabBarController = splitViewController.viewControllers[0] as? UITabBarController
+        window?.rootViewController = splitViewController
         splitViewController.preferredPrimaryColumnWidthFraction = 0.35
         if #available(iOS 13.0, *) {
             splitViewController.view.backgroundColor = .systemBackground
         } else {
             splitViewController.view.backgroundColor = .white
         }
-        window?.rootViewController = splitViewController
 
         window?.makeKeyAndVisible()
         pushWindow = FloatWindow(type: .push, delegate: self)
@@ -100,16 +103,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             }
         }
         login()
+        
+        INPreferences.requestSiriAuthorization { (status) in
+        }
         return true
     }
     
-//    func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {
-//        if AppDelegate.isPad() {
-//            return .all
-//        } else {
-//            return .portrait
-//        }
-//    }
+    func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {
+        if AppDelegate.isPad() {
+            return .all
+        } else {
+            return .portrait
+        }
+    }
     
     class func isLandscape() -> Bool {
         return UIDevice.current.orientation == .landscapeLeft || UIDevice.current.orientation == .landscapeRight
@@ -131,11 +137,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
                 contactVC.loginSuccess = true
                 contactVC.username = username
                 if AppDelegate.isPad() && !self.splitViewController.isCollapsed {
-                    if let contactVC = (AppDelegate.shared.navigationController.topViewController as? ContactsTableViewController) {
+                    if let _ = (AppDelegate.shared.navigationController.topViewController as? ContactsTableViewController) {
                     }
                     return
                 }
-//                self.socketManager.connect()
             }
         } else {
             self.navigationController.viewControllers = [JoinChatViewController()]
@@ -143,28 +148,44 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
     
     func applicationDidBecomeActive(_ application: UIApplication) {
+        print("become active")
+        DispatchQueue.global().async {
+            WebSocketManager.shared.sortMessages()
+        }
         let nowTime = Date().timeIntervalSince1970
-        let shouldReLogin = nowTime - lastAppEnterBackgroundTime >= 20 * 60
-        if shouldReLogin, let password = UserDefaults.standard.value(forKey: "lastPassword") as? String {
-            socketManager.login(username: socketManager.myName, password: password) { (result) in
-                guard result == "登录成功" else { return }
-                self.socketManager.connect()
+        let shouldReLogin = nowTime - lastAppEnterBackgroundTime >= 0.01 * 60
+        var reloginCount = 0
+        func reloginFunc() {
+            reloginCount += 1
+            if reloginCount < 5, let password = UserDefaults.standard.value(forKey: "lastPassword") as? String {
+                socketManager.login(username: socketManager.myName, password: password) { (result) in
+                    if result == "登录成功" {
+                        self.socketManager.connect()
+                    } else {
+                        reloginFunc()
+                    }
+                }
             }
         }
+        if shouldReLogin {
+            reloginFunc()
+        }
         if (self.navigationController).topViewController?.title == "JoinChatVC" { return }
-        guard !WebSocketManager.shared.cookie.isEmpty else { return }
+        guard !WebSocketManager.shared.cookie.isEmpty else {
+            return
+        }
         if !shouldReLogin {
             WebSocketManager.shared.connect()
         }
     }
     
     func applicationDidEnterBackground(_ application: UIApplication) {
-        AppDelegate.shared.navigationController.topViewController?.navigationItem.title = "background"
-
+        launchedByPushAction = false
+        print("enter background")
         lastAppEnterBackgroundTime = NSDate().timeIntervalSince1970
         guard !callManager.hasCall() else { return }
         socketManager.disconnect()
-
+        WebSocketManager.shared.invalidatePingTimer()
     }
     
     func application(_ application: UIApplication, performActionFor shortcutItem: UIApplicationShortcutItem, completionHandler: @escaping (Bool) -> Void) {
@@ -218,9 +239,34 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         
     // 点击推送通知才会调用
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+        if response.actionIdentifier.count > 0 { launchedByPushAction = true }
+        let taskId = UIApplication.shared.beginBackgroundTask {
+            print("后台任务超时")
+        }
+        WebSocketManager.shared.backgroundTasks.append(taskId)
+        DispatchQueue.global().asyncAfter(deadline: .now() + 10) {
+            for task in WebSocketManager.shared.backgroundTasks {
+                UIApplication.shared.endBackgroundTask(task)
+                WebSocketManager.shared.backgroundTasks.removeFirst()
+            }
+            WebSocketManager.shared.disconnect()
+        }
         guard let userInfo = response.notification.request.content.userInfo as? [String: AnyObject],
               let aps = userInfo["aps"] as? [String: AnyObject] else { return }
         notificationManager.processRemoteNotification(aps)
+        
+        switch response.actionIdentifier {
+        case "REPLY_ACTION":
+            if let textResponse = response as? UNTextInputNotificationResponse {
+                let input = textResponse.userText
+                notificationManager.processReplyAction(replyContent: input)
+            }
+        case "DO_NOT_DISTURT_ACTION":
+            break
+        default:
+            break
+        }
+        completionHandler()
     }
             
 }
@@ -288,4 +334,19 @@ extension AppDelegate: FloatWindowTouchDelegate {
         call.end()
         callManager.end(call: call)
     }
+}
+
+// 通知快捷操作
+extension AppDelegate: UNUserNotificationCenterDelegate {
+    
+    private func registerPushAction() {
+        let replyAction = UNTextInputNotificationAction(identifier: "REPLY_ACTION", title: "回复", options: UNNotificationActionOptions(rawValue: 0), textInputButtonTitle: "回复", textInputPlaceholder: "")
+        let doNotDisturbAction = UNNotificationAction(identifier: "DO_NOT_DISTURT_ACTION", title: "勿扰", options: .init(rawValue: 0))
+        let categoryForPublic = UNNotificationCategory(identifier: "MESSAGE", actions: [replyAction], intentIdentifiers: [], hiddenPreviewsBodyPlaceholder: "", options: .customDismissAction)
+        let categoryForPersonal = UNNotificationCategory(identifier: "MESSAGE_PUBLICPINO", actions: [replyAction, doNotDisturbAction], intentIdentifiers: [], hiddenPreviewsBodyPlaceholder: "", options: .customDismissAction)
+        let notificationCenter = UNUserNotificationCenter.current()
+        notificationCenter.setNotificationCategories([categoryForPublic, categoryForPersonal])
+        notificationCenter.delegate = self
+    }
+        
 }

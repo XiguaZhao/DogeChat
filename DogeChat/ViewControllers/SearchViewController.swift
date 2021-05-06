@@ -3,10 +3,11 @@
 //  DogeChat
 //
 //  Created by 赵锡光 on 2020/6/4.
-//  Copyright © 2020 Luke Parham. All rights reserved.
+//  Copyright © 2020 Xiguang Zhao. All rights reserved.
 //
 
 import UIKit
+import YPTransition
 
 protocol AddContactDelegate: class {
   func addSuccess()

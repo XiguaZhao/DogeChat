@@ -3,15 +3,17 @@
 //  DogeChat
 //
 //  Created by 赵锡光 on 2021/1/16.
-//  Copyright © 2021 Luke Parham. All rights reserved.
+//  Copyright © 2021 Xiguang Zhao. All rights reserved.
 //
 
 import UIKit
+import YPTransition
 
 class NotificationManager: NSObject {
     
     let manager = WebSocketManager.shared
     static let shared = NotificationManager()
+    var nowPushInfo: (sender: String, content: String) = ("", "")
     var remoteNotificationUsername = "" {
         didSet {
             if remoteNotificationUsername != "" {
@@ -38,24 +40,53 @@ class NotificationManager: NSObject {
     public func processRemoteNotification(_ notification: [String: AnyObject]) {
         guard let alert = notification["alert"] as? [String: AnyObject],
               let sender = alert["title"] as? String,
-              let _ = alert["body"] as? String else { return }
-        remoteNotificationUsername = sender
+              let content = alert["body"] as? String else { return }
+        nowPushInfo = (sender, content)
         UIApplication.shared.applicationIconBadgeNumber = 0
+        if !AppDelegate.shared.launchedByPushAction {
+            remoteNotificationUsername = sender
+        }
     }
     
-    
-    func prepareVoiceChat(caller: String, uuid: UUID) {
+    private func login(success: @escaping (()->Void), fail: @escaping (()->Void)) {
         guard let username = UserDefaults.standard.value(forKey: "lastUsername") as? String,
               let password = UserDefaults.standard.value(forKey: "lastPassword") as? String else { return }
         manager.login(username: username, password: password) { (result) in
             guard result == "登录成功" else {
-                if let call = AppDelegate.shared.callManager.callWithUUID(uuid) {
-                    AppDelegate.shared.callManager.end(call: call)
-                }
+                fail()
                 return
             }
-            self.manager.connect()
+            success()
         }
+    }
+    
+    func prepareVoiceChat(caller: String, uuid: UUID) {
+        login {
+            WebSocketManager.shared.connect()
+        } fail: {
+            if let call = AppDelegate.shared.callManager.callWithUUID(uuid) {
+                AppDelegate.shared.callManager.end(call: call)
+            }
+        }
+
+    }
+    
+    func processReplyAction(replyContent: String) {
+        login { [weak self] in
+            guard let self = self, self.nowPushInfo.sender.count != 0 else { return }
+            let option: MessageOption = self.nowPushInfo.sender == "群聊" ? .toAll : .toOne
+            let message = Message(message: replyContent, imageURL: nil, videoURL: nil, messageSender: .ourself, receiver: self.nowPushInfo.sender, uuid: UUID().uuidString, sender: WebSocketManager.shared.myName, messageType: .text, option: option, id: .max, sendStatus: .fail, emojisInfo: [])
+            WebSocketManager.shared.connect()
+            WebSocketManager.shared.notSendContent.append(message)
+            if option == .toAll {
+                WebSocketManager.shared.messagesGroup.append(message)
+            } else {
+                WebSocketManager.shared.messagesSingle.add(message, for: message.receiver)
+            }
+        } fail: {
+            
+        }
+
     }
     
 }

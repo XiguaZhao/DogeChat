@@ -3,11 +3,12 @@
 //  DogeChat
 //
 //  Created by 赵锡光 on 2021/1/22.
-//  Copyright © 2021 Luke Parham. All rights reserved.
+//  Copyright © 2021 Xiguang Zhao. All rights reserved.
 //
 
 import CallKit
 import AVFoundation
+import YPTransition
 
 class ProviderDelegate: NSObject {
     
@@ -88,7 +89,7 @@ extension ProviderDelegate: CXProviderDelegate {
     
     func provider(_ provider: CXProvider, perform action: CXAnswerCallAction) {
         DispatchQueue.main.async {
-            Recorder.sharedInstance().delegate = WebSocketManager.shared
+            Recorder.sharedInstance().delegate = WebSocketManagerAdapter.shared
             Recorder.sharedInstance().startRecordAndPlay()
         }
         guard let call = callManager.callWithUUID(action.callUUID) else {

@@ -3,11 +3,12 @@
 //  DogeChat
 //
 //  Created by 赵锡光 on 2020/5/27.
-//  Copyright © 2020 Luke Parham. All rights reserved.
+//  Copyright © 2020 Xiguang Zhao. All rights reserved.
 //
 
 import UIKit
 import SwiftyJSON
+import YPTransition
 
 class ContactsTableViewController: UITableViewController {
     
@@ -155,11 +156,14 @@ class ContactsTableViewController: UITableViewController {
         guard let message = userInfo?["message"] as? Message,
               let correctId = userInfo?["correctId"] as? Int,
               let toAll = userInfo?["toAll"] as? Bool else { return }
-        guard let indexToDelete = manager.notSendMessages.firstIndex(where: { $0.uuid == message.uuid }) else {
-            return
+        if correctId <= 0 { return }
+        for (index, notSent) in manager.notSendContent.enumerated() {
+            if let notSentMessage = notSent as? Message, notSentMessage.uuid == message.uuid {
+                manager.notSendContent.remove(at: index)
+                break
+            }
         }
-        manager.notSendMessages.remove(at: indexToDelete)
-        if toAll { 
+        if toAll {
             guard let indexForAddToManager = manager.messagesGroup.firstIndex(of: message) else { return }
             manager.messagesGroup[indexForAddToManager].id = correctId
             manager.messagesGroup[indexForAddToManager].sendStatus = .success
@@ -299,7 +303,7 @@ extension ContactsTableViewController: MessageDelegate, AddContactDelegate {
     }
     
     func newFriendRequest() {
-        manager.playSound()
+        WebSocketManagerAdapter.shared.playSound()
         if #available(iOS 13.0, *) {
             navigationItem.rightBarButtonItem = itemRequest
         }

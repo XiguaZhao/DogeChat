@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import YPTransition
 
 private let offsetPush: CGFloat = 5
 private let durationPush: TimeInterval = 0.8

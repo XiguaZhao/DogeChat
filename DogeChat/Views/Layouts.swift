@@ -29,6 +29,7 @@
  */
 
 import UIKit
+import YPTransition
 
 extension ChatRoomViewController {
     @objc func keyboardWillChange(notification: NSNotification) {
@@ -80,34 +81,12 @@ extension ChatRoomViewController {
     }
     
     func layoutViews(size: CGSize) {
+        let size = view.frame.size
         collectionView.frame = CGRect(x: 0, y: 0, width: size.width, height: size.height - messageBarHeight)
         messageInputBar.frame = CGRect(x: 0, y: size.height - messageBarHeight, width: size.width, height: messageBarHeight)
         let emojiViewHeight: CGFloat = MessageInputView.ratioOfEmojiView * view.bounds.height
         emojiSelectView.frame = CGRect(x: 0, y: messageInputBar.frame.maxY, width: size.width, height: emojiViewHeight)
-//        collectionView.translatesAutoresizingMaskIntoConstraints = false
-//        messageInputBar.translatesAutoresizingMaskIntoConstraints = false
-//        emojiSelectView.translatesAutoresizingMaskIntoConstraints = false
-//        weak var wself = self
-//        collectionView.mas_makeConstraints { (make) in
-//            make?.leading.equalTo()(wself?.view.mas_leading)
-//            make?.trailing.equalTo()(wself?.view.mas_trailing)
-//            make?.top.equalTo()(wself?.view.mas_top)
-//            make?.bottom.equalTo()(wself?.messageInputBar.mas_top)
-//            make?.height.equalTo()((wself?.view.bounds.height)! - messageBarHeight)
-//        }
-//        messageInputBar.mas_makeConstraints { (make) in
-//            make?.leading.equalTo()(wself?.view.mas_leading)
-//            make?.trailing.equalTo()(wself?.view.mas_trailing)
-//            make?.bottom.equalTo()(wself?.emojiSelectView.mas_top)
-//            make?.top.equalTo()(wself?.collectionView.mas_bottom)
-//            make?.height.greaterThanOrEqualTo()(wself?.messageBarHeight)
-//        }
-//        emojiSelectView.mas_makeConstraints { (make) in
-//            make?.leading.equalTo()(wself?.view.mas_leading)
-//            make?.trailing.equalTo()(wself?.view.mas_trailing)
-//            make?.top.equalTo()(wself?.messageInputBar.mas_bottom)
-//            make?.height.equalTo()(emojiViewHeight)
-//        }
+        collectionView.contentInset = .zero
     }
     
 }

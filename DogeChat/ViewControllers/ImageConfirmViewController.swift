@@ -3,10 +3,11 @@
 //  DogeChat
 //
 //  Created by 赵锡光 on 2021/2/22.
-//  Copyright © 2021 Luke Parham. All rights reserved.
+//  Copyright © 2021 Xiguang Zhao. All rights reserved.
 //
 
 import UIKit
+import YPTransition
 
 class ImageConfirmViewController: UIViewController {
 

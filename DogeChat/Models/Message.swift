@@ -30,6 +30,11 @@
 
 import Foundation
 
+enum MessageSender {
+    case ourself
+    case someoneElse
+}
+
 enum MessageType: String{
     case text
     case join
