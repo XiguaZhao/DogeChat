@@ -9,7 +9,7 @@
 import UIKit
 import YPTransition
 
-protocol AddContactDelegate: class {
+protocol AddContactDelegate: AnyObject {
   func addSuccess()
 }
 

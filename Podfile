@@ -24,4 +24,6 @@ pod 'SwiftyRSA'
 pod 'SDWebImage'
 pod 'SocketRocket'
 pod 'YPTransition', :path => '/Users/zhaoxiguang/youpin/yptransition2'
+pod 'Pinyin4Swift'
 end
+

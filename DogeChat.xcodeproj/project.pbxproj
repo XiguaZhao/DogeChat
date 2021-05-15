@@ -19,6 +19,17 @@
 		0739FA5825BAB00300B6A7AB /* Audio.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0739FA5725BAB00300B6A7AB /* Audio.swift */; };
 		0739FABC25BEEF6B00B6A7AB /* FloatWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0739FABB25BEEF6B00B6A7AB /* FloatWindow.swift */; };
 		073FDF6A25B2A35000FE01CD /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 073FDF6925B2A35000FE01CD /* NotificationManager.swift */; };
+		07471A0B264F83E50042EC2D /* VideoFrameData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07471A0A264F83E50042EC2D /* VideoFrameData.swift */; };
+		07471A0D264F83ED0042EC2D /* VideoProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07471A0C264F83ED0042EC2D /* VideoProcessor.swift */; };
+		07471A0F264F83FD0042EC2D /* Matrix.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07471A0E264F83FD0042EC2D /* Matrix.swift */; };
+		07471A20264F846E0042EC2D /* VertexDescriptors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07471A16264F846E0042EC2D /* VertexDescriptors.swift */; };
+		07471A21264F846E0042EC2D /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 07471A17264F846E0042EC2D /* Shaders.metal */; };
+		07471A22264F846E0042EC2D /* DepthStencilStates.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07471A18264F846E0042EC2D /* DepthStencilStates.swift */; };
+		07471A23264F846E0042EC2D /* MetalUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07471A1B264F846E0042EC2D /* MetalUtils.swift */; };
+		07471A24264F846E0042EC2D /* RenderDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07471A1C264F846E0042EC2D /* RenderDestination.swift */; };
+		07471A25264F846E0042EC2D /* BufferView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07471A1D264F846E0042EC2D /* BufferView.swift */; };
+		07471A26264F846E0042EC2D /* PipelineStates.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07471A1E264F846E0042EC2D /* PipelineStates.swift */; };
+		07471A27264F846E0042EC2D /* Renderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07471A1F264F846E0042EC2D /* Renderer.swift */; };
 		0749E65F25E521420058EC30 /* EmojiSelectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0749E65E25E521420058EC30 /* EmojiSelectView.swift */; };
 		0749E66225E601690058EC30 /* EmojiCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0749E66125E601690058EC30 /* EmojiCollectionViewCell.swift */; };
 		0760E10125E74BD30030337E /* HJOpenGLView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0760E0FE25E74BD30030337E /* HJOpenGLView.m */; };
@@ -29,7 +40,6 @@
 		07866D1926340541007E049C /* Intents.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 07866D1826340541007E049C /* Intents.framework */; };
 		07866D1C26340541007E049C /* IntentHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07866D1B26340541007E049C /* IntentHandler.swift */; };
 		07866D3126340541007E049C /* SiriMessage.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 07866D1726340541007E049C /* SiriMessage.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		079317262643CB65008EBB27 /* Recorder.m in Sources */ = {isa = PBXBuildFile; fileRef = 079317252643CB64008EBB27 /* Recorder.m */; };
 		079317282643CDA2008EBB27 /* WebSocketManagerAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 079317272643CDA2008EBB27 /* WebSocketManagerAdapter.swift */; };
 		0799068625B3D44B0083C1B8 /* main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0799068525B3D44B0083C1B8 /* main.storyboard */; };
 		07AB7B0B248F2A7A005306A1 /* SignUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07AB7B09248F2A7A005306A1 /* SignUpViewController.swift */; };
@@ -106,9 +116,6 @@
 /* Begin PBXFileReference section */
 		0702F7E5247E62B200B22846 /* ContactsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsTableViewController.swift; sourceTree = "<group>"; };
 		070C41732489204F0035314A /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
-		071F9704247D22D1000B3DBC /* RowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RowController.swift; sourceTree = "<group>"; };
-		071F9708247D24CA000B3DBC /* Message.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
-		071F970B247D2592000B3DBC /* WatchSessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchSessionManager.swift; sourceTree = "<group>"; };
 		071F970D247D45C1000B3DBC /* WatchSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchSession.swift; sourceTree = "<group>"; };
 		0739FA3D25B9557900B6A7AB /* ImageBrowserViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageBrowserViewController.swift; sourceTree = "<group>"; };
 		0739FA4325BA829D00B6A7AB /* PushKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PushKit.framework; path = System/Library/Frameworks/PushKit.framework; sourceTree = SDKROOT; };
@@ -126,6 +133,18 @@
 		073FDF9F25B2F3BE00FE01CD /* DogeChat-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "DogeChat-Bridging-Header.h"; sourceTree = "<group>"; };
 		073FDFAC25B2F61500FE01CD /* libAFNetworking.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libAFNetworking.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		073FDFDE25B2FA3700FE01CD /* SwiftyJSON.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SwiftyJSON.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		07471A0A264F83E50042EC2D /* VideoFrameData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoFrameData.swift; sourceTree = "<group>"; };
+		07471A0C264F83ED0042EC2D /* VideoProcessor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VideoProcessor.swift; sourceTree = "<group>"; };
+		07471A0E264F83FD0042EC2D /* Matrix.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Matrix.swift; sourceTree = "<group>"; };
+		07471A16264F846E0042EC2D /* VertexDescriptors.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VertexDescriptors.swift; sourceTree = "<group>"; };
+		07471A17264F846E0042EC2D /* Shaders.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
+		07471A18264F846E0042EC2D /* DepthStencilStates.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DepthStencilStates.swift; sourceTree = "<group>"; };
+		07471A19264F846E0042EC2D /* ShaderTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShaderTypes.h; sourceTree = "<group>"; };
+		07471A1B264F846E0042EC2D /* MetalUtils.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MetalUtils.swift; sourceTree = "<group>"; };
+		07471A1C264F846E0042EC2D /* RenderDestination.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RenderDestination.swift; sourceTree = "<group>"; };
+		07471A1D264F846E0042EC2D /* BufferView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BufferView.swift; sourceTree = "<group>"; };
+		07471A1E264F846E0042EC2D /* PipelineStates.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PipelineStates.swift; sourceTree = "<group>"; };
+		07471A1F264F846E0042EC2D /* Renderer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Renderer.swift; sourceTree = "<group>"; };
 		0749E65E25E521420058EC30 /* EmojiSelectView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiSelectView.swift; sourceTree = "<group>"; };
 		0749E66125E601690058EC30 /* EmojiCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiCollectionViewCell.swift; sourceTree = "<group>"; };
 		0760E0FD25E74BD30030337E /* HJH264Encoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HJH264Encoder.h; sourceTree = "<group>"; };
@@ -147,8 +166,6 @@
 		07866D2626340541007E049C /* IntentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntentViewController.swift; sourceTree = "<group>"; };
 		07866D2926340541007E049C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
 		07866D2B26340541007E049C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		079317242643CB64008EBB27 /* Recorder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Recorder.h; sourceTree = "<group>"; };
-		079317252643CB64008EBB27 /* Recorder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Recorder.m; sourceTree = "<group>"; };
 		079317272643CDA2008EBB27 /* WebSocketManagerAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebSocketManagerAdapter.swift; sourceTree = "<group>"; };
 		0799068525B3D44B0083C1B8 /* main.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = main.storyboard; sourceTree = "<group>"; };
 		07A740A82514E5E90014880E /* Starscream.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Starscream.xcodeproj; path = "../../../DownloadedFromRaywenderlich/Starscream-master/Starscream.xcodeproj"; sourceTree = "<group>"; };
@@ -159,21 +176,15 @@
 		07AB7B0A248F2A7A005306A1 /* SignUpViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SignUpViewController.xib; sourceTree = "<group>"; };
 		07B3F5D3262470D70016B5C9 /* ChatRoomViewController+Drop.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChatRoomViewController+Drop.swift"; sourceTree = "<group>"; };
 		07B3F5F12627E65B0016B5C9 /* ChatRoomCollectionViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatRoomCollectionViewLayout.swift; sourceTree = "<group>"; };
-		07C6AF80247D1AF10007222F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Interface.storyboard; sourceTree = "<group>"; };
-		07C6AF82247D1AF60007222F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		07C6AF84247D1AF60007222F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		07C6AF8E247D1AF70007222F /* InterfaceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InterfaceController.swift; sourceTree = "<group>"; };
-		07C6AF90247D1AF70007222F /* ExtensionDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtensionDelegate.swift; sourceTree = "<group>"; };
-		07C6AF92247D1AF70007222F /* NotificationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationController.swift; sourceTree = "<group>"; };
-		07C6AF94247D1AF80007222F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		07C6AF96247D1AF80007222F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		07C6AF97247D1AF80007222F /* PushNotificationPayload.apns */ = {isa = PBXFileReference; lastKnownFileType = text; path = PushNotificationPayload.apns; sourceTree = "<group>"; };
 		07C9632D25E3B53900C2BF4C /* ImageConfirmViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageConfirmViewController.swift; sourceTree = "<group>"; };
 		07C9632E25E3B53900C2BF4C /* ImageConfirmViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ImageConfirmViewController.xib; sourceTree = "<group>"; };
 		07E001D9248CA56800D4A287 /* SelectShortcutTVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectShortcutTVC.swift; sourceTree = "<group>"; };
+		0A4AEF28A524D18B5C8ECDC5 /* Pods-DogeChatWatch Extension.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DogeChatWatch Extension.release.xcconfig"; path = "Target Support Files/Pods-DogeChatWatch Extension/Pods-DogeChatWatch Extension.release.xcconfig"; sourceTree = "<group>"; };
 		0B69595E028EAB1E5EC8EA2E /* Pods-DogeChat.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DogeChat.release.xcconfig"; path = "Target Support Files/Pods-DogeChat/Pods-DogeChat.release.xcconfig"; sourceTree = "<group>"; };
 		0BB85710DE7602B06E64DC2B /* Pods-SiriMessage.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SiriMessage.release.xcconfig"; path = "Target Support Files/Pods-SiriMessage/Pods-SiriMessage.release.xcconfig"; sourceTree = "<group>"; };
 		11446107E0EC4769216E7331 /* Pods-DogeChat.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DogeChat.debug.xcconfig"; path = "Target Support Files/Pods-DogeChat/Pods-DogeChat.debug.xcconfig"; sourceTree = "<group>"; };
+		3A00166581D5028C88378B40 /* Pods-DogeChatWatch Extension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DogeChatWatch Extension.debug.xcconfig"; path = "Target Support Files/Pods-DogeChatWatch Extension/Pods-DogeChatWatch Extension.debug.xcconfig"; sourceTree = "<group>"; };
+		662BDD147731663819D8A961 /* libPods-DogeChatWatch Extension.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-DogeChatWatch Extension.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		9BE932888DEA4AE98C7FEC3A /* libPods-SiriMessage.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SiriMessage.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A8314936592D9B8008FA8F43 /* Pods-SiriMessage.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SiriMessage.debug.xcconfig"; path = "Target Support Files/Pods-SiriMessage/Pods-SiriMessage.debug.xcconfig"; sourceTree = "<group>"; };
 		AE909BEA1EB54099009D9D95 /* MessageCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageCollectionViewCell.swift; sourceTree = "<group>"; };
@@ -216,15 +227,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		071F970A247D24CF000B3DBC /* Model */ = {
-			isa = PBXGroup;
-			children = (
-				071F9708247D24CA000B3DBC /* Message.swift */,
-				071F970B247D2592000B3DBC /* WatchSessionManager.swift */,
-			);
-			path = Model;
-			sourceTree = "<group>";
-		};
 		073144A3245FF83D00D915E8 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -240,6 +242,7 @@
 				07866D1826340541007E049C /* Intents.framework */,
 				07866D2326340541007E049C /* IntentsUI.framework */,
 				9BE932888DEA4AE98C7FEC3A /* libPods-SiriMessage.a */,
+				662BDD147731663819D8A961 /* libPods-DogeChatWatch Extension.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -247,8 +250,6 @@
 		0739FA4C25BAA90800B6A7AB /* Call */ = {
 			isa = PBXGroup;
 			children = (
-				079317242643CB64008EBB27 /* Recorder.h */,
-				079317252643CB64008EBB27 /* Recorder.m */,
 				0739FA4E25BAA9A300B6A7AB /* Call.swift */,
 				0739FA5125BAAAD300B6A7AB /* CallManager.swift */,
 				0739FA5425BAACD400B6A7AB /* ProviderDelegate.swift */,
@@ -267,15 +268,59 @@
 			path = notification;
 			sourceTree = "<group>";
 		};
-		0760E0FC25E74BD30030337E /* Video */ = {
+		07471A09264F838B0042EC2D /* Objective-C */ = {
 			isa = PBXGroup;
 			children = (
 				0760E10525E74C410030337E /* HJH264Decoder.h */,
 				0760E10425E74C410030337E /* HJH264Decoder.m */,
 				0760E0FD25E74BD30030337E /* HJH264Encoder.h */,
-				0760E0FE25E74BD30030337E /* HJOpenGLView.m */,
 				0760E0FF25E74BD30030337E /* HJH264Encoder.m */,
 				0760E10025E74BD30030337E /* HJOpenGLView.h */,
+				0760E0FE25E74BD30030337E /* HJOpenGLView.m */,
+			);
+			path = "Objective-C";
+			sourceTree = "<group>";
+		};
+		07471A12264F84260042EC2D /* Swift */ = {
+			isa = PBXGroup;
+			children = (
+				07471A15264F846E0042EC2D /* Renderer */,
+				07471A0E264F83FD0042EC2D /* Matrix.swift */,
+				07471A0C264F83ED0042EC2D /* VideoProcessor.swift */,
+				07471A0A264F83E50042EC2D /* VideoFrameData.swift */,
+			);
+			path = Swift;
+			sourceTree = "<group>";
+		};
+		07471A15264F846E0042EC2D /* Renderer */ = {
+			isa = PBXGroup;
+			children = (
+				07471A16264F846E0042EC2D /* VertexDescriptors.swift */,
+				07471A17264F846E0042EC2D /* Shaders.metal */,
+				07471A18264F846E0042EC2D /* DepthStencilStates.swift */,
+				07471A19264F846E0042EC2D /* ShaderTypes.h */,
+				07471A1A264F846E0042EC2D /* Utilities */,
+				07471A1E264F846E0042EC2D /* PipelineStates.swift */,
+				07471A1F264F846E0042EC2D /* Renderer.swift */,
+			);
+			path = Renderer;
+			sourceTree = "<group>";
+		};
+		07471A1A264F846E0042EC2D /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				07471A1B264F846E0042EC2D /* MetalUtils.swift */,
+				07471A1C264F846E0042EC2D /* RenderDestination.swift */,
+				07471A1D264F846E0042EC2D /* BufferView.swift */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
+		0760E0FC25E74BD30030337E /* Video */ = {
+			isa = PBXGroup;
+			children = (
+				07471A12264F84260042EC2D /* Swift */,
+				07471A09264F838B0042EC2D /* Objective-C */,
 			);
 			path = Video;
 			sourceTree = "<group>";
@@ -347,6 +392,7 @@
 		078D413F248DF75B00E78605 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				0739FA4C25BAA90800B6A7AB /* Call */,
 				0760E0FC25E74BD30030337E /* Video */,
 				071F970D247D45C1000B3DBC /* WatchSession.swift */,
 				073FDF6925B2A35000FE01CD /* NotificationManager.swift */,
@@ -375,31 +421,6 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		07C6AF7E247D1AF10007222F /* ChatWatch */ = {
-			isa = PBXGroup;
-			children = (
-				07C6AF7F247D1AF10007222F /* Interface.storyboard */,
-				07C6AF82247D1AF60007222F /* Assets.xcassets */,
-				07C6AF84247D1AF60007222F /* Info.plist */,
-			);
-			path = ChatWatch;
-			sourceTree = "<group>";
-		};
-		07C6AF8D247D1AF70007222F /* ChatWatch Extension */ = {
-			isa = PBXGroup;
-			children = (
-				07C6AF8E247D1AF70007222F /* InterfaceController.swift */,
-				071F9704247D22D1000B3DBC /* RowController.swift */,
-				07C6AF90247D1AF70007222F /* ExtensionDelegate.swift */,
-				07C6AF92247D1AF70007222F /* NotificationController.swift */,
-				07C6AF94247D1AF80007222F /* Assets.xcassets */,
-				07C6AF96247D1AF80007222F /* Info.plist */,
-				07C6AF97247D1AF80007222F /* PushNotificationPayload.apns */,
-				071F970A247D24CF000B3DBC /* Model */,
-			);
-			path = "ChatWatch Extension";
-			sourceTree = "<group>";
-		};
 		AEA5A17A1EC3641C0041C7B4 /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
@@ -411,8 +432,6 @@
 			isa = PBXGroup;
 			children = (
 				AEC6BF3D1EAF320E007CA6E5 /* DogeChat */,
-				07C6AF7E247D1AF10007222F /* ChatWatch */,
-				07C6AF8D247D1AF70007222F /* ChatWatch Extension */,
 				078032792486B28C00E370E0 /* DogeChatTests */,
 				073FDF5325B2871C00FE01CD /* notification */,
 				07866D1A26340541007E049C /* SiriMessage */,
@@ -439,7 +458,6 @@
 				073FDF6525B289A800FE01CD /* DogeChat.entitlements */,
 				AEC6BF4A1EAF320E007CA6E5 /* Info.plist */,
 				0799068525B3D44B0083C1B8 /* main.storyboard */,
-				0739FA4C25BAA90800B6A7AB /* Call */,
 				078D413F248DF75B00E78605 /* Models */,
 				078D413E248DF71700E78605 /* Views */,
 				078D413D248DF6E500E78605 /* ViewControllers */,
@@ -458,6 +476,8 @@
 				0B69595E028EAB1E5EC8EA2E /* Pods-DogeChat.release.xcconfig */,
 				A8314936592D9B8008FA8F43 /* Pods-SiriMessage.debug.xcconfig */,
 				0BB85710DE7602B06E64DC2B /* Pods-SiriMessage.release.xcconfig */,
+				3A00166581D5028C88378B40 /* Pods-DogeChatWatch Extension.debug.xcconfig */,
+				0A4AEF28A524D18B5C8ECDC5 /* Pods-DogeChatWatch Extension.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -473,6 +493,7 @@
 				07866D1326340541007E049C /* Sources */,
 				07866D1426340541007E049C /* Frameworks */,
 				07866D1526340541007E049C /* Resources */,
+				76580C9154A8DADE4A57FE4D /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -510,7 +531,7 @@
 		AEC6BF331EAF320E007CA6E5 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 1240;
+				LastSwiftUpdateCheck = 1250;
 				LastUpgradeCheck = 1200;
 				ORGANIZATIONNAME = "Luke Parham";
 				TargetAttributes = {
@@ -595,6 +616,24 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		76580C9154A8DADE4A57FE4D /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-SiriMessage/Pods-SiriMessage-resources.sh",
+				"${PODS_CONFIGURATION_BUILD_DIR}/Pinyin4Swift/Pinyin4Swift.bundle",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/Pinyin4Swift.bundle",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SiriMessage/Pods-SiriMessage-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		864EF20E946ECF58B789FB6C /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -655,16 +694,21 @@
 			buildActionMask = 2147483647;
 			files = (
 				0739FA5525BAACD400B6A7AB /* ProviderDelegate.swift in Sources */,
+				07471A26264F846E0042EC2D /* PipelineStates.swift in Sources */,
 				AEC6BF411EAF320E007CA6E5 /* JoinChatViewController.swift in Sources */,
 				0760E10125E74BD30030337E /* HJOpenGLView.m in Sources */,
 				07C9632F25E3B53900C2BF4C /* ImageConfirmViewController.swift in Sources */,
 				0760E10A25E74C7E0030337E /* VideoChatViewController.swift in Sources */,
+				07471A0F264F83FD0042EC2D /* Matrix.swift in Sources */,
 				0760E10225E74BD30030337E /* HJH264Encoder.m in Sources */,
+				07471A0D264F83ED0042EC2D /* VideoProcessor.swift in Sources */,
 				0739FA4F25BAA9A300B6A7AB /* Call.swift in Sources */,
+				07471A23264F846E0042EC2D /* MetalUtils.swift in Sources */,
 				0702F7E6247E62B200B22846 /* ContactsTableViewController.swift in Sources */,
 				AE909BF11EB63FDB009D9D95 /* MessageInputView.swift in Sources */,
 				070C41742489204F0035314A /* SearchViewController.swift in Sources */,
 				07B3F5D4262470D70016B5C9 /* ChatRoomViewController+Drop.swift in Sources */,
+				07471A24264F846E0042EC2D /* RenderDestination.swift in Sources */,
 				AE909BEB1EB54099009D9D95 /* MessageCollectionViewCell.swift in Sources */,
 				07E001DA248CA56800D4A287 /* SelectShortcutTVC.swift in Sources */,
 				073FDF6A25B2A35000FE01CD /* NotificationManager.swift in Sources */,
@@ -674,16 +718,21 @@
 				0749E66225E601690058EC30 /* EmojiCollectionViewCell.swift in Sources */,
 				AE909BEF1EB54C4B009D9D95 /* Label.swift in Sources */,
 				AEC6BF3F1EAF320E007CA6E5 /* AppDelegate.swift in Sources */,
+				07471A20264F846E0042EC2D /* VertexDescriptors.swift in Sources */,
 				AEA5A1771EC3618C0041C7B4 /* Layouts.swift in Sources */,
+				07471A25264F846E0042EC2D /* BufferView.swift in Sources */,
 				07AB7B0B248F2A7A005306A1 /* SignUpViewController.swift in Sources */,
 				0739FA5825BAB00300B6A7AB /* Audio.swift in Sources */,
 				0739FA5225BAAAD300B6A7AB /* CallManager.swift in Sources */,
-				079317262643CB65008EBB27 /* Recorder.m in Sources */,
+				07471A0B264F83E50042EC2D /* VideoFrameData.swift in Sources */,
 				AEC6BF511EAF345A007CA6E5 /* ChatRoomViewController.swift in Sources */,
+				07471A21264F846E0042EC2D /* Shaders.metal in Sources */,
+				07471A22264F846E0042EC2D /* DepthStencilStates.swift in Sources */,
 				AEA5A1791EC362150041C7B4 /* ChatRoomViewController+Table.swift in Sources */,
 				07B3F5F22627E65B0016B5C9 /* ChatRoomCollectionViewLayout.swift in Sources */,
 				0739FABC25BEEF6B00B6A7AB /* FloatWindow.swift in Sources */,
 				0760E10625E74C410030337E /* HJH264Decoder.m in Sources */,
+				07471A27264F846E0042EC2D /* Renderer.swift in Sources */,
 				0749E65F25E521420058EC30 /* EmojiSelectView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -705,14 +754,6 @@
 				07866D2926340541007E049C /* Base */,
 			);
 			name = MainInterface.storyboard;
-			sourceTree = "<group>";
-		};
-		07C6AF7F247D1AF10007222F /* Interface.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				07C6AF80247D1AF10007222F /* Base */,
-			);
-			name = Interface.storyboard;
 			sourceTree = "<group>";
 		};
 		AEC6BF471EAF320E007CA6E5 /* LaunchScreen.storyboard */ = {

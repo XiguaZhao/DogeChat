@@ -31,7 +31,7 @@
 import UIKit
 import YPTransition
 
-protocol MessageInputDelegate: class {
+protocol MessageInputDelegate: AnyObject {
     func sendWasTapped(content: String)
     func addButtonTapped()
 }

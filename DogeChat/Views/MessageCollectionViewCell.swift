@@ -32,7 +32,7 @@ import UIKit
 import AVFoundation
 import YPTransition
 
-protocol MessageTableViewCellDelegate: class {
+protocol MessageTableViewCellDelegate: AnyObject {
     func imageViewTapped(_ cell: MessageCollectionViewCell, imageView: FLAnimatedImageView, path: String)
     func emojiOutBounds(from cell: MessageCollectionViewCell, gesture: UIGestureRecognizer)
     func emojiInfoDidChange(from oldInfo: EmojiInfo?, to newInfo: EmojiInfo?, cell: MessageCollectionViewCell)

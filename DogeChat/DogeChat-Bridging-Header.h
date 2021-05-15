@@ -16,3 +16,4 @@
 #import <SocketRocket/SRWebSocket.h>
 #import <Masonry/Masonry.h>
 #import <YPTransition/YPTransition.h>
+#import "ShaderTypes.h"

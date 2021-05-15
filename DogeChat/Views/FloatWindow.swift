@@ -13,7 +13,7 @@ private let durationPush: TimeInterval = 0.8
 private let pushExistTime: TimeInterval = 3
 private let durationAlwaysDisplay:  TimeInterval = 0.5
 
-protocol FloatWindowTouchDelegate: class {
+protocol FloatWindowTouchDelegate: AnyObject {
     func tapPush(_ window: FloatWindow!, sender: String, content: String)
     func tapAlwaysDisplay(_ window: FloatWindow!, name: String)
 }

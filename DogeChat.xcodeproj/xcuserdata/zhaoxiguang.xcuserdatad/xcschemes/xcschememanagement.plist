@@ -6,11 +6,15 @@
 	<dict>
 		<key>ChatWatch (Notification).xcscheme_^#shared#^_</key>
 		<dict>
+			<key>isShown</key>
+			<false/>
 			<key>orderHint</key>
 			<integer>2</integer>
 		</dict>
 		<key>ChatWatch.xcscheme_^#shared#^_</key>
 		<dict>
+			<key>isShown</key>
+			<false/>
 			<key>orderHint</key>
 			<integer>1</integer>
 		</dict>
@@ -19,10 +23,31 @@
 			<key>orderHint</key>
 			<integer>0</integer>
 		</dict>
+		<key>DogeChatWatch (Complication).xcscheme_^#shared#^_</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+			<key>orderHint</key>
+			<integer>21</integer>
+		</dict>
+		<key>DogeChatWatch (Notification).xcscheme_^#shared#^_</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+			<key>orderHint</key>
+			<integer>20</integer>
+		</dict>
+		<key>DogeChatWatch.xcscheme_^#shared#^_</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+			<key>orderHint</key>
+			<integer>18</integer>
+		</dict>
 		<key>SiriMessage.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>14</integer>
+			<integer>19</integer>
 		</dict>
 		<key>SiriMessageUI.xcscheme_^#shared#^_</key>
 		<dict>
@@ -38,6 +63,11 @@
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
 		<key>078032772486B28C00E370E0</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>07866D1626340541007E049C</key>
 		<dict>
 			<key>primary</key>
 			<true/>
