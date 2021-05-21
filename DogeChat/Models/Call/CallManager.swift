@@ -50,6 +50,7 @@ class CallManager: NSObject {
         let startCallAction = CXStartCallAction(call: uuid, handle: handle)
         startCallAction.isVideo = false
         AppDelegate.shared.callWindow.assignValueForAlwaysDisplay(name: handle.value)
+        AppDelegate.shared.switcherWindow.assignValueForAlwaysDisplay(name: "内/外放")
         let transaction = CXTransaction(action: startCallAction)
         requestTransition(transaction)
     }

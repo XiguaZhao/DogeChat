@@ -124,90 +124,10 @@
             filePath = "DogeChat/ViewControllers/ChatRoomViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "248"
-            endingLineNumber = "248"
+            startingLineNumber = "247"
+            endingLineNumber = "247"
             landmarkName = "confirmSendPhoto()"
             landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "C1FF71FC-1ED1-4DC4-9E52-F14F2DCAAFB4"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "DogeChat/ViewControllers/ChatRoomViewController.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "148"
-            endingLineNumber = "148"
-            landmarkName = "uploadSuccess(notification:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "2D5AB350-BF0B-4BC4-B754-AEC2DECE2C7C"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "DogeChat/ViewControllers/ChatRoomViewController.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "434"
-            endingLineNumber = "434"
-            landmarkName = "revokeMessage(_:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "7917730D-3BCC-477D-A065-C0814CA42824"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "DogeChat/ViewControllers/ChatRoomViewController.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "334"
-            endingLineNumber = "334"
-            landmarkName = "receiveHistoryMessages(_:)"
-            landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "7917730D-3BCC-477D-A065-C0814CA42824 - aeef316dda44ea66"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "DogeChat.ChatRoomViewController.receiveHistoryMessages(Foundation.Notification) -&gt; ()"
-                  moduleName = "DogeChat"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/zhaoxiguang/Library/Mobile%20Documents/com~apple~CloudDocs/Documents/Developer/DogeChat/DogeChat/ViewControllers/ChatRoomViewController.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "328"
-                  endingLineNumber = "328"
-                  offsetFromSymbolStart = "2124">
-               </Location>
-               <Location
-                  uuid = "7917730D-3BCC-477D-A065-C0814CA42824 - 6ac79447633d94dd"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #2 (Swift.Int) -&gt; Foundation.IndexPath in DogeChat.ChatRoomViewController.receiveHistoryMessages(Foundation.Notification) -&gt; ()"
-                  moduleName = "DogeChat"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/zhaoxiguang/Library/Mobile%20Documents/com~apple~CloudDocs/Documents/Developer/DogeChat/DogeChat/ViewControllers/ChatRoomViewController.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "328"
-                  endingLineNumber = "328"
-                  offsetFromSymbolStart = "24">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -292,9 +212,25 @@
             filePath = "DogeChat/AppDelegate.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "307"
-            endingLineNumber = "307"
+            startingLineNumber = "312"
+            endingLineNumber = "312"
             landmarkName = "application(_:continue:restorationHandler:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "052292B7-5E47-4882-8A75-84CD0D0E21AF"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../../../../../../youpin/yptransition2/YPTransition/Classes/Recorder.m"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "244"
+            endingLineNumber = "244"
+            landmarkName = "-setRouteToOption:"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

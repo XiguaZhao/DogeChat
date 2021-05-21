@@ -13,7 +13,10 @@
 #import "Recorder.h"
 #import "HJH264Encoder.h"
 #import "HJH264Decoder.h"
-#import <SocketRocket/SRWebSocket.h>
+#import "HJOpenGLView.h"
+//#import <SocketRocket/SRWebSocket.h>
 #import <Masonry/Masonry.h>
 #import <YPTransition/YPTransition.h>
-#import "ShaderTypes.h"
+#import "OverlayVideoView.h"
+#import "MainVideoView.h"
+#import "VideoChatViewController.h"

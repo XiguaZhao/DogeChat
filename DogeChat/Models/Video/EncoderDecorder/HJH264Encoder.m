@@ -55,7 +55,7 @@
         frameID = 0;
         
         // ----- 1. 创建session -----
-        int width = 640, height = 480;
+        int width = 360, height = 640;
         OSStatus status = VTCompressionSessionCreate(NULL, width, height,
                                                      kCMVideoCodecType_H264, NULL, NULL, NULL,
                                                      didCompressH264, (__bridge void *)(self),  &EncodingSession);
@@ -101,7 +101,7 @@
 // 把编码后的数据写入TCP文件 
 -(void)returnDataToTCPWithHeadData:(NSData*)headData andData:(NSData*)data
 {
-    printf("---- video 编码后的数据data大小 = %d + %d \n",(int)[headData length] ,(int)[data length]);
+//    printf("---- video 编码后的数据data大小 = %d + %d \n",(int)[headData length] ,(int)[data length]);
     NSMutableData *tempData = [NSMutableData dataWithData:headData];
     [tempData appendData:data];
     
@@ -129,7 +129,9 @@
         NSLog(@"H264: VTCompressionSessionEncodeFrame failed with %d", (int)statusCode);
         
         VTCompressionSessionInvalidate(EncodingSession);
-        CFRelease(EncodingSession);
+        if (EncodingSession != NULL) {
+            CFRelease(EncodingSession);
+        }
         EncodingSession = NULL;
         return;
     }

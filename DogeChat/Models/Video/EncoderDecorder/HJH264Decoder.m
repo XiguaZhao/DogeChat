@@ -31,7 +31,7 @@
 {
     self = [super init];
     if (self) {
-        
+        [self initVideoToolBox];
     }
     return self;
 }
@@ -72,7 +72,7 @@
                 pixelBuffer = [self decode]; // 解码得到的CVPixelBufferRef会传入OpenGL ES类进行解析渲染
                 break;
             case 0x07:
-               NSLog(@"*********** SPS");
+//               NSLog(@"*********** SPS");
                 mSPSSize = packetSize - 4;
                 mSPS = malloc(mSPSSize);
                 memcpy(mSPS, packetBuffer + 4, mSPSSize);
@@ -84,7 +84,7 @@
                 memcpy(mPPS, packetBuffer + 4, mPPSSize);
                 break;
             default:
-                NSLog(@"*********** B/P frame"); // P帧?
+//                NSLog(@"*********** B/P frame"); // P帧?
                 pixelBuffer = [self decode];
                 
                 break;

@@ -102,12 +102,10 @@ const GLfloat kColorConversion601FullRange[] = {
 	return [CAEAGLLayer class];
 }
 
-
-- (instancetype)init
+- (instancetype)initWithFrame:(CGRect)frame
 {
-    self = [super init];
+    self = [super initWithFrame:frame];
     if (self) {
-        
         _isFullScreen = NO;
         
         self.contentScaleFactor = [[UIScreen mainScreen] scale];
@@ -127,6 +125,15 @@ const GLfloat kColorConversion601FullRange[] = {
         }
         
         _preferredConversion = kColorConversion709;
+    }
+    return self;
+}
+
+- (instancetype)init
+{
+    self = [super init];
+    if (self) {
+        
     }
     return self;
 }

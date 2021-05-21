@@ -57,6 +57,7 @@ class Call: NSObject {
         WebSocketManager.shared.responseVoiceChat(to: handle, uuid: uuid.uuidString, response: "accept")
         WebSocketManager.shared.nowCallUUID = uuid
         AppDelegate.shared.callWindow.assignValueForAlwaysDisplay(name: handle)
+        AppDelegate.shared.switcherWindow.assignValueForAlwaysDisplay(name: "内/外放")
         state = .active
         rejectBySelf = false
     }
@@ -71,6 +72,7 @@ class Call: NSObject {
         Recorder.sharedInstance().stopRecordAndPlay()
         WebSocketManager.shared.endCall(uuid: uuid.uuidString, with: handle)
         AppDelegate.shared.callWindow.nestedVC.tapped(nil)
+        AppDelegate.shared.switcherWindow.isHidden = true
         state = .ended
     }
     

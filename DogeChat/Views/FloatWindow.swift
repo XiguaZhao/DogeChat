@@ -22,6 +22,7 @@ class NestedViewController: UIViewController {
     
     weak var window: FloatWindow?
     var type: WindowType!
+    var alwaysDisplayType: AlwayDisplayType!
     var pushView: UIView!
     var alwaysDisplayView: UIView!
     var nameLabelPush: UILabel!
@@ -79,6 +80,10 @@ class NestedViewController: UIViewController {
                 delegate?.tapPush(window, sender: nameLabelPush.text ?? "", content: messageLabelPush.text ?? "")
             }
         case .alwaysDisplay:
+            if needCallDelegate {
+                delegate?.tapAlwaysDisplay(window, name: nameLabelAlwaysDisplay.text ?? "")
+            }
+            if self.alwaysDisplayType == .shouldNotDimiss { break }
             endLabel.isHidden = true
             nameLabelAlwaysDisplay.text = "已结束"
             if timerForTapAlwaysDisplay != nil {
@@ -89,9 +94,6 @@ class NestedViewController: UIViewController {
                 self?.autoDismissAlwaysDisplay()
             })
             timerForTapAlwaysDisplay?.fire()
-            if needCallDelegate {
-                delegate?.tapAlwaysDisplay(window, name: nameLabelAlwaysDisplay.text ?? "")
-            }
         default: break
         }
     }
@@ -139,7 +141,9 @@ class NestedViewController: UIViewController {
         nameLabelAlwaysDisplay.translatesAutoresizingMaskIntoConstraints = false
         endLabel.translatesAutoresizingMaskIntoConstraints = false
         nameLabelAlwaysDisplay.text = "赵锡光"
-        endLabel.text = "挂断"
+        if self.alwaysDisplayType == .shouldDismiss {
+            endLabel.text = "挂断"
+        }
         nameLabelAlwaysDisplay.font = .systemFont(ofSize: 15)
         endLabel.font = .systemFont(ofSize: 10)
         NSLayoutConstraint.activate([
@@ -162,20 +166,28 @@ enum WindowType {
     case alwaysDisplay
 }
 
+enum AlwayDisplayType {
+    case shouldDismiss
+    case shouldNotDimiss
+}
+
 class FloatWindow: UIWindow {
     
     let nestedVC: NestedViewController
     let type: WindowType
+    let alwayDisplayType: AlwayDisplayType
     private weak var timerForPush: Timer?
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    init(type: WindowType, delegate: FloatWindowTouchDelegate?) {
+    init(type: WindowType, alwayDisplayType: AlwayDisplayType, delegate: FloatWindowTouchDelegate?) {
         self.type = type
         self.nestedVC = NestedViewController()
+        self.alwayDisplayType = alwayDisplayType
         nestedVC.type = type
+        nestedVC.alwaysDisplayType = alwayDisplayType
         nestedVC.delegate = delegate
         let size = UIScreen.main.bounds.size
         switch type {
@@ -188,7 +200,11 @@ class FloatWindow: UIWindow {
             configurePushType()
         case .alwaysDisplay:
             let width: CGFloat = 60
-            let frame = CGRect(x: size.width - width, y: (size.height-width)/2, width: width, height: width)
+            var y = (size.height-width)/2
+            if alwayDisplayType == .shouldNotDimiss {
+                y += 200
+            }
+            let frame = CGRect(x: size.width - width, y: y, width: width, height: width)
             super.init(frame: frame)
             self.layer.cornerRadius = width / 2
             self.layer.masksToBounds = true

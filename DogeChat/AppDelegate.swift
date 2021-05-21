@@ -41,6 +41,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
     var pushWindow: FloatWindow!
     var callWindow: FloatWindow!
+    var switcherWindow: FloatWindow!
     var deviceToken: String?
     var pushKitToken: String?
     var launchedByPushAction = false
@@ -79,8 +80,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
 
         window?.makeKeyAndVisible()
-        pushWindow = FloatWindow(type: .push, delegate: self)
-        callWindow = FloatWindow(type: .alwaysDisplay, delegate: self)
+        pushWindow = FloatWindow(type: .push, alwayDisplayType: .shouldDismiss, delegate: self)
+        callWindow = FloatWindow(type: .alwaysDisplay, alwayDisplayType: .shouldDismiss, delegate: self)
+        switcherWindow = FloatWindow(type: .alwaysDisplay, alwayDisplayType: .shouldNotDimiss, delegate: self)
         
         providerDelegate = ProviderDelegate(callManager: callManager)
                 
@@ -155,6 +157,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let nowTime = Date().timeIntervalSince1970
         let shouldReLogin = nowTime - lastAppEnterBackgroundTime >= 0.01 * 60
         var reloginCount = 0
+        if !callManager.hasCall() {
+            WebSocketManager.shared.connected = false
+        }
         func reloginFunc() {
             reloginCount += 1
             if reloginCount < 5, let password = UserDefaults.standard.value(forKey: "lastPassword") as? String {
@@ -330,10 +335,25 @@ extension AppDelegate: FloatWindowTouchDelegate {
     }
     
     func tapAlwaysDisplay(_ window: FloatWindow!, name: String) {
-        guard let call = callManager.callWithUUID(socketManager.nowCallUUID) else { return }
-        call.end()
-        callManager.end(call: call)
+        if window.alwayDisplayType == .shouldDismiss {
+            webSocketAdapter.readyToSendVideoData = false
+            Recorder.sharedInstance().needSendVideo = false
+            guard let call = callManager.callWithUUID(socketManager.nowCallUUID) else { return }
+            call.end()
+            callManager.end(call: call)
+            if let videoVC = self.navigationController.visibleViewController as? VideoChatViewController {
+                videoVC.dismiss()
+            }
+            switcherWindow.isHidden = true
+        } else {
+            if Recorder.sharedInstance().nowRoute == .headphone {
+                Recorder.sharedInstance().setRouteToOption(.speaker)
+            } else {
+                Recorder.sharedInstance().setRouteToOption(.headphone)
+            }
+        }
     }
+    
 }
 
 // 通知快捷操作

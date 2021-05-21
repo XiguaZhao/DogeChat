@@ -179,18 +179,17 @@ extension ChatRoomViewController: MessageInputDelegate, UIImagePickerControllerD
                 actionSheet.dismiss(animated: true, completion: nil)
             }
         }))
-        actionSheet.addAction(UIAlertAction(title: "语音通话", style: .default, handler: { [weak self] (action) in
-            guard let self = self else { return }
+        let startCallAction = {
             let uuid = UUID().uuidString
             self.manager.sendCallRequst(to: self.friendName, uuid: uuid)
             AppDelegate.shared.callManager.startCall(handle: self.friendName, uuid: uuid)
+        }
+        actionSheet.addAction(UIAlertAction(title: "语音通话", style: .default, handler: {  (action) in
+            startCallAction()
         }))
-        actionSheet.addAction(UIAlertAction(title: "结束语音通话", style: .default, handler: { [weak self] (action) in
-            Recorder.sharedInstance().stopRecordAndPlay()
-            guard let self = self else { return }
-            self.manager.endCall(uuid: self.manager.nowCallUUID.uuidString, with: self.friendName)
-            guard let call = AppDelegate.shared.callManager.callWithUUID(self.manager.nowCallUUID) else { return }
-            AppDelegate.shared.callManager.end(call: call)
+        actionSheet.addAction(UIAlertAction(title: "视频通话", style: .default, handler: { (action) in
+            startCallAction()
+            Recorder.sharedInstance().needSendVideo = true
         }))
         actionSheet.addAction(UIAlertAction(title: "取消", style: .cancel, handler: nil))
         present(actionSheet, animated: true, completion: nil)

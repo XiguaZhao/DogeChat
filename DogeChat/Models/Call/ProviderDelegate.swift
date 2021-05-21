@@ -91,6 +91,7 @@ extension ProviderDelegate: CXProviderDelegate {
         DispatchQueue.main.async {
             Recorder.sharedInstance().delegate = WebSocketManagerAdapter.shared
             Recorder.sharedInstance().startRecordAndPlay()
+//            WebSocketManagerAdapter.shared.readyToSendVideoData = true
         }
         guard let call = callManager.callWithUUID(action.callUUID) else {
             action.fail()
@@ -107,6 +108,8 @@ extension ProviderDelegate: CXProviderDelegate {
             action.fail()
             return
         }
+        WebSocketManagerAdapter.shared.readyToSendVideoData = false
+        Recorder.sharedInstance().needSendVideo = false
         stopAudio()
         call.end()
         action.fulfill()
@@ -116,6 +119,5 @@ extension ProviderDelegate: CXProviderDelegate {
         }
         callManager.remove(call: call)
     }
-    
 }
 
