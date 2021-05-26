@@ -32,13 +32,14 @@ import UIKit
 import SwiftyJSON
 import YPTransition
 
-protocol ChatRoomVCDelegate: class {
+protocol ChatRoomVCDelegate: AnyObject {
     
 }
 
 class ChatRoomViewController: UIViewController {
     
     static let numberOfHistory = 10
+    static var needRotate = false
     let manager = WebSocketManager.shared
     let collectionView = UICollectionView(frame: CGRect.zero, collectionViewLayout: ChatRootCollectionViewLayout())
     let messageInputBar = MessageInputView()
@@ -53,8 +54,10 @@ class ChatRoomViewController: UIViewController {
     var isAutoGetHistory = false
     var isFirstTimeGetHistory = false
     let messageBarHeight:CGFloat = 60.0
-    
+    var activePKView: UIView!
+    var drawingIndexPath: IndexPath!
     var username = ""
+    var collectionViewTapGesture: UITapGestureRecognizer!
     
     var lastIndexPath: IndexPath {
         return IndexPath(row: messages.count-1, section: 0)
@@ -82,13 +85,14 @@ class ChatRoomViewController: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(emojiButtonTapped), name: .emojiButtonTapped, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(receiveEmojiInfoChangedNotification(_:)), name: .emojiInfoChanged, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(receiveHistoryMessages(_:)), name: .receiveHistoryMessages, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(drawDataDownloadedSuccessNoti(_:)), name: .drawDataDownloadedSuccess, object: nil)
         addRefreshController()
 //        layoutViews(size: view.bounds.size)
         loadViews()
         configureEmojiView()
         layoutViews(size: view.bounds.size)
-        let recognizer = UITapGestureRecognizer(target: self, action: #selector(tap))
-        collectionView.addGestureRecognizer(recognizer)
+        collectionViewTapGesture = UITapGestureRecognizer(target: self, action: #selector(tap))
+        collectionView.addGestureRecognizer(collectionViewTapGesture)
     }
     
     
@@ -109,7 +113,8 @@ class ChatRoomViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         layoutViews(size: view.bounds.size)
-        collectionView.reloadData()
+//        collectionView.reloadData()
+        drawDone()
         DispatchQueue.main.async { [self] in
             scrollBottom = false
             if collectionView.contentSize.height < view.bounds.height {
@@ -118,7 +123,7 @@ class ChatRoomViewController: UIViewController {
             }
         }
     }
-    
+        
     deinit {
         print("chat room VC deinit")
     }
@@ -164,6 +169,7 @@ extension ChatRoomViewController: MessageInputDelegate, UIImagePickerControllerD
     func addButtonTapped() {
         let imagePicker = UIImagePickerController()
         imagePicker.delegate = self
+        messageInputBar.textView.resignFirstResponder()
         let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
         let popover = actionSheet.popoverPresentationController
         popover?.sourceView = messageInputBar.addButton
@@ -179,7 +185,8 @@ extension ChatRoomViewController: MessageInputDelegate, UIImagePickerControllerD
                 actionSheet.dismiss(animated: true, completion: nil)
             }
         }))
-        let startCallAction = {
+        let startCallAction = { [weak self] in
+            guard let self = self else { return }
             let uuid = UUID().uuidString
             self.manager.sendCallRequst(to: self.friendName, uuid: uuid)
             AppDelegate.shared.callManager.startCall(handle: self.friendName, uuid: uuid)
@@ -191,6 +198,18 @@ extension ChatRoomViewController: MessageInputDelegate, UIImagePickerControllerD
             startCallAction()
             Recorder.sharedInstance().needSendVideo = true
         }))
+        if #available(iOS 14.0, *) {
+            actionSheet.addAction(UIAlertAction(title: "速绘", style: .default, handler: { [weak self] (action) in
+                guard let self = self else { return }
+                let drawVC = DrawViewController()
+                drawVC.pkViewDelegate.dataChangedDelegate = self
+                let newMessage = Message(message: "", messageSender: .ourself, receiver: self.friendName, uuid: UUID().uuidString, sender: self.username, messageType: .draw, option: self.messageOption)
+                drawVC.message = newMessage
+                WebSocketManager.shared.sendDrawMessage(newMessage)
+                drawVC.modalPresentationStyle = .fullScreen
+                self.navigationController?.present(drawVC, animated: true, completion: nil)
+            }))
+        }
         actionSheet.addAction(UIAlertAction(title: "取消", style: .cancel, handler: nil))
         present(actionSheet, animated: true, completion: nil)
     }
@@ -229,7 +248,7 @@ extension ChatRoomViewController: MessageInputDelegate, UIImagePickerControllerD
     
     @objc func confirmSendPhoto() {
         guard let (_, imageURL) = self.latestPickedImageInfo else { return }
-        let message = Message(message: "", imageURL: imageURL.absoluteString, videoURL: nil, messageSender: .ourself, receiver: friendName, sender: username, messageType: .image, option: messageOption, date: NSData().description, sendStatus: .fail)
+        let message = Message(message: "", imageURL: imageURL.absoluteString, videoURL: nil, messageSender: .ourself, receiver: friendName, sender: username, messageType: .image, option: messageOption, date: NSDate().description, sendStatus: .fail)
         manager.imageDict[message.uuid] = imageURL
         insertNewMessageCell([message])
         DispatchQueue.main.async { [self] in
@@ -306,6 +325,109 @@ extension ChatRoomViewController: MessageTableViewCellDelegate {
         self.present(browser, animated: true, completion: nil)
     }
     
+    override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+        if !AppDelegate.isPad() {
+            return .portrait
+        }
+        return .all
+    }
+    
+    
+    
+    //MARK: PKView手写
+    func pkViewTapped(_ cell: MessageCollectionViewCell, pkView: UIView!) {
+        if let lastActive = activePKView {
+            lastActive.isUserInteractionEnabled = false
+            lastActive.resignFirstResponder()
+        }
+        activePKView = pkView
+        if let indexPath = collectionView.indexPath(for: cell) {
+            drawingIndexPath = indexPath
+        }
+        if #available(iOS 14.0, *) {
+            self.collectionView.isScrollEnabled = false
+            self.collectionViewTapGesture.isEnabled = false
+
+            let drawVC = DrawViewController()
+            guard let pkView = pkView as? PKView else { return }
+            let message = messages[drawingIndexPath.item]
+            drawVC.message = message
+            drawVC.pkView.drawing = pkView.drawing.transformed(using: CGAffineTransform(scaleX: 1/message.pkViewScale, y: 1/message.pkViewScale))
+            print(message.pkViewScale)
+            drawVC.pkViewDelegate.dataChangedDelegate = self
+            drawVC.modalPresentationStyle = .fullScreen
+            self.navigationController?.present(drawVC, animated: true, completion: nil)
+        }
+    }
+    
+    @objc func drawDone() {
+        self.navigationItem.rightBarButtonItem = nil
+        activePKView?.backgroundColor = .clear
+        activePKView?.resignFirstResponder()
+        activePKView?.isUserInteractionEnabled = false
+        collectionView.isScrollEnabled = true
+        collectionViewTapGesture.isEnabled = true
+        activePKView = nil
+        if let drawingIndexPath = drawingIndexPath {
+            collectionView.reloadItems(at: [drawingIndexPath])
+        }
+        drawingIndexPath = nil
+        self.navigationController?.interactivePopGestureRecognizer?.isEnabled = true
+    }
+    
+    @objc func drawDataDownloadedSuccessNoti(_ noti: Notification) {
+        guard let message = noti.object as? Message else { return }
+        if let index = self.messages.firstIndex(of: message) {
+            let indexPath = IndexPath(item: index, section: 0)
+            self.collectionView.reloadItems(at: [indexPath])
+        }
+    }
+    
+}
+
+@available(iOS 14.0, *)
+extension ChatRoomViewController: PKViewChangedDelegate {
+    func pkView(_ pkView: PKCanvasView, message: Any?, addNewStroke newStroke: PKStroke) {
+        print("add new stroke")
+        guard let message = message as? Message else { return }
+        message.isDrawing = true
+        let data = PKDrawing(strokes: [newStroke]).dataRepresentation()
+        let base64String = data.base64EncodedString()
+        WebSocketManager.shared.sendRealTimeDrawData(base64String, sender: username, receiver: friendName, uuid: message.uuid)
+    }
+    
+    func pkView(_ pkView: PKCanvasView, message: Any?, deleteStrokesIndex: [NSNumber]) {
+        print("delete\(deleteStrokesIndex.count)")
+        guard let message = message as? Message else { return }
+        message.isDrawing = true
+        let indexes = deleteStrokesIndex.map { $0.intValue }
+        WebSocketManager.shared.sendRealTimeDrawData(indexes, sender: username, receiver: friendName, uuid: message.uuid)
+    }
+    
+    func pkViewDidFinishDrawing(_ pkView: PKCanvasView, message: Any?) {
+        if let message = message as? Message {
+            message.pkDrawing = pkView.drawing
+            if !WebSocketManager.shared.drawMessages.contains(message) {
+                WebSocketManager.shared.drawMessages.append(message)
+            }
+            insertNewMessageCell([message])
+            message.isDrawing = false
+            guard !pkView.drawing.strokes.isEmpty else { return }
+            WebSocketManager.shared.uploadData(pkView.drawing.dataRepresentation()) { [weak self] task, data in
+                guard let self = self, let data = data else { return }
+                let json = JSON(data)
+                guard json["status"].stringValue == "success" else {
+                    print("上传失败")
+                    return
+                }
+                let filePath = WebSocketManager.shared.encrypt.decryptMessage(json["filePath"].stringValue)
+                message.pkDataURL = WebSocketManager.shared.url_pre + filePath
+                message.message = message.pkDataURL ?? ""
+                WebSocketManager.shared.sendDrawMessage(message)
+                self.drawDone()
+            }
+        }
+    }
 }
 
 extension ChatRoomViewController: MessageDelegate {
@@ -328,7 +450,7 @@ extension ChatRoomViewController: MessageDelegate {
         let minId = (self.messages.first?.id) ?? Int.max
         self.pagesAndCurNum.pages = pages
         let filtered = messages.filter { $0.id < minId }.reversed() as [Message]
-        let oldIndexPath = IndexPath(item: min(self.messages.count, ChatRoomViewController.numberOfHistory), section: 0)
+        let oldIndexPath = IndexPath(item: min(self.messages.count, filtered.count), section: 0)
         self.messages.insert(contentsOf: filtered, at: 0)
         let indexPaths = [Int](0..<filtered.count).map{ IndexPath(item: $0, section: 0) }
         UIView.performWithoutAnimation {

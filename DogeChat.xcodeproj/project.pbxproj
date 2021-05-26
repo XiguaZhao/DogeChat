@@ -29,6 +29,8 @@
 		0760E10125E74BD30030337E /* HJOpenGLView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0760E0FE25E74BD30030337E /* HJOpenGLView.m */; };
 		0760E10225E74BD30030337E /* HJH264Encoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 0760E0FF25E74BD30030337E /* HJH264Encoder.m */; };
 		0760E10625E74C410030337E /* HJH264Decoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 0760E10425E74C410030337E /* HJH264Decoder.m */; };
+		078E66A22658C0D600E5277E /* PKView.m in Sources */ = {isa = PBXBuildFile; fileRef = 078E66A12658C0D600E5277E /* PKView.m */; };
+		078E66A6265A310F00E5277E /* DrawViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 078E66A5265A310F00E5277E /* DrawViewController.swift */; };
 		079317282643CDA2008EBB27 /* WebSocketManagerAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 079317272643CDA2008EBB27 /* WebSocketManagerAdapter.swift */; };
 		0799068625B3D44B0083C1B8 /* main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0799068525B3D44B0083C1B8 /* main.storyboard */; };
 		07AB7B0B248F2A7A005306A1 /* SignUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07AB7B09248F2A7A005306A1 /* SignUpViewController.swift */; };
@@ -140,6 +142,9 @@
 		07866D2626340541007E049C /* IntentViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntentViewController.swift; sourceTree = "<group>"; };
 		07866D2926340541007E049C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
 		07866D2B26340541007E049C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		078E66A02658C0D600E5277E /* PKView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PKView.h; sourceTree = "<group>"; };
+		078E66A12658C0D600E5277E /* PKView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PKView.m; sourceTree = "<group>"; };
+		078E66A5265A310F00E5277E /* DrawViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawViewController.swift; sourceTree = "<group>"; };
 		079317272643CDA2008EBB27 /* WebSocketManagerAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebSocketManagerAdapter.swift; sourceTree = "<group>"; };
 		0799068525B3D44B0083C1B8 /* main.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = main.storyboard; sourceTree = "<group>"; };
 		07A740A82514E5E90014880E /* Starscream.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Starscream.xcodeproj; path = "../../../DownloadedFromRaywenderlich/Starscream-master/Starscream.xcodeproj"; sourceTree = "<group>"; };
@@ -310,6 +315,7 @@
 				07E001D9248CA56800D4A287 /* SelectShortcutTVC.swift */,
 				07AB7B09248F2A7A005306A1 /* SignUpViewController.swift */,
 				07AB7B0A248F2A7A005306A1 /* SignUpViewController.xib */,
+				078E66A5265A310F00E5277E /* DrawViewController.swift */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -317,6 +323,8 @@
 		078D413E248DF71700E78605 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				078E66A02658C0D600E5277E /* PKView.h */,
+				078E66A12658C0D600E5277E /* PKView.m */,
 				AE909BEA1EB54099009D9D95 /* MessageCollectionViewCell.swift */,
 				AE909BF01EB63FDB009D9D95 /* MessageInputView.swift */,
 				AEA5A1761EC3618C0041C7B4 /* Layouts.swift */,
@@ -571,6 +579,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				0739FA5525BAACD400B6A7AB /* ProviderDelegate.swift in Sources */,
+				078E66A22658C0D600E5277E /* PKView.m in Sources */,
 				AEC6BF411EAF320E007CA6E5 /* JoinChatViewController.swift in Sources */,
 				0760E10125E74BD30030337E /* HJOpenGLView.m in Sources */,
 				07C9632F25E3B53900C2BF4C /* ImageConfirmViewController.swift in Sources */,
@@ -601,6 +610,7 @@
 				0739FABC25BEEF6B00B6A7AB /* FloatWindow.swift in Sources */,
 				07B4A6D12654EFFB006574A6 /* Recorder.m in Sources */,
 				0760E10625E74C410030337E /* HJH264Decoder.m in Sources */,
+				078E66A6265A310F00E5277E /* DrawViewController.swift in Sources */,
 				0749E65F25E521420058EC30 /* EmojiSelectView.swift in Sources */,
 				07471A3F265002440042EC2D /* OverlayVideoView.m in Sources */,
 			);
@@ -761,8 +771,9 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.demo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = zhaoxiguangdemo;
+				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OBJC_BRIDGING_HEADER = "DogeChat/DogeChat-Bridging-Header.h";
-				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_WORKSPACE_SKIPPED_SDK_FRAMEWORKS = "";
@@ -788,8 +799,9 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.demo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = zhaoxiguangdemo;
+				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OBJC_BRIDGING_HEADER = "DogeChat/DogeChat-Bridging-Header.h";
-				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};

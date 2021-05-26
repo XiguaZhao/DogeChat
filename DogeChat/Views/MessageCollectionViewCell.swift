@@ -36,6 +36,7 @@ protocol MessageTableViewCellDelegate: AnyObject {
     func imageViewTapped(_ cell: MessageCollectionViewCell, imageView: FLAnimatedImageView, path: String)
     func emojiOutBounds(from cell: MessageCollectionViewCell, gesture: UIGestureRecognizer)
     func emojiInfoDidChange(from oldInfo: EmojiInfo?, to newInfo: EmojiInfo?, cell: MessageCollectionViewCell)
+    func pkViewTapped(_ cell: MessageCollectionViewCell, pkView: UIView!)
 }
 
 class MessageCollectionViewCell: UICollectionViewCell {
@@ -55,6 +56,7 @@ class MessageCollectionViewCell: UICollectionViewCell {
     var contentSize: CGSize = CGSize.zero
     var activeEmojiView: UIView?
     static let emojiWidth: CGFloat = 150
+    static let pkViewHeight: CGFloat = 100
     var isGif: Bool {
         guard let url = message.imageURL else {
             return false
@@ -71,6 +73,7 @@ class MessageCollectionViewCell: UICollectionViewCell {
     
     override func prepareForReuse() {
         super.prepareForReuse()
+        emojis.removeAll()
         for view in contentView.subviews {
             view.removeFromSuperview()
         }
@@ -88,6 +91,7 @@ class MessageCollectionViewCell: UICollectionViewCell {
     }
     
     func apply(message: Message) {
+        self.message = message
         messageLabel.clipsToBounds = true
         messageLabel.textColor = .white
         messageLabel.numberOfLines = 0
@@ -103,6 +107,11 @@ class MessageCollectionViewCell: UICollectionViewCell {
         contentView.addSubview(nameLabel)
         contentView.addSubview(indicator)
         
+        if message.messageType == .draw {
+            downloadPKDataIfNeeded()
+            addPKView()
+        }
+        
         animatedImageView = FLAnimatedImageView()
         
         animatedImageView.translatesAutoresizingMaskIntoConstraints = false
@@ -111,7 +120,6 @@ class MessageCollectionViewCell: UICollectionViewCell {
         contentView.addSubview(animatedImageView)
         indicator.isHidden = true
         addGestureForImageView()
-        self.message = message
         nameLabel.text = message.senderUsername
         messageLabel.text = message.message
         messageSender = message.messageSender
@@ -121,6 +129,7 @@ class MessageCollectionViewCell: UICollectionViewCell {
         }
         layoutEmojis()
         layoutIfNeeded()
+                
         guard let imageUrl = message.imageURL else { return }
         if imageUrl.hasPrefix("file://") {
             DispatchQueue.global().async {
@@ -143,11 +152,16 @@ class MessageCollectionViewCell: UICollectionViewCell {
         if let data = cache.object(forKey: imageUrl as NSString) {
             if !isGif {
                 self.animatedImageView.image = UIImage(data: data as Data)
+                layoutIfNeeded()
+                return
             } else {
-                self.animatedImageView.animatedImage = FLAnimatedImage(gifData: data as Data)
+                let animatedImage = FLAnimatedImage(gifData: data as Data)
+                if animatedImage != nil {
+                    self.animatedImageView.animatedImage = animatedImage
+                    layoutIfNeeded()
+                    return
+                } 
             }
-            layoutIfNeeded()
-            return
         }
         
         imageDownloader.loadImage(with: URL(string: imageUrl), options: .avoidDecodeImage) { (received, total, url) in
@@ -208,6 +222,22 @@ class MessageCollectionViewCell: UICollectionViewCell {
             height = nameHeight + 150
         case .video:
             height = nameHeight + 180
+        case .draw:
+            if  #available(iOS 14.0, *) {
+                height = nameHeight + pkViewHeight
+                if let pkDrawing = message.pkDrawing as? PKDrawing {
+                    let bounds = pkDrawing.bounds
+                    let maxWidth = UIScreen.main.bounds.width * 0.8
+                    if bounds.maxX > maxWidth {
+                        let ratio = maxWidth / bounds.maxX
+                        height = bounds.height * ratio + nameHeight + bounds.origin.y * ratio + 30
+                    } else {
+                        height = nameHeight + bounds.maxY + 20
+                    }
+                }
+            } else {
+                height = 0
+            }
         }
         var wholeFrame = CGRect(x: 0, y: 0, width: screenWidth, height: height)
         for emojiInfo in message.emojisInfo {
@@ -246,6 +276,10 @@ extension MessageCollectionViewCell {
             layoutForImageMessage()
         case .video:
             layoutForVideoMessage()
+        case .draw:
+            if #available(iOS 14.0, *) {
+                layoutForDrawMessage()
+            }
         }
         
         if messageSender == .someoneElse {
@@ -303,7 +337,7 @@ extension MessageCollectionViewCell {
         } else {
             nameLabel.isHidden = false
             nameLabel.sizeToFit()
-            messageLabel.backgroundColor = .lightGray
+            messageLabel.backgroundColor = #colorLiteral(red: 0.09282096475, green: 0.7103053927, blue: 1, alpha: 1)
 
             messageLabel.center = CGPoint(x: messageLabel.bounds.size.width/2.0 + 16, y: contentView.center.y + (nameLabel.bounds.size.height + 8)/2)
             nameLabel.frame = CGRect(x: messageLabel.frame.origin.x, y: messageLabel.frame.origin.y - 8 - nameLabel.bounds.height, width: nameLabel.bounds.width, height: nameLabel.bounds.height)
@@ -317,6 +351,93 @@ extension MessageCollectionViewCell {
     
     func layoutForVideoMessage() {
         messageLabel.isHidden = true
+    }
+    
+    // PencilKit相关
+    @available(iOS 14.0, *)
+    func layoutForDrawMessage() {
+        messageLabel.isHidden = true
+        guard let pkView = self.getPKView() else { return }
+        let rightMargin:CGFloat = 0
+        pkView.frame = CGRect(x: 0, y: 0, width: 0.8 * contentView.bounds.width + 20 - rightMargin, height: contentView.bounds.height - 30)
+        pkView.contentSize = CGSize(width: pkView.frame.width, height: 2000)
+        if messageSender == .ourself {
+            pkView.center = CGPoint(x: contentView.bounds.width - pkView.bounds.width/2 - safeAreaInsets.right - rightMargin , y: contentView.center.y)
+        } else {
+            pkView.center = CGPoint(x: pkView.bounds.width/2.0 + 16, y: contentView.center.y + (nameLabel.bounds.size.height + 8)/2)
+            nameLabel.frame = CGRect(x: 16, y: 8, width: nameLabel.bounds.width, height: nameLabel.bounds.height)
+        }
+        if let pkDrawing = message.pkDrawing as? PKDrawing {
+            var maxWidth = contentView.bounds.width * 0.8
+            if UIApplication.shared.statusBarOrientation == .landscapeLeft || UIApplication.shared.statusBarOrientation == .landscapeRight {
+                maxWidth = UIScreen.main.bounds.height * 0.8
+            }
+            if pkDrawing.bounds.maxX > maxWidth {
+                let ratio = max(0, maxWidth / pkDrawing.bounds.maxX)
+                pkView.drawing = pkDrawing.transformed(using: CGAffineTransform(scaleX: ratio, y: ratio))
+                message.pkViewScale = ratio
+            } else {
+                pkView.drawing = pkDrawing
+            }
+        }
+    }
+    
+    func addPKView() {
+        if #available(iOS 14.0, *) {
+            if let pkView = self.getPKView() {
+                pkView.removeFromSuperview()
+            }
+            let pkView = PKView()
+            pkView.drawingPolicy = .anyInput
+            pkView.isUserInteractionEnabled = false
+            self.contentView.addSubview(pkView)
+            let tap = UITapGestureRecognizer(target: self, action: #selector(pkViewTapAction(_:)))
+            if message.messageSender == .ourself {
+                contentView.addGestureRecognizer(tap)
+            }
+        }
+    }
+    
+    @available(iOS 14.0, *)
+    @objc func pkViewTapAction(_ tap: UITapGestureRecognizer) {
+        if messageSender == .ourself {
+            guard let pkView = self.getPKView() else { return }
+            delegate?.pkViewTapped(self, pkView: pkView)
+        }
+    }
+    
+    @available(iOS 14.0, *)
+    func getPKView() -> PKView? {
+        for view in contentView.subviews {
+            if view.isKind(of: PKView.self) {
+                return view as? PKView
+            }
+        }
+        return nil
+    }
+    func downloadPKDataIfNeeded() {
+        guard #available(iOS 14.0, *),
+              let pkDataStr = message.pkDataURL,
+              let pkDataURL = URL(string: pkDataStr) else { return }
+        let cache = ContactsTableViewController.pkDataCache
+        if let cachedPKData = cache.object(forKey: pkDataStr as NSString),
+           let pkDrawing = try? PKDrawing(data: cachedPKData as Data) {
+            if !message.isDrawing {
+                message.pkDrawing = pkDrawing
+            }
+        } else {
+            let capturedMessage = self.message
+            DispatchQueue.global().async {
+                if let downloadedData = try? Data(contentsOf: pkDataURL),
+                   let pkDrawing = try? PKDrawing(data: downloadedData) {
+                    cache.setObject(downloadedData as NSData, forKey: pkDataStr as NSString)
+                    capturedMessage?.pkDrawing = pkDrawing
+                    DispatchQueue.main.async {
+                        NotificationCenter.default.post(name: .drawDataDownloadedSuccess, object: capturedMessage)
+                    }
+                }
+            }
+        }
     }
     
     func isJoinOrQuitMessage() -> Bool {

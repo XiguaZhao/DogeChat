@@ -91,7 +91,6 @@ extension ProviderDelegate: CXProviderDelegate {
         DispatchQueue.main.async {
             Recorder.sharedInstance().delegate = WebSocketManagerAdapter.shared
             Recorder.sharedInstance().startRecordAndPlay()
-//            WebSocketManagerAdapter.shared.readyToSendVideoData = true
         }
         guard let call = callManager.callWithUUID(action.callUUID) else {
             action.fail()

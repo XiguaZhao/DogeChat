@@ -8,6 +8,7 @@
 
 import Foundation
 import YPTransition
+import SwiftyJSON
 
 class WebSocketManagerAdapter: NSObject {
     
@@ -21,7 +22,7 @@ class WebSocketManagerAdapter: NSObject {
             }
         }
     }
-        
+    
     private override init() {
         super.init()
         NotificationCenter.default.addObserver(self, selector: #selector(emojiPathsFetched(noti:)), name: .emojiPathsFetched, object: nil)
@@ -33,6 +34,8 @@ class WebSocketManagerAdapter: NSObject {
         NotificationCenter.default.addObserver(self, selector: #selector(playSound(_:)), name: .playSound, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(voiceChatAccept), name: .voiceChatAccept, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(endVoiceChat(_:)), name: .endVoiceChat, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(receiveRealTimeDrawData(noti:)), name: .receiveRealTimeDrawData, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(receiveDrawMessageUpdate(_:)), name: .drawMessageUpdate, object: nil)
         manager.dataDelegate = self
     }
     
@@ -92,8 +95,19 @@ class WebSocketManagerAdapter: NSObject {
         let userInfo = noti.userInfo!
         let newMessages = userInfo["messages"] as! [Message]
         let isPublic = userInfo["isPublic"] as! Bool
-        if let chatVC = AppDelegate.shared.navigationController.topViewController as? ChatRoomViewController, chatVC.navigationItem.title == (isPublic ? "群聊" : newMessages.first?.senderUsername) {
-            chatVC.insertNewMessageCell(newMessages)
+        if let chatVC = AppDelegate.shared.navigationController.topViewController as? ChatRoomViewController {
+            let vcTitle = chatVC.navigationItem.title
+            if isPublic && vcTitle == "群聊" {
+                chatVC.insertNewMessageCell(newMessages)
+            } else {
+                for message in newMessages {
+                    if message.senderUsername == vcTitle {
+                        chatVC.insertNewMessageCell([message])
+                    } else {
+                        manager.postNotification(message: message)
+                    }
+                }
+            }
         } else {
             for message in newMessages {
                 manager.postNotification(message: message)
@@ -120,6 +134,62 @@ class WebSocketManagerAdapter: NSObject {
               let call = AppDelegate.shared.callManager.callWithUUID(_uuid) else { return }
         AppDelegate.shared.callManager.end(call: call)
     }
+    
+    @objc func receiveDrawMessageUpdate(_ noti: Notification) {
+        guard let message = noti.object as? Message else { return }
+        message.isDrawing = false
+        if let chatRoomVC = AppDelegate.shared.navigationController.topViewController as? ChatRoomViewController {
+            if let index = chatRoomVC.messages.firstIndex(of: message) {
+                DispatchQueue.main.async {
+                    chatRoomVC.collectionView.reloadItems(at: [IndexPath(item: index, section: 0)])
+                }
+            }
+        }
+    }
+    
+    @objc func receiveRealTimeDrawData(noti: Notification) {
+        guard let json = noti.object as? JSON else { return }
+        let uuid = json["uuid"].stringValue
+        let _ = json["sender"].stringValue
+        if #available(iOS 14.0, *) {
+            DispatchQueue.global().async {
+                var hasChange = false
+                guard let targetMessage = WebSocketManager.shared.drawMessages.first(where: { $0.uuid == uuid} ) else { return }
+                if let base64Str = json["base64Str"].string {
+                    guard let strokeData = Data(base64Encoded: base64Str) else { return }
+                    if let newDrawing = try? PKDrawing(data: strokeData) {
+                        if let pkDrawing = targetMessage.pkDrawing as? PKDrawing {
+                            targetMessage.pkDrawing = pkDrawing.appending(newDrawing)
+                        } else {
+                            targetMessage.pkDrawing = newDrawing
+                        }
+                        hasChange = true
+                    }
+                }
+                else if let indexes = json["base64Str"].arrayObject as? [Int] {
+                    if let drawing = targetMessage.pkDrawing as? PKDrawing, drawing.strokes.count > indexes[0] {
+                        var newDrawing = drawing
+                        for index in indexes {
+                            newDrawing.strokes.remove(at: index)
+                        }
+                        targetMessage.pkDrawing = newDrawing
+                        hasChange = true
+                    }
+                }
+                if hasChange {
+                    targetMessage.isDrawing = true
+                    if let chatRoomVC = AppDelegate.shared.navigationController?.topViewController as? ChatRoomViewController {
+                        if let index = chatRoomVC.messages.firstIndex(of: targetMessage) {
+                            DispatchQueue.main.async {
+                                chatRoomVC.collectionView.reloadItems(at: [IndexPath(item: index, section: 0)])
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
 }
 
 extension WebSocketManagerAdapter: VoiceDelegate, WebSocketDataDelegate {

@@ -20,6 +20,7 @@ class ContactsTableViewController: UITableViewController {
     var itemRequest = UIBarButtonItem()
     var selectedIndexPath: IndexPath?
     static var poppedChatVC: [UIViewController]?
+    static let pkDataCache: NSCache<NSString, NSData> = NSCache()
     var appDelegate: AppDelegate {
         return UIApplication.shared.delegate as! AppDelegate
     }

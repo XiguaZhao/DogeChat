@@ -33,7 +33,6 @@
     // 设备对象 (video)
     AVCaptureDevice *inputCamera = [self getCameraWithFront:YES type:AVCaptureDeviceTypeBuiltInWideAngleCamera];
     [self setupSessionWithCamera:inputCamera];
-    [self.avSession startRunning];
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(switchCameraAction)];
     [self addGestureRecognizer:tap];
 }

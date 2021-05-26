@@ -21,7 +21,6 @@
 @property (nonatomic, strong) NSMutableArray *socketArray;
 @property (nonatomic, strong) NSMutableData *completeData;
 @property (nonatomic, strong) NSLock *currentLock;
-@property (nonatomic, assign) BOOL exit;
 
 @end
 
@@ -126,9 +125,10 @@
                 if (type == 0) {
                 }else if (type == 1) {
                     // 视频
+                    __weak MainVideoView *wself = self;
                     [self.decoder startH264DecodeWithVideoData:(char *)mData.bytes andLength:(int)mData.length andReturnDecodedData:^(CVPixelBufferRef pixelBuffer) {
-                        [self updateRatioForOverlayVideoViewWithWidth:CVPixelBufferGetWidth(pixelBuffer) height:CVPixelBufferGetHeight(pixelBuffer)];
-                        [self.playView displayPixelBuffer:pixelBuffer];
+                        [wself updateRatioForOverlayVideoViewWithWidth:CVPixelBufferGetWidth(pixelBuffer) height:CVPixelBufferGetHeight(pixelBuffer)];
+                        [wself.playView displayPixelBuffer:pixelBuffer];
                     }];
                 }
                 
@@ -140,6 +140,7 @@
         }
        
     }
+    [NSThread exit];
 }
 
 - (int)intWithData:(NSData *)data {

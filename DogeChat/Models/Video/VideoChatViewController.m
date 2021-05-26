@@ -73,21 +73,29 @@ static CGFloat overlayWidth = 0;
     });
 }
 
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    [self.overlayVideoView.avSession startRunning];
+}
+
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
+    self.mainVideoView.exit = YES;
     [self.overlayVideoView.avSession stopRunning];
 }
 
 - (void)captureOutput:(AVCaptureOutput *)output didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection {
     if (output != self.overlayVideoView.videoOutput) return;
     if (WebSocketManagerAdapter.shared.readyToSendVideoData) {
+        __weak VideoChatViewController *wself = self;
         [self.encoder startH264EncodeWithSampleBuffer:sampleBuffer andReturnData:^(NSData *data) {
-            self->_count++;
+            __strong VideoChatViewController *strongSelf = wself;
+            strongSelf->_count++;
             NSMutableData *mData = [[NSMutableData alloc] init];
-            NSData *headData = [self bytewithInt:60000];//协议头 4位 (0-4)
-            NSData *countData = [self bytewithInt:self->_count];//发到第几个包 4位 (4-8)
-            NSData *legnthData = [self bytewithInt:(int)data.length];//当前包的长度 4位 (8-12)
-            NSData *dataType = [self bytewithInt:1];//type 1为视频
+            NSData *headData = [strongSelf bytewithInt:60000];//协议头 4位 (0-4)
+            NSData *countData = [strongSelf bytewithInt:strongSelf->_count];//发到第几个包 4位 (4-8)
+            NSData *legnthData = [strongSelf bytewithInt:(int)data.length];//当前包的长度 4位 (8-12)
+            NSData *dataType = [strongSelf bytewithInt:1];//type 1为视频
             [mData appendData:headData];
             [mData appendData:countData];
             [mData appendData:legnthData];

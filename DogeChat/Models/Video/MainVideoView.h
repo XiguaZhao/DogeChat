@@ -12,6 +12,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface MainVideoView : UIView
 
+@property (nonatomic, assign) BOOL exit;
+
 - (void)didReceiveData:(NSData *)data;
 
 @end

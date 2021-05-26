@@ -1,32 +1,3 @@
-/**
- * Copyright (c) 2017 Razeware LLC
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * Notwithstanding the foregoing, you may not use, copy, modify, merge, publish,
- * distribute, sublicense, create a derivative work, and/or sell copies of the
- * Software in any work that is designed, intended, or marketed for pedagogical or
- * instructional purposes related to programming, coding, application development,
- * or information technology.  Permission for such use, copying, modification,
- * merger, publication, distribution, sublicensing, creation of derivative works,
- * or sale is expressly withheld.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
 
 import UIKit
 import YPTransition
@@ -35,7 +6,6 @@ extension ChatRoomViewController: UICollectionViewDataSource, UICollectionViewDe
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
-
         guard let splitVC = self.splitViewController,
               let contactVC = ((splitVC.viewControllers.first as? UITabBarController)?.viewControllers?.first as? UINavigationController)?.viewControllers.first as? ContactsTableViewController else { return }
         if !splitVC.isCollapsed {
@@ -45,12 +15,17 @@ extension ChatRoomViewController: UICollectionViewDataSource, UICollectionViewDe
                 return
             }
             if splitVC.viewControllers.count > 1, let chatroomVC = (splitVC.viewControllers[1] as? UINavigationController)?.topViewController as? ChatRoomViewController {
+                AppDelegate.shared.navigationController = (splitVC.viewControllers[1] as! UINavigationController)
                 DispatchQueue.main.async {
                     chatroomVC.layoutViews(size: size)
                     chatroomVC.collectionView.reloadData()
                 }
             }
             ContactsTableViewController.poppedChatVC = nil
+        } else {
+            if let nc = (splitVC.viewControllers.first as? UITabBarController)?.viewControllers?.first as? UINavigationController {
+                AppDelegate.shared.navigationController = nc
+            }
         }
     }
         
@@ -95,7 +70,22 @@ extension ChatRoomViewController: UICollectionViewDataSource, UICollectionViewDe
     }
     
     func insertNewMessageCell(_ messages: [Message]) {
-        let filtered = messages.filter { !self.messages.contains($0) }
+        let alreadyUUIDs: Set<String> = Set(self.messages.map { $0.uuid })
+        let newUUIDs: Set<String> = Set(messages.map { $0.uuid })
+        let filteredUUIDs = newUUIDs.subtracting(alreadyUUIDs)
+        let filtered = messages.filter { filteredUUIDs.contains($0.uuid)}
+        guard !filtered.isEmpty else {
+            DispatchQueue.global().async {
+                for message in messages {
+                    if message.messageType == .draw && !message.message.isEmpty {
+                        if let index = self.messages.firstIndex(where: { $0.uuid == message.uuid }) {
+                            self.messages[index].pkDataURL = message.pkDataURL
+                        }
+                    }
+                }
+            }
+            return
+        }
         DispatchQueue.main.async { [self] in
             var indexPaths: [IndexPath] = []
             for message in filtered {
@@ -117,6 +107,7 @@ extension ChatRoomViewController: UICollectionViewDataSource, UICollectionViewDe
                 scrollToBottom = false
             }
             scrollToBottom = scrollToBottom || (messages.count == 1 && messages[0].messageSender == .ourself)
+            scrollToBottom = scrollToBottom && (drawingIndexPath == nil)
             if scrollToBottom, let indexPath = indexPaths.last {
                 collectionView.scrollToItem(at: indexPath, at: .bottom, animated: true)
             }

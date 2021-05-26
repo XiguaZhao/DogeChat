@@ -106,8 +106,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         login()
         
-        INPreferences.requestSiriAuthorization { (status) in
-        }
+//        INPreferences.requestSiriAuthorization { (status) in
+//        }
         return true
     }
     
@@ -115,7 +115,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         if AppDelegate.isPad() {
             return .all
         } else {
-            return .portrait
+            if #available(iOS 14.0, *) {
+                if ChatRoomViewController.needRotate {
+                    return .landscape
+                } else {
+                    return .portrait
+                }
+            } else {
+                return .portrait
+            }
         }
     }
     
@@ -155,9 +163,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             WebSocketManager.shared.sortMessages()
         }
         let nowTime = Date().timeIntervalSince1970
-        let shouldReLogin = nowTime - lastAppEnterBackgroundTime >= 0.01 * 60
+        let shouldReLogin = nowTime - lastAppEnterBackgroundTime >= 20 * 60
         var reloginCount = 0
         if !callManager.hasCall() {
+            if socketManager.connected {
+                socketManager.disconnect()
+            }
             WebSocketManager.shared.connected = false
         }
         func reloginFunc() {
