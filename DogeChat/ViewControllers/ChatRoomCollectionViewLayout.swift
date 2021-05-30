@@ -41,4 +41,6 @@ class ChatRootCollectionViewLayout: UICollectionViewFlowLayout {
         indexPathsToReload = toReload
     }
     
+    
+    
 }

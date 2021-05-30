@@ -39,6 +39,7 @@ class EmojiCollectionViewCell: UICollectionViewCell {
     
     override func prepareForReuse() {
         super.prepareForReuse()
+        emojiView.image = nil
     }
     
     @objc func tapTwice(_ ges: UITapGestureRecognizer) {

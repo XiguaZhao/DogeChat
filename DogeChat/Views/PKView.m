@@ -3,7 +3,7 @@
 //  DogeChat
 //
 //  Created by 赵锡光 on 2021/5/22.
-//  Copyright © 2021 Luke Parham. All rights reserved.
+//  Copyright © 2021 赵锡光. All rights reserved.
 //
 
 #import "PKView.h"
@@ -11,20 +11,7 @@
 @interface PKViewDelegate ()
 
 @property (nonatomic, strong) NSArray<PKStroke *> *oldStrokes;
-
-@end
-
-@implementation PKView
-
-- (instancetype)initWithFrame:(CGRect)frame
-{
-    self = [super initWithFrame:frame];
-    if (self) {
-        
-    }
-    return self;
-}
-
+@property (nonatomic, strong) PKStroke *lastStroke;
 
 @end
 
@@ -47,13 +34,28 @@
         }
     } else {
         PKStroke *newStroke = canvasView.drawing.strokes.lastObject;
+        self.lastStroke = newStroke;
         if (newStroke != nil && ![self.oldStrokes containsObject:newStroke]) {
             [self.dataChangedDelegate pkView:self.pkView message:self.message addNewStroke:newStroke];
         }
+        CGRect bounds = [[PKDrawing alloc] initWithStrokes:@[newStroke]].bounds;
+        BOOL shouldAutoOffset = NO;
+        if (CGRectGetMaxX(bounds) > canvasView.contentOffset.x + canvasView.bounds.size.width * 0.8) {
+            shouldAutoOffset = YES;
+        }
+        if (self.autoOffsetDelegate) {
+            [self.autoOffsetDelegate shoudAutoOffset:shouldAutoOffset];
+        }
     }
-    
-    
     self.oldStrokes = canvasView.drawing.strokes;
+}
+
+- (void)autoOffset {
+    if (!_pkView) return;
+    CGPoint originalOffset = _pkView.contentOffset;
+    originalOffset.x += 0.6 * _pkView.bounds.size.width;
+    originalOffset.x = MIN(originalOffset.x, _pkView.contentSize.width - _pkView.bounds.size.width);
+    [_pkView setContentOffset:originalOffset animated:YES];
 }
 
 - (void)toolPickerSelectedToolDidChange:(PKToolPicker *)toolPicker {
@@ -63,5 +65,9 @@
     self.pkView.tool = toolPicker.selectedTool;
 }
 
+
+- (UIView *)viewForZoomingInScrollView:(UIScrollView *)scrollView {
+    return scrollView;
+}
 
 @end

@@ -1,114 +1,144 @@
-/**
- * Copyright (c) 2017 Razeware LLC
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * Notwithstanding the foregoing, you may not use, copy, modify, merge, publish,
- * distribute, sublicense, create a derivative work, and/or sell copies of the
- * Software in any work that is designed, intended, or marketed for pedagogical or
- * instructional purposes related to programming, coding, application development,
- * or information technology.  Permission for such use, copying, modification,
- * merger, publication, distribution, sublicensing, creation of derivative works,
- * or sale is expressly withheld.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
 
 import UIKit
 import UserNotifications
 import YPTransition
 
 class JoinChatViewController: UIViewController {
-  let logoImageView = UIImageView()
-  let shadowView = UIView()
-  let nameTextField = TextField()
-  let passwordTextField = TextField()
-  let manager = WebSocketManager.shared
-  let login = UIButton()
-  let signUp = UIButton()
-  
-  override func viewWillAppear(_ animated: Bool) {
-    super.viewWillAppear(animated)
-  }
-  
-  @objc func loginTapped() {
-    guard let username = nameTextField.text, let password = passwordTextField.text else { return }
-    login(username: username, password: password)
-  }
-  
-  @objc func signUpTapped() {
-    navigationController?.pushViewController(SignUpViewController(), animated: true)
-  }
-  
-  @objc func dismissKeyboard() {
-    nameTextField.resignFirstResponder()
-    passwordTextField.resignFirstResponder()
-  }
+    
+    let manager = WebSocketManager.shared
+    let usernameLabel = UILabel()
+    let passwordLabel = UILabel()
+    let usernameTF = UITextField()
+    let passwordTF = UITextField()
+    let loginButton = UIButton()
+    let signUpButton = UIButton()
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        navigationItem.title = "Doge Chat"
+        usernameLabel.text = "用户名："
+        passwordLabel.text = "密码："
+        usernameLabel.font = UIFont.boldSystemFont(ofSize: 20)
+        passwordLabel.font = UIFont.boldSystemFont(ofSize: 20)
+        let labelStackView = UIStackView(arrangedSubviews: [usernameLabel, passwordLabel])
+        labelStackView.axis = .vertical
+        labelStackView.spacing = 25
+        
+        usernameTF.placeholder = "Username"
+        passwordTF.placeholder = "Password"
+        usernameTF.borderStyle = .roundedRect
+        passwordTF.borderStyle = .roundedRect
+        let tfStackView = UIStackView(arrangedSubviews: [usernameTF, passwordTF])
+        tfStackView.axis = .vertical
+        tfStackView.spacing = 30
+        
+        let topStackView = UIStackView(arrangedSubviews: [labelStackView, tfStackView])
+        topStackView.axis = .horizontal
+        
+        loginButton.setTitle("登录", for: .normal)
+        signUpButton.setTitle("注册", for: .normal)
+        loginButton.setTitleColor(.systemBlue, for: .normal)
+        signUpButton.setTitleColor(.systemBlue, for: .normal)
+        let buttonStackView = UIStackView(arrangedSubviews: [loginButton, signUpButton])
+        buttonStackView.axis = .horizontal
+        buttonStackView.distribution = .fillEqually
+        
+        let stackView = UIStackView(arrangedSubviews: [topStackView, buttonStackView])
+        stackView.axis = .vertical
+        stackView.spacing = 30
+        view.addSubview(stackView)
+        
+        stackView.mas_makeConstraints { [weak self] make in
+            guard let self = self else { return }
+            make?.center.equalTo()(self.view)
+        }
+        usernameLabel.mas_makeConstraints { [weak self] make in
+            guard let self = self else { return }
+            make?.centerY.equalTo()(self.usernameTF.mas_centerY)
+        }
+        passwordLabel.mas_makeConstraints { [weak self] make in
+            guard let self = self else { return }
+            make?.centerY.equalTo()(self.passwordTF.mas_centerY)
+        }
+        
+        usernameTF.delegate = self
+        passwordTF.delegate = self
+        
+        loginButton.addTarget(self, action: #selector(loginTapped), for: .touchUpInside)
+        signUpButton.addTarget(self, action: #selector(signUpTapped), for: .touchUpInside)
+        
+        let tap = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        view.addGestureRecognizer(tap)
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+    }
+    
+    @objc func loginTapped() {
+        guard let username = usernameTF.text, let password = passwordTF.text else { return }
+        login(username: username, password: password)
+    }
+    
+    @objc func signUpTapped() {
+        navigationController?.pushViewController(SignUpViewController(), animated: true)
+    }
+    
+    @objc func dismissKeyboard() {
+        usernameTF.resignFirstResponder()
+        passwordTF.resignFirstResponder()
+    }
 }
 
 extension JoinChatViewController: UITextFieldDelegate {
-  func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-    if textField === textField { passwordTextField.resignFirstResponder() } else { textField.resignFirstResponder() }
-    if let username = nameTextField.text, let password = passwordTextField.text {
-      login(username: username, password: password)
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        if textField == usernameTF { passwordTF.resignFirstResponder() } else { textField.resignFirstResponder() }
+        if let username = usernameTF.text, let password = passwordTF.text {
+            login(username: username, password: password)
+        }
+        return true
     }
-    return true
-  }
-  
-  func login(username: String, password: String) {
-    guard username.count != 0 && password.count != 0 else {
-      makeAlert(message: "信息不完整", detail: nil, showTime: 1, completion: nil)
-      return 
+    
+    func login(username: String, password: String) {
+        guard username.count != 0 && password.count != 0 else {
+            makeAlert(message: "信息不完整", detail: nil, showTime: 1, completion: nil)
+            return
+        }
+        manager.myName = username
+        manager.login(username: username, password: password) { loginResult in
+            if loginResult == "登录成功" {
+                let contactsTVC = ContactsTableViewController()
+                contactsTVC.username = username
+                contactsTVC.navigationItem.title = username
+                self.navigationController?.setViewControllers([contactsTVC], animated: true)
+                contactsTVC.loginSuccess = true
+                UserDefaults.standard.setValue(username, forKey: "lastUsername")
+                UserDefaults.standard.setValue(password, forKey: "lastPassword")
+            } else {
+                let alert = UIAlertController(title: loginResult, message: "请重新检查输入", preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
+                self.present(alert, animated: true)
+            }
+        }
     }
-    manager.myName = username
-    manager.login(username: username, password: password) { loginResult in
-      if loginResult == "登录成功" {
-        let contactsTVC = ContactsTableViewController()
-        contactsTVC.username = username
-        contactsTVC.navigationItem.title = username
-        self.navigationController?.setViewControllers([contactsTVC], animated: true)
-        contactsTVC.loginSuccess = true
-        UserDefaults.standard.setValue(username, forKey: "lastUsername")
-        UserDefaults.standard.setValue(password, forKey: "lastPassword")
-      } else {
-        let alert = UIAlertController(title: loginResult, message: "请重新检查输入", preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
-        self.present(alert, animated: true)
-      }
-    }
-  }
     
 }
 
 class TextField: UITextField {
-  
-  let padding = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 8);
-  
-  override func textRect(forBounds bounds: CGRect) -> CGRect {
-    return bounds.inset(by: padding)
-  }
-  
-  override func placeholderRect(forBounds bounds: CGRect) -> CGRect {
-    return bounds.inset(by: padding)
-  }
-  
-  override func editingRect(forBounds bounds: CGRect) -> CGRect {
-    return bounds.inset(by: padding)
-  }
+    
+    let padding = UIEdgeInsets(top: 0, left: 16, bottom: 0, right: 8);
+    
+    override func textRect(forBounds bounds: CGRect) -> CGRect {
+        return bounds.inset(by: padding)
+    }
+    
+    override func placeholderRect(forBounds bounds: CGRect) -> CGRect {
+        return bounds.inset(by: padding)
+    }
+    
+    override func editingRect(forBounds bounds: CGRect) -> CGRect {
+        return bounds.inset(by: padding)
+    }
 }
 
 

@@ -13,14 +13,23 @@ import YPTransition
 class ContactsTableViewController: UITableViewController {
     
     var unreadMessage = [String: Int]()
-    var usernames = [String]()
+    var usersInfo = [(name: String, message: Message?, avatarUrl: String?)]()
+    var usernames: [String] {
+        get {
+            return usersInfo.map { $0.name }
+        }
+        set {
+            usersInfo = newValue.map { ($0, nil, nil) }
+        }
+    }
     var username = ""
     let manager = WebSocketManager.shared
     var barItem = UIBarButtonItem()
     var itemRequest = UIBarButtonItem()
     var selectedIndexPath: IndexPath?
+    let cache: NSCache<NSString, NSData> = NSCache()
     static var poppedChatVC: [UIViewController]?
-    static let pkDataCache: NSCache<NSString, NSData> = NSCache()
+    static var pkDataCache = [String : Data]()
     var appDelegate: AppDelegate {
         return UIApplication.shared.delegate as! AppDelegate
     }
@@ -190,7 +199,8 @@ class ContactsTableViewController: UITableViewController {
         var remoteFilePath = JSON(data)["filePath"].stringValue
         remoteFilePath = manager.encrypt.decryptMessage(remoteFilePath)
         remoteFilePath = manager.url_pre + remoteFilePath
-        manager.sendMessage(remoteFilePath, to: message.receiver, from: message.senderUsername, option: message.option, uuid: message.uuid, type: "image")
+        message.message = remoteFilePath
+        manager.sendWrappedMessage(message)
     }
     
     
@@ -240,9 +250,12 @@ class ContactsTableViewController: UITableViewController {
         selectedIndexPath = indexPath
         tableView.cellForRow(at: indexPath)?.accessoryView = nil
         if let splitVC = self.splitViewController, !splitVC.isCollapsed {
-            (self.splitViewController?.viewControllers[1] as? UINavigationController)?.setViewControllers([chatRoomVC], animated: false)
+            let nav = self.splitViewController?.viewControllers[1] as? UINavigationController
+            nav?.setViewControllers([chatRoomVC], animated: false)
+            AppDelegate.shared.navigationController = nav
         } else {
             self.navigationController?.setViewControllers([self, chatRoomVC], animated: true)
+            AppDelegate.shared.navigationController = self.navigationController
         }
     }
     

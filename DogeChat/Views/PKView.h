@@ -3,7 +3,7 @@
 //  DogeChat
 //
 //  Created by 赵锡光 on 2021/5/22.
-//  Copyright © 2021 Luke Parham. All rights reserved.
+//  Copyright © 2021 赵锡光. All rights reserved.
 //
 
 #import <PencilKit/PencilKit.h>
@@ -16,20 +16,25 @@ API_AVAILABLE(ios(14.0))
 - (void)pkView:(PKCanvasView *)pkView message:(id __nullable)message addNewStroke:(PKStroke *)newStroke;
 - (void)pkView:(PKCanvasView *)pkView message:(id __nullable)message deleteStrokesIndex:(NSArray<NSNumber *> *)deleteStrokesIndex;
 - (void)pkViewDidFinishDrawing:(PKCanvasView *)pkView message:(id __nullable)message;
+- (void)pkViewDidCancelDrawing:(PKCanvasView *)pkView message:(id __nullable)message;
+
+@end
+
+@protocol PKViewAutoOffsetDelegate <NSObject>
+
+- (void)shoudAutoOffset:(BOOL)shouldAutoOffset;
 
 @end
 
 API_AVAILABLE(ios(14.0))
-@interface PKView : PKCanvasView
-
-@end
-
-API_AVAILABLE(ios(14.0))
-@interface PKViewDelegate : NSObject <PKCanvasViewDelegate>
+@interface PKViewDelegate : NSObject <PKCanvasViewDelegate, PKToolPickerObserver>
 
 @property (nonatomic, weak) PKCanvasView *pkView;
 @property (nonatomic, weak) id<PKViewChangedDelegate> dataChangedDelegate;
+@property (nonatomic, weak) id<PKViewAutoOffsetDelegate> autoOffsetDelegate;
 @property (nonatomic, strong, nullable) id message;
+
+- (void)autoOffset;
 
 @end
 

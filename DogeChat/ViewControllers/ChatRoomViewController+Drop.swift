@@ -19,7 +19,7 @@ extension ChatRoomViewController: UICollectionViewDropDelegate {
             coordinator.session.loadObjects(ofClass: UIImage.self) { (images) in
                 for _image in images {
                     let image = _image as! UIImage
-                    if let cell = collectionView.cellForItem(at: destinationIndexPath) as? MessageCollectionViewCell {
+                    if let cell = collectionView.cellForItem(at: destinationIndexPath) as? MessageCollectionViewBaseCell {
                         cell.didDrop(imageLink: imageLink, image: image, point: coordinator.session.location(in: cell.contentView), cache: cache)
                     }
                 }

@@ -31,7 +31,7 @@ extension ChatRoomViewController: UICollectionViewDataSource, UICollectionViewDe
         
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         if scrollBottom {
-            DispatchQueue.main.asyncAfter(deadline: DispatchTime(uptimeNanoseconds: UInt64(0.005)*NSEC_PER_SEC)) {
+            DispatchQueue.main.async {
                 guard !self.messages.isEmpty else { return }
                 self.collectionView.scrollToItem(at: IndexPath(row: self.messages.count - 1, section: 0), at: .bottom, animated: false)
             }
@@ -41,11 +41,22 @@ extension ChatRoomViewController: UICollectionViewDataSource, UICollectionViewDe
     
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MessageCollectionViewCell.textCellIdentifier, for: indexPath) as? MessageCollectionViewCell else {
+        let message = messages[indexPath.row]
+        var cellID: String?
+        switch message.messageType {
+        case .join, .text:
+            cellID = MessageCollectionViewTextCell.cellID
+        case .image:
+            cellID = MessageCollectionViewImageCell.cellID
+        case .draw:
+            cellID = MessageCollectionViewDrawCell.cellID
+        default:
+            cellID = nil
+        }
+        guard let cellID = cellID,
+              let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellID, for: indexPath) as? MessageCollectionViewBaseCell else {
             return UICollectionViewCell()
         }
-        
-        let message = messages[indexPath.row]
         cell.indexPath = indexPath
         cell.delegate = self
         cell.cache = cache
@@ -55,7 +66,7 @@ extension ChatRoomViewController: UICollectionViewDataSource, UICollectionViewDe
     }
         
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: collectionView.bounds.width, height: MessageCollectionViewCell.height(for: messages[indexPath.item]))
+        return CGSize(width: collectionView.bounds.width, height: MessageCollectionViewBaseCell.height(for: messages[indexPath.item]))
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
@@ -66,37 +77,19 @@ extension ChatRoomViewController: UICollectionViewDataSource, UICollectionViewDe
             return
         }
         displayHistory()
-        isAutoGetHistory = true
     }
     
-    func insertNewMessageCell(_ messages: [Message]) {
+    func insertNewMessageCell(_ messages: [Message], position: InsertPosition = .bottom, index: Int = 0, completion: (()->Void)? = nil) {
         let alreadyUUIDs: Set<String> = Set(self.messages.map { $0.uuid })
         let newUUIDs: Set<String> = Set(messages.map { $0.uuid })
         let filteredUUIDs = newUUIDs.subtracting(alreadyUUIDs)
         let filtered = messages.filter { filteredUUIDs.contains($0.uuid)}
         guard !filtered.isEmpty else {
-            DispatchQueue.global().async {
-                for message in messages {
-                    if message.messageType == .draw && !message.message.isEmpty {
-                        if let index = self.messages.firstIndex(where: { $0.uuid == message.uuid }) {
-                            self.messages[index].pkDataURL = message.pkDataURL
-                        }
-                    }
-                }
-            }
             return
         }
         DispatchQueue.main.async { [self] in
             var indexPaths: [IndexPath] = []
             for message in filtered {
-                if message.messageSender == .ourself {
-                    switch message.option {
-                    case .toAll:
-                        manager.messagesGroup.append(message)
-                    case .toOne:
-                        manager.messagesSingle.add(message, for: message.receiver)
-                    }
-                }
                 indexPaths.append(IndexPath(row: self.messages.count, section: 0))
                 self.messages.append(message)
             }
@@ -111,6 +104,7 @@ extension ChatRoomViewController: UICollectionViewDataSource, UICollectionViewDe
             if scrollToBottom, let indexPath = indexPaths.last {
                 collectionView.scrollToItem(at: indexPath, at: .bottom, animated: true)
             }
+            completion?()
         }
     }
     
@@ -121,7 +115,7 @@ extension ChatRoomViewController: UICollectionViewDataSource, UICollectionViewDe
         messageInputBar.textView.resignFirstResponder()
     }
     
-    func emojiOutBounds(from cell: MessageCollectionViewCell, gesture: UIGestureRecognizer) {
+    func emojiOutBounds(from cell: MessageCollectionViewBaseCell, gesture: UIGestureRecognizer) {
         let point = gesture.location(in: collectionView)
         guard let oldIndexPath = cell.indexPath else { return }
         guard let newIndexPath = collectionView.indexPathForItem(at: point) else {
@@ -134,7 +128,7 @@ extension ChatRoomViewController: UICollectionViewDataSource, UICollectionViewDe
             messages[oldIndexPath.item].emojisInfo.remove(at: messageIndex)
             let newPoint = gesture.location(in: collectionView.cellForItem(at: newIndexPath)?.contentView)
             emojiInfo.x = newPoint.x / UIScreen.main.bounds.width
-            emojiInfo.y = newPoint.y / MessageCollectionViewCell.height(for: messages[newIndexPath.item])
+            emojiInfo.y = newPoint.y / MessageCollectionViewBaseCell.height(for: messages[newIndexPath.item])
             emojiInfo.lastModifiedBy = manager.myName
             messages[newIndexPath.item].emojisInfo.append(emojiInfo)
             needReload(indexPath: [newIndexPath, oldIndexPath])
@@ -142,7 +136,7 @@ extension ChatRoomViewController: UICollectionViewDataSource, UICollectionViewDe
         }
     }
     
-    func emojiInfoDidChange(from oldInfo: EmojiInfo?, to newInfo: EmojiInfo?, cell: MessageCollectionViewCell) {
+    func emojiInfoDidChange(from oldInfo: EmojiInfo?, to newInfo: EmojiInfo?, cell: MessageCollectionViewBaseCell) {
         if let indexPahth = collectionView.indexPath(for: cell) {
             needReload(indexPath: [indexPahth])
             newInfo?.lastModifiedBy = manager.myName

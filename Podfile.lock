@@ -16,6 +16,7 @@ PODS:
     - AFNetworking/NSURLSession
   - DACircularProgress (2.3.1)
   - FLAnimatedImage (1.0.12)
+  - JSONModel (1.8.0)
   - LookinServer (1.0.0)
   - Masonry (1.1.0)
   - SDWebImage (5.10.2):
@@ -37,6 +38,7 @@ DEPENDENCIES:
   - AFNetworking
   - DACircularProgress
   - FLAnimatedImage
+  - JSONModel
   - LookinServer
   - Masonry
   - SDWebImage
@@ -49,6 +51,7 @@ SPEC REPOS:
     - AFNetworking
     - DACircularProgress
     - FLAnimatedImage
+    - JSONModel
     - LookinServer
     - Masonry
     - SDWebImage
@@ -71,6 +74,7 @@ SPEC CHECKSUMS:
   AFNetworking: 7864c38297c79aaca1500c33288e429c3451fdce
   DACircularProgress: 4dd437c0fc3da5161cb289e07ac449493d41db71
   FLAnimatedImage: 4a0b56255d9b05f18b6dd7ee06871be5d3b89e31
+  JSONModel: 02ab723958366a3fd27da57ea2af2113658762e9
   LookinServer: 0002891cd3cec5e082a910e897dfe71b4f06b89e
   Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
   SDWebImage: b969dcfc02c40a5da71eac0b03b8f1a0c794a86f
@@ -79,6 +83,6 @@ SPEC CHECKSUMS:
   SwiftyRSA: 3b9c9179744217951facc6a3e9ae8d8c97061ffa
   YPTransition: 3daa0a3bb4192721553798581bb043a07c56e7a9
 
-PODFILE CHECKSUM: d53a3f199ad8d4a5d3132d80ef37f1cb8dd460ad
+PODFILE CHECKSUM: e64e03de9c46ca0036a83f422d7ae51ace5eb9e4
 
 COCOAPODS: 1.10.1

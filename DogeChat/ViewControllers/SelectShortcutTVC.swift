@@ -80,6 +80,7 @@ class SelectShortcutTVC: UITableViewController {
     
     @objc func logout() {
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
+        WebSocketManager.shared.disconnect()
         self.tabBarController?.selectedViewController = appDelegate.navigationController;
         appDelegate.navigationController?.setViewControllers([JoinChatViewController()], animated: true)
     }

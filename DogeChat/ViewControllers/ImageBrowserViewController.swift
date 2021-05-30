@@ -52,6 +52,7 @@ class ImageBrowserViewController: UIViewController {
             }
         }
         scrollView.addSubview(imageView)
+        scrollView.minimumZoomScale = 0.5
         let swipeDownGesture = UISwipeGestureRecognizer(target: self, action: #selector(swipeDown))
         swipeDownGesture.direction = .down
         self.view.addGestureRecognizer(swipeDownGesture)

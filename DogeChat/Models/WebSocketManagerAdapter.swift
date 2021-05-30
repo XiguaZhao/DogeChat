@@ -3,7 +3,7 @@
 //  DogeChat
 //
 //  Created by 赵锡光 on 2021/5/6.
-//  Copyright © 2021 Luke Parham. All rights reserved.
+//  Copyright © 2021 赵锡光. All rights reserved.
 //
 
 import Foundation
@@ -14,6 +14,7 @@ class WebSocketManagerAdapter: NSObject {
     
     @objc static let shared = WebSocketManagerAdapter()
     let manager = WebSocketManager.shared
+    let queue = DispatchQueue(label: "com.zhaoxiguang.realtimeDrawing")
     @objc var readyToSendVideoData = false {
         didSet {
             guard readyToSendVideoData == true else { return }
@@ -138,6 +139,7 @@ class WebSocketManagerAdapter: NSObject {
     @objc func receiveDrawMessageUpdate(_ noti: Notification) {
         guard let message = noti.object as? Message else { return }
         message.isDrawing = false
+        message.needReDownload = true
         if let chatRoomVC = AppDelegate.shared.navigationController.topViewController as? ChatRoomViewController {
             if let index = chatRoomVC.messages.firstIndex(of: message) {
                 DispatchQueue.main.async {
@@ -159,7 +161,9 @@ class WebSocketManagerAdapter: NSObject {
                     guard let strokeData = Data(base64Encoded: base64Str) else { return }
                     if let newDrawing = try? PKDrawing(data: strokeData) {
                         if let pkDrawing = targetMessage.pkDrawing as? PKDrawing {
-                            targetMessage.pkDrawing = pkDrawing.appending(newDrawing)
+                            self.queue.sync {
+                                targetMessage.pkDrawing = pkDrawing.appending(newDrawing)
+                            }
                         } else {
                             targetMessage.pkDrawing = newDrawing
                         }
