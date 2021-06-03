@@ -14,7 +14,6 @@ pod 'DACircularProgress'
 pod 'Masonry'
 pod 'YPTransition', :path => '/Users/zhaoxiguang/youpin/YPTransition2'
 pod 'LookinServer'
-pod 'JSONModel'
 end
 
 #target 'SiriMessage' do

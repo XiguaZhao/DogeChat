@@ -269,13 +269,14 @@ class ContactsTableViewController: UITableViewController {
         case 0:
             chatRoomVC.messages = manager.messagesGroup
             chatRoomVC.friendName = WebSocketManager.PUBLICPINO
+            chatRoomVC.messagesUUIDs = WebSocketManager.shared.groupUUIDs
         default:
             chatRoomVC.messageOption = .toOne
             let friendName = usernames[indexPath.row]
             chatRoomVC.friendName = friendName
             chatRoomVC.messages = manager.messagesSingle[friendName] ?? []
+            chatRoomVC.messagesUUIDs = manager.singleUUIDs[friendName] ?? Set()
         }
-        chatRoomVC.messagesUUIDs = Set(chatRoomVC.messages.map { $0.uuid })
         return chatRoomVC
     }
     

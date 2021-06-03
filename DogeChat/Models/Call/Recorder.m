@@ -9,6 +9,7 @@
 #import "Recorder.h"
 #import <AVFoundation/AVFoundation.h>
 #import <UIKit/UIKit.h>
+#import "DogeChat-Swift.h"
 
 #define INPUT_BUS   1
 #define OUTPUT_BUS  0
@@ -17,8 +18,6 @@
 static AudioBufferList recordBufferList;
 static AudioUnit _recordAudioUnit;
 
-//static NSMutableData *recordPcmData;
-static NSMutableData *recordedData;
 
 @interface Recorder ()
 
@@ -168,10 +167,14 @@ static OSStatus RecordCallback(void *inRefCon,
         [wholeData appendData:legnthData];
         [wholeData appendData:dataType];
         [wholeData appendData:pcmData];
-
-        if (pcmData && pcmData.length > 0) {
-            [sharedInstace.delegate timeToSendData:wholeData];
-        }
+//
+//        if (WebSocketManagerAdapter.shared.readyToSendVideoData) {
+//            [sharedInstace.recordedData appendData:pcmData];
+//        } else {
+            if (pcmData && pcmData.length > 0) {
+                [sharedInstace.delegate timeToSendData:wholeData];
+            }
+//        }
     }
     return noErr;
 }
@@ -187,7 +190,7 @@ static OSStatus PlayCallback(void *inRefCon,
     UInt32 buffLen = ioData->mBuffers[0].mDataByteSize;
     NSUInteger receivedLen = sharedInstace.receivedData.length;
     if (sharedInstace.receivedData.length >= buffLen) {
-        NSUInteger throttleLen = buffLen * 40;
+        NSUInteger throttleLen = 10000;
         if (receivedLen > throttleLen) {
             [sharedInstace.receivedData replaceBytesInRange:NSMakeRange(0, receivedLen - buffLen) withBytes:NULL length:0];
         }
@@ -253,7 +256,6 @@ static OSStatus PlayCallback(void *inRefCon,
 - (void)startRecord {
     NSLog(@"开始录音");
     self.isRecording = YES;
-    recordedData = [NSMutableData data];
 }
 
 - (void)stopRecord {
@@ -278,10 +280,10 @@ static OSStatus PlayCallback(void *inRefCon,
         return;
     }
     NSLog(@"开始通话");
-    if (recordedData) {
-        recordedData = nil;
+    if (_recordedData) {
+        _recordedData = nil;
     }
-    recordedData = [NSMutableData data];
+    _recordedData = [NSMutableData data];
     sharedInstace.receivedData = [NSMutableData data];
     [self startRecord];
     [self startPlay];

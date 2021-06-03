@@ -13,6 +13,7 @@
 #import "HJH264Decoder.h"
 #import <Masonry/Masonry.h>
 #import "DogeChat-Swift.h"
+#import "Recorder.h"
 
 static CGFloat overlayWidth = 0;
 
@@ -101,6 +102,11 @@ static CGFloat overlayWidth = 0;
             [mData appendData:legnthData];
             [mData appendData:dataType];
             [mData appendData:data];
+            NSMutableData *recordedAudioData = Recorder.sharedInstance.recordedData;
+            if (recordedAudioData.length) {
+                [mData appendData:recordedAudioData];
+                [recordedAudioData replaceBytesInRange:NSMakeRange(0, recordedAudioData.length) withBytes:NULL length:0];
+            }
             [WebSocketManager.shared sendVideoData:[mData copy]];
         }];
 

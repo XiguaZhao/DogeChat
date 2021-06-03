@@ -26,6 +26,7 @@ typedef NS_ENUM(NSUInteger, AudioRoute) {
 @property (nonatomic, strong, nullable) NSMutableData *receivedData;
 @property (nonatomic, assign) BOOL needSendVideo;
 @property (nonatomic, assign) AudioRoute nowRoute;
+@property (nonatomic, strong) NSMutableData *recordedData;
 
 + (instancetype)sharedInstance;
 - (void)startRecord; //开始录音

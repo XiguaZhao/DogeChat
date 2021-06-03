@@ -9,7 +9,7 @@
 import Foundation
 import WatchConnectivity
 
-protocol WCStatus: class {
+protocol WCStatus: AnyObject {
   func wcStatusChangedTo(_ status: Bool)
 }
 
