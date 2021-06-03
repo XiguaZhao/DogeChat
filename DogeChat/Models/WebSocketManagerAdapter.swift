@@ -96,11 +96,11 @@ class WebSocketManagerAdapter: NSObject {
         let userInfo = noti.userInfo!
         let newMessages = userInfo["messages"] as! [Message]
         let isPublic = userInfo["isPublic"] as! Bool
-        if let chatVC = AppDelegate.shared.navigationController.topViewController as? ChatRoomViewController {
+        if let chatVC = AppDelegate.shared.navigationController.topViewController as? ChatRoomViewController { // 当前在聊天页面
             let vcTitle = chatVC.navigationItem.title
-            if isPublic && vcTitle == "群聊" {
+            if isPublic && vcTitle == "群聊" { // 是群聊直接插入
                 chatVC.insertNewMessageCell(newMessages)
-            } else {
+            } else { // newMessages中包含了多个联系人，属于当前聊天界面的插入，不属于的发通知给ContactTVC更新小红点
                 for message in newMessages {
                     if message.senderUsername == vcTitle {
                         chatVC.insertNewMessageCell([message])

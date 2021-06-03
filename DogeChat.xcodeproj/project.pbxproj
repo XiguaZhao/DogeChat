@@ -30,6 +30,9 @@
 		07471A4A265036700042EC2D /* Shader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 07471A48265036700042EC2D /* Shader.fsh */; };
 		0749E65F25E521420058EC30 /* EmojiSelectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0749E65E25E521420058EC30 /* EmojiSelectView.swift */; };
 		0749E66225E601690058EC30 /* EmojiCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0749E66125E601690058EC30 /* EmojiCollectionViewCell.swift */; };
+		075557322665D4B000F63F55 /* Recorder.m in Sources */ = {isa = PBXBuildFile; fileRef = 075557312665D4B000F63F55 /* Recorder.m */; };
+		075557342666317000F63F55 /* SettingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 075557332666317000F63F55 /* SettingViewController.swift */; };
+		075557362666529B00F63F55 /* DatePickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 075557352666529B00F63F55 /* DatePickerViewController.swift */; };
 		0760E10125E74BD30030337E /* HJOpenGLView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0760E0FE25E74BD30030337E /* HJOpenGLView.m */; };
 		0760E10225E74BD30030337E /* HJH264Encoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 0760E0FF25E74BD30030337E /* HJH264Encoder.m */; };
 		0760E10625E74C410030337E /* HJH264Decoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 0760E10425E74C410030337E /* HJH264Decoder.m */; };
@@ -41,7 +44,6 @@
 		07AB7B0C248F2A7A005306A1 /* SignUpViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 07AB7B0A248F2A7A005306A1 /* SignUpViewController.xib */; };
 		07B3F5D4262470D70016B5C9 /* ChatRoomViewController+Drop.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07B3F5D3262470D70016B5C9 /* ChatRoomViewController+Drop.swift */; };
 		07B3F5F22627E65B0016B5C9 /* ChatRoomCollectionViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07B3F5F12627E65B0016B5C9 /* ChatRoomCollectionViewLayout.swift */; };
-		07B4A6D12654EFFB006574A6 /* Recorder.m in Sources */ = {isa = PBXBuildFile; fileRef = 07B4A6D02654EFFB006574A6 /* Recorder.m */; };
 		07C9632F25E3B53900C2BF4C /* ImageConfirmViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07C9632D25E3B53900C2BF4C /* ImageConfirmViewController.swift */; };
 		07C9633025E3B53900C2BF4C /* ImageConfirmViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 07C9632E25E3B53900C2BF4C /* ImageConfirmViewController.xib */; };
 		07E001DA248CA56800D4A287 /* SelectShortcutTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07E001D9248CA56800D4A287 /* SelectShortcutTVC.swift */; };
@@ -134,6 +136,10 @@
 		07471A48265036700042EC2D /* Shader.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = Shader.fsh; sourceTree = "<group>"; };
 		0749E65E25E521420058EC30 /* EmojiSelectView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiSelectView.swift; sourceTree = "<group>"; };
 		0749E66125E601690058EC30 /* EmojiCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiCollectionViewCell.swift; sourceTree = "<group>"; };
+		075557302665D4B000F63F55 /* Recorder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Recorder.h; sourceTree = "<group>"; };
+		075557312665D4B000F63F55 /* Recorder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Recorder.m; sourceTree = "<group>"; };
+		075557332666317000F63F55 /* SettingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingViewController.swift; sourceTree = "<group>"; };
+		075557352666529B00F63F55 /* DatePickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatePickerViewController.swift; sourceTree = "<group>"; };
 		0760E0FD25E74BD30030337E /* HJH264Encoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HJH264Encoder.h; sourceTree = "<group>"; };
 		0760E0FE25E74BD30030337E /* HJOpenGLView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HJOpenGLView.m; sourceTree = "<group>"; };
 		0760E0FF25E74BD30030337E /* HJH264Encoder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HJH264Encoder.m; sourceTree = "<group>"; };
@@ -163,8 +169,6 @@
 		07AB7B0A248F2A7A005306A1 /* SignUpViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SignUpViewController.xib; sourceTree = "<group>"; };
 		07B3F5D3262470D70016B5C9 /* ChatRoomViewController+Drop.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChatRoomViewController+Drop.swift"; sourceTree = "<group>"; };
 		07B3F5F12627E65B0016B5C9 /* ChatRoomCollectionViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatRoomCollectionViewLayout.swift; sourceTree = "<group>"; };
-		07B4A6CF2654EFFB006574A6 /* Recorder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Recorder.h; path = ../../../../../../../../../youpin/yptransition2/YPTransition/Classes/Recorder.h; sourceTree = "<group>"; };
-		07B4A6D02654EFFB006574A6 /* Recorder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Recorder.m; path = ../../../../../../../../../youpin/yptransition2/YPTransition/Classes/Recorder.m; sourceTree = "<group>"; };
 		07C9632D25E3B53900C2BF4C /* ImageConfirmViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageConfirmViewController.swift; sourceTree = "<group>"; };
 		07C9632E25E3B53900C2BF4C /* ImageConfirmViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ImageConfirmViewController.xib; sourceTree = "<group>"; };
 		07E001D9248CA56800D4A287 /* SelectShortcutTVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectShortcutTVC.swift; sourceTree = "<group>"; };
@@ -230,8 +234,8 @@
 		0739FA4C25BAA90800B6A7AB /* Call */ = {
 			isa = PBXGroup;
 			children = (
-				07B4A6CF2654EFFB006574A6 /* Recorder.h */,
-				07B4A6D02654EFFB006574A6 /* Recorder.m */,
+				075557302665D4B000F63F55 /* Recorder.h */,
+				075557312665D4B000F63F55 /* Recorder.m */,
 				0739FA4E25BAA9A300B6A7AB /* Call.swift */,
 				0739FA5125BAAAD300B6A7AB /* CallManager.swift */,
 				0739FA5425BAACD400B6A7AB /* ProviderDelegate.swift */,
@@ -325,6 +329,8 @@
 				07AB7B09248F2A7A005306A1 /* SignUpViewController.swift */,
 				07AB7B0A248F2A7A005306A1 /* SignUpViewController.xib */,
 				078E66A5265A310F00E5277E /* DrawViewController.swift */,
+				075557332666317000F63F55 /* SettingViewController.swift */,
+				075557352666529B00F63F55 /* DatePickerViewController.swift */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -595,6 +601,7 @@
 				078E66A22658C0D600E5277E /* PKView.m in Sources */,
 				AEC6BF411EAF320E007CA6E5 /* JoinChatViewController.swift in Sources */,
 				0760E10125E74BD30030337E /* HJOpenGLView.m in Sources */,
+				075557322665D4B000F63F55 /* Recorder.m in Sources */,
 				07C9632F25E3B53900C2BF4C /* ImageConfirmViewController.swift in Sources */,
 				0760E10225E74BD30030337E /* HJH264Encoder.m in Sources */,
 				07471A42265008820042EC2D /* MainVideoView.m in Sources */,
@@ -619,12 +626,13 @@
 				07AB7B0B248F2A7A005306A1 /* SignUpViewController.swift in Sources */,
 				0739FA5825BAB00300B6A7AB /* Audio.swift in Sources */,
 				071CF7B626609F7C00897B01 /* MessageCollectionViewImageCell.swift in Sources */,
+				075557362666529B00F63F55 /* DatePickerViewController.swift in Sources */,
 				0739FA5225BAAAD300B6A7AB /* CallManager.swift in Sources */,
 				AEC6BF511EAF345A007CA6E5 /* ChatRoomViewController.swift in Sources */,
 				AEA5A1791EC362150041C7B4 /* ChatRoomViewController+Table.swift in Sources */,
 				07B3F5F22627E65B0016B5C9 /* ChatRoomCollectionViewLayout.swift in Sources */,
 				0739FABC25BEEF6B00B6A7AB /* FloatWindow.swift in Sources */,
-				07B4A6D12654EFFB006574A6 /* Recorder.m in Sources */,
+				075557342666317000F63F55 /* SettingViewController.swift in Sources */,
 				0760E10625E74C410030337E /* HJH264Decoder.m in Sources */,
 				078E66A6265A310F00E5277E /* DrawViewController.swift in Sources */,
 				0749E65F25E521420058EC30 /* EmojiSelectView.swift in Sources */,

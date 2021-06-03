@@ -10,6 +10,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+typedef NS_ENUM(NSUInteger, AudioRoute) {
+    AudioRouteSpeaker,
+    AudioRouteHeadphone
+};
+
 @protocol VoiceDelegate <NSObject>
 
 - (void)timeToSendData:(NSData *)data;
@@ -19,6 +24,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, weak) id<VoiceDelegate> delegate;
 @property (nonatomic, strong, nullable) NSMutableData *receivedData;
+@property (nonatomic, assign) BOOL needSendVideo;
+@property (nonatomic, assign) AudioRoute nowRoute;
 
 + (instancetype)sharedInstance;
 - (void)startRecord; //开始录音
@@ -28,6 +35,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)startRecordAndPlay;  //开始通话
 - (void)stopRecordAndPlay;   //结束通话
+
+- (void)setRouteToOption:(AudioRoute)route;
+
++ (int)intWithData:(NSData *)data;
++ (int)intWithDataBytes:(char *)byteK;
++ (NSData *)bytewithInt:(int )i;
 @end
 
 NS_ASSUME_NONNULL_END

@@ -125,6 +125,8 @@ class ContactsTableViewController: UITableViewController {
     deinit {
         manager.messagesGroup.removeAll()
         manager.messagesSingle.removeAll()
+        manager.groupUUIDs.removeAll()
+        manager.singleUUIDs.removeAll()
         manager.disconnect()
     }
     
@@ -266,12 +268,14 @@ class ContactsTableViewController: UITableViewController {
         switch indexPath.row {
         case 0:
             chatRoomVC.messages = manager.messagesGroup
+            chatRoomVC.friendName = WebSocketManager.PUBLICPINO
         default:
             chatRoomVC.messageOption = .toOne
             let friendName = usernames[indexPath.row]
             chatRoomVC.friendName = friendName
             chatRoomVC.messages = manager.messagesSingle[friendName] ?? []
         }
+        chatRoomVC.messagesUUIDs = Set(chatRoomVC.messages.map { $0.uuid })
         return chatRoomVC
     }
     

@@ -24,14 +24,13 @@ class ImageBrowserViewController: UIViewController {
         } else {
             view.backgroundColor = .white
         }
-        scrollView = UIScrollView(frame: view.frame)
+        scrollView = UIScrollView()
         scrollView.bounds = scrollView.frame
         scrollView.minimumZoomScale = 1
         scrollView.maximumZoomScale = 4
         scrollView.contentInsetAdjustmentBehavior = .never
         scrollView.delegate = self
         view.addSubview(scrollView)
-        imageView.frame = scrollView.frame
         imageView.contentMode = .scaleAspectFit
         if let data = imageData {
             if imagePath.hasSuffix(".gif") {
@@ -58,6 +57,12 @@ class ImageBrowserViewController: UIViewController {
         self.view.addGestureRecognizer(swipeDownGesture)
         let tap = UITapGestureRecognizer(target: self, action: #selector(swipeDown))
         self.view.addGestureRecognizer(tap)
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        scrollView.frame = view.frame
+        imageView.frame = scrollView.frame
     }
             
     @objc func swipeDown() {

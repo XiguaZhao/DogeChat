@@ -18,6 +18,7 @@ class ChatRoomViewController: UIViewController {
     var latestPickedImageInfo: (image: UIImage?, url: URL)?
     let emojiSelectView = EmojiSelectView()
     var messages = [Message]()
+    var messagesUUIDs = Set<String>()
     var isFirstTimeGetHistory = false
     let messageBarHeight:CGFloat = 60.0
     var activePKView: UIView!
@@ -104,12 +105,14 @@ class ChatRoomViewController: UIViewController {
         guard let index = messages.firstIndex(of: message) else { return }
         messages[index].id = correctId
         messages[index].sendStatus = .success
-        guard message.receiver == friendName else {
+        guard message.receiver == friendName || (message.receiver == "PublicPino" && friendName.isEmpty) else {
             return
         }
         let indexPath = IndexPath(row: index, section: 0)
-        (collectionView.cellForItem(at: indexPath) as? MessageCollectionViewBaseCell)?.indicator.stopAnimating()
-        (collectionView.cellForItem(at: indexPath) as? MessageCollectionViewBaseCell)?.indicator.removeFromSuperview()
+        if let indicator = (collectionView.cellForItem(at: indexPath) as? MessageCollectionViewBaseCell)?.indicator {
+            indicator.stopAnimating()
+            indicator.removeFromSuperview()
+        }
     }
     
     @objc func uploadSuccess(notification: Notification) {
@@ -289,7 +292,7 @@ extension ChatRoomViewController: MessageTableViewCellDelegate {
         browser.imagePath = path
         browser.modalPresentationStyle = .fullScreen
         browser.cache = cache
-        self.present(browser, animated: true, completion: nil)
+        AppDelegate.shared.navigationController.present(browser, animated: true, completion: nil)
     }
     
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
@@ -423,12 +426,14 @@ extension ChatRoomViewController: MessageDelegate {
     
     @objc func receiveHistoryMessages(_ noti: Notification) {
         guard let messages = noti.userInfo?["messages"] as? [Message], let pages = noti.userInfo?["pages"] as? Int else { return }
-        let minId = (self.messages.first?.id) ?? Int.max
         self.pagesAndCurNum.pages = pages
-        let filtered = messages.filter { $0.id < minId }.reversed() as [Message]
+        let filtered = messages.filter { !self.messagesUUIDs.contains($0.uuid) }.reversed() as [Message]
         let oldIndexPath = IndexPath(item: min(self.messages.count, filtered.count), section: 0)
         
         self.messages.insert(contentsOf: filtered, at: 0)
+        for message in filtered {
+            self.messagesUUIDs.insert(message.uuid)
+        }
         let indexPaths = [Int](0..<filtered.count).map{ IndexPath(item: $0, section: 0) }
         UIView.performWithoutAnimation {
             self.collectionView.insertItems(at: indexPaths)
@@ -484,7 +489,7 @@ extension ChatRoomViewController {
             }
             var revokeAction: UIAction?
             var starEmojiAction: UIAction?
-            if self.messages[indexPath.row].messageSender == .ourself && self.messages[indexPath.row].messageType != .join && self.messageOption == .toOne {
+            if self.messages[indexPath.row].messageSender == .ourself && self.messages[indexPath.row].messageType != .join {
                 revokeAction = UIAction(title: "撤回") { (_) in
                     self.revoke(indexPath: indexPath)
                 }

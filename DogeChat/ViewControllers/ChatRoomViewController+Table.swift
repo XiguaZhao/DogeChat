@@ -80,7 +80,7 @@ extension ChatRoomViewController: UICollectionViewDataSource, UICollectionViewDe
     }
     
     func insertNewMessageCell(_ messages: [Message], position: InsertPosition = .bottom, index: Int = 0, completion: (()->Void)? = nil) {
-        let alreadyUUIDs: Set<String> = Set(self.messages.map { $0.uuid })
+        let alreadyUUIDs = self.messagesUUIDs
         let newUUIDs: Set<String> = Set(messages.map { $0.uuid })
         let filteredUUIDs = newUUIDs.subtracting(alreadyUUIDs)
         let filtered = messages.filter { filteredUUIDs.contains($0.uuid)}
@@ -92,6 +92,7 @@ extension ChatRoomViewController: UICollectionViewDataSource, UICollectionViewDe
             for message in filtered {
                 indexPaths.append(IndexPath(row: self.messages.count, section: 0))
                 self.messages.append(message)
+                self.messagesUUIDs.insert(message.uuid)
             }
             collectionView.insertItems(at: indexPaths)
             var scrollToBottom = !collectionView.isDragging

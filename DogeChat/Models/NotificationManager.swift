@@ -14,6 +14,7 @@ class NotificationManager: NSObject {
     let manager = WebSocketManager.shared
     static let shared = NotificationManager()
     var nowPushInfo: (sender: String, content: String) = ("", "")
+    var actionCompletionHandler: (() -> Void)?
     var remoteNotificationUsername = "" {
         didSet {
             if remoteNotificationUsername != "" {
@@ -35,8 +36,16 @@ class NotificationManager: NSObject {
     
     private override init() {
         super.init()
+        NotificationCenter.default.addObserver(self, selector: #selector(quickReplyDone(_:)), name: .quickReplyDone, object: nil)
     }
     
+    @objc func quickReplyDone(_ noti: Notification) {
+        WebSocketManager.shared.disconnect()
+        actionCompletionHandler?()
+        actionCompletionHandler = nil
+        print("快捷回复完成，调用completionHandler")
+    }
+
     public func processRemoteNotification(_ notification: [String: AnyObject]) {
         guard let alert = notification["alert"] as? [String: AnyObject],
               let sender = alert["title"] as? String,
@@ -76,12 +85,14 @@ class NotificationManager: NSObject {
             guard let self = self, self.nowPushInfo.sender.count != 0 else { return }
             let option: MessageOption = self.nowPushInfo.sender == "群聊" ? .toAll : .toOne
             let message = Message(message: replyContent, imageURL: nil, videoURL: nil, messageSender: .ourself, receiver: self.nowPushInfo.sender, uuid: UUID().uuidString, sender: WebSocketManager.shared.myName, messageType: .text, option: option, id: .max, sendStatus: .fail, emojisInfo: [])
+            WebSocketManager.shared.quickReplyUUID = message.uuid
             WebSocketManager.shared.connect()
             WebSocketManager.shared.notSendContent.append(message)
-            if option == .toAll {
-                WebSocketManager.shared.messagesGroup.append(message)
-            } else {
-                WebSocketManager.shared.messagesSingle.add(message, for: message.receiver)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
+                if !WebSocketManager.shared.quickReplyUUID.isEmpty {
+                    self.actionCompletionHandler?()
+                    self.actionCompletionHandler = nil
+                }
             }
         } fail: {
             

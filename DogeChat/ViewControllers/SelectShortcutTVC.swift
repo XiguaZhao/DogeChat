@@ -49,19 +49,13 @@ class SelectShortcutTVC: UITableViewController {
     }
     let cellIdentifier = "shortcutCell"
     let keyForNameAndPwd = "usernamesAndPasswords"
-    var logoutButton: UIBarButtonItem!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.title = "设置快捷操作"
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: cellIdentifier)
-        setLogoutButton()
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        self.navigationController?.setToolbarHidden(false, animated: false)
-    }
     
     func makeShortcutItem(_ username: String, password: String) -> UIApplicationShortcutItem {
         let icon = UIApplicationShortcutIcon(type: .contact)
@@ -69,21 +63,7 @@ class SelectShortcutTVC: UITableViewController {
         return item
     }
     
-    func setLogoutButton() {
-        logoutButton = UIBarButtonItem(title: "退出登录", style: .plain, target: self, action: #selector(logout))
-        if #available(iOS 14.0, *) {
-            self.setToolbarItems([UIBarButtonItem(systemItem: .flexibleSpace), logoutButton, UIBarButtonItem(systemItem: .flexibleSpace)], animated: true)
-        } else {
-            self.setToolbarItems([logoutButton], animated: true)
-        }
-    }
     
-    @objc func logout() {
-        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
-        WebSocketManager.shared.disconnect()
-        self.tabBarController?.selectedViewController = appDelegate.navigationController;
-        appDelegate.navigationController?.setViewControllers([JoinChatViewController()], animated: true)
-    }
     
     // MARK: - Table view data source
     

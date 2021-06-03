@@ -28,7 +28,6 @@ class MessageCollectionViewImageCell: MessageCollectionViewBaseCell {
         
         animatedImageView.contentMode = .scaleAspectFit
         contentView.addSubview(animatedImageView)
-        indicationNeighborView = animatedImageView
         addGestureForImageView()
     }
     
@@ -44,12 +43,12 @@ class MessageCollectionViewImageCell: MessageCollectionViewBaseCell {
     override func layoutSubviews() {
         super.layoutSubviews()
         layoutImageView()
+        indicationNeighborView = animatedImageView
         layoutIndicatorViewAndMainView()
     }
     
     override func apply(message: Message) {
         super.apply(message: message)
-        
         downloadImageIfNeeded()
     }
     

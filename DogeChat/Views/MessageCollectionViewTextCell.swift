@@ -22,7 +22,6 @@ class MessageCollectionViewTextCell: MessageCollectionViewBaseCell {
         messageLabel.textColor = .white
         messageLabel.numberOfLines = 0
         contentView.addSubview(messageLabel)
-        indicationNeighborView = messageLabel
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -33,6 +32,7 @@ class MessageCollectionViewTextCell: MessageCollectionViewBaseCell {
         super.layoutSubviews()
         if message.messageType == .text {
             layoutForTextMessage()
+            indicationNeighborView = messageLabel
             layoutIndicatorViewAndMainView()
         } else {
             layoutForRevokeMessage()

@@ -32,7 +32,6 @@ class MessageCollectionViewBaseCell: UICollectionViewCell {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        indicator.translatesAutoresizingMaskIntoConstraints = false
         nameLabel.textColor = .lightGray
         nameLabel.font = UIFont(name: "Helvetica", size: 10) //UIFont.systemFont(ofSize: 10)
         clipsToBounds = true
@@ -84,18 +83,18 @@ class MessageCollectionViewBaseCell: UICollectionViewCell {
         case .someoneElse:
             targetView.center = CGPoint(x: targetView.bounds.width / 2 + nameLabelStartX, y: contentView.center.y + (nameLabel.bounds.height + nameLabelStartY) / 2)
         }
-        indicator.center = CGPoint(x: targetView.frame.minX - 50, y: targetView.center.y)
+        indicator.center = CGPoint(x: targetView.frame.minX - 30, y: targetView.center.y)
         
     }
     
     
     // 计算高度
     class func height(for message: Message) -> CGFloat {
-        let maxSize = CGSize(width: 2*(UIScreen.main.bounds.size.width/3), height: CGFloat.greatestFiniteMagnitude)
+        let maxSize = CGSize(width: 2*(AppDelegate.shared.navigationController.view.bounds.size.width/3), height: CGFloat.greatestFiniteMagnitude)
         let nameHeight = message.messageSender == .ourself ? 0 : (height(forText: message.senderUsername, fontSize: 10, maxSize: maxSize) + 4 )
         let messageHeight = height(forText: message.message, fontSize: 17, maxSize: maxSize)
         var height: CGFloat
-        let screenWidth = UIScreen.main.bounds.width
+        let screenWidth = AppDelegate.shared.navigationController.view.bounds.width
         switch message.messageType {
         case .join, .text:
             height = nameHeight + messageHeight + 32 + 16
@@ -108,7 +107,7 @@ class MessageCollectionViewBaseCell: UICollectionViewCell {
                 height = nameHeight + pkViewHeight
                 if let pkDrawing = message.pkDrawing as? PKDrawing {
                     let bounds = pkDrawing.bounds
-                    let maxWidth = UIScreen.main.bounds.width * 0.8
+                    let maxWidth = AppDelegate.shared.navigationController.view.bounds.width * 0.8
                     if bounds.maxX > maxWidth {
                         let ratio = maxWidth / bounds.maxX
                         height = bounds.height * ratio + nameHeight + bounds.origin.y * ratio + 30

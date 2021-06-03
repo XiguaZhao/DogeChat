@@ -155,13 +155,22 @@ static OSStatus RecordCallback(void *inRefCon,
     recordBufferList.mBuffers[0].mData = samples;
     recordBufferList.mBuffers[0].mNumberChannels = 1;
     recordBufferList.mBuffers[0].mDataByteSize = numSamples*sizeof(UInt16);
-    NSLog(@"record buffer size: %u", (unsigned int)recordBufferList.mBuffers[0].mDataByteSize);
     AudioUnitRender(_recordAudioUnit, ioActionFlags, inTimeStamp, inBusNumber, inNumberFrames, &recordBufferList);
     if (sharedInstace.isRecording) {
         NSData *pcmData = [NSData dataWithBytes:recordBufferList.mBuffers[0].mData length:recordBufferList.mBuffers[0].mDataByteSize];
+        NSMutableData *wholeData = [NSMutableData new];
+        NSData *headData = [Recorder bytewithInt:60000];//协议头 4位 (0-4)
+        NSData *countData = [Recorder bytewithInt:sharedInstace.needSendVideo ? 1 : 0];//是否想要视频[4-8]
+        NSData *legnthData = [Recorder bytewithInt:(int)pcmData.length];//当前包的长度 4位 (8-12)
+        NSData *dataType = [Recorder bytewithInt:2];//type 2为音频
+        [wholeData appendData:headData];
+        [wholeData appendData:countData];
+        [wholeData appendData:legnthData];
+        [wholeData appendData:dataType];
+        [wholeData appendData:pcmData];
+
         if (pcmData && pcmData.length > 0) {
-            [sharedInstace.delegate timeToSendData:pcmData];
-            NSLog(@"发出去的dataLen:%lu", (unsigned long)pcmData.length);
+            [sharedInstace.delegate timeToSendData:wholeData];
         }
     }
     return noErr;
@@ -200,9 +209,7 @@ static OSStatus PlayCallback(void *inRefCon,
 - (void)initAudioSession {
     [AVAudioSession.sharedInstance setActive:NO error:nil];
     NSError *error;
-    if (AVAudioSession.sharedInstance.category != AVAudioSessionCategoryPlayAndRecord) {
-        [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayAndRecord withOptions:AVAudioSessionCategoryOptionAllowBluetooth error:&error];
-    }
+    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayAndRecord withOptions:AVAudioSessionCategoryOptionAllowBluetooth | AVAudioSessionCategoryOptionAllowBluetoothA2DP error:&error];
     //VoiceProcessingIO有一个属性可用来打开(0)/关闭(1)回声消除功能
     UInt32 echoCancellation=0;
     AudioUnitSetProperty(_recordAudioUnit,
@@ -213,6 +220,23 @@ static OSStatus PlayCallback(void *inRefCon,
                          sizeof(echoCancellation));
     self.recorderOpenStatus = AudioOutputUnitStart(_recordAudioUnit);
     self.isUnitWorking = YES;
+    self.nowRoute = AudioRouteHeadphone;
+}
+
+- (void)setRouteToOption:(AudioRoute)route {
+    switch (route) {
+        case AudioRouteSpeaker: {
+            [[AVAudioSession sharedInstance] overrideOutputAudioPort:AVAudioSessionPortOverrideSpeaker error:nil];
+            self.nowRoute = AudioRouteSpeaker;
+        }
+            break;
+            
+        case AudioRouteHeadphone: {
+            [[AVAudioSession sharedInstance] overrideOutputAudioPort:AVAudioSessionPortOverrideNone error:nil];
+            self.nowRoute = AudioRouteHeadphone;
+        }
+            break;
+    }
 }
 
 - (void)setRecorderOpenStatus:(OSStatus)recorderOpenStatus {
@@ -293,6 +317,37 @@ static OSStatus PlayCallback(void *inRefCon,
             [fileHandle closeFile];
         }
     }
+}
+
++ (int)intWithData:(NSData *)data {
+    Byte *byteK = (Byte *)data.bytes;
+    int valueK;
+    valueK = (int) (((byteK[0] & 0xFF)<<24)
+                    |((byteK[1] & 0xFF)<<16)
+                    |((byteK[2] & 0xFF)<<8)
+                    |(byteK[3] & 0xFF));
+    return valueK;
+}
+
+
++ (int)intWithDataBytes:(char *)byteK {
+    // Byte *byteK = (Byte *)data.bytes;
+    int valueK;
+    valueK = (int) (((byteK[0] & 0xFF)<<24)
+                    |((byteK[1] & 0xFF)<<16)
+                    |((byteK[2] & 0xFF)<<8)
+                    |(byteK[3] & 0xFF));
+    return valueK;
+}
+
++ (NSData * )bytewithInt:(int )i {
+    Byte b1=i & 0xff;
+    Byte b2=(i>>8) & 0xff;
+    Byte b3=(i>>16) & 0xff;
+    Byte b4=(i>>24) & 0xff;
+    Byte byte[] = {b4,b3,b2,b1};
+    NSData *data = [NSData dataWithBytes:byte length:sizeof(byte)];
+    return data;
 }
 
 @end

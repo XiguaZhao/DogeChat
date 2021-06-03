@@ -1,0 +1,56 @@
+//
+//  DatePickerViewController.swift
+//  DogeChat
+//
+//  Created by 赵锡光 on 2021/6/1.
+//  Copyright © 2021 Luke Parham. All rights reserved.
+//
+
+import UIKit
+
+protocol DatePickerChangeDelegate: AnyObject {
+    func datePickerConfirmed(_ picker: UIDatePicker)
+}
+
+class DatePickerViewController: UIViewController {
+
+    let picker = UIDatePicker()
+    var stackView: UIStackView!
+    weak var delegate: DatePickerChangeDelegate?
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        let confirmButton = UIButton()
+        if #available(iOS 13.0, *) {
+            view.backgroundColor = .systemBackground
+            confirmButton.setTitleColor(.systemBlue, for: .normal)
+        } 
+        picker.datePickerMode = .countDownTimer
+        
+        confirmButton.setTitle("确认", for: .normal)
+        confirmButton.addTarget(self, action: #selector(confirmed(_:)), for: .touchUpInside)
+        stackView = UIStackView(arrangedSubviews: [picker, confirmButton])
+        stackView.frame = CGRect(x: 0, y: 0, width: 200, height: 200)
+        stackView.axis = .vertical
+        stackView.spacing = 20
+        
+        view.addSubview(stackView)
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        if let stackView = stackView {
+            stackView.center = view.center
+        }
+    }
+
+    @objc func confirmed(_ sender: UIButton) {
+        delegate?.datePickerConfirmed(picker)
+        self.dismiss(animated: true, completion: nil)
+    }
+
+}

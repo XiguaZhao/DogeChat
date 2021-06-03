@@ -70,11 +70,7 @@ class JoinChatViewController: UIViewController {
         let tap = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         view.addGestureRecognizer(tap)
     }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-    }
-    
+        
     @objc func loginTapped() {
         guard let username = usernameTF.text, let password = passwordTF.text else { return }
         login(username: username, password: password)

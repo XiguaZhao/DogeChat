@@ -227,17 +227,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     // 点击推送通知才会调用
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
         if response.actionIdentifier.count > 0 { launchedByPushAction = true }
-        let taskId = UIApplication.shared.beginBackgroundTask {
-            print("后台任务超时")
-        }
-        WebSocketManager.shared.backgroundTasks.append(taskId)
-        DispatchQueue.global().asyncAfter(deadline: .now() + 10) {
-            for task in WebSocketManager.shared.backgroundTasks {
-                UIApplication.shared.endBackgroundTask(task)
-                WebSocketManager.shared.backgroundTasks.removeFirst()
-            }
-            WebSocketManager.shared.disconnect()
-        }
         guard let userInfo = response.notification.request.content.userInfo as? [String: AnyObject],
               let aps = userInfo["aps"] as? [String: AnyObject] else { return }
         notificationManager.processRemoteNotification(aps)
@@ -245,15 +234,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         switch response.actionIdentifier {
         case "REPLY_ACTION":
             if let textResponse = response as? UNTextInputNotificationResponse {
+                notificationManager.actionCompletionHandler = completionHandler
                 let input = textResponse.userText
                 notificationManager.processReplyAction(replyContent: input)
             }
         case "DO_NOT_DISTURT_ACTION":
+            WebSocketManager.shared.doNotDisturb(for: "", hour: 4) {
+                completionHandler()
+                print("已经调用completionHandler")
+            }
             break
         default:
             break
         }
-        completionHandler()
     }
             
 }
@@ -343,9 +336,9 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
     
     private func registerPushAction() {
         let replyAction = UNTextInputNotificationAction(identifier: "REPLY_ACTION", title: "回复", options: UNNotificationActionOptions(rawValue: 0), textInputButtonTitle: "回复", textInputPlaceholder: "")
-        let doNotDisturbAction = UNNotificationAction(identifier: "DO_NOT_DISTURT_ACTION", title: "勿扰", options: .init(rawValue: 0))
-        let categoryForPublic = UNNotificationCategory(identifier: "MESSAGE", actions: [replyAction], intentIdentifiers: [], hiddenPreviewsBodyPlaceholder: "", options: .customDismissAction)
-        let categoryForPersonal = UNNotificationCategory(identifier: "MESSAGE_PUBLICPINO", actions: [replyAction, doNotDisturbAction], intentIdentifiers: [], hiddenPreviewsBodyPlaceholder: "", options: .customDismissAction)
+        let doNotDisturbAction = UNNotificationAction(identifier: "DO_NOT_DISTURT_ACTION", title: "勿扰4小时", options: .init(rawValue: 0))
+        let categoryForPersonal = UNNotificationCategory(identifier: "MESSAGE", actions: [replyAction], intentIdentifiers: [], hiddenPreviewsBodyPlaceholder: "", options: .customDismissAction)
+        let categoryForPublic = UNNotificationCategory(identifier: "MESSAGE_PUBLICPINO", actions: [replyAction, doNotDisturbAction], intentIdentifiers: [], hiddenPreviewsBodyPlaceholder: "", options: .customDismissAction)
         let notificationCenter = UNUserNotificationCenter.current()
         notificationCenter.setNotificationCategories([categoryForPublic, categoryForPersonal])
         notificationCenter.delegate = self

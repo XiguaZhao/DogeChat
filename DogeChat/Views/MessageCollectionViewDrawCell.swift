@@ -34,6 +34,9 @@ class MessageCollectionViewDrawCell: MessageCollectionViewBaseCell {
     override func layoutSubviews() {
         super.layoutSubviews()
         layoutForDrawMessage()
+        if #available(iOS 14.0, *) {
+            indicationNeighborView = getPKView()
+        }
         layoutIndicatorViewAndMainView()
     }
         
@@ -51,10 +54,7 @@ class MessageCollectionViewDrawCell: MessageCollectionViewBaseCell {
         pkView.frame = CGRect(x: 0, y: 0, width: 0.8 * contentView.bounds.width + 20 - rightMargin, height: contentView.bounds.height - 30)
         pkView.contentSize = CGSize(width: pkView.frame.width, height: 2000)
         if let pkDrawing = message.pkDrawing as? PKDrawing {
-            var maxWidth = contentView.bounds.width * 0.8
-            if UIApplication.shared.statusBarOrientation == .landscapeLeft || UIApplication.shared.statusBarOrientation == .landscapeRight {
-                maxWidth = UIScreen.main.bounds.height * 0.8
-            }
+            let maxWidth = contentView.bounds.width * 0.8
             if pkDrawing.bounds.maxX > maxWidth {
                 let ratio = max(0, maxWidth / pkDrawing.bounds.maxX)
                 pkView.drawing = pkDrawing.transformed(using: CGAffineTransform(scaleX: ratio, y: ratio))
@@ -71,7 +71,6 @@ class MessageCollectionViewDrawCell: MessageCollectionViewBaseCell {
             pkView.drawingPolicy = .anyInput
             pkView.isUserInteractionEnabled = false
             self.contentView.addSubview(pkView)
-            indicationNeighborView = pkView
             tapGes = UITapGestureRecognizer(target: self, action: #selector(pkViewTapAction(_:)))
             contentView.addGestureRecognizer(tapGes)
         }

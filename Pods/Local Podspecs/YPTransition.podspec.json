@@ -1,0 +1,42 @@
+{
+  "name": "YPTransition",
+  "version": "0.1.11",
+  "summary": "A short description of YPTransition.",
+  "pod_target_xcconfig": {
+    "SWIFT_COMPILATION_MODE": "wholemodule"
+  },
+  "description": "TODO: Add long description of the pod here.",
+  "homepage": "https://git.n.xiaomi.com/youpin-ios/youpin-code/YPTransition",
+  "license": {
+    "type": "MIT",
+    "file": "LICENSE"
+  },
+  "authors": {
+    "MrZhaoXG": "zhaoxiguang@xiaomi.com"
+  },
+  "source": {
+    "git": "git@git.n.xiaomi.com:youpin-ios/youpin-code/YPTransition.git",
+    "tag": "0.1.11"
+  },
+  "platforms": {
+    "ios": "11.0"
+  },
+  "source_files": "YPTransition/Classes/**/*",
+  "dependencies": {
+    "AFNetworking": [
+
+    ],
+    "SwiftyJSON": [
+
+    ],
+    "SwiftyRSA": [
+      "~>1.0"
+    ],
+    "SDWebImage": [
+
+    ],
+    "Starscream": [
+
+    ]
+  }
+}
