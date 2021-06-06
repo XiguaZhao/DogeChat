@@ -3,8 +3,10 @@ import UIKit
 import AVFoundation
 import YPTransition
 
-let nameLabelStartX: CGFloat = 16
+let nameLabelStartX: CGFloat = 40 + 5 + 5
 let nameLabelStartY: CGFloat = 10
+let avatarWidth: CGFloat = 40
+let avatarMargin: CGFloat = 5
 
 protocol MessageTableViewCellDelegate: AnyObject {
     func imageViewTapped(_ cell: MessageCollectionViewBaseCell, imageView: FLAnimatedImageView, path: String)
@@ -27,15 +29,23 @@ class MessageCollectionViewBaseCell: UICollectionViewCell {
     var cache: NSCache<NSString, NSData>!
     var indicationNeighborView: UIView?
     var pinchGes: UIPinchGestureRecognizer?
+    let avatarImageView = FLAnimatedImageView()
     
     static let textCellIdentifier = "MessageCell"
     
     override init(frame: CGRect) {
         super.init(frame: frame)
         nameLabel.textColor = .lightGray
-        nameLabel.font = UIFont(name: "Helvetica", size: 10) //UIFont.systemFont(ofSize: 10)
+        nameLabel.font = UIFont(name: "Helvetica", size: 10) 
         clipsToBounds = true
         
+        avatarImageView.contentMode = .scaleAspectFill
+        avatarImageView.layer.masksToBounds = true
+        avatarImageView.layer.cornerRadius = avatarWidth / 2
+        avatarImageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tapAvatarAction(_:))))
+        avatarImageView.isUserInteractionEnabled = true
+        
+        contentView.addSubview(avatarImageView)
         contentView.addSubview(nameLabel)
         contentView.addSubview(indicator)
     }
@@ -56,6 +66,7 @@ class MessageCollectionViewBaseCell: UICollectionViewCell {
             nameLabel.isHidden = false
             nameLabel.sizeToFit()
             nameLabel.frame = CGRect(x: nameLabelStartX, y: nameLabelStartY, width: nameLabel.bounds.width, height: nameLabel.bounds.height)
+            avatarImageView.frame = CGRect(x: avatarMargin, y: avatarMargin, width: avatarWidth, height: avatarWidth)
             indicator.isHidden = true
         } else {
             nameLabel.isHidden = true
@@ -63,6 +74,8 @@ class MessageCollectionViewBaseCell: UICollectionViewCell {
                 indicator.isHidden = false
                 indicator.startAnimating()
             }
+            avatarImageView.frame = CGRect(x: 0, y: 0, width: avatarWidth, height: avatarWidth)
+            avatarImageView.center = CGPoint(x: contentView.bounds.width - avatarImageView.bounds.width / 2 - avatarMargin, y: contentView.center.y)
         }
         if message.messageType == .join {
             nameLabel.isHidden = true
@@ -72,16 +85,88 @@ class MessageCollectionViewBaseCell: UICollectionViewCell {
     func apply(message: Message) {
         self.message = message
         nameLabel.text = message.senderUsername
+        DispatchQueue.main.async {
+            self.loadAvatar()
+        }
         layoutEmojis()
+    }
+    
+    @objc func tapAvatarAction(_ ges: UITapGestureRecognizer) {
+        let username = message.senderUsername
+        var url: String?
+        if message.messageSender == .ourself {
+            url = WebSocketManager.shared.myAvatarUrl
+        } else {
+            switch message.option {
+            case .toOne:
+                if let index = ContactsTableViewController.usernames.firstIndex(of: username) {
+                    url = WebSocketManager.shared.url_pre +  ContactsTableViewController.usersInfos[index].avatarUrl
+                }
+            case .toAll:
+                url = message.avatarUrl
+            }
+        }
+        if let url = url {
+            delegate?.imageViewTapped(self, imageView: avatarImageView, path: url)
+        }
+    }
+    
+    func loadAvatar() {
+        let block: (String) -> Void = { [self] url in
+            if let data = ContactTableViewCell.avatarCache[url] {
+                if url.hasSuffix(".gif") {
+                    avatarImageView.animatedImage = FLAnimatedImage(gifData: data)
+                } else {
+                    avatarImageView.image = UIImage(data: data)
+                }
+            }
+        }
+        if message.messageSender == .ourself {
+            let url = WebSocketManager.shared.myAvatarUrl
+            block(url)
+        } else if message.option == .toOne {
+            if let index = ContactsTableViewController.usersInfos.firstIndex(where: { $0.name == message.senderUsername }) {
+                let url = WebSocketManager.shared.url_pre +  ContactsTableViewController.usersInfos[index].avatarUrl
+                block(url)
+            }
+        } else { // 群聊 someoneElse
+            let url = message.avatarUrl
+            guard !url.isEmpty else { return }
+            let isGif = url.hasSuffix(".gif")
+            if let data = ContactTableViewCell.avatarCache[url] {
+                if isGif {
+                    avatarImageView.animatedImage = FLAnimatedImage(gifData: data)
+                } else {
+                    avatarImageView.image = UIImage(data: data)
+                }
+            } else {
+                let capturedMessage = self.message
+                SDWebImageManager.shared.loadImage(with: URL(string: url), options: .avoidDecodeImage, progress: nil) { image, data, _, _, _, _ in
+                    guard capturedMessage?.uuid == self.message.uuid else { return }
+                    if !isGif, let image = image { // is photo
+                        let compressed = WebSocketManager.shared.compressEmojis(image)
+                        self.avatarImageView.image = UIImage(data: compressed)
+                        ContactTableViewCell.avatarCache[url] = compressed
+                    } else { // gif图处理
+                        self.avatarImageView.animatedImage = FLAnimatedImage(gifData: data)
+                        if let data = data {
+                            ContactTableViewCell.avatarCache[url] = data
+                        }
+                    }
+
+                }
+            }
+        }
     }
     
     func layoutIndicatorViewAndMainView() {
         guard let targetView = indicationNeighborView else { return }
         switch message.messageSender {
         case .ourself:
-            targetView.center = CGPoint(x: contentView.bounds.width - (targetView.bounds.width / 2) - 16 - safeAreaInsets.right, y: contentView.center.y)
+            targetView.center = CGPoint(x: contentView.bounds.width - (targetView.bounds.width / 2) - nameLabelStartX - safeAreaInsets.right, y: contentView.center.y)
         case .someoneElse:
             targetView.center = CGPoint(x: targetView.bounds.width / 2 + nameLabelStartX, y: contentView.center.y + (nameLabel.bounds.height + nameLabelStartY) / 2)
+            avatarImageView.center = CGPoint(x: avatarMargin + avatarWidth / 2, y: targetView.center.y)
         }
         indicator.center = CGPoint(x: targetView.frame.minX - 30, y: targetView.center.y)
         

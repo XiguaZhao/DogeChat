@@ -8,6 +8,7 @@
 
 import UIKit
 import YPTransition
+import SwiftyJSON
 
 @objc protocol EmojiViewDelegate: AnyObject {
     @objc optional func didSelectEmoji(filePath: String)
@@ -48,19 +49,16 @@ class EmojiSelectView: UIView {
     }
     
     private func configure() {
-        collectionView.translatesAutoresizingMaskIntoConstraints = false;
         if #available(iOS 13.0, *) {
             collectionView.backgroundColor = .systemBackground
         } else {
             collectionView.backgroundColor = .white
         }
-        NSLayoutConstraint.activate([
-            collectionView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
-            collectionView.trailingAnchor.constraint(equalTo: self.trailingAnchor),
-            collectionView.topAnchor.constraint(equalTo: self.topAnchor),
-            collectionView.bottomAnchor.constraint(equalTo: self.bottomAnchor),
-
-        ])
+    }
+    
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        collectionView.frame = self.bounds
     }
     
     required init?(coder: NSCoder) {
@@ -69,13 +67,44 @@ class EmojiSelectView: UIView {
     
 }
 
-extension EmojiSelectView: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UICollectionViewDelegate, UICollectionViewDataSourcePrefetching, EmojiViewDelegate {
+extension EmojiSelectView: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UICollectionViewDelegate, UICollectionViewDataSourcePrefetching, EmojiSelectCellLongPressDelegate {
+    
+    func didLongPressEmojiCell(_ cell: EmojiCollectionViewCell) {
+        let alert = UIAlertController(title: "选中当前Emoji", message: nil, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "设为自己头像", style: .default, handler: { [weak self] _ in
+            guard let self = self else { return }
+            self.useAsSelfAvatar(cell: cell)
+        }))
+        alert.addAction(UIAlertAction(title: "删除", style: .destructive, handler: { [weak self] _ in
+            guard let self = self else { return }
+            let confirmAlert = UIAlertController(title: "确认删除？", message: nil, preferredStyle: .alert)
+            confirmAlert.addAction(UIAlertAction(title: "确认", style: .default, handler: { _ in
+                self.deleteEmoji(cell: cell)
+            }))
+            confirmAlert.addAction(UIAlertAction(title: "取消", style: .cancel, handler: nil))
+            AppDelegate.shared.navigationController.present(confirmAlert, animated: true, completion: nil)
+        }))
+        alert.addAction(UIAlertAction(title: "取消", style: .cancel, handler: nil))
+        AppDelegate.shared.navigationController.present(alert, animated: true, completion: nil)
+    }
     
     func deleteEmoji(cell: EmojiCollectionViewCell) {
         if let indexPath = cell.indexPath, let id = EmojiSelectView.emojiPathToId[emojis[indexPath.item]] {
             WebSocketManager.shared.deleteEmoji(emojis[indexPath.item], id: id) { [self] in
                 collectionView.deleteItems(at: [indexPath])
                 emojis.remove(at: indexPath.item)
+            }
+        }
+    }
+    
+    func useAsSelfAvatar(cell: EmojiCollectionViewCell) {
+        if let index = cell.indexPath?.item {
+            let path = (emojis[index] as NSString).replacingOccurrences(of: WebSocketManager.shared.url_pre, with: "")
+            WebSocketManager.shared.changeAvatarWithPath(path) { task, data in
+                guard let data = data else { return }
+                if JSON(data)["status"].stringValue == "success" {
+                    WebSocketManager.shared.myAvatarUrl = WebSocketManager.shared.url_pre + JSON(data)["avatarUrl"].stringValue
+                }
             }
         }
     }
@@ -108,7 +137,7 @@ extension EmojiSelectView: UICollectionViewDataSource, UICollectionViewDelegateF
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         var width = collectionView.bounds.width / 4 - 2
-        if UIDevice.current.userInterfaceIdiom == .pad || AppDelegate.isLandscape(){
+        if UIDevice.current.userInterfaceIdiom == .pad && AppDelegate.isLandscape(){
             width = 150
         }
         return CGSize(width: width, height: width)
@@ -134,16 +163,24 @@ extension EmojiSelectView: UICollectionViewDataSource, UICollectionViewDelegateF
         return cell
     }
     
-    @available(iOS 13.0, *)
-    func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
-        guard let cell = collectionView.cellForItem(at: indexPath) as? EmojiCollectionViewCell else { return nil }
-        let identifier = "\(indexPath.row)" as NSString
-        return .init(identifier: identifier, previewProvider: nil) { (menu) -> UIMenu? in
-            return UIMenu(title: "", image: nil, children: [UIAction(title: "删除") { _ in
-                self.deleteEmoji(cell: cell)
-            }])
-        }
-    }
+//    @available(iOS 13.0, *)
+//    func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+//        guard let cell = collectionView.cellForItem(at: indexPath) as? EmojiCollectionViewCell else { return nil }
+//        let identifier = "\(indexPath.row)" as NSString
+//        return .init(identifier: identifier, previewProvider: nil) { (menu) -> UIMenu? in
+//            let deleteAction = UIAction(title: "删除") { [weak self, weak cell] _ in
+//                if let cell = cell {
+//                    self?.deleteEmoji(cell: cell)
+//                }
+//            }
+//            let avatarAction = UIAction(title: "设为自己头像") { [weak self, weak cell] _ in
+//                if let cell = cell {
+//                    self?.useAsSelfAvatar(cell: cell)
+//                }
+//            }
+//            return UIMenu(title: "", image: nil, children: [deleteAction, avatarAction])
+//        }
+//    }
     
 }
 
@@ -151,7 +188,8 @@ extension EmojiSelectView: UICollectionViewDragDelegate {
     
     func collectionView(_ collectionView: UICollectionView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
         session.localContext = collectionView
-        guard let cell = collectionView.cellForItem(at: indexPath) as? EmojiCollectionViewCell, let image = cell.emojiView.image else { return [] }
+        weak var weakCell = collectionView.cellForItem(at: indexPath) as? EmojiCollectionViewCell
+        guard let cell = weakCell, let image = cell.emojiView.image else { return [] }
         let dragItem = UIDragItem(itemProvider: NSItemProvider(object: image))
         dragItem.localObject = [cell.url?.absoluteString ?? "", cache]
         return [dragItem]

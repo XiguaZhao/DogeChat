@@ -13,7 +13,6 @@
 		071CF7B626609F7C00897B01 /* MessageCollectionViewImageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 071CF7B526609F7C00897B01 /* MessageCollectionViewImageCell.swift */; };
 		071CF7B826609F8900897B01 /* MessageCollectionViewDrawCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 071CF7B726609F8900897B01 /* MessageCollectionViewDrawCell.swift */; };
 		071CF7D2266383BD00897B01 /* ContactTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 071CF7D0266383BC00897B01 /* ContactTableViewCell.swift */; };
-		071F970E247D45C1000B3DBC /* WatchSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 071F970D247D45C1000B3DBC /* WatchSession.swift */; };
 		0739FA3E25B9557A00B6A7AB /* ImageBrowserViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0739FA3D25B9557900B6A7AB /* ImageBrowserViewController.swift */; };
 		0739FA4425BA829E00B6A7AB /* PushKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0739FA4325BA829D00B6A7AB /* PushKit.framework */; };
 		0739FA4825BA855A00B6A7AB /* CallKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0739FA4725BA855A00B6A7AB /* CallKit.framework */; };
@@ -33,6 +32,7 @@
 		075557322665D4B000F63F55 /* Recorder.m in Sources */ = {isa = PBXBuildFile; fileRef = 075557312665D4B000F63F55 /* Recorder.m */; };
 		075557342666317000F63F55 /* SettingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 075557332666317000F63F55 /* SettingViewController.swift */; };
 		075557362666529B00F63F55 /* DatePickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 075557352666529B00F63F55 /* DatePickerViewController.swift */; };
+		0755575D266B3D9F00F63F55 /* ContactsTableViewController+Avatar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0755575C266B3D9E00F63F55 /* ContactsTableViewController+Avatar.swift */; };
 		0760E10125E74BD30030337E /* HJOpenGLView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0760E0FE25E74BD30030337E /* HJOpenGLView.m */; };
 		0760E10225E74BD30030337E /* HJH264Encoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 0760E0FF25E74BD30030337E /* HJH264Encoder.m */; };
 		0760E10625E74C410030337E /* HJH264Decoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 0760E10425E74C410030337E /* HJH264Decoder.m */; };
@@ -46,6 +46,7 @@
 		07B3F5F22627E65B0016B5C9 /* ChatRoomCollectionViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07B3F5F12627E65B0016B5C9 /* ChatRoomCollectionViewLayout.swift */; };
 		07C9632F25E3B53900C2BF4C /* ImageConfirmViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07C9632D25E3B53900C2BF4C /* ImageConfirmViewController.swift */; };
 		07C9633025E3B53900C2BF4C /* ImageConfirmViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 07C9632E25E3B53900C2BF4C /* ImageConfirmViewController.xib */; };
+		07D298DE266CBD3800C09F6C /* HapticManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07D298DD266CBD3800C09F6C /* HapticManager.swift */; };
 		07E001DA248CA56800D4A287 /* SelectShortcutTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07E001D9248CA56800D4A287 /* SelectShortcutTVC.swift */; };
 		AE909BEB1EB54099009D9D95 /* MessageCollectionViewBaseCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE909BEA1EB54099009D9D95 /* MessageCollectionViewBaseCell.swift */; };
 		AE909BEF1EB54C4B009D9D95 /* Label.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE909BEE1EB54C4B009D9D95 /* Label.swift */; };
@@ -109,7 +110,6 @@
 		071CF7B526609F7C00897B01 /* MessageCollectionViewImageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageCollectionViewImageCell.swift; sourceTree = "<group>"; };
 		071CF7B726609F8900897B01 /* MessageCollectionViewDrawCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageCollectionViewDrawCell.swift; sourceTree = "<group>"; };
 		071CF7D0266383BC00897B01 /* ContactTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactTableViewCell.swift; sourceTree = "<group>"; };
-		071F970D247D45C1000B3DBC /* WatchSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WatchSession.swift; sourceTree = "<group>"; };
 		0739FA3D25B9557900B6A7AB /* ImageBrowserViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageBrowserViewController.swift; sourceTree = "<group>"; };
 		0739FA4325BA829D00B6A7AB /* PushKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PushKit.framework; path = System/Library/Frameworks/PushKit.framework; sourceTree = SDKROOT; };
 		0739FA4725BA855A00B6A7AB /* CallKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CallKit.framework; path = System/Library/Frameworks/CallKit.framework; sourceTree = SDKROOT; };
@@ -140,6 +140,7 @@
 		075557312665D4B000F63F55 /* Recorder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Recorder.m; sourceTree = "<group>"; };
 		075557332666317000F63F55 /* SettingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingViewController.swift; sourceTree = "<group>"; };
 		075557352666529B00F63F55 /* DatePickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatePickerViewController.swift; sourceTree = "<group>"; };
+		0755575C266B3D9E00F63F55 /* ContactsTableViewController+Avatar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ContactsTableViewController+Avatar.swift"; sourceTree = "<group>"; };
 		0760E0FD25E74BD30030337E /* HJH264Encoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HJH264Encoder.h; sourceTree = "<group>"; };
 		0760E0FE25E74BD30030337E /* HJOpenGLView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HJOpenGLView.m; sourceTree = "<group>"; };
 		0760E0FF25E74BD30030337E /* HJH264Encoder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HJH264Encoder.m; sourceTree = "<group>"; };
@@ -171,6 +172,7 @@
 		07B3F5F12627E65B0016B5C9 /* ChatRoomCollectionViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatRoomCollectionViewLayout.swift; sourceTree = "<group>"; };
 		07C9632D25E3B53900C2BF4C /* ImageConfirmViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageConfirmViewController.swift; sourceTree = "<group>"; };
 		07C9632E25E3B53900C2BF4C /* ImageConfirmViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ImageConfirmViewController.xib; sourceTree = "<group>"; };
+		07D298DD266CBD3800C09F6C /* HapticManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticManager.swift; sourceTree = "<group>"; };
 		07E001D9248CA56800D4A287 /* SelectShortcutTVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectShortcutTVC.swift; sourceTree = "<group>"; };
 		0A4AEF28A524D18B5C8ECDC5 /* Pods-DogeChatWatch Extension.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DogeChatWatch Extension.release.xcconfig"; path = "Target Support Files/Pods-DogeChatWatch Extension/Pods-DogeChatWatch Extension.release.xcconfig"; sourceTree = "<group>"; };
 		0B69595E028EAB1E5EC8EA2E /* Pods-DogeChat.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DogeChat.release.xcconfig"; path = "Target Support Files/Pods-DogeChat/Pods-DogeChat.release.xcconfig"; sourceTree = "<group>"; };
@@ -320,6 +322,7 @@
 				AEA5A1781EC362150041C7B4 /* ChatRoomViewController+Table.swift */,
 				AEA5A1761EC3618C0041C7B4 /* ChatRoomViewController+Layout.swift */,
 				0702F7E5247E62B200B22846 /* ContactsTableViewController.swift */,
+				0755575C266B3D9E00F63F55 /* ContactsTableViewController+Avatar.swift */,
 				0739FA3D25B9557900B6A7AB /* ImageBrowserViewController.swift */,
 				07C9632D25E3B53900C2BF4C /* ImageConfirmViewController.swift */,
 				07C9632E25E3B53900C2BF4C /* ImageConfirmViewController.xib */,
@@ -359,9 +362,9 @@
 			children = (
 				0739FA4C25BAA90800B6A7AB /* Call */,
 				0760E0FC25E74BD30030337E /* Video */,
-				071F970D247D45C1000B3DBC /* WatchSession.swift */,
 				073FDF6925B2A35000FE01CD /* NotificationManager.swift */,
 				079317272643CDA2008EBB27 /* WebSocketManagerAdapter.swift */,
+				07D298DD266CBD3800C09F6C /* HapticManager.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -604,6 +607,7 @@
 				075557322665D4B000F63F55 /* Recorder.m in Sources */,
 				07C9632F25E3B53900C2BF4C /* ImageConfirmViewController.swift in Sources */,
 				0760E10225E74BD30030337E /* HJH264Encoder.m in Sources */,
+				0755575D266B3D9F00F63F55 /* ContactsTableViewController+Avatar.swift in Sources */,
 				07471A42265008820042EC2D /* MainVideoView.m in Sources */,
 				0739FA4F25BAA9A300B6A7AB /* Call.swift in Sources */,
 				0702F7E6247E62B200B22846 /* ContactsTableViewController.swift in Sources */,
@@ -611,10 +615,10 @@
 				070C41742489204F0035314A /* SearchViewController.swift in Sources */,
 				07B3F5D4262470D70016B5C9 /* ChatRoomViewController+Drop.swift in Sources */,
 				AE909BEB1EB54099009D9D95 /* MessageCollectionViewBaseCell.swift in Sources */,
+				07D298DE266CBD3800C09F6C /* HapticManager.swift in Sources */,
 				07E001DA248CA56800D4A287 /* SelectShortcutTVC.swift in Sources */,
 				071CF7B826609F8900897B01 /* MessageCollectionViewDrawCell.swift in Sources */,
 				073FDF6A25B2A35000FE01CD /* NotificationManager.swift in Sources */,
-				071F970E247D45C1000B3DBC /* WatchSession.swift in Sources */,
 				079317282643CDA2008EBB27 /* WebSocketManagerAdapter.swift in Sources */,
 				07471A4526501B200042EC2D /* VideoChatViewController.m in Sources */,
 				0739FA3E25B9557A00B6A7AB /* ImageBrowserViewController.swift in Sources */,

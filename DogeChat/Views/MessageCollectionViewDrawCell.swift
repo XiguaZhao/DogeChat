@@ -107,7 +107,9 @@ class MessageCollectionViewDrawCell: MessageCollectionViewBaseCell {
             DispatchQueue.global().async {
                 if let downloadedData = try? Data(contentsOf: pkDataURL),
                    let pkDrawing = try? PKDrawing(data: downloadedData) {
-                    ContactsTableViewController.pkDataCache[pkDataStr] = downloadedData
+                    ContactsTableViewController.pkDataWriteQueue.sync {
+                        ContactsTableViewController.pkDataCache[pkDataStr] = downloadedData
+                    }
                     capturedMessage.pkDrawing = pkDrawing
                     capturedMessage.needReDownload = false
                     DispatchQueue.main.async {

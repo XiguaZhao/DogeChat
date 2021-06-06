@@ -9,29 +9,39 @@
 import UIKit
 import YPTransition
 
+protocol ContactTableViewCellDelegate: AnyObject {
+    func avatarTapped(_ cell: ContactTableViewCell, path: String)
+}
+
 class ContactTableViewCell: UITableViewCell {
     
     static let cellID = "ContactTableViewCell"
+    static let cellHeight: CGFloat = 60
+    let avataroffset: CGFloat = 12
+    static var avatarCache = [String: Data]()
     
     let avatarImageView = FLAnimatedImageView()
     let nameLabel = UILabel()
     let latestMessageLabel = UILabel()
-    var message: Message!
+    var info: (name: String, avatarUrl: String, latestMessage: Message?)!
     var labelStackView: UIStackView!
     var stackView: UIStackView!
+    weak var delegate: ContactTableViewCellDelegate?
     
-    override func awakeFromNib() {
-        super.awakeFromNib()
-        
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
         nameLabel.font = UIFont.systemFont(ofSize: 15)
         
-        latestMessageLabel.adjustsFontSizeToFitWidth = true
         latestMessageLabel.textColor = .lightGray
         latestMessageLabel.numberOfLines = 1
         latestMessageLabel.lineBreakMode = .byTruncatingTail
+        latestMessageLabel.font = UIFont.systemFont(ofSize: nameLabel.font.pointSize - 3)
         
         avatarImageView.layer.masksToBounds = true
-        avatarImageView.layer.cornerRadius = 8
+        avatarImageView.layer.cornerRadius = (ContactTableViewCell.cellHeight - avataroffset) / 2
+        avatarImageView.contentMode = .scaleAspectFill
+        avatarImageView.isUserInteractionEnabled = true
+        avatarImageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(avatarTapAction(_:))))
         
         labelStackView = UIStackView(arrangedSubviews: [nameLabel, latestMessageLabel])
         labelStackView.axis = .vertical
@@ -42,21 +52,35 @@ class ContactTableViewCell: UITableViewCell {
         stackView.spacing = 10
         stackView.alignment = .center
         contentView.addSubview(stackView)
+        stackView.mas_makeConstraints { [weak self] make in
+            guard let self = self else { return }
+            make?.centerY.equalTo()(self.contentView.mas_centerY)
+            make?.leading.equalTo()(self.contentView.mas_leading)?.offset()(15)
+            make?.trailing.equalTo()(self.contentView.mas_trailing)?.offset()(-40)
+        }
     }
-
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func layoutSubviews() {
         super.layoutSubviews()
         avatarImageView.mas_updateConstraints { [weak self] make in
-            make?.width.mas_lessThanOrEqualTo()(self?.stackView.mas_height)
+            make?.width.mas_equalTo()(ContactTableViewCell.cellHeight - avataroffset)
             make?.width.mas_equalTo()(self?.avatarImageView.mas_height)
         }
     }
     
-    func apply(message: Message?, name: String, imageUrl: String) {
-        self.message = message
-        nameLabel.text = name
+    @objc func avatarTapAction(_ tap: UITapGestureRecognizer) {
+        delegate?.avatarTapped(self, path: info.avatarUrl)
+    }
+    
+    func apply(_ info: (name: String, avatarUrl: String, latestMessage: Message?)) {
+        self.info = info
+        nameLabel.text = info.name
         var text = ""
-        if let message = message {
+        if let message = info.latestMessage {
             switch message.messageType {
             case .draw:
                 text = "[速绘]"
@@ -74,16 +98,35 @@ class ContactTableViewCell: UITableViewCell {
         } else {
             latestMessageLabel.removeFromSuperview()
         }
-        if !imageUrl.isEmpty {
-            WebSocketManager.shared.getCacheImage(from: nil, path: imageUrl) { [weak self] image, data in
-                guard let self = self, let data = data else { return }
-                if imageUrl.hasSuffix(".gif") {
-                    self.avatarImageView.animatedImage = FLAnimatedImage(gifData: data)
+        if !info.avatarUrl.isEmpty {
+            let avatarUrl = WebSocketManager.shared.url_pre + info.avatarUrl
+            let isGif = avatarUrl.hasSuffix(".gif")
+            if let data = ContactTableViewCell.avatarCache[avatarUrl] {
+                if isGif {
+                    avatarImageView.animatedImage = FLAnimatedImage(gifData: data as Data)
                 } else {
-                    self.avatarImageView.image = UIImage(data: data)
+                    avatarImageView.image = UIImage(data: data as Data)
+                }
+                return
+            }
+            SDWebImageManager.shared.loadImage(with: URL(string: avatarUrl), options: .avoidDecodeImage) { (received, total, url) in
+            } completed: { [self] (image, data, error, cacheType, finished, url) in
+                guard info.name == self.info.name else {
+                    return
+                }
+                if !isGif, let image = image { // is photo
+                    let compressed = WebSocketManager.shared.compressEmojis(image)
+                    avatarImageView.image = UIImage(data: compressed)
+                    ContactTableViewCell.avatarCache[avatarUrl] = compressed
+                } else { // gif图处理
+                    avatarImageView.animatedImage = FLAnimatedImage(gifData: data)
+                    if let data = data {
+                        ContactTableViewCell.avatarCache[avatarUrl] = data
+                    }
                 }
             }
         }
     }
+    
     
 }

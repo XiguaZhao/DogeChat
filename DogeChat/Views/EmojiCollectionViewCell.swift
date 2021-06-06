@@ -9,6 +9,10 @@
 import UIKit
 import YPTransition
 
+protocol EmojiSelectCellLongPressDelegate: AnyObject {
+    func didLongPressEmojiCell(_ cell: EmojiCollectionViewCell)
+}
+
 class EmojiCollectionViewCell: UICollectionViewCell {
     
     static let cellID = "EmojiCollectionViewCell"
@@ -16,7 +20,7 @@ class EmojiCollectionViewCell: UICollectionViewCell {
     let imageDownloader = SDWebImageManager.shared
     var url: URL?
     var cache: NSCache<NSString, NSData>?
-    weak var delegate: EmojiViewDelegate?
+    weak var delegate: EmojiSelectCellLongPressDelegate?
     var indexPath: IndexPath!
     var path: String!
     
@@ -31,6 +35,9 @@ class EmojiCollectionViewCell: UICollectionViewCell {
         super.init(frame: frame)
         contentView.addSubview(emojiView)
         emojiView.contentMode = .scaleAspectFit
+        let longPress = UILongPressGestureRecognizer(target: self, action: #selector(longPressAction(_:)))
+        emojiView.isUserInteractionEnabled = true
+        emojiView.addGestureRecognizer(longPress)
     }
     
     required init?(coder: NSCoder) {
@@ -42,9 +49,10 @@ class EmojiCollectionViewCell: UICollectionViewCell {
         emojiView.image = nil
     }
     
-    @objc func tapTwice(_ ges: UITapGestureRecognizer) {
-        delegate?.deleteEmoji?(cell: self)
+    @objc func longPressAction(_ ges: UILongPressGestureRecognizer) {
+        delegate?.didLongPressEmojiCell(self)
     }
+    
         
     func displayEmoji(urlString: String) {
         guard let url = URL(string: urlString) else { return }

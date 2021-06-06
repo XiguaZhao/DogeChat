@@ -112,11 +112,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
            let password = UserDefaults.standard.value(forKey: "lastPassword") as? String {
             let contactVC = ContactsTableViewController()
             contactVC.navigationItem.title = username
+            contactVC.username = username
             self.navigationController.viewControllers = [contactVC]
             socketManager.login(username: username, password: password) { (loginResult) in
                 guard loginResult == "登录成功" else { return }
                 contactVC.loginSuccess = true
-                contactVC.username = username
                 if AppDelegate.isPad() && !self.splitViewController.isCollapsed {
                     if let _ = (AppDelegate.shared.navigationController.topViewController as? ContactsTableViewController) {
                     }
@@ -130,6 +130,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func applicationDidBecomeActive(_ application: UIApplication) {
         print("become active")
+        application.applicationIconBadgeNumber = 0
         DispatchQueue.global().async {
             WebSocketManager.shared.sortMessages()
         }
@@ -207,7 +208,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func registerNotification() {
         let center = UNUserNotificationCenter.current()
         center.delegate = self
-        center .requestAuthorization(options: [.badge, .sound, .alert]) { (granted, error) in
+        center.requestAuthorization(options: [.badge, .sound, .alert]) { (granted, error) in
             if (error == nil && granted) {
                 DispatchQueue.main.async {
                     UIApplication.shared.registerForRemoteNotifications();
@@ -304,7 +305,7 @@ extension AppDelegate: FloatWindowTouchDelegate {
     func tapPush(_ window: FloatWindow!, sender: String, content: String) {
         self.tabBarController.selectedViewController = navigationController
         if let contactVC = navigationController.viewControllers.first as? ContactsTableViewController,
-           let index = contactVC.usernames.firstIndex(of: sender) {
+           let index = ContactsTableViewController.usernames.firstIndex(of: sender) {
             contactVC.tableView(contactVC.tableView, didSelectRowAt: IndexPath(row: index, section: 0))
         }
     }

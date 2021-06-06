@@ -227,4 +227,25 @@ extension WebSocketManagerAdapter: VoiceDelegate, WebSocketDataDelegate {
     func time(toSend data: Data) {
         manager.sendVoiceData(data)
     }
+    
+    func compressImage(_ image: UIImage, needSave: Bool = true) -> (image: UIImage, fileUrl: URL) {
+        var size = image.size
+        let ratio = size.width / size.height
+        let width: CGFloat = UIScreen.main.bounds.width
+        let height = width / ratio
+        size = CGSize(width: width, height: height)
+        var result: UIImage!
+        DispatchQueue.global().sync {
+            UIGraphicsBeginImageContextWithOptions(size, false, UIScreen.main.scale)
+            image.draw(in: CGRect(x: 0, y: 0, width: width, height: height))
+            result = UIGraphicsGetImageFromCurrentImageContext() ?? UIImage()
+            UIGraphicsEndImageContext()
+        }
+        let fileUrl = URL(string: "file://" + NSTemporaryDirectory() + UUID().uuidString + ".jpg")!
+        if needSave {
+            try? result.jpegData(compressionQuality: 0.3)?.write(to: fileUrl)
+        }
+        return (result, fileUrl)
+    }
+
 }

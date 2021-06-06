@@ -34,7 +34,11 @@ class NestedViewController: UIViewController {
         
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.view.backgroundColor = .gray
+        if #available(iOS 13.0, *) {
+            self.view.backgroundColor = .systemBackground
+        } else {
+            self.view.backgroundColor = .gray
+        }
         let tap = UITapGestureRecognizer(target: self, action: #selector(tapped(_:)))
         self.view.addGestureRecognizer(tap)
     }
@@ -111,6 +115,8 @@ class NestedViewController: UIViewController {
         let height = view.frame.size.height
         nameLabelPush = UILabel()
         messageLabelPush = UILabel()
+        nameLabelPush.font = UIFont.boldSystemFont(ofSize: 20)
+        messageLabelPush.font = UIFont.systemFont(ofSize: nameLabelPush.font.pointSize - 5)
         nameLabelPush.numberOfLines = 1
         messageLabelPush.numberOfLines = 1
         view.addSubview(nameLabelPush)
@@ -119,13 +125,13 @@ class NestedViewController: UIViewController {
         messageLabelPush.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
             nameLabelPush.topAnchor.constraint(equalTo: view.topAnchor, constant: offsetPush),
-            nameLabelPush.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: offsetPush),
+            nameLabelPush.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: offsetPush * 2),
             nameLabelPush.bottomAnchor.constraint(equalTo: messageLabelPush.topAnchor, constant: -offsetPush),
             NSLayoutConstraint(item: nameLabelPush!, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: height / 3)
         ])
         NSLayoutConstraint.activate([
             messageLabelPush.topAnchor.constraint(equalTo: nameLabelPush.bottomAnchor, constant: offsetPush),
-            messageLabelPush.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: offsetPush),
+            messageLabelPush.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: offsetPush * 2),
             messageLabelPush.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -offsetPush),
             messageLabelPush.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -offsetPush)
         ])
@@ -176,7 +182,9 @@ class FloatWindow: UIWindow {
     let nestedVC: NestedViewController
     let type: WindowType
     let alwayDisplayType: AlwayDisplayType
+    var cachedFrame: CGRect?
     private weak var timerForPush: Timer?
+    private weak var autoDismissTimer: Timer?
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -194,10 +202,15 @@ class FloatWindow: UIWindow {
         case .push:
             let offset: CGFloat = 10
             let height: CGFloat = 80
-            super.init(frame: CGRect(x: offset, y: -(offset + height), width: size.width - 2 * offset, height: height))
+            let frame = CGRect(x: offset, y: -(offset + height), width: size.width - 2 * offset, height: height)
+            super.init(frame: frame)
+            self.cachedFrame = frame
             self.layer.cornerRadius = 10
             self.layer.masksToBounds = true
             configurePushType()
+            let swipeUp = UISwipeGestureRecognizer(target: self, action: #selector(swipeUpAction(_:)))
+            swipeUp.direction = .up
+            self.addGestureRecognizer(swipeUp)
         case .alwaysDisplay:
             let width: CGFloat = 60
             var y = (size.height-width)/2
@@ -213,6 +226,12 @@ class FloatWindow: UIWindow {
         nestedVC.window = self
         self.rootViewController = nestedVC
         self.windowLevel = .init(1000)
+    }
+    
+    @objc func swipeUpAction(_ ges: UISwipeGestureRecognizer) {
+        autoDismissTimer?.invalidate()
+        autoDismissTimer = nil
+        autoDismissPush(endFrame: self.cachedFrame!, duration: durationPush)
     }
     
     func configurePushType() {
@@ -235,7 +254,7 @@ class FloatWindow: UIWindow {
             UIView.animate(withDuration: durationPush, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 2, options: .curveEaseIn) {
                 self.frame = newFrame
             } completion: { (finished) in
-                Timer.scheduledTimer(withTimeInterval: pushExistTime, repeats: false) { [weak self] (_) in
+                self.autoDismissTimer = Timer.scheduledTimer(withTimeInterval: pushExistTime, repeats: false) { [weak self] (_) in
                     self?.autoDismissPush(endFrame: oldFrame, duration: durationPush)
                 }
             }

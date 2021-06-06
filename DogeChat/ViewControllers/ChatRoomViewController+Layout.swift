@@ -24,10 +24,11 @@ extension ChatRoomViewController {
                 self.emojiSelectView.alpha = (shouldDown ? 0 : 1)
                 self.emojiSelectView.center = CGPoint(x: self.emojiSelectView.center.x, y: self.emojiSelectView.center.y + offsetY)
                 self.collectionView.contentInset = inset
-                if !shouldDown && messageInputBar.textView.isFirstResponder {
-                    guard collectionView.numberOfItems(inSection: 0) != 0 else { return }
-                    collectionView.scrollToItem(at: IndexPath(row: collectionView.numberOfItems(inSection: 0) - 1, section: 0), at: .bottom, animated: false)
-                    
+                if !shouldDown {
+                    if self.messageInputBar.textView.isFirstResponder || collectionView.indexPathsForVisibleItems.contains(IndexPath(item: max(0, collectionView.numberOfItems(inSection: 0) - 1), section: 0)) {
+                        guard collectionView.numberOfItems(inSection: 0) != 0 else { return }
+                        collectionView.scrollToItem(at: IndexPath(row: collectionView.numberOfItems(inSection: 0) - 1, section: 0), at: .bottom, animated: false)
+                    }
                 }
             }
         }

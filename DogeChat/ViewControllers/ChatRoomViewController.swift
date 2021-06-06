@@ -25,6 +25,7 @@ class ChatRoomViewController: UIViewController {
     var drawingIndexPath: IndexPath!
     var username = ""
     var collectionViewTapGesture: UITapGestureRecognizer!
+    var friendAvatarUrl = ""
     var isInsertingHistory = false
     
     var lastIndexPath: IndexPath {
@@ -96,7 +97,7 @@ class ChatRoomViewController: UIViewController {
     @objc func tap() {
         messageInputBar.textViewResign()
     }
-    
+        
     @objc func sendSuccess(notification: Notification) {
         let userInfo = notification.userInfo
         guard let message = userInfo?["message"] as? Message,
@@ -112,6 +113,8 @@ class ChatRoomViewController: UIViewController {
         if let indicator = (collectionView.cellForItem(at: indexPath) as? MessageCollectionViewBaseCell)?.indicator {
             indicator.stopAnimating()
             indicator.removeFromSuperview()
+        } else {
+            collectionView.reloadItems(at: [indexPath])
         }
     }
     
@@ -199,7 +202,7 @@ extension ChatRoomViewController: MessageInputDelegate, UIImagePickerControllerD
             isGif = originalUrl_.absoluteString.hasSuffix(".gif")
             originalUrl = originalUrl_
         }
-        self.latestPickedImageInfo = (isGif ? (nil, originalUrl!) : compressImage(image))
+        self.latestPickedImageInfo = (isGif ? (nil, originalUrl!) : WebSocketManagerAdapter.shared.compressImage(image))
         picker.dismiss(animated: true) {
             guard !isGif else {
                 self.confirmSendPhoto()
@@ -239,20 +242,6 @@ extension ChatRoomViewController: MessageInputDelegate, UIImagePickerControllerD
         self.latestPickedImageInfo = nil
     }
     
-    func compressImage(_ image: UIImage) -> (image: UIImage, fileUrl: URL) {
-        var size = image.size
-        let ratio = size.width / size.height
-        let width: CGFloat = UIScreen.main.bounds.width
-        let height = width / ratio
-        size = CGSize(width: width, height: height)
-        UIGraphicsBeginImageContextWithOptions(size, false, UIScreen.main.scale)
-        image.draw(in: CGRect(x: 0, y: 0, width: width, height: height))
-        let result = UIGraphicsGetImageFromCurrentImageContext() ?? UIImage()
-        UIGraphicsEndImageContext()
-        let fileUrl = URL(string: "file://" + NSTemporaryDirectory() + UUID().uuidString + ".jpg")!
-        try? result.jpegData(compressionQuality: 0.3)?.write(to: fileUrl)
-        return (result, fileUrl)
-    }
 
     func updateUploadProgress(_ progress: Progress, message: Message) {
         let targetCell = collectionView.visibleCells.filter { cell in
@@ -387,7 +376,7 @@ extension ChatRoomViewController: PKViewChangedDelegate {
             }
             guard !pkView.drawing.strokes.isEmpty else { return }
             let drawData = pkView.drawing.dataRepresentation()
-            WebSocketManager.shared.uploadData(drawData) { [weak self] task, data in
+            WebSocketManager.shared.uploadData(drawData, path: "message/uploadImg", name: "upload", fileName: "", needCookie: false, contentType: "application/octet-stream", params: nil) { [weak self] task, data in
                 guard let _ = self, let data = data else { return }
                 let json = JSON(data)
                 guard json["status"].stringValue == "success" else {

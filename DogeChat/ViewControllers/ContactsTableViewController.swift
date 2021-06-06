@@ -10,26 +10,22 @@ import UIKit
 import SwiftyJSON
 import YPTransition
 
-class ContactsTableViewController: UITableViewController {
+class ContactsTableViewController: UITableViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
     var unreadMessage = [String: Int]()
-    var usersInfo = [(name: String, message: Message?, avatarUrl: String?)]()
-    var usernames: [String] {
-        get {
-            return usersInfo.map { $0.name }
-        }
-        set {
-            usersInfo = newValue.map { ($0, nil, nil) }
-        }
+    static var usersInfos = [(name: String, avatarUrl: String, latestMessage: Message?)]()
+    static var usernames: [String] {
+        usersInfos.map { $0.name }
     }
     var username = ""
+    let avatarImageView = FLAnimatedImageView()
     let manager = WebSocketManager.shared
     var barItem = UIBarButtonItem()
     var itemRequest = UIBarButtonItem()
     var selectedIndexPath: IndexPath?
-    let cache: NSCache<NSString, NSData> = NSCache()
     static var poppedChatVC: [UIViewController]?
     static var pkDataCache = [String : Data]()
+    static let pkDataWriteQueue = DispatchQueue(label: "com.zhaoxiguang.dogeChat.pkDataWrite")
     var appDelegate: AppDelegate {
         return UIApplication.shared.delegate as! AppDelegate
     }
@@ -40,7 +36,7 @@ class ContactsTableViewController: UITableViewController {
             }
             let waitToProcessNotificationUsername = NotificationManager.shared.remoteNotificationUsername
             if loginSuccess && waitToProcessNotificationUsername != ""{
-                if let index = usernames.firstIndex(of: waitToProcessNotificationUsername) {
+                if let index = ContactsTableViewController.usernames.firstIndex(of: waitToProcessNotificationUsername) {
                     if self.navigationController?.topViewController?.navigationItem.title == waitToProcessNotificationUsername {
                         return
                     }
@@ -54,11 +50,14 @@ class ContactsTableViewController: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "defaultCell")
+        tableView.register(ContactTableViewCell.self, forCellReuseIdentifier: ContactTableViewCell.cellID)
         tableView.separatorStyle = .none
         NotificationCenter.default.addObserver(self, selector: #selector(receiveNewMessage(notification:)), name: .receiveNewMessage, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(sendSuccess(notification:)), name: .sendSuccess, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(uploadSuccess(notification:)), name: .uploadSuccess, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(updateLatestMessage(_:)), name: .updateLatesetMessage, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(updateMyAvatar(_:)), name: .updateMyAvatar, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(friendChangeAvatar(_:)), name: .friendChangeAvatar, object: nil)
         setupRefreshControl()
         barItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(presentSearchVC))
         if #available(iOS 13.0, *) {
@@ -66,6 +65,7 @@ class ContactsTableViewController: UITableViewController {
         } else {
             itemRequest = UIBarButtonItem(title: "新", style: .plain, target: self, action: #selector(presentSearchVC))
         }
+        setupMyAvatar()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -86,13 +86,13 @@ class ContactsTableViewController: UITableViewController {
     @objc func presentSearchVC() {
         let vc = SearchViewController()
         vc.username = self.username
-        vc.usernames = self.usernames
+        vc.usernames = ContactsTableViewController.usernames
         vc.delegate = self
         self.present(vc, animated: true)
     }
     
     @objc func refreshContacts() {
-        manager.getContacts { [weak self] usernames, error  in
+        manager.getContacts { [weak self] userInfos, error  in
             guard let self = self else { return }
             if error != nil {
                 self.navigationItem.title = "获取联系人失败"
@@ -106,10 +106,9 @@ class ContactsTableViewController: UITableViewController {
                 }
                 return
             }
-            print(usernames)
+            print(userInfos)
             self.refreshControl?.endRefreshing()
-            self.usernames = usernames
-            self.usernames.insert("群聊", at: 0)
+            ContactsTableViewController.usersInfos = userInfos
             self.tableView.reloadData()
             self.navigationItem.title = self.username
         }
@@ -133,12 +132,12 @@ class ContactsTableViewController: UITableViewController {
     @objc func receiveNewMessage(notification: Notification) {
         guard let message = notification.object as? Message else { return }
         if navigationController?.topViewController != self, let indexPath = tableView.indexPathForSelectedRow {
-            if usernames[indexPath.row] == message.senderUsername && message.option == .toOne { return }
+            if ContactsTableViewController.usernames[indexPath.row] == message.senderUsername && message.option == .toOne { return }
             if indexPath.row == 0 && message.option == .toAll { return }
         }
         var index = 0
         if message.option == .toOne {
-            index = usernames.firstIndex(of: message.senderUsername) ?? 0
+            index = ContactsTableViewController.usernames.firstIndex(of: message.senderUsername) ?? 0
         }
         if self.navigationController?.topViewController?.navigationItem.title == (message.receiver == "" ? "群聊" : message.senderUsername) {
             if let chatroomVC = self.navigationController?.topViewController as? ChatRoomViewController,
@@ -158,8 +157,20 @@ class ContactsTableViewController: UITableViewController {
             unreadMessage["群聊"] = (unreadMessage["群聊"] ?? 0) + 1
         }
         let name = message.option == .toAll ? "群聊" : message.senderUsername
-        let content = message.option == .toAll ? "\(message.senderUsername)：\(message.message)" : message.message
-        AppDelegate.shared.pushWindow.assignValueForPush(sender: name, content: content)
+        var content = message.option == .toAll ? "\(message.senderUsername)：" : ""
+        switch message.messageType {
+        case .text, .join:
+            content += message.message
+        case .draw:
+            content += "[速绘]"
+        case .image:
+            content += "[图片]"
+        case .video:
+            content += "[视频]"
+        }
+        if !(AppDelegate.shared.navigationController.visibleViewController is ContactsTableViewController) {
+            AppDelegate.shared.pushWindow.assignValueForPush(sender: name, content: content)
+        }
         tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
     }
     
@@ -185,6 +196,7 @@ class ContactsTableViewController: UITableViewController {
             manager.messagesSingle[receiver]![index].id = correctId
             manager.messagesSingle[receiver]![index].sendStatus = .success
         }
+        NotificationCenter.default.post(name: .updateLatesetMessage, object: message)
     }
     
     @objc func uploadSuccess(notification: Notification) {
@@ -215,39 +227,39 @@ class ContactsTableViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
-        return usernames.count
+        return ContactsTableViewController.usersInfos.count
     }
     
     override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 50
+        return ContactTableViewCell.cellHeight
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "defaultCell", for: indexPath)
-        cell.textLabel?.text = usernames[indexPath.row]
-        if self.traitCollection.forceTouchCapability == .available {
-            registerForPreviewing(with: self, sourceView: cell)
-        }
+        let cell = tableView.dequeueReusableCell(withIdentifier: ContactTableViewCell.cellID, for: indexPath) as! ContactTableViewCell
+        cell.apply(ContactsTableViewController.usersInfos[indexPath.row])
+        cell.delegate = self
         let height = self.tableView(tableView, heightForRowAt: indexPath)
         let offset: CGFloat = 10
-        let adjustedWidth = height - 20
+        let adjustedWidth = height - 30
         let origin = offset / 2
         let label = UILabel(frame: CGRect(x: origin, y: origin, width: adjustedWidth, height: adjustedWidth))
         label.layer.cornerRadius = label.frame.height / 2
         label.layer.masksToBounds = true
         label.backgroundColor = .red
         label.textAlignment = .center
-        if let number = unreadMessage[usernames[indexPath.row]], number > 0 {
+        if let number = unreadMessage[ContactsTableViewController.usernames[indexPath.row]], number > 0 {
             label.text = String(number)
             cell.accessoryView = label
-        } 
+        }  else {
+            cell.accessoryView = nil
+        }
         return cell
     }
     
     //MARK: -Table view delegate
         
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        unreadMessage[usernames[indexPath.row]] = 0
+        unreadMessage[ContactsTableViewController.usernames[indexPath.row]] = 0
         let chatRoomVC = chatroomVC(for: indexPath)
         selectedIndexPath = indexPath
         tableView.cellForRow(at: indexPath)?.accessoryView = nil
@@ -264,7 +276,7 @@ class ContactsTableViewController: UITableViewController {
     private func chatroomVC(for indexPath: IndexPath) -> ChatRoomViewController {
         let chatRoomVC = ChatRoomViewController()
         chatRoomVC.username = username
-        chatRoomVC.navigationItem.title = usernames[indexPath.row]
+        chatRoomVC.navigationItem.title = ContactsTableViewController.usernames[indexPath.row]
         switch indexPath.row {
         case 0:
             chatRoomVC.messages = manager.messagesGroup
@@ -272,12 +284,42 @@ class ContactsTableViewController: UITableViewController {
             chatRoomVC.messagesUUIDs = WebSocketManager.shared.groupUUIDs
         default:
             chatRoomVC.messageOption = .toOne
-            let friendName = usernames[indexPath.row]
+            let friendName = ContactsTableViewController.usernames[indexPath.row]
             chatRoomVC.friendName = friendName
             chatRoomVC.messages = manager.messagesSingle[friendName] ?? []
             chatRoomVC.messagesUUIDs = manager.singleUUIDs[friendName] ?? Set()
+            chatRoomVC.friendAvatarUrl = manager.url_pre + ContactsTableViewController.usersInfos[indexPath.row].avatarUrl
         }
         return chatRoomVC
+    }
+    
+    @objc func updateLatestMessage(_ noti: Notification) {
+        guard let message = noti.object as? Message else { return }
+        let friendName: String
+        let needUpdate: Bool
+        if message.option == .toAll {
+            friendName = "群聊"
+            let alreadyMax = manager.messagesGroup.map { $0.id }.max() ?? 0
+            needUpdate = message.id > alreadyMax
+        } else {
+            friendName = message.messageSender == .ourself ? message.receiver : message.senderUsername
+            needUpdate = (manager.messagesSingle[friendName]?.map( { $0.id }).max() ?? 0) < message.id
+        }
+        if needUpdate, let index = ContactsTableViewController.usernames.firstIndex(of: friendName) {
+            ContactsTableViewController.usersInfos[index].latestMessage = message
+            // 刷新对应的，把最新的移动到前面
+            UIView.performWithoutAnimation {
+                self.tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
+            }
+            if index != 0 {
+                let removed = ContactsTableViewController.usersInfos.remove(at: index)
+                ContactsTableViewController.usersInfos.insert(removed, at: 1)
+                tableView.performBatchUpdates {
+                    tableView.moveRow(at: IndexPath(row: index, section: 0), to: IndexPath(row: 1, section: 0))
+                } completion: { _ in
+                }
+            }
+        }
     }
     
 }
@@ -294,7 +336,7 @@ extension ContactsTableViewController: UIViewControllerPreviewingDelegate {
         case 0:
             needGetHistory = manager.messagesGroup.isEmpty
         default:
-            needGetHistory = manager.messagesSingle[usernames[indexPath.row]] == nil
+            needGetHistory = manager.messagesSingle[ContactsTableViewController.usernames[indexPath.row]] == nil
         }
         if needGetHistory { vc.displayHistory() }
         return vc

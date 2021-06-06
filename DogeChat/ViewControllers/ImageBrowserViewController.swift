@@ -26,7 +26,6 @@ class ImageBrowserViewController: UIViewController {
         }
         scrollView = UIScrollView()
         scrollView.bounds = scrollView.frame
-        scrollView.minimumZoomScale = 1
         scrollView.maximumZoomScale = 4
         scrollView.contentInsetAdjustmentBehavior = .never
         scrollView.delegate = self
@@ -41,7 +40,7 @@ class ImageBrowserViewController: UIViewController {
         } else {
             SDWebImageManager.shared.loadImage(with: URL(string: imagePath), options: .avoidDecodeImage, progress: nil) { [self] (image, data, error, cacheType, finished, url) in
                 if let data = data {
-                    cache.setObject(data as NSData, forKey: imagePath as NSString)
+                    cache?.setObject(data as NSData, forKey: imagePath as NSString)
                     if imagePath.hasSuffix(".gif") {
                         imageView.animatedImage = FLAnimatedImage(gifData: data)
                     } else  {
@@ -51,7 +50,6 @@ class ImageBrowserViewController: UIViewController {
             }
         }
         scrollView.addSubview(imageView)
-        scrollView.minimumZoomScale = 0.5
         let swipeDownGesture = UISwipeGestureRecognizer(target: self, action: #selector(swipeDown))
         swipeDownGesture.direction = .down
         self.view.addGestureRecognizer(swipeDownGesture)
@@ -63,6 +61,10 @@ class ImageBrowserViewController: UIViewController {
         super.viewDidLayoutSubviews()
         scrollView.frame = view.frame
         imageView.frame = scrollView.frame
+    }
+    
+    override var prefersStatusBarHidden: Bool {
+        return true
     }
             
     @objc func swipeDown() {
