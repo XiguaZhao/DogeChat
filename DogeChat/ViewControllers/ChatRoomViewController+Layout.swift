@@ -4,7 +4,7 @@ import YPTransition
 
 extension ChatRoomViewController {
     @objc func keyboardWillChange(notification: NSNotification) {
-        if MessageInputView.becauseEmojiTapped {
+        if MessageInputView.becauseEmojiTapped && AppDelegate.shared.isIOS {
             MessageInputView.becauseEmojiTapped = false
             return
         }
@@ -12,7 +12,7 @@ extension ChatRoomViewController {
             let endFrame = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)!.cgRectValue
             let messageBarHeight = self.messageInputBar.bounds.size.height
             let point = CGPoint(x: self.messageInputBar.center.x, y: endFrame.origin.y - messageBarHeight/2.0)
-            let shouldDown = endFrame.origin.y == UIScreen.main.bounds.height
+            let shouldDown = endFrame.origin.y == AppDelegate.shared.window?.bounds.height ?? UIScreen.main.bounds.height
             let inset = UIEdgeInsets(top: 0, left: 0, bottom: shouldDown ? 0 : endFrame.size.height, right: 0)
             let offsetY = point.y - messageInputBar.center.y
             var duration = 0.25

@@ -6,6 +6,7 @@
 //  Copyright © 2021 赵锡光. All rights reserved.
 //
 
+
 #import "VideoChatViewController.h"
 #import "MainVideoView.h"
 #import "OverlayVideoView.h"
@@ -14,6 +15,8 @@
 #import <Masonry/Masonry.h>
 #import "DogeChat-Swift.h"
 #import "Recorder.h"
+
+#if CompileVideo
 
 static CGFloat overlayWidth = 0;
 
@@ -128,3 +131,5 @@ static CGFloat overlayWidth = 0;
 }
 
 @end
+
+#endif

@@ -16,7 +16,8 @@ class ImageBrowserViewController: UIViewController {
     var scrollView: UIScrollView!
     var imageData: Data!
     var cache: NSCache<NSString, NSData>!
-            
+    var canRotate = true
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         if #available(iOS 13.0, *) {
@@ -68,6 +69,7 @@ class ImageBrowserViewController: UIViewController {
     }
             
     @objc func swipeDown() {
+        self.canRotate = false
         self.dismiss(animated: true, completion: nil)
     }
     

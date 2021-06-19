@@ -69,10 +69,10 @@
             filePath = "DogeChat/ViewControllers/ChatRoomViewController+Table.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "69"
-            endingLineNumber = "69"
-            landmarkName = "ChatRoomViewController"
-            landmarkType = "21">
+            startingLineNumber = "70"
+            endingLineNumber = "70"
+            landmarkName = "collectionView(_:layout:sizeForItemAt:)"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -173,22 +173,6 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "5308317F-C536-46AC-9A3A-52C33E6D4DCC"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "DogeChat/AppDelegate.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "288"
-            endingLineNumber = "288"
-            landmarkName = "application(_:continue:restorationHandler:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
             uuid = "052292B7-5E47-4882-8A75-84CD0D0E21AF"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
@@ -212,8 +196,8 @@
             filePath = "DogeChat/ViewControllers/ChatRoomViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "312"
-            endingLineNumber = "312"
+            startingLineNumber = "335"
+            endingLineNumber = "335"
             landmarkName = "pkViewTapped(_:pkView:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -244,8 +228,8 @@
             filePath = "DogeChat/ViewControllers/ChatRoomViewController+Table.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "8"
-            endingLineNumber = "8"
+            startingLineNumber = "9"
+            endingLineNumber = "9"
             landmarkName = "viewWillTransition(to:with:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -276,8 +260,8 @@
             filePath = "DogeChat/Models/WebSocketManagerAdapter.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "165"
-            endingLineNumber = "165"
+            startingLineNumber = "170"
+            endingLineNumber = "170"
             landmarkName = "receiveRealTimeDrawData(noti:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -331,8 +315,8 @@
             filePath = "DogeChat/ViewControllers/ChatRoomViewController+Table.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "79"
-            endingLineNumber = "79"
+            startingLineNumber = "80"
+            endingLineNumber = "80"
             landmarkName = "scrollViewDidScroll(_:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -347,8 +331,8 @@
             filePath = "../../../../../../youpin/YPTransition2/YPTransition/Classes/WebSocketManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "593"
-            endingLineNumber = "593"
+            startingLineNumber = "411"
+            endingLineNumber = "411"
             landmarkName = "parseReceivedMessage(_:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -356,16 +340,32 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "9FEFA9F7-5DA2-44A7-BFA3-CE53F048A00F"
+            uuid = "97DCB2FC-4C3A-4E36-A724-BE96573B7C3B"
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "../../../../../../youpin/YPTransition2/YPTransition/Classes/WebSocketManager.swift"
+            filePath = "DogeChatWatch Extension/Controller/ChatRoomInterfaceController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "216"
-            endingLineNumber = "216"
-            landmarkName = "getContacts(completion:)"
+            startingLineNumber = "154"
+            endingLineNumber = "154"
+            landmarkName = "showNameAndContent(message:index:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "8FB98748-DF8C-45A0-9442-CA09A8C688D6"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "DogeChat/ViewControllers/ContactsTableViewController.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "112"
+            endingLineNumber = "112"
+            landmarkName = "refreshContacts()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

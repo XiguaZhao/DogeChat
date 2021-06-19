@@ -19,7 +19,8 @@
     "tag": "0.1.11"
   },
   "platforms": {
-    "ios": "11.0"
+    "ios": "11.0",
+    "osx": "11.0"
   },
   "source_files": "YPTransition/Classes/**/*",
   "dependencies": {
@@ -29,13 +30,13 @@
     "SwiftyJSON": [
 
     ],
-    "SwiftyRSA": [
-      "~>1.0"
-    ],
     "SDWebImage": [
 
     ],
     "Starscream": [
+
+    ],
+    "DogeChatUniversal": [
 
     ]
   }

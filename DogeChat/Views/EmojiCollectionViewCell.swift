@@ -70,7 +70,7 @@ class EmojiCollectionViewCell: UICollectionViewCell {
                 self.layoutIfNeeded()
                 DispatchQueue.global().async {
                     if let image = image {
-                        let compressed = WebSocketManager.shared.compressEmojis(image)
+                        let compressed = WebSocketManager.shared.messageManager.compressEmojis(image)
                         DispatchQueue.main.async {
                             self.emojiView.image = UIImage(data: compressed)
                         }

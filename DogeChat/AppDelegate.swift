@@ -5,6 +5,9 @@ import PushKit
 import CallKit
 import Intents
 import YPTransition
+import RSAiOSWatchOS
+import DogeChatUniversal
+
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -26,6 +29,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     let voipRegistry = PKPushRegistry(queue: DispatchQueue.main)
     var lastAppEnterBackgroundTime = NSDate().timeIntervalSince1970
     let webSocketAdapter = WebSocketManagerAdapter.shared
+    var isIOS = true
     class var shared: AppDelegate {
         return UIApplication.shared.delegate as! AppDelegate
     }
@@ -56,7 +60,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         switcherWindow = FloatWindow(type: .alwaysDisplay, alwayDisplayType: .shouldNotDimiss, delegate: self)
         
         providerDelegate = ProviderDelegate(callManager: callManager)
-                
+        socketManager.messageManager.encrypt = EncryptMessage()
         let notificationOptions = launchOptions?[.remoteNotification]
         if let notification = notificationOptions as? [String: AnyObject],
            let aps = notification["aps"] as? [String: AnyObject] {
@@ -65,12 +69,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         registerNotification()
         voipRegistry.delegate = self
-        voipRegistry.desiredPushTypes = [.voIP]
-        
+        if #available(macCatalyst 14.0, iOS 12.0, *) {
+            voipRegistry.desiredPushTypes = [.voIP]
+        }
+        #if targetEnvironment(macCatalyst)
+        isIOS = false
+        #endif
         DispatchQueue.global().async {
             guard let files = try? FileManager.default.contentsOfDirectory(atPath: NSTemporaryDirectory()) else { return }
             for fileName in files {
-                if fileName.hasSuffix(".gif") || fileName.hasSuffix(".png") || fileName.hasSuffix(".jpg") || fileName.hasSuffix("jpeg") {
+                if fileName.isImageOrVideoOrVoice() {
                     try? FileManager.default.removeItem(atPath: NSTemporaryDirectory() + fileName)
                 }
             }
@@ -90,6 +98,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 if ChatRoomViewController.needRotate {
                     return .landscape
                 } else {
+                    if let browser =  navigationController?.visibleViewController as? ImageBrowserViewController {
+                        return browser.canRotate ? .all : .portrait
+                    }
                     return .portrait
                 }
             } else {
@@ -114,7 +125,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             contactVC.navigationItem.title = username
             contactVC.username = username
             self.navigationController.viewControllers = [contactVC]
-            socketManager.login(username: username, password: password) { (loginResult) in
+            socketManager.messageManager.login(username: username, password: password) { (loginResult) in
                 guard loginResult == "登录成功" else { return }
                 contactVC.loginSuccess = true
                 if AppDelegate.isPad() && !self.splitViewController.isCollapsed {
@@ -128,14 +139,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
     }
     
+    func needRelogin() -> Bool {
+        let nowTime = Date().timeIntervalSince1970
+        return nowTime - lastAppEnterBackgroundTime >= 20 * 60
+    }
+        
     func applicationDidBecomeActive(_ application: UIApplication) {
         print("become active")
         application.applicationIconBadgeNumber = 0
         DispatchQueue.global().async {
             WebSocketManager.shared.sortMessages()
         }
-        let nowTime = Date().timeIntervalSince1970
-        let shouldReLogin = nowTime - lastAppEnterBackgroundTime >= 20 * 60
+        let shouldReLogin = self.needRelogin()
         var reloginCount = 0
         if !callManager.hasCall() {
             if socketManager.connected {
@@ -146,7 +161,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         func reloginFunc() {
             reloginCount += 1
             if reloginCount < 5, let password = UserDefaults.standard.value(forKey: "lastPassword") as? String {
-                socketManager.login(username: socketManager.myName, password: password) { (result) in
+                socketManager.messageManager.login(username: socketManager.messageManager.myName, password: password) { (result) in
                     if result == "登录成功" {
                         self.socketManager.connect()
                     } else {
@@ -159,7 +174,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             reloginFunc()
         }
         if (self.navigationController).topViewController?.title == "JoinChatVC" { return }
-        guard !WebSocketManager.shared.cookie.isEmpty else {
+        guard !WebSocketManager.shared.messageManager.cookie.isEmpty else {
             return
         }
         if !shouldReLogin {
@@ -317,9 +332,12 @@ extension AppDelegate: FloatWindowTouchDelegate {
             guard let call = callManager.callWithUUID(socketManager.nowCallUUID) else { return }
             call.end()
             callManager.end(call: call)
+            #if !targetEnvironment(macCatalyst)
             if let videoVC = self.navigationController.visibleViewController as? VideoChatViewController {
                 videoVC.dismiss()
             }
+            #endif
+            WebSocketManager.shared.nowCallUUID = nil
             switcherWindow.isHidden = true
         } else {
             if Recorder.sharedInstance().nowRoute == .headphone {

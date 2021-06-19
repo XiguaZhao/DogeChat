@@ -8,6 +8,7 @@
 
 import UIKit
 import YPTransition
+import DogeChatUniversal
 
 class NotificationManager: NSObject {
     
@@ -60,7 +61,7 @@ class NotificationManager: NSObject {
     private func login(success: @escaping (()->Void), fail: @escaping (()->Void)) {
         guard let username = UserDefaults.standard.value(forKey: "lastUsername") as? String,
               let password = UserDefaults.standard.value(forKey: "lastPassword") as? String else { return }
-        manager.login(username: username, password: password) { (result) in
+        manager.messageManager.login(username: username, password: password) { (result) in
             guard result == "登录成功" else {
                 fail()
                 return
@@ -84,10 +85,10 @@ class NotificationManager: NSObject {
         login { [weak self] in
             guard let self = self, self.nowPushInfo.sender.count != 0 else { return }
             let option: MessageOption = self.nowPushInfo.sender == "群聊" ? .toAll : .toOne
-            let message = Message(message: replyContent, imageURL: nil, videoURL: nil, messageSender: .ourself, receiver: self.nowPushInfo.sender, uuid: UUID().uuidString, sender: WebSocketManager.shared.myName, messageType: .text, option: option, id: .max, sendStatus: .fail, emojisInfo: [])
+            let message = Message(message: replyContent, imageURL: nil, videoURL: nil, messageSender: .ourself, receiver: self.nowPushInfo.sender, uuid: UUID().uuidString, sender: WebSocketManager.shared.messageManager.myName, messageType: .text, option: option, id: .max, sendStatus: .fail, emojisInfo: [])
             WebSocketManager.shared.quickReplyUUID = message.uuid
             WebSocketManager.shared.connect()
-            WebSocketManager.shared.notSendContent.append(message)
+            WebSocketManager.shared.messageManager.notSendContent.append(message)
             DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
                 if !WebSocketManager.shared.quickReplyUUID.isEmpty {
                     self.actionCompletionHandler?()

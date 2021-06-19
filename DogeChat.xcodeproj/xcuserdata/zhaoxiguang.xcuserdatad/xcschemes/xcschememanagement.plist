@@ -23,31 +23,48 @@
 			<key>orderHint</key>
 			<integer>0</integer>
 		</dict>
+		<key>DogeChatMac.xcscheme_^#shared#^_</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+			<key>orderHint</key>
+			<integer>34</integer>
+		</dict>
 		<key>DogeChatWatch (Complication).xcscheme_^#shared#^_</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
 			<key>orderHint</key>
-			<integer>21</integer>
+			<integer>6</integer>
 		</dict>
 		<key>DogeChatWatch (Notification).xcscheme_^#shared#^_</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
 			<key>orderHint</key>
-			<integer>20</integer>
+			<integer>5</integer>
+		</dict>
+		<key>DogeChatWatch 1.xcscheme_^#shared#^_</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>8</integer>
+		</dict>
+		<key>DogeChatWatch Extension.xcscheme_^#shared#^_</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>7</integer>
 		</dict>
 		<key>DogeChatWatch.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
 			<key>orderHint</key>
-			<integer>18</integer>
+			<integer>3</integer>
 		</dict>
 		<key>SiriMessage.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
-			<integer>19</integer>
+			<integer>4</integer>
 		</dict>
 		<key>SiriMessageUI.xcscheme_^#shared#^_</key>
 		<dict>
@@ -62,12 +79,42 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
+		<key>0715EA6626739A520042F4F0</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>0761FAB2266DB6BE00AE0171</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>0761FABE266DB6C100AE0171</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>0761FAF9266E484C00AE0171</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>0761FB05266E484E00AE0171</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>078032772486B28C00E370E0</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
 		<key>07866D1626340541007E049C</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>07C6941726779F82009A5EC8</key>
 		<dict>
 			<key>primary</key>
 			<true/>

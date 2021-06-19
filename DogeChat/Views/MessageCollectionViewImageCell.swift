@@ -8,6 +8,7 @@
 
 import UIKit
 import YPTransition
+import DogeChatUniversal
 
 class MessageCollectionViewImageCell: MessageCollectionViewBaseCell {
     
@@ -70,7 +71,7 @@ class MessageCollectionViewImageCell: MessageCollectionViewBaseCell {
         guard let imageUrl = message.imageURL else { return }
         if imageUrl.hasPrefix("file://") {
             DispatchQueue.global().async {
-                if let imageUrl = WebSocketManager.shared.imageDict[self.message.uuid] as? URL{
+                if let imageUrl = WebSocketManager.shared.messageManager.imageDict[self.message.uuid] as? URL{
                     guard let data = try? Data(contentsOf: imageUrl) else { return }
                     DispatchQueue.main.async {
                         if self.isGif {
@@ -107,7 +108,7 @@ class MessageCollectionViewImageCell: MessageCollectionViewBaseCell {
                 return
             }
             if !isGif, let image = image { // is photo
-                let compressed = WebSocketManager.shared.compressEmojis(image)
+                let compressed = WebSocketManager.shared.messageManager.compressEmojis(image)
                 animatedImageView.image = UIImage(data: compressed)
                 cache.setObject(compressed as NSData, forKey: imageUrl as NSString)
             } else { // gif图处理

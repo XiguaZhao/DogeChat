@@ -8,9 +8,10 @@
 
 import UIKit
 import YPTransition
+import DogeChatUniversal
 
 protocol ContactTableViewCellDelegate: AnyObject {
-    func avatarTapped(_ cell: ContactTableViewCell, path: String)
+    func avatarTapped(_ cell: ContactTableViewCell?, path: String)
 }
 
 class ContactTableViewCell: UITableViewCell {
@@ -41,7 +42,6 @@ class ContactTableViewCell: UITableViewCell {
         avatarImageView.layer.cornerRadius = (ContactTableViewCell.cellHeight - avataroffset) / 2
         avatarImageView.contentMode = .scaleAspectFill
         avatarImageView.isUserInteractionEnabled = true
-        avatarImageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(avatarTapAction(_:))))
         
         labelStackView = UIStackView(arrangedSubviews: [nameLabel, latestMessageLabel])
         labelStackView.axis = .vertical
@@ -73,7 +73,7 @@ class ContactTableViewCell: UITableViewCell {
     }
     
     @objc func avatarTapAction(_ tap: UITapGestureRecognizer) {
-        delegate?.avatarTapped(self, path: info.avatarUrl)
+//        delegate?.avatarTapped(self, path: info.avatarUrl)
     }
     
     func apply(_ info: (name: String, avatarUrl: String, latestMessage: Message?)) {
@@ -115,7 +115,7 @@ class ContactTableViewCell: UITableViewCell {
                     return
                 }
                 if !isGif, let image = image { // is photo
-                    let compressed = WebSocketManager.shared.compressEmojis(image)
+                    let compressed = WebSocketManager.shared.messageManager.compressEmojis(image)
                     avatarImageView.image = UIImage(data: compressed)
                     ContactTableViewCell.avatarCache[avatarUrl] = compressed
                 } else { // gif图处理

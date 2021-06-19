@@ -6,15 +6,15 @@
 //  Copyright © 2017年 Josie. All rights reserved.
 //
 
+
 #import "HJOpenGLView.h"
+
+#if CompileVideo
+
 #import <QuartzCore/QuartzCore.h>
 #import <AVFoundation/AVUtilities.h>
 #import <mach/mach_time.h>
 #import <GLKit/GLKit.h>
-//#import "HeaderDefine.h"
-
-
-// Uniform index.
 enum
 {
 	UNIFORM_Y,
@@ -527,3 +527,4 @@ const GLfloat kColorConversion601FullRange[] = {
 
 @end
 
+#endif

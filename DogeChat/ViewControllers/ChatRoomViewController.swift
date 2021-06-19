@@ -2,6 +2,8 @@
 import UIKit
 import SwiftyJSON
 import YPTransition
+import DogeChatUniversal
+import PhotosUI
 
 class ChatRoomViewController: UIViewController {
     
@@ -15,7 +17,7 @@ class ChatRoomViewController: UIViewController {
     var pagesAndCurNum = (pages: 1, curNum: 1)
     var originOfInputBar = CGPoint()
     var scrollBottom = true
-    var latestPickedImageInfo: (image: UIImage?, url: URL)?
+    var latestPickedImageInfo: (image: UIImage?, fileUrl: URL)?
     let emojiSelectView = EmojiSelectView()
     var messages = [Message]()
     var messagesUUIDs = Set<String>()
@@ -45,7 +47,7 @@ class ChatRoomViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        manager.messageDelegate = self
+        manager.messageManager.messageDelegate = self
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillChange(notification:)), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(sendSuccess(notification:)), name: .sendSuccess, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(uploadSuccess(notification:)), name: .uploadSuccess, object: nil)
@@ -128,35 +130,57 @@ class ChatRoomViewController: UIViewController {
 }
 
 //MARK - Message Input Bar
-extension ChatRoomViewController: MessageInputDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+extension ChatRoomViewController: MessageInputDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, PHPickerViewControllerDelegate {
+    @available(iOS 14, *)
+    func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
+        picker.dismiss(animated: true, completion: nil)
+        for result in results {
+            result.itemProvider.loadObject(ofClass: UIImage.self) { [weak self] object, error in
+                if let image = object as? UIImage {
+                    self?.latestPickedImageInfo = WebSocketManagerAdapter.shared.compressImage(image)
+                    self?.confirmSendPhoto()
+                }
+            }
+        }
+    }
+    
     func sendWasTapped(content: String) {
         guard !content.isEmpty else { return }
         let wrappedMessage = processMessageString(for: content)
-        manager.notSendContent.append(wrappedMessage)
+        manager.messageManager.notSendContent.append(wrappedMessage)
         insertNewMessageCell([wrappedMessage])
-//        manager.sendMessage(content, to: friendName, from: username, option: messageOption, uuid: wrappedMessage.uuid)
         manager.sendWrappedMessage(wrappedMessage)
     }
     
     func addButtonTapped() {
         let imagePicker = UIImagePickerController()
         imagePicker.delegate = self
+        
         messageInputBar.textView.resignFirstResponder()
         let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
         let popover = actionSheet.popoverPresentationController
         popover?.sourceView = messageInputBar.addButton
         popover?.sourceRect = CGRect(x: 0, y: 0, width: 100, height: 100)
-        actionSheet.addAction(UIAlertAction(title: "拍照", style: .default, handler: { [weak self] (action) in
+        actionSheet.addAction(UIAlertAction(title: "拍照/视频", style: .default, handler: { [weak self] (action) in
             imagePicker.sourceType = .camera
+            imagePicker.mediaTypes = UIImagePickerController.availableMediaTypes(for: .camera)!
+            imagePicker.videoQuality = .typeIFrame1280x720
             imagePicker.cameraCaptureMode = .photo
             self?.present(imagePicker, animated: true, completion: nil)
         }))
         actionSheet.addAction(UIAlertAction(title: "从相册选择", style: .default, handler: { [weak self] (action) in
+            self?.present(imagePicker, animated: true, completion: nil)
             self?.messageInputBar.textView.resignFirstResponder()
-            self?.present(imagePicker, animated: true) {
-                actionSheet.dismiss(animated: true, completion: nil)
-            }
         }))
+        if #available(iOS 14.0, *) {
+            actionSheet.addAction(UIAlertAction(title: "相册（多选，不支持gif）", style: .default, handler: { [weak self] _ in
+                var config = PHPickerConfiguration()
+                config.selectionLimit = 0
+                let picker = PHPickerViewController(configuration: config)
+                picker.delegate = self
+                self?.present(picker, animated: true, completion: nil)
+            }))
+        }
         let startCallAction = { [weak self] in
             guard let self = self else { return }
             let uuid = UUID().uuidString
@@ -195,7 +219,10 @@ extension ChatRoomViewController: MessageInputDelegate, UIImagePickerControllerD
     }
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        guard let image = info[.originalImage] as? UIImage else { return }
+        guard let image = info[.originalImage] as? UIImage else {
+            picker.dismiss(animated: true, completion: nil)
+            return
+        }
         var isGif = false
         var originalUrl: URL?
         if let originalUrl_ = info[.imageURL] as? URL {
@@ -221,21 +248,17 @@ extension ChatRoomViewController: MessageInputDelegate, UIImagePickerControllerD
     @objc func confirmSendPhoto() {
         guard let (_, imageURL) = self.latestPickedImageInfo else { return }
         let message = Message(message: "", imageURL: imageURL.absoluteString, videoURL: nil, messageSender: .ourself, receiver: friendName, sender: username, messageType: .image, option: messageOption, date: NSDate().description, sendStatus: .fail)
-        manager.imageDict[message.uuid] = imageURL
+        manager.messageManager.imageDict[message.uuid] = imageURL
         insertNewMessageCell([message])
         DispatchQueue.main.async { [self] in
             collectionView.scrollToItem(at: IndexPath(row: messages.count-1, section: 0), at: .bottom, animated: true)
         }
         manager.uploadPhoto(imageUrl: imageURL, message: message) { (progress) in
-            print(progress.fractionCompleted)
-            DispatchQueue.main.async {
-                self.updateUploadProgress(progress, message: message)
-            }
         } success: { (task, data) in
             let json = JSON(data as Any)
             var filePath = json["filePath"].stringValue
             print(filePath)
-            filePath = WebSocketManager.shared.encrypt.decryptMessage(filePath)
+            filePath = WebSocketManager.shared.messageManager.encrypt.decryptMessage(filePath)
             message.imageURL = WebSocketManager.shared.url_pre + filePath
             message.message = message.imageURL ?? ""
         }
@@ -252,7 +275,7 @@ extension ChatRoomViewController: MessageInputDelegate, UIImagePickerControllerD
     }
     
     private func processMessageString(for string: String) -> Message {
-        return Message(message: string, messageSender: .ourself, receiver: friendName, sender: username, messageType: .text, option: messageOption, id: manager.maxId + 1, sendStatus: .fail)
+        return Message(message: string, messageSender: .ourself, receiver: friendName, sender: username, messageType: .text, option: messageOption, id: manager.messageManager.maxId + 1, sendStatus: .fail)
     }
     
     private func configureEmojiView() {
@@ -269,7 +292,7 @@ extension ChatRoomViewController: MessageInputDelegate, UIImagePickerControllerD
 
 extension ChatRoomViewController: EmojiViewDelegate {
     func didSelectEmoji(filePath: String) {
-        let message = Message(message: filePath, imageURL: filePath, videoURL: nil, messageSender: .ourself, receiver: friendName, sender: username, messageType: .image, option: messageOption, id: manager.maxId+1, date: Date().description, sendStatus: .fail)
+        let message = Message(message: filePath, imageURL: filePath, videoURL: nil, messageSender: .ourself, receiver: friendName, sender: username, messageType: .image, option: messageOption, id: manager.messageManager.maxId+1, date: Date().description, sendStatus: .fail)
         manager.sendWrappedMessage(message)
         insertNewMessageCell([message])
     }
@@ -383,7 +406,7 @@ extension ChatRoomViewController: PKViewChangedDelegate {
                     print("上传失败")
                     return
                 }
-                let filePath = WebSocketManager.shared.encrypt.decryptMessage(json["filePath"].stringValue)
+                let filePath = WebSocketManager.shared.messageManager.encrypt.decryptMessage(json["filePath"].stringValue)
                 message.pkDataURL = WebSocketManager.shared.url_pre + filePath
                 message.message = message.pkDataURL ?? ""
                 WebSocketManager.shared.sendDrawMessage(message)
@@ -463,40 +486,6 @@ extension ChatRoomViewController {
         pagesAndCurNum.curNum += 1
     }
     
-    //MARK: ContextMune
-    @available(iOS 13.0, *)
-    func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
-        let cell = collectionView.cellForItem(at: indexPath) as! MessageCollectionViewBaseCell
-        let identifier = "\(indexPath.row)" as NSString
-        return UIContextMenuConfiguration(identifier: identifier, previewProvider: nil
-        ) { (menuElement) -> UIMenu? in
-            let copyAction = UIAction(title: "复制") { (_) in
-                if let textCell = cell as? MessageCollectionViewTextCell {
-                    let text = textCell.messageLabel.text
-                    UIPasteboard.general.string = text
-                }
-            }
-            var revokeAction: UIAction?
-            var starEmojiAction: UIAction?
-            if self.messages[indexPath.row].messageSender == .ourself && self.messages[indexPath.row].messageType != .join {
-                revokeAction = UIAction(title: "撤回") { (_) in
-                    self.revoke(indexPath: indexPath)
-                }
-            }
-            if let imageUrl = cell.message.imageURL {
-                starEmojiAction = UIAction(title: "收藏表情") { (_) in
-                    let isGif = imageUrl.hasSuffix(".gif")
-                    self.manager.starAndUploadEmoji(filePath: imageUrl, isGif: isGif)
-                }
-            }
-            var children: [UIAction] = [copyAction]
-            if revokeAction != nil { children.append(revokeAction!) }
-            if starEmojiAction != nil { children.append(starEmojiAction!) }
-            let menu = UIMenu(title: "", image: nil, children: children)
-            return menu
-        }
-    }
-    
     func revoke(indexPath: IndexPath) {
         let id = messages[indexPath.row].id
         manager.revokeMessage(id: id)
@@ -513,9 +502,9 @@ extension ChatRoomViewController {
         let updatedMessage = messages[index]
         switch messageOption {
         case .toAll:
-            manager.messagesGroup[index] = updatedMessage
+            manager.messageManager.messagesGroup[index] = updatedMessage
         case .toOne:
-            manager.messagesSingle.update(at: index, for: friendName, with: updatedMessage)
+            manager.messageManager.messagesSingle.update(at: index, for: friendName, with: updatedMessage)
         }
         collectionView.reloadItems(at: [IndexPath(row: index, section: 0)])
     }

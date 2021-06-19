@@ -2,6 +2,7 @@
 import UIKit
 import AVFoundation
 import YPTransition
+import DogeChatUniversal
 
 let nameLabelStartX: CGFloat = 40 + 5 + 5
 let nameLabelStartY: CGFloat = 10
@@ -13,6 +14,7 @@ protocol MessageTableViewCellDelegate: AnyObject {
     func emojiOutBounds(from cell: MessageCollectionViewBaseCell, gesture: UIGestureRecognizer)
     func emojiInfoDidChange(from oldInfo: EmojiInfo?, to newInfo: EmojiInfo?, cell: MessageCollectionViewBaseCell)
     func pkViewTapped(_ cell: MessageCollectionViewBaseCell, pkView: UIView!)
+    func avatarDoubleTap(_ cell: MessageCollectionViewBaseCell)
 }
 
 class MessageCollectionViewBaseCell: UICollectionViewCell {
@@ -30,6 +32,8 @@ class MessageCollectionViewBaseCell: UICollectionViewCell {
     var indicationNeighborView: UIView?
     var pinchGes: UIPinchGestureRecognizer?
     let avatarImageView = FLAnimatedImageView()
+    let doubleTapGes = UITapGestureRecognizer()
+    let tapAvatar = UITapGestureRecognizer()
     
     static let textCellIdentifier = "MessageCell"
     
@@ -42,8 +46,11 @@ class MessageCollectionViewBaseCell: UICollectionViewCell {
         avatarImageView.contentMode = .scaleAspectFill
         avatarImageView.layer.masksToBounds = true
         avatarImageView.layer.cornerRadius = avatarWidth / 2
-        avatarImageView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tapAvatarAction(_:))))
+        tapAvatar.addTarget(self, action: #selector(tapAvatarAction(_:)))
+//        tapAvatar.delegate = self
+        avatarImageView.addGestureRecognizer(tapAvatar)
         avatarImageView.isUserInteractionEnabled = true
+        addDoubleTapForAvatar()
         
         contentView.addSubview(avatarImageView)
         contentView.addSubview(nameLabel)
@@ -85,6 +92,7 @@ class MessageCollectionViewBaseCell: UICollectionViewCell {
     func apply(message: Message) {
         self.message = message
         nameLabel.text = message.senderUsername
+        doubleTapGes.isEnabled = message.messageSender == .someoneElse
         DispatchQueue.main.async {
             self.loadAvatar()
         }
@@ -95,7 +103,7 @@ class MessageCollectionViewBaseCell: UICollectionViewCell {
         let username = message.senderUsername
         var url: String?
         if message.messageSender == .ourself {
-            url = WebSocketManager.shared.myAvatarUrl
+            url = WebSocketManager.shared.messageManager.myAvatarUrl
         } else {
             switch message.option {
             case .toOne:
@@ -122,7 +130,7 @@ class MessageCollectionViewBaseCell: UICollectionViewCell {
             }
         }
         if message.messageSender == .ourself {
-            let url = WebSocketManager.shared.myAvatarUrl
+            let url = WebSocketManager.shared.messageManager.myAvatarUrl
             block(url)
         } else if message.option == .toOne {
             if let index = ContactsTableViewController.usersInfos.firstIndex(where: { $0.name == message.senderUsername }) {
@@ -144,7 +152,7 @@ class MessageCollectionViewBaseCell: UICollectionViewCell {
                 SDWebImageManager.shared.loadImage(with: URL(string: url), options: .avoidDecodeImage, progress: nil) { image, data, _, _, _, _ in
                     guard capturedMessage?.uuid == self.message.uuid else { return }
                     if !isGif, let image = image { // is photo
-                        let compressed = WebSocketManager.shared.compressEmojis(image)
+                        let compressed = WebSocketManager.shared.messageManager.compressEmojis(image)
                         self.avatarImageView.image = UIImage(data: compressed)
                         ContactTableViewCell.avatarCache[url] = compressed
                     } else { // gif图处理
@@ -204,7 +212,7 @@ class MessageCollectionViewBaseCell: UICollectionViewCell {
                 height = 0
             }
         }
-        var wholeFrame = CGRect(x: 0, y: 0, width: screenWidth, height: height)
+        var wholeFrame = CGRect(x: 0, y: 0, width: screenWidth, height: max(0, height))
         for emojiInfo in message.emojisInfo {
             let size = CGSize(width: emojiWidth * emojiInfo.scale, height: emojiWidth * emojiInfo.scale)
             let point = CGPoint(x: screenWidth * emojiInfo.x - size.width / 2, y: height * emojiInfo.y - size.height / 2)
@@ -233,7 +241,7 @@ class MessageCollectionViewBaseCell: UICollectionViewCell {
 extension MessageCollectionViewBaseCell {
     func didDrop(imageLink: String, image: UIImage, point: CGPoint, cache: NSCache<NSString, NSData>) {
         let width: CGFloat = MessageCollectionViewBaseCell.emojiWidth
-        let emojiInfo = EmojiInfo(x: max(0, point.x/self.contentSize.width), y: max(0, point.y/self.contentSize.height), rotation: 0, scale: 1, imageLink: imageLink, lastModifiedBy: WebSocketManager.shared.myName)
+        let emojiInfo = EmojiInfo(x: max(0, point.x/self.contentSize.width), y: max(0, point.y/self.contentSize.height), rotation: 0, scale: 1, imageLink: imageLink, lastModifiedBy: WebSocketManager.shared.messageManager.myName)
         message.emojisInfo.append(emojiInfo)
         let frame = CGRect(x: point.x - width / 2, y: point.y - width / 2, width: width, height: width)
         let contentBounds = CGRect(origin: CGPoint(x: 0, y: 0), size: self.contentSize)
@@ -274,7 +282,7 @@ extension MessageCollectionViewBaseCell {
             imageView.contentMode = .scaleAspectFit
             contentView.addSubview(imageView)
             emojis[emojiInfo] = imageView
-            WebSocketManager.shared.getCacheImage(from: cache, path: emojiInfo.imageLink) { (image, data) in
+            getCacheImage(from: cache, path: emojiInfo.imageLink) { (image, data) in
                 if let data = data {
                     if emojiInfo.imageLink.hasSuffix(".gif") {
                         imageView.animatedImage = FLAnimatedImage(gifData: data)

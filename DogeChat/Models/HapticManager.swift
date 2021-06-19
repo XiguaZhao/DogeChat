@@ -28,7 +28,7 @@ class HapticManager: NSObject {
     
     private let supportsHaptics: Bool
 
-    func createAndStartHapticEngine() {
+    private func createAndStartHapticEngine() {
         
         // Create and configure a haptic engine.
         do {
@@ -123,7 +123,7 @@ class HapticManager: NSObject {
         }
     }
 
-    private func playHapticTransient(time: TimeInterval,
+    func playHapticTransient(time: TimeInterval,
                                      intensity: Float,
                                      sharpness: Float) {
         

@@ -32,7 +32,7 @@ class NameAndPassword: NSObject, NSCoding {
     }
     
     let username: String
-    let password: String
+    var password: String?
 }
 
 class SelectShortcutTVC: UITableViewController {

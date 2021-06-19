@@ -14,10 +14,13 @@ PODS:
   - AFNetworking/Serialization (4.0.1)
   - AFNetworking/UIKit (4.0.1):
     - AFNetworking/NSURLSession
-  - DACircularProgress (2.3.1)
+  - DogeChatUniversal (0.1.0):
+    - AFNetworking
+    - SwiftyJSON
   - FLAnimatedImage (1.0.12)
-  - LookinServer (1.0.0)
   - Masonry (1.1.0)
+  - RSAiOSWatchOS (0.1.0):
+    - SwiftyRSA
   - SDWebImage (5.10.2):
     - SDWebImage/Core (= 5.10.2)
   - SDWebImage/Core (5.10.2)
@@ -28,37 +31,40 @@ PODS:
   - SwiftyRSA/ObjC (1.6.0)
   - YPTransition (0.1.11):
     - AFNetworking
+    - DogeChatUniversal
     - SDWebImage
     - Starscream
     - SwiftyJSON
-    - SwiftyRSA (~> 1.0)
 
 DEPENDENCIES:
   - AFNetworking
-  - DACircularProgress
+  - DogeChatUniversal (from `/Users/zhaoxiguang/Workspace/DogeChatUniversal`)
   - FLAnimatedImage
-  - LookinServer
   - Masonry
+  - RSAiOSWatchOS (from `/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/RSAiOSWatchOS`)
   - SDWebImage
   - SwiftyJSON (from `https://github.com/SwiftyJSON/SwiftyJSON.git`, commit `2b6054efa051565954e1d2b9da831680026cd768`)
-  - SwiftyRSA
+  - SwiftyRSA (from `/Users/zhaoxiguang/Workspace/SwiftyRSA`)
   - YPTransition (from `/Users/zhaoxiguang/youpin/YPTransition2`)
 
 SPEC REPOS:
   trunk:
     - AFNetworking
-    - DACircularProgress
     - FLAnimatedImage
-    - LookinServer
     - Masonry
     - SDWebImage
     - Starscream
-    - SwiftyRSA
 
 EXTERNAL SOURCES:
+  DogeChatUniversal:
+    :path: "/Users/zhaoxiguang/Workspace/DogeChatUniversal"
+  RSAiOSWatchOS:
+    :path: "/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/RSAiOSWatchOS"
   SwiftyJSON:
     :commit: 2b6054efa051565954e1d2b9da831680026cd768
     :git: https://github.com/SwiftyJSON/SwiftyJSON.git
+  SwiftyRSA:
+    :path: "/Users/zhaoxiguang/Workspace/SwiftyRSA"
   YPTransition:
     :path: "/Users/zhaoxiguang/youpin/YPTransition2"
 
@@ -69,16 +75,16 @@ CHECKOUT OPTIONS:
 
 SPEC CHECKSUMS:
   AFNetworking: 7864c38297c79aaca1500c33288e429c3451fdce
-  DACircularProgress: 4dd437c0fc3da5161cb289e07ac449493d41db71
+  DogeChatUniversal: 3901d42c8cc1108179a4986679e23f323f528e8a
   FLAnimatedImage: 4a0b56255d9b05f18b6dd7ee06871be5d3b89e31
-  LookinServer: 0002891cd3cec5e082a910e897dfe71b4f06b89e
   Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
+  RSAiOSWatchOS: b1e0f34d74ea956f6c9bbb1638189d028d4f8372
   SDWebImage: b969dcfc02c40a5da71eac0b03b8f1a0c794a86f
   Starscream: 5178aed56b316f13fa3bc55694e583d35dd414d9
   SwiftyJSON: 4e107719275086d9d9111e1a7ca6c484b6664574
   SwiftyRSA: 3b9c9179744217951facc6a3e9ae8d8c97061ffa
-  YPTransition: 3daa0a3bb4192721553798581bb043a07c56e7a9
+  YPTransition: 8a154d23457d4ac12ad188a7ebd8272174f7ff84
 
-PODFILE CHECKSUM: d53a3f199ad8d4a5d3132d80ef37f1cb8dd460ad
+PODFILE CHECKSUM: bfcfcb8abeadee95fc97fe60c887915cb2fab72c
 
 COCOAPODS: 1.10.1

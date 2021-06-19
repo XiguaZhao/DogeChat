@@ -14,7 +14,7 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "0793172D2643F0B9008EBB27"
+               BlueprintIdentifier = "0761FAF9266E484C00AE0171"
                BuildableName = "DogeChatWatch.app"
                BlueprintName = "DogeChatWatch"
                ReferencedContainer = "container:DogeChat.xcodeproj">
@@ -55,18 +55,16 @@
       debugServiceExtension = "internal"
       allowLocationSimulation = "YES"
       launchAutomaticallySubstyle = "8">
-      <RemoteRunnable
-         runnableDebuggingMode = "2"
-         BundleIdentifier = "com.apple.Carousel"
-         RemotePath = "/DogeChat">
+      <BuildableProductRunnable
+         runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "0793172D2643F0B9008EBB27"
+            BlueprintIdentifier = "0761FAF9266E484C00AE0171"
             BuildableName = "DogeChatWatch.app"
             BlueprintName = "DogeChatWatch"
             ReferencedContainer = "container:DogeChat.xcodeproj">
          </BuildableReference>
-      </RemoteRunnable>
+      </BuildableProductRunnable>
    </LaunchAction>
    <ProfileAction
       buildConfiguration = "Release"
@@ -75,27 +73,16 @@
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES"
       launchAutomaticallySubstyle = "8">
-      <RemoteRunnable
-         runnableDebuggingMode = "2"
-         BundleIdentifier = "com.apple.Carousel"
-         RemotePath = "/DogeChat">
+      <BuildableProductRunnable
+         runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "0793172D2643F0B9008EBB27"
+            BlueprintIdentifier = "0761FAF9266E484C00AE0171"
             BuildableName = "DogeChatWatch.app"
             BlueprintName = "DogeChatWatch"
             ReferencedContainer = "container:DogeChat.xcodeproj">
          </BuildableReference>
-      </RemoteRunnable>
-      <MacroExpansion>
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "0793172D2643F0B9008EBB27"
-            BuildableName = "DogeChatWatch.app"
-            BlueprintName = "DogeChatWatch"
-            ReferencedContainer = "container:DogeChat.xcodeproj">
-         </BuildableReference>
-      </MacroExpansion>
+      </BuildableProductRunnable>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">

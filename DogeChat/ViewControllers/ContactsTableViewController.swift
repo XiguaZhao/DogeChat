@@ -9,6 +9,7 @@
 import UIKit
 import SwiftyJSON
 import YPTransition
+import DogeChatUniversal
 
 class ContactsTableViewController: UITableViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
@@ -75,7 +76,7 @@ class ContactsTableViewController: UITableViewController, UIImagePickerControlle
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        manager.messageDelegate = self
+        manager.messageManager.messageDelegate = self
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -92,18 +93,11 @@ class ContactsTableViewController: UITableViewController, UIImagePickerControlle
     }
     
     @objc func refreshContacts() {
-        manager.getContacts { [weak self] userInfos, error  in
+        manager.messageManager.getContacts { [weak self] userInfos, error  in
             guard let self = self else { return }
             if error != nil {
                 self.navigationItem.title = "获取联系人失败"
                 self.refreshControl?.endRefreshing()
-                if let password = UserDefaults.standard.value(forKey: "lastPassword") as? String {
-                    self.manager.login(username: self.username, password: password) { (result) in
-                        if result == "登录成功" {
-                            self.refreshContacts()
-                        }
-                    }
-                }
                 return
             }
             print(userInfos)
@@ -111,7 +105,13 @@ class ContactsTableViewController: UITableViewController, UIImagePickerControlle
             ContactsTableViewController.usersInfos = userInfos
             self.tableView.reloadData()
             self.navigationItem.title = self.username
+            WebSocketManager.shared.connect()
         }
+        #if targetEnvironment(macCatalyst)
+        if appDelegate.needRelogin() {
+            appDelegate.applicationDidBecomeActive(UIApplication.shared)
+        }
+        #endif
     }
     
     func setupRefreshControl() {
@@ -122,10 +122,10 @@ class ContactsTableViewController: UITableViewController, UIImagePickerControlle
     
     
     deinit {
-        manager.messagesGroup.removeAll()
-        manager.messagesSingle.removeAll()
-        manager.groupUUIDs.removeAll()
-        manager.singleUUIDs.removeAll()
+        manager.messageManager.messagesGroup.removeAll()
+        manager.messageManager.messagesSingle.removeAll()
+        manager.messageManager.groupUUIDs.removeAll()
+        manager.messageManager.singleUUIDs.removeAll()
         manager.disconnect()
     }
     
@@ -180,21 +180,21 @@ class ContactsTableViewController: UITableViewController, UIImagePickerControlle
               let correctId = userInfo?["correctId"] as? Int,
               let toAll = userInfo?["toAll"] as? Bool else { return }
         if correctId <= 0 { return }
-        for (index, notSent) in manager.notSendContent.enumerated() {
+        for (index, notSent) in manager.messageManager.notSendContent.enumerated() {
             if let notSentMessage = notSent as? Message, notSentMessage.uuid == message.uuid {
-                manager.notSendContent.remove(at: index)
+                manager.messageManager.notSendContent.remove(at: index)
                 break
             }
         }
         if toAll {
-            guard let indexForAddToManager = manager.messagesGroup.firstIndex(of: message) else { return }
-            manager.messagesGroup[indexForAddToManager].id = correctId
-            manager.messagesGroup[indexForAddToManager].sendStatus = .success
+            guard let indexForAddToManager = manager.messageManager.messagesGroup.firstIndex(of: message) else { return }
+            manager.messageManager.messagesGroup[indexForAddToManager].id = correctId
+            manager.messageManager.messagesGroup[indexForAddToManager].sendStatus = .success
         } else {
             let receiver = message.receiver
-            guard let index = manager.messagesSingle[receiver]?.firstIndex(of: message) else { return }
-            manager.messagesSingle[receiver]![index].id = correctId
-            manager.messagesSingle[receiver]![index].sendStatus = .success
+            guard let index = manager.messageManager.messagesSingle[receiver]?.firstIndex(of: message) else { return }
+            manager.messageManager.messagesSingle[receiver]![index].id = correctId
+            manager.messageManager.messagesSingle[receiver]![index].sendStatus = .success
         }
         NotificationCenter.default.post(name: .updateLatesetMessage, object: message)
     }
@@ -204,14 +204,14 @@ class ContactsTableViewController: UITableViewController, UIImagePickerControlle
               let data = notification.userInfo?["data"] else { return }
         switch message.option {
         case .toOne:
-            guard let index = manager.messagesSingle[message.receiver]?.firstIndex(of: message) else { return }
-            manager.messagesSingle[message.receiver]![index].sendStatus = .success
+            guard let index = manager.messageManager.messagesSingle[message.receiver]?.firstIndex(of: message) else { return }
+            manager.messageManager.messagesSingle[message.receiver]![index].sendStatus = .success
         case .toAll:
-            guard let index = manager.messagesGroup.firstIndex(of: message) else { return }
-            manager.messagesGroup[index].sendStatus = .success
+            guard let index = manager.messageManager.messagesGroup.firstIndex(of: message) else { return }
+            manager.messageManager.messagesGroup[index].sendStatus = .success
         }
         var remoteFilePath = JSON(data)["filePath"].stringValue
-        remoteFilePath = manager.encrypt.decryptMessage(remoteFilePath)
+        remoteFilePath = manager.messageManager.encrypt.decryptMessage(remoteFilePath)
         remoteFilePath = manager.url_pre + remoteFilePath
         message.message = remoteFilePath
         manager.sendWrappedMessage(message)
@@ -273,21 +273,45 @@ class ContactsTableViewController: UITableViewController, UIImagePickerControlle
         }
     }
     
+    @available(iOS 13.0, *)
+    override func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+        let path = ContactsTableViewController.usersInfos[indexPath.row].avatarUrl
+        return .init(identifier: (ContactsTableViewController.usersInfos[indexPath.row].name as NSString)) { [weak self] in
+            guard let self = self else { return nil }
+            let vc = self.chatroomVC(for: indexPath)
+            return vc
+        } actionProvider: { (menuElement) -> UIMenu? in
+            let avatarElement = UIAction(title: "查看头像") { [weak self] _ in
+                guard let self = self else { return }
+                self.avatarTapped(nil, path: path)
+            }
+            return UIMenu(title: "", image: nil, children: [avatarElement])
+        }
+    }
+    
+    @available(iOS 13.0, *)
+    override func tableView(_ tableView: UITableView, willPerformPreviewActionForMenuWith configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionCommitAnimating) {
+        let username = configuration.identifier as! String
+        if let index = ContactsTableViewController.usernames.firstIndex(of: username) {
+            self.tableView(tableView, didSelectRowAt: IndexPath(row: index, section: 0))
+        }
+    }
+    
     private func chatroomVC(for indexPath: IndexPath) -> ChatRoomViewController {
         let chatRoomVC = ChatRoomViewController()
         chatRoomVC.username = username
         chatRoomVC.navigationItem.title = ContactsTableViewController.usernames[indexPath.row]
         switch indexPath.row {
         case 0:
-            chatRoomVC.messages = manager.messagesGroup
+            chatRoomVC.messages = manager.messageManager.messagesGroup
             chatRoomVC.friendName = WebSocketManager.PUBLICPINO
-            chatRoomVC.messagesUUIDs = WebSocketManager.shared.groupUUIDs
+            chatRoomVC.messagesUUIDs = WebSocketManager.shared.messageManager.groupUUIDs
         default:
             chatRoomVC.messageOption = .toOne
             let friendName = ContactsTableViewController.usernames[indexPath.row]
             chatRoomVC.friendName = friendName
-            chatRoomVC.messages = manager.messagesSingle[friendName] ?? []
-            chatRoomVC.messagesUUIDs = manager.singleUUIDs[friendName] ?? Set()
+            chatRoomVC.messages = manager.messageManager.messagesSingle[friendName] ?? []
+            chatRoomVC.messagesUUIDs = manager.messageManager.singleUUIDs[friendName] ?? Set()
             chatRoomVC.friendAvatarUrl = manager.url_pre + ContactsTableViewController.usersInfos[indexPath.row].avatarUrl
         }
         return chatRoomVC
@@ -299,11 +323,11 @@ class ContactsTableViewController: UITableViewController, UIImagePickerControlle
         let needUpdate: Bool
         if message.option == .toAll {
             friendName = "群聊"
-            let alreadyMax = manager.messagesGroup.map { $0.id }.max() ?? 0
+            let alreadyMax = manager.messageManager.messagesGroup.map { $0.id }.max() ?? 0
             needUpdate = message.id > alreadyMax
         } else {
             friendName = message.messageSender == .ourself ? message.receiver : message.senderUsername
-            needUpdate = (manager.messagesSingle[friendName]?.map( { $0.id }).max() ?? 0) < message.id
+            needUpdate = (manager.messageManager.messagesSingle[friendName]?.map( { $0.id }).max() ?? 0) < message.id
         }
         if needUpdate, let index = ContactsTableViewController.usernames.firstIndex(of: friendName) {
             ContactsTableViewController.usersInfos[index].latestMessage = message
@@ -334,9 +358,9 @@ extension ContactsTableViewController: UIViewControllerPreviewingDelegate {
         let needGetHistory: Bool
         switch indexPath.row {
         case 0:
-            needGetHistory = manager.messagesGroup.isEmpty
+            needGetHistory = manager.messageManager.messagesGroup.isEmpty
         default:
-            needGetHistory = manager.messagesSingle[ContactsTableViewController.usernames[indexPath.row]] == nil
+            needGetHistory = manager.messageManager.messagesSingle[ContactsTableViewController.usernames[indexPath.row]] == nil
         }
         if needGetHistory { vc.displayHistory() }
         return vc
@@ -350,13 +374,13 @@ extension ContactsTableViewController: UIViewControllerPreviewingDelegate {
 
 extension ContactsTableViewController: MessageDelegate, AddContactDelegate {
     func revokeMessage(_ id: Int) {
-        let messages = manager.messagesSingle
+        let messages = manager.messageManager.messagesSingle
         guard let index = messages.firstIndex(where: { $0.value.contains(where: {$0.id == id}) }) else { return }
         let keyValue = messages[index]
         guard let indexOfMessage = messages[keyValue.key]!.firstIndex(where: {$0.id == id}) else { return }
-        manager.messagesSingle[keyValue.key]![indexOfMessage].message = "\(keyValue.key)撤回了一条消息"
-        manager.messagesSingle[keyValue.key]![indexOfMessage].messageType = .join
-        self.receiveNewMessage(notification: Notification(name: .receiveNewMessage, object: manager.messagesSingle[keyValue.key]?[indexOfMessage], userInfo: nil))
+        manager.messageManager.messagesSingle[keyValue.key]![indexOfMessage].message = "\(keyValue.key)撤回了一条消息"
+        manager.messageManager.messagesSingle[keyValue.key]![indexOfMessage].messageType = .join
+        self.receiveNewMessage(notification: Notification(name: .receiveNewMessage, object: manager.messageManager.messagesSingle[keyValue.key]?[indexOfMessage], userInfo: nil))
     }
     
     func newFriend() {

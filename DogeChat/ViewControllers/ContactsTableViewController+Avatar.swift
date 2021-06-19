@@ -10,9 +10,8 @@ import Foundation
 import SwiftyJSON
 import YPTransition
 
-extension ContactsTableViewController: ContactTableViewCellDelegate {
-    
-    func avatarTapped(_ cell: ContactTableViewCell, path: String) {
+extension ContactsTableViewController: ContactTableViewCellDelegate, UIContextMenuInteractionDelegate {
+    func avatarTapped(_ cell: ContactTableViewCell?, path: String) {
         let browser = ImageBrowserViewController()
         browser.modalPresentationStyle = .fullScreen
         browser.imagePath = WebSocketManager.shared.url_pre + path
@@ -26,6 +25,10 @@ extension ContactsTableViewController: ContactTableViewCellDelegate {
         avatarImageView.layer.masksToBounds = true
         let stackView = UIStackView(arrangedSubviews: [avatarImageView, label])
         stackView.spacing = 15
+        if #available(iOS 13.0, *) {
+            let interaction = UIContextMenuInteraction(delegate: self)
+            stackView.addInteraction(interaction)
+        }
         self.navigationItem.titleView = stackView
         if let height = self.navigationController?.navigationBar.bounds.height {
             avatarImageView.mas_updateConstraints { make in
@@ -33,11 +36,22 @@ extension ContactsTableViewController: ContactTableViewCellDelegate {
             }
             avatarImageView.layer.cornerRadius = height / 2
         }
-        avatarImageView.isUserInteractionEnabled = true
+        stackView.isUserInteractionEnabled = true
         let tapAvatar = UITapGestureRecognizer(target: self, action: #selector(changeAvatarAction(_:)))
-        avatarImageView.addGestureRecognizer(tapAvatar)
+        stackView.addGestureRecognizer(tapAvatar)
     }
     
+    @available(iOS 13.0, *)
+    func contextMenuInteraction(_ interaction: UIContextMenuInteraction, configurationForMenuAtLocation location: CGPoint) -> UIContextMenuConfiguration? {
+        return .init(identifier: nil) {
+            let browser = ImageBrowserViewController()
+            browser.imagePath = WebSocketManager.shared.messageManager.myAvatarUrl
+            return browser
+        } actionProvider: { _ in
+            return nil
+        }
+    }
+        
     @objc func updateMyAvatar(_ noti: Notification) {
         let url = noti.object as! String
         SDWebImageManager.shared.loadImage(with: URL(string: url), options: .avoidDecodeImage, progress: nil) { [self] image, data, error, _, _, _ in
@@ -48,7 +62,7 @@ extension ContactsTableViewController: ContactTableViewCellDelegate {
                 }
             } else {
                 if let image = image {
-                    let data = self.manager.compressEmojis(image)
+                    let data = self.manager.messageManager.compressEmojis(image)
                     avatarImageView.image = UIImage(data: data)
                     ContactTableViewCell.avatarCache[url] = data
                 }
@@ -96,7 +110,7 @@ extension ContactsTableViewController: ContactTableViewCellDelegate {
                 guard let data = data else { return }
                 let json = JSON(data)
                 if json["status"].stringValue == "success" {
-                    WebSocketManager.shared.myAvatarUrl = WebSocketManager.shared.url_pre + json["avatarUrl"].stringValue
+                    WebSocketManager.shared.messageManager.myAvatarUrl = WebSocketManager.shared.url_pre + json["avatarUrl"].stringValue
                 }
             }
         }

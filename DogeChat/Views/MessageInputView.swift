@@ -105,7 +105,7 @@ class MessageInputView: UIView {
     
     @objc func textViewResign() {
         textView.resignFirstResponder()
-        let screenSize = UIScreen.main.bounds.size
+        let screenSize = AppDelegate.shared.window?.bounds.size ?? UIScreen.main.bounds.size
         let userInfo = [UIResponder.keyboardFrameEndUserInfoKey: NSValue(cgRect: CGRect(x: 0, y: screenSize.height, width: screenSize.width, height: screenSize.height))]
         NotificationCenter.default.post(name: UIResponder.keyboardWillChangeFrameNotification, object: nil, userInfo: userInfo)
     }
@@ -116,7 +116,7 @@ class MessageInputView: UIView {
     
     @objc func emojiButtonTapped() {
         let block = {
-            let screenSize = UIScreen.main.bounds.size
+            let screenSize = AppDelegate.shared.window?.bounds.size ?? UIScreen.main.bounds.size
             let ratio: CGFloat = MessageInputView.ratioOfEmojiView
             let userInfo = [UIResponder.keyboardFrameEndUserInfoKey: NSValue(cgRect: CGRect(x: 0, y: (1-ratio)*screenSize.height, width: screenSize.width, height: ratio*screenSize.height))]
             NotificationCenter.default.post(name: UIResponder.keyboardWillChangeFrameNotification, object: nil, userInfo: userInfo)

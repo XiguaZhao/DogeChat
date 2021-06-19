@@ -8,6 +8,7 @@
 
 import UIKit
 import YPTransition
+import DogeChatUniversal
 
 class MessageCollectionViewDrawCell: MessageCollectionViewBaseCell {
     

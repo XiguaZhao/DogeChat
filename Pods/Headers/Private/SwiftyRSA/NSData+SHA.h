@@ -1,1 +1,1 @@
-../../../SwiftyRSA/Source/NSData+SHA.h
+../../../../../../../../../../Workspace/SwiftyRSA/Source/NSData+SHA.h

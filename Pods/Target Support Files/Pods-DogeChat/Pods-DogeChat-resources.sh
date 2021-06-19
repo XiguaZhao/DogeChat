@@ -97,10 +97,18 @@ EOM
   esac
 }
 if [[ "$CONFIGURATION" == "Debug" ]]; then
-  install_resource "${PODS_ROOT}/MJRefresh/MJRefresh/MJRefresh.bundle"
+  install_resource "${PODS_ROOT}/../../../../../../../Workspace/ELCImagePickerController/Classes/ELCImagePicker/Resources/ELCAlbumPickerController.xib"
+  install_resource "${PODS_ROOT}/../../../../../../../Workspace/ELCImagePickerController/Classes/ELCImagePicker/Resources/ELCAssetPicker.xib"
+  install_resource "${PODS_ROOT}/../../../../../../../Workspace/ELCImagePickerController/Classes/ELCImagePicker/Resources/ELCAssetTablePicker.xib"
+  install_resource "${PODS_ROOT}/../../../../../../../Workspace/ELCImagePickerController/Classes/ELCImagePicker/Resources/Overlay.png"
+  install_resource "${PODS_ROOT}/../../../../../../../Workspace/ELCImagePickerController/Classes/ELCImagePicker/Resources/Overlay@2x.png"
 fi
 if [[ "$CONFIGURATION" == "Release" ]]; then
-  install_resource "${PODS_ROOT}/MJRefresh/MJRefresh/MJRefresh.bundle"
+  install_resource "${PODS_ROOT}/../../../../../../../Workspace/ELCImagePickerController/Classes/ELCImagePicker/Resources/ELCAlbumPickerController.xib"
+  install_resource "${PODS_ROOT}/../../../../../../../Workspace/ELCImagePickerController/Classes/ELCImagePicker/Resources/ELCAssetPicker.xib"
+  install_resource "${PODS_ROOT}/../../../../../../../Workspace/ELCImagePickerController/Classes/ELCImagePicker/Resources/ELCAssetTablePicker.xib"
+  install_resource "${PODS_ROOT}/../../../../../../../Workspace/ELCImagePickerController/Classes/ELCImagePicker/Resources/Overlay.png"
+  install_resource "${PODS_ROOT}/../../../../../../../Workspace/ELCImagePickerController/Classes/ELCImagePicker/Resources/Overlay@2x.png"
 fi
 
 mkdir -p "${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}"

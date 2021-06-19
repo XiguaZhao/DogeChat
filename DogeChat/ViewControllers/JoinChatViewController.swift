@@ -100,14 +100,15 @@ extension JoinChatViewController: UITextFieldDelegate {
             makeAlert(message: "信息不完整", detail: nil, showTime: 1, completion: nil)
             return
         }
-        manager.myName = username
-        manager.login(username: username, password: password) { loginResult in
+        manager.messageManager.myName = username
+        manager.messageManager.login(username: username, password: password) { loginResult in
             if loginResult == "登录成功" {
                 let contactsTVC = ContactsTableViewController()
                 contactsTVC.username = username
                 contactsTVC.navigationItem.title = username
                 self.navigationController?.setViewControllers([contactsTVC], animated: true)
                 contactsTVC.loginSuccess = true
+                NotificationCenter.default.post(name: .updateMyAvatar, object: WebSocketManager.shared.messageManager.myAvatarUrl)
                 UserDefaults.standard.setValue(username, forKey: "lastUsername")
                 UserDefaults.standard.setValue(password, forKey: "lastPassword")
             } else {

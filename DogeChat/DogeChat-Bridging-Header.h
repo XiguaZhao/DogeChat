@@ -9,15 +9,15 @@
 #import <SDWebImage/SDWebImageManager.h>
 #import <SDWebImage/SDImageCache.h>
 #import <SDWebImage/SDWebImage.h>
-#import <DACircularProgress/DACircularProgressView.h>
 #import "Recorder.h"
 #import "HJH264Encoder.h"
 #import "HJH264Decoder.h"
 #import "HJOpenGLView.h"
-//#import <SocketRocket/SRWebSocket.h>
 #import <Masonry/Masonry.h>
 #import <YPTransition/YPTransition.h>
 #import "OverlayVideoView.h"
 #import "MainVideoView.h"
+#if CompileVideo
 #import "VideoChatViewController.h"
+#endif
 #import "PKView.h"

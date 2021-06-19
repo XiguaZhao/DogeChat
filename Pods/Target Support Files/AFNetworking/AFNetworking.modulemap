@@ -1,5 +1,7 @@
 module AFNetworking {
   umbrella header "AFNetworking-umbrella.h"
+  exclude header "AFNetworking.root-NSURLSession-Security-Serialization-umbrella.h"
+  exclude header "AFNetworking-c94d3492-umbrella.h"
 
   export *
   module * { export * }

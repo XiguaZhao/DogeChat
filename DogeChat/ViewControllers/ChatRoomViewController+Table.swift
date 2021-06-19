@@ -1,6 +1,7 @@
 
 import UIKit
 import YPTransition
+import DogeChatUniversal
 
 extension ChatRoomViewController: UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
     
@@ -79,6 +80,40 @@ extension ChatRoomViewController: UICollectionViewDataSource, UICollectionViewDe
         displayHistory()
     }
     
+    //MARK: ContextMune
+    @available(iOS 13.0, *)
+    func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+        let cell = collectionView.cellForItem(at: indexPath) as! MessageCollectionViewBaseCell
+        let identifier = "\(indexPath.row)" as NSString
+        return UIContextMenuConfiguration(identifier: identifier, previewProvider: nil
+        ) { (menuElement) -> UIMenu? in
+            let copyAction = UIAction(title: "复制") { (_) in
+                if let textCell = cell as? MessageCollectionViewTextCell {
+                    let text = textCell.messageLabel.text
+                    UIPasteboard.general.string = text
+                }
+            }
+            var revokeAction: UIAction?
+            var starEmojiAction: UIAction?
+            if self.messages[indexPath.row].messageSender == .ourself && self.messages[indexPath.row].messageType != .join {
+                revokeAction = UIAction(title: "撤回") { (_) in
+                    self.revoke(indexPath: indexPath)
+                }
+            }
+            if let imageUrl = cell.message.imageURL, cell.message.sendStatus == .success {
+                starEmojiAction = UIAction(title: "收藏表情") { (_) in
+                    let isGif = imageUrl.hasSuffix(".gif")
+                    self.manager.starAndUploadEmoji(filePath: imageUrl, isGif: isGif)
+                }
+            }
+            var children: [UIAction] = [copyAction]
+            if revokeAction != nil { children.append(revokeAction!) }
+            if starEmojiAction != nil { children.append(starEmojiAction!) }
+            let menu = UIMenu(title: "", image: nil, children: children)
+            return menu
+        }
+    }
+    
     func insertNewMessageCell(_ messages: [Message], position: InsertPosition = .bottom, index: Int = 0, completion: (()->Void)? = nil) {
         let alreadyUUIDs = self.messagesUUIDs
         let newUUIDs: Set<String> = Set(messages.map { $0.uuid })
@@ -130,7 +165,7 @@ extension ChatRoomViewController: UICollectionViewDataSource, UICollectionViewDe
             let newPoint = gesture.location(in: collectionView.cellForItem(at: newIndexPath)?.contentView)
             emojiInfo.x = newPoint.x / UIScreen.main.bounds.width
             emojiInfo.y = newPoint.y / MessageCollectionViewBaseCell.height(for: messages[newIndexPath.item])
-            emojiInfo.lastModifiedBy = manager.myName
+            emojiInfo.lastModifiedBy = manager.messageManager.myName
             messages[newIndexPath.item].emojisInfo.append(emojiInfo)
             needReload(indexPath: [newIndexPath, oldIndexPath])
             manager.sendEmojiInfos([messages[oldIndexPath.item], messages[newIndexPath.item]], receiver: friendName)
@@ -140,7 +175,7 @@ extension ChatRoomViewController: UICollectionViewDataSource, UICollectionViewDe
     func emojiInfoDidChange(from oldInfo: EmojiInfo?, to newInfo: EmojiInfo?, cell: MessageCollectionViewBaseCell) {
         if let indexPahth = collectionView.indexPath(for: cell) {
             needReload(indexPath: [indexPahth])
-            newInfo?.lastModifiedBy = manager.myName
+            newInfo?.lastModifiedBy = manager.messageManager.myName
             manager.sendEmojiInfos([messages[indexPahth.item]], receiver: friendName)
         }
     }

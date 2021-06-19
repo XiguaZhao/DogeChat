@@ -6,10 +6,13 @@
 //  Copyright © 2021 赵锡光. All rights reserved.
 //
 
+
 #import "MainVideoView.h"
 #import "HJH264Decoder.h"
 #import "HJOpenGLView.h"
 #import <Masonry/Masonry.h>
+#if CompileVideo
+
 
 @interface MainVideoView ()
 
@@ -166,3 +169,5 @@
 
 
 @end
+
+#endif

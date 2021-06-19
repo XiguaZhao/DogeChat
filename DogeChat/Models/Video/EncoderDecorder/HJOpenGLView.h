@@ -6,6 +6,11 @@
 //  Copyright © 2017年 Josie. All rights reserved.
 //
 
+
+#define CompileVideo __is_target_environment(iOS)
+
+#if CompileVideo
+
 #import <UIKit/UIKit.h>
 #import <OpenGLES/ES2/gl.h>
 #import <OpenGLES/ES2/glext.h>
@@ -14,5 +19,5 @@
 
 - (void)setupGL;
 - (void)displayPixelBuffer:(CVPixelBufferRef)pixelBuffer;
-
 @end
+#endif

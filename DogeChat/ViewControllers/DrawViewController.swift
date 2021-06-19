@@ -8,6 +8,7 @@
 
 import UIKit
 import YPTransition
+import DogeChatUniversal
 
 @available(iOS 14.0, *)
 class DrawViewController: UIViewController, PKViewAutoOffsetDelegate {
@@ -28,7 +29,7 @@ class DrawViewController: UIViewController, PKViewAutoOffsetDelegate {
         ChatRoomViewController.needRotate = true
         toolBar.mas_makeConstraints { [weak self] make in
             guard let self = self else { return }
-            make?.top.equalTo()(self.view)?.offset()
+            make?.top.equalTo()(self.view.mas_safeAreaLayoutGuideTop)
             make?.leading.equalTo()(self.view)
             make?.trailing.equalTo()(self.view)
         }

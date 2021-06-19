@@ -12,14 +12,17 @@ import YPTransition
 enum SettingType {
     case shortcut
     case doNotDisturb
+    case selectHost
+    case wsAddress
+    case resetHostAndWs
 }
 
 class SettingViewController: UITableViewController, DatePickerChangeDelegate {
     
     var logoutButton: UIBarButtonItem!
     
-    let settingOptions = ["快捷操作", "勿扰模式"]
-    let settingTypes: [SettingType] = [.shortcut, .doNotDisturb]
+    let settingOptions = ["快捷操作", "勿扰模式", "自定义host", "自定义ws地址", "重置host&ws"]
+    let settingTypes: [SettingType] = [.shortcut, .doNotDisturb, .selectHost, .wsAddress, .resetHostAndWs]
     let cellID = "SettingCellID"
 
     override func viewDidLoad() {
@@ -60,6 +63,34 @@ class SettingViewController: UITableViewController, DatePickerChangeDelegate {
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
+        let customizedAddress: ((SettingType) -> Void) = { type in
+            var text = ""
+            var key = ""
+            switch type {
+            case .selectHost:
+                text = WebSocketManager.shared.messageManager.url_pre
+                key = "host"
+            case .wsAddress:
+                text = WebSocketManager.shared.socketUrl
+                key = "socketUrl"
+            default:
+                break
+            }
+            let alert = UIAlertController(title: "就你事多", message: nil, preferredStyle: .alert)
+            alert.addTextField { tf in
+                tf.text = text
+            }
+            alert.addAction(UIAlertAction(title: "确认", style: .default, handler: { [weak alert, weak self] _ in
+                if let input = alert?.textFields?.first?.text, !input.isEmpty {
+                    UserDefaults.standard.setValue(input, forKey: key)
+                } else {
+                    UserDefaults.standard.setValue(nil, forKey: key)
+                }
+                self?.makeAlert(message: "修改完成，请重启", detail: nil, showTime: 1, completion: nil)
+            }))
+            alert.addAction(UIAlertAction(title: "取消", style: .cancel, handler: nil))
+            self.present(alert, animated: true, completion: nil)
+        }
         switch settingTypes[indexPath.row] {
         case .shortcut:
             navigationController?.pushViewController(SelectShortcutTVC(), animated: true)
@@ -67,6 +98,14 @@ class SettingViewController: UITableViewController, DatePickerChangeDelegate {
             let pickerVC = DatePickerViewController()
             pickerVC.delegate = self
             self.present(pickerVC, animated: true, completion: nil)
+        case .selectHost:
+            customizedAddress(.selectHost)
+        case .wsAddress:
+            customizedAddress(.wsAddress)
+        case .resetHostAndWs:
+            UserDefaults.standard.setValue(nil, forKey: "host")
+            UserDefaults.standard.setValue(nil, forKey: "socketUrl")
+            self.makeAlert(message: "重置完成，请重启", detail: nil, showTime: 1, completion: nil)
         }
     }
     

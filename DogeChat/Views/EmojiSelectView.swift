@@ -19,12 +19,12 @@ class EmojiSelectView: UIView {
 
     weak var delegate: EmojiViewDelegate?
     let collectionView: UICollectionView!
-    var emojis: [String] = WebSocketManager.shared.emojiPaths {
+    var emojis: [String] = WebSocketManager.shared.messageManager.emojiPaths {
         didSet {
             self.isHidden = false
             if emojis != oldValue {
                 collectionView.reloadData()
-                WebSocketManager.shared.emojiPaths = emojis
+                WebSocketManager.shared.messageManager.emojiPaths = emojis
             }
         }
     }
@@ -103,7 +103,7 @@ extension EmojiSelectView: UICollectionViewDataSource, UICollectionViewDelegateF
             WebSocketManager.shared.changeAvatarWithPath(path) { task, data in
                 guard let data = data else { return }
                 if JSON(data)["status"].stringValue == "success" {
-                    WebSocketManager.shared.myAvatarUrl = WebSocketManager.shared.url_pre + JSON(data)["avatarUrl"].stringValue
+                    WebSocketManager.shared.messageManager.myAvatarUrl = WebSocketManager.shared.url_pre + JSON(data)["avatarUrl"].stringValue
                 }
             }
         }
@@ -119,7 +119,7 @@ extension EmojiSelectView: UICollectionViewDataSource, UICollectionViewDelegateF
                     DispatchQueue.global().async {
                         if let data = data,
                               let image = UIImage(data: data) {
-                            let compressed = WebSocketManager.shared.compressEmojis(image)
+                            let compressed = WebSocketManager.shared.messageManager.compressEmojis(image)
                             cache.setObject(compressed as NSData, forKey: (imageLink as NSString))
                         } else if let image = image,
                                   let compressed = image.pngData() {
@@ -136,10 +136,7 @@ extension EmojiSelectView: UICollectionViewDataSource, UICollectionViewDelegateF
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        var width = collectionView.bounds.width / 4 - 2
-        if UIDevice.current.userInterfaceIdiom == .pad && AppDelegate.isLandscape(){
-            width = 150
-        }
+        let width = 90
         return CGSize(width: width, height: width)
     }
     
