@@ -24,6 +24,11 @@
 	<string></string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+	</dict>
 	<key>NSCameraUsageDescription</key>
 	<string>曹惟乾你这个大傻逼！</string>
 	<key>NSMicrophoneUsageDescription</key>
@@ -39,6 +44,7 @@
 	</array>
 	<key>UIBackgroundModes</key>
 	<array>
+		<string>audio</string>
 		<string>processing</string>
 		<string>remote-notification</string>
 		<string>voip</string>

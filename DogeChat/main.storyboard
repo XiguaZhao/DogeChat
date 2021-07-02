@@ -4,14 +4,15 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="18093"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Navigation Controller-->
+        <!--Doge Chat Navigation Controller-->
         <scene sceneID="52K-xt-9hQ">
             <objects>
-                <navigationController id="73m-2C-Avi" sceneMemberID="viewController">
+                <navigationController id="73m-2C-Avi" customClass="DogeChatNavigationController" customModule="DogeChat" customModuleProvider="target" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" systemItem="contacts" id="qFt-lo-DEp"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="03O-YF-ybZ">
                         <rect key="frame" x="0.0" y="44" width="428" height="44"/>
@@ -26,6 +27,11 @@
         <scene sceneID="ijE-0c-6MT">
             <objects>
                 <splitViewController id="Ker-fq-rFq" sceneMemberID="viewController">
+                    <userDefinedRuntimeAttributes>
+                        <userDefinedRuntimeAttribute type="number" keyPath="gutterWidth">
+                            <integer key="value" value="2"/>
+                        </userDefinedRuntimeAttribute>
+                    </userDefinedRuntimeAttributes>
                     <connections>
                         <segue destination="hLv-Vk-XoE" kind="relationship" relationship="masterViewController" id="Jml-KI-uAi"/>
                         <segue destination="mlY-KK-fBy" kind="relationship" relationship="detailViewController" id="t1r-PA-kMy"/>
@@ -35,10 +41,10 @@
             </objects>
             <point key="canvasLocation" x="-2470" y="-358"/>
         </scene>
-        <!--Tab Bar Controller-->
+        <!--Doge Chat Tab Bar Controller-->
         <scene sceneID="fAB-79-vBU">
             <objects>
-                <tabBarController id="hLv-Vk-XoE" sceneMemberID="viewController">
+                <tabBarController id="hLv-Vk-XoE" customClass="DogeChatTabBarController" customModule="DogeChat" customModuleProvider="target" sceneMemberID="viewController">
                     <tabBar key="tabBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="XK0-xE-hvC">
                         <rect key="frame" x="0.0" y="0.0" width="414" height="49"/>
                         <autoresizingMask key="autoresizingMask"/>
@@ -46,18 +52,19 @@
                     </tabBar>
                     <connections>
                         <segue destination="73m-2C-Avi" kind="relationship" relationship="viewControllers" id="dF3-Gi-WRe"/>
-                        <segue destination="QJ7-1B-WKH" kind="relationship" relationship="viewControllers" id="yrf-MV-Rjw"/>
+                        <segue destination="WrQ-ga-1RZ" kind="relationship" relationship="viewControllers" id="0S2-lI-uUS"/>
+                        <segue destination="QJ7-1B-WKH" kind="relationship" relationship="viewControllers" id="q5s-3U-fgW"/>
                     </connections>
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="QFR-kt-v9I" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-664" y="-165"/>
         </scene>
-        <!--Navigation Controller-->
+        <!--Doge Chat Navigation Controller-->
         <scene sceneID="yeq-q3-aB6">
             <objects>
-                <navigationController storyboardIdentifier="chatroomNav" id="mlY-KK-fBy" sceneMemberID="viewController">
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="P2Y-tL-7OF">
+                <navigationController storyboardIdentifier="chatroomNav" id="mlY-KK-fBy" customClass="DogeChatNavigationController" customModule="DogeChat" customModuleProvider="target" sceneMemberID="viewController">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" largeTitles="YES" id="P2Y-tL-7OF">
                         <rect key="frame" x="0.0" y="44" width="428" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
@@ -70,35 +77,16 @@
         <scene sceneID="KTC-wF-asg">
             <objects>
                 <tableViewController clearsSelectionOnViewWillAppear="NO" id="Twh-WA-ERh" customClass="SettingViewController" customModule="DogeChat" customModuleProvider="target" sceneMemberID="viewController">
-                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" id="4QT-Xm-rky">
-                        <rect key="frame" x="0.0" y="0.0" width="428" height="926"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
-                        <prototypes>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" id="Jqi-pn-P7W">
-                                <rect key="frame" x="0.0" y="24.333333969116211" width="428" height="43.666667938232422"/>
-                                <autoresizingMask key="autoresizingMask"/>
-                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="Jqi-pn-P7W" id="vGx-IX-MKs">
-                                    <rect key="frame" x="0.0" y="0.0" width="428" height="43.666667938232422"/>
-                                    <autoresizingMask key="autoresizingMask"/>
-                                </tableViewCellContentView>
-                            </tableViewCell>
-                        </prototypes>
-                        <connections>
-                            <outlet property="dataSource" destination="Twh-WA-ERh" id="tax-TC-qCU"/>
-                            <outlet property="delegate" destination="Twh-WA-ERh" id="eo2-ZK-NTZ"/>
-                        </connections>
-                    </tableView>
                     <navigationItem key="navigationItem" title="Root View Controller" id="Ad1-k2-OUQ"/>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="JIg-ig-4v5" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1511" y="-73"/>
         </scene>
-        <!--Navigation Controller-->
+        <!--Doge Chat Navigation Controller-->
         <scene sceneID="g9u-DR-5dM">
             <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="QJ7-1B-WKH" sceneMemberID="viewController">
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="QJ7-1B-WKH" customClass="DogeChatNavigationController" customModule="DogeChat" customModuleProvider="target" sceneMemberID="viewController">
                     <tabBarItem key="tabBarItem" systemItem="more" id="2T8-9p-W6V"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" largeTitles="YES" id="vU6-Pv-CSs">
@@ -113,6 +101,39 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="258-Q9-My8" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="638" y="54"/>
+        </scene>
+        <!--Doge Chat Navigation Controller-->
+        <scene sceneID="TSg-da-ryh">
+            <objects>
+                <navigationController id="WrQ-ga-1RZ" customClass="DogeChatNavigationController" customModule="DogeChat" customModuleProvider="target" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" systemItem="favorites" id="z3a-74-ie0"/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" largeTitles="YES" id="bjc-Id-bWg">
+                        <rect key="frame" x="0.0" y="44" width="428" height="96"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="qSP-Wa-zaP" kind="relationship" relationship="rootViewController" id="hG9-jh-Fwp"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="ch4-b5-Cui" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="615" y="803"/>
+        </scene>
+        <!--收藏-->
+        <scene sceneID="Vs6-5R-ePp">
+            <objects>
+                <viewController id="qSP-Wa-zaP" customClass="PlayListViewController" customModule="DogeChat" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="WxG-vB-t9g">
+                        <rect key="frame" x="0.0" y="0.0" width="428" height="926"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="b7i-cq-ZV8"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                    <navigationItem key="navigationItem" title="收藏" id="GSP-du-jK8"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="JTm-9H-Sg4" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1390" y="806"/>
         </scene>
     </scenes>
     <resources>

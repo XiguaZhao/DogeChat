@@ -10,6 +10,8 @@ import WatchKit
 import Foundation
 import DogeChatUniversal
 
+var isLogin = false
+
 typealias ContactInfo = (name: String, avatarUrl: String, latestMessage: Message?)
 
 class ContactInterfaceController: WKInterfaceController {
@@ -26,10 +28,15 @@ class ContactInterfaceController: WKInterfaceController {
         NotificationCenter.default.addObserver(self, selector: #selector(canGetContacts), name: NSNotification.Name("canGetContacts"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(updateLatestMessage(_:)), name: .updateLatesetMessage, object: nil)
         // Configure interface objects here.
-        if let username = UserDefaults.standard.value(forKey: "username") as? String, let password = UserDefaults.standard.value(forKey: "password") as? String {
+        var loginCount = 0
+        func login(username: String, password: String) {
             self.setTitle("正在登录...")
+            isLogin = false
             SocketManager.shared.messageManager.login(username: username, password: password) { [weak self] result in
+                loginCount += 1
+                guard loginCount <= 6 else { return }
                 if result == "登录成功" {
+                    isLogin = true
                     self?.setTitle("获取联系人...")
                     SocketManager.shared.messageManager.getContacts { [weak self] usersInfos, error in
                         guard let self = self else { return }
@@ -37,9 +44,15 @@ class ContactInterfaceController: WKInterfaceController {
                         SocketManager.shared.connect()
                     }
                 } else {
-                    self?.pushController(withName: "login", context: nil)
+                    isLogin = false
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                        login(username: username, password: password)
+                    }
                 }
             }
+        }
+        if let username = UserDefaults.standard.value(forKey: "username") as? String, let password = UserDefaults.standard.value(forKey: "password") as? String {
+            login(username: username, password: password)
         } else {
             self.pushController(withName: "login", context: nil)
         }

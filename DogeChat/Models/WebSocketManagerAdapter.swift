@@ -53,9 +53,8 @@ class WebSocketManagerAdapter: NSObject {
     
     public func playSound(needSound: Bool = true) {
         if UIApplication.shared.applicationState == .active {
-            AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
             if needSound {
-                AudioServicesPlaySystemSound(1007)
+                AudioServicesPlaySystemSound(1015)
             }
         }
     }
@@ -150,6 +149,8 @@ class WebSocketManagerAdapter: NSObject {
                 DispatchQueue.main.async {
                     chatRoomVC.collectionView.reloadItems(at: [IndexPath(item: index, section: 0)])
                 }
+                chatRoomVC.messages[index].drawScale = nil
+                chatRoomVC.messages[index].height = nil
             }
         }
     }
@@ -190,13 +191,38 @@ class WebSocketManagerAdapter: NSObject {
                     if let chatRoomVC = AppDelegate.shared.navigationController?.topViewController as? ChatRoomViewController {
                         if let index = chatRoomVC.messages.firstIndex(of: targetMessage) {
                             DispatchQueue.main.async {
-                                chatRoomVC.collectionView.reloadItems(at: [IndexPath(item: index, section: 0)])
+                                if let cell = chatRoomVC.collectionView.cellForItem(at: IndexPath(item: index, section: 0)) as? MessageCollectionViewDrawCell, let drawing = targetMessage.pkDrawing as? PKDrawing {
+                                    if let scale = targetMessage.drawScale {
+                                        let transformedDrawing = drawing.transformed(using: CGAffineTransform(scaleX: scale, y: scale))
+                                        guard let pkView = cell.getPKView() else { return }
+                                        pkView.drawing = transformedDrawing
+                                        let bounds = transformedDrawing.bounds
+                                        
+                                        if bounds.maxX > pkView.bounds.width {
+                                            targetMessage.drawScale = max(0.17, (targetMessage.drawScale ?? 0.3) - 0.1)
+                                            chatRoomVC.collectionView.reloadItems(at: [IndexPath(item: index, section: 0)])
+                                        } else if bounds.maxY > pkView.bounds.height {
+                                            targetMessage.height! += 100
+                                            self.reloadAndScroll(index: index, collectionView: chatRoomVC.collectionView)
+                                        }
+                                    } else {
+                                        targetMessage.drawScale = 0.3
+                                        targetMessage.height = 200
+                                        self.reloadAndScroll(index: index, collectionView: chatRoomVC.collectionView)
+                                    }
+                                }
                             }
                         }
                     }
                 }
             }
         }
+    }
+    
+    func reloadAndScroll(index: Int, collectionView: UICollectionView) {
+        let indexPath = IndexPath(item: index, section: 0)
+        collectionView.reloadItems(at: [indexPath])
+        collectionView.scrollToItem(at: indexPath, at: .bottom, animated: true)
     }
     
 }

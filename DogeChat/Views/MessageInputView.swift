@@ -1,93 +1,93 @@
-/**
- * Copyright (c) 2017 Razeware LLC
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * Notwithstanding the foregoing, you may not use, copy, modify, merge, publish,
- * distribute, sublicense, create a derivative work, and/or sell copies of the
- * Software in any work that is designed, intended, or marketed for pedagogical or
- * instructional purposes related to programming, coding, application development,
- * or information technology.  Permission for such use, copying, modification,
- * merger, publication, distribution, sublicensing, creation of derivative works,
- * or sale is expressly withheld.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
-
 import UIKit
 import YPTransition
 
 protocol MessageInputDelegate: AnyObject {
     func sendWasTapped(content: String)
     func addButtonTapped()
+    func voiceButtonTapped(_ sender: UIButton)
+    func textViewFontSizeChange(_ textView: UITextView, oldSize: CGFloat, newSize: CGFloat)
+    func textViewFontSizeChangeEnded(_ textView: UITextView)
 }
 
-class MessageInputView: UIView {
+class MessageInputView: DogeChatBlurView {
     weak var delegate: MessageInputDelegate?
     
     static let ratioOfEmojiView: CGFloat = 0.45
     static var becauseEmojiTapped = false
-    let textView = UITextView()
+    let textView = DogeChatTextView()
     let addButton = UIButton()
     let emojiButton = UIButton()
-    
+    let upArrowButton = UIButton()
+    let voiceButton = UIButton()
+    var beginY: CGFloat = 0
+    var frameShouldAnimate = true
+    var directionUp = true
+
     override init(frame: CGRect) {
         super.init(frame: frame)
         
-        backgroundColor = UIColor(red: 247/255, green: 247/255, blue: 247/255, alpha: 1.0)
-        if #available(iOS 13.0, *) {
-            backgroundColor = .systemBackground
-        }
         textView.translatesAutoresizingMaskIntoConstraints = false
         textView.layer.cornerRadius = 4
         textView.layer.borderColor = UIColor(red: 200/255, green: 200/255, blue: 200/255, alpha: 0.6).cgColor
         textView.layer.borderWidth = 1
         textView.font = UIFont.systemFont(ofSize: 18)
         textView.returnKeyType = .send
-        
+        textView.backgroundColor = .clear
         addButton.translatesAutoresizingMaskIntoConstraints = false
         emojiButton.translatesAutoresizingMaskIntoConstraints = false
+        upArrowButton.translatesAutoresizingMaskIntoConstraints = false
+        voiceButton.translatesAutoresizingMaskIntoConstraints = false
         if #available(iOS 13.0, *) {
             let largeConfig = UIImage.SymbolConfiguration(pointSize: 140, weight: .bold, scale: .large)
             addButton.setImage(UIImage(systemName: "plus.circle", withConfiguration: largeConfig), for: .normal)
             emojiButton.setImage(UIImage(systemName: "smiley", withConfiguration: largeConfig), for: .normal)
+            upArrowButton.setImage(UIImage(systemName: "arrow.up", withConfiguration: largeConfig), for: .normal)
+            voiceButton.setImage(UIImage(systemName: "music.mic", withConfiguration: largeConfig), for: .normal)
         } else {
             addButton.titleLabel?.text = "+"
             addButton.titleLabel?.textAlignment = .center
             emojiButton.titleLabel?.text = "表情"
             emojiButton.titleLabel?.textAlignment = .center
+            upArrowButton.titleLabel?.text = "发送"
+            upArrowButton.titleLabel?.textAlignment = .center
+            voiceButton.titleLabel?.text = "语音"
+            voiceButton.titleLabel?.textAlignment = .center
         }
         addButton.addTarget(self, action: #selector(addButtonTapped), for: .touchUpInside)
         emojiButton.addTarget(self, action: #selector(emojiButtonTapped), for: .touchUpInside)
+        voiceButton.addTarget(self, action: #selector(voiceButtonTapped(_:)), for: .touchUpInside)
+        let pan = UIPanGestureRecognizer(target: self, action: #selector(upArrowTouch(_:)))
+        upArrowButton.addGestureRecognizer(pan)
         addSubview(textView)
         addSubview(addButton)
         addSubview(emojiButton)
-        let offset: CGFloat = 10
+        addSubview(upArrowButton)
+        addSubview(voiceButton)
+        
+        let offset: CGFloat = 5
         NSLayoutConstraint.activate([
-            textView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: offset),
+            textView.leadingAnchor.constraint(equalTo: self.voiceButton.trailingAnchor, constant: offset),
             textView.trailingAnchor.constraint(equalTo: self.emojiButton.leadingAnchor, constant: -offset),
             textView.topAnchor.constraint(equalTo: self.topAnchor),
             textView.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -20)
         ])
         
+        upArrowButton.isHidden = true
+        upArrowButton.mas_makeConstraints { make in
+            make?.edges.equalTo()(emojiButton)?.offset()
+        }
+                
+        voiceButton.mas_makeConstraints { [weak self] make in
+            make?.leading.equalTo()(self?.mas_leading)
+            make?.top.equalTo()(self?.addButton.mas_top)
+            make?.bottom.equalTo()(self?.addButton.mas_bottom)
+            make?.width.mas_equalTo()(30)
+        }
+        
         NSLayoutConstraint.activate([
-            addButton.bottomAnchor.constraint(equalTo: textView.bottomAnchor, constant: -offset+5),
+            addButton.bottomAnchor.constraint(equalTo: textView.bottomAnchor, constant: -offset),
             addButton.leadingAnchor.constraint(equalTo: emojiButton.trailingAnchor, constant: offset),
-            addButton.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -offset-10),
+            addButton.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -offset),
             NSLayoutConstraint(item: addButton, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: 30),
             NSLayoutConstraint(item: addButton, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: 30)
         ])
@@ -112,6 +112,38 @@ class MessageInputView: UIView {
     
     @objc func addButtonTapped() {
         delegate?.addButtonTapped()
+    }
+    
+    @objc func voiceButtonTapped(_ sender: UIButton) {
+        delegate?.voiceButtonTapped(sender)
+    }
+    
+    @objc func upArrowTouch(_ ges: UIPanGestureRecognizer) {
+        switch ges.state {
+        case .began:
+            beginY = ges.location(in: self.superview).y
+            frameShouldAnimate = false
+        case .changed:
+            let nowY = ges.location(in: self.superview).y
+            let offset = (beginY - nowY) / 500
+            let oldSize = textView.font!.pointSize
+            var newSize = textView.font!.pointSize + offset
+            newSize = min(50, newSize)
+            newSize = max(7, newSize)
+            textView.font = .systemFont(ofSize: newSize)
+            delegate?.textViewFontSizeChange(textView, oldSize: oldSize, newSize: newSize)
+            let nowDirectionUp = ges.velocity(in: self.superview).y < 0
+            if nowDirectionUp != directionUp {
+                beginY = nowY
+            }
+            directionUp = ges.velocity(in: self.superview).y < 0
+        case .ended:
+            print("end")
+            frameShouldAnimate = true
+            delegate?.textViewFontSizeChangeEnded(textView)
+        default:
+            break
+        }
     }
     
     @objc func emojiButtonTapped() {

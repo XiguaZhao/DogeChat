@@ -12,7 +12,8 @@ pod 'SDWebImage'
 pod 'Masonry'
 pod 'YPTransition', :path => '/Users/zhaoxiguang/youpin/YPTransition2'
 pod 'DogeChatUniversal', :path => '/Users/zhaoxiguang/Workspace/DogeChatUniversal'
-#pod 'LookinServer'
+pod 'LookinServer'
+pod 'ReachabilitySwift'
 pod 'RSAiOSWatchOS', :path => '/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/RSAiOSWatchOS'
 end
 

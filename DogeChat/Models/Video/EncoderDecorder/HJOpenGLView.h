@@ -7,7 +7,8 @@
 //
 
 
-#define CompileVideo __is_target_environment(iOS)
+#define CompileVideo (__is_target_environment(iOS) || __is_target_environment(simulator))
+//#define CompileVideo 1
 
 #if CompileVideo
 

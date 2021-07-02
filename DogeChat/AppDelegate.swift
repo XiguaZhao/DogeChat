@@ -7,12 +7,13 @@ import Intents
 import YPTransition
 import RSAiOSWatchOS
 import DogeChatUniversal
-
+import Reachability
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
     
     var window: UIWindow?
+    let reachability = try! Reachability()
     var pushWindow: FloatWindow!
     var callWindow: FloatWindow!
     var switcherWindow: FloatWindow!
@@ -26,10 +27,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var splitViewController: UISplitViewController!
     var providerDelegate: ProviderDelegate!
     let callManager = CallManager()
+    var isLoginInProgress = false
     let voipRegistry = PKPushRegistry(queue: DispatchQueue.main)
     var lastAppEnterBackgroundTime = NSDate().timeIntervalSince1970
     let webSocketAdapter = WebSocketManagerAdapter.shared
+    var contactVC: ContactsTableViewController?
     var isIOS = true
+    let splitVCDelegate = SplitViewControllerDelegate()
+    var lastUserInterfaceStyle: UIUserInterfaceStyle = .unspecified
+    var immersive: Bool {
+        fileURLAt(dirName: "customBlur", fileName: userID) != nil || (PlayerManager.shared.isPlaying && UserDefaults.standard.bool(forKey: "immersive"))
+    }
     class var shared: AppDelegate {
         return UIApplication.shared.delegate as! AppDelegate
     }
@@ -42,18 +50,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         } else {
             window?.backgroundColor = .white
         }
-        
+        if UserDefaults.standard.value(forKey: "forceDarkMode") == nil {
+            UserDefaults.standard.setValue(true, forKey: "forceDarkMode")
+        }
         splitViewController = UIStoryboard(name: "main", bundle: .main).instantiateInitialViewController() as? UISplitViewController
+        splitViewController.delegate = splitVCDelegate
         splitViewController.preferredDisplayMode = .allVisible
         tabBarController = splitViewController.viewControllers[0] as? UITabBarController
         window?.rootViewController = splitViewController
         splitViewController.preferredPrimaryColumnWidthFraction = 0.35
-        if #available(iOS 13.0, *) {
-            splitViewController.view.backgroundColor = .systemBackground
-        } else {
-            splitViewController.view.backgroundColor = .white
-        }
-
+        splitViewController.view.backgroundColor = .clear
         window?.makeKeyAndVisible()
         pushWindow = FloatWindow(type: .push, alwayDisplayType: .shouldDismiss, delegate: self)
         callWindow = FloatWindow(type: .alwaysDisplay, alwayDisplayType: .shouldDismiss, delegate: self)
@@ -84,10 +90,28 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             }
         }
         login()
-        
+        if UserDefaults.standard.value(forKey: "immersive") == nil {
+            UserDefaults.standard.setValue(true, forKey: "immersive")
+        }
 //        INPreferences.requestSiriAuthorization { (status) in
 //        }
+        setupReachability()
         return true
+    }
+    
+    func setupReachability() {
+        reachability.whenReachable = { reach in
+            if !isLogin {
+                WebSocketManager.shared.messageManager.login(username: myName, password: myPassWord) { res in
+                    WebSocketManager.shared.connect()
+                    if res == "登录成功", let contactVC = self.getContactVC() {
+                        contactVC.loginSuccess = true
+                    }
+                }
+            } else {
+                WebSocketManager.shared.connect()
+            }
+        }
     }
     
     func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {
@@ -117,26 +141,37 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return UIDevice.current.userInterfaceIdiom == .pad
     }
     
+    class func isPhone() -> Bool {
+        return UIDevice.current.userInterfaceIdiom == .phone
+    }
+    
     func login() {
+        guard !isLoginInProgress else { return }
         self.navigationController = self.tabBarController.viewControllers?.first as? UINavigationController
         if let username = UserDefaults.standard.value(forKey: "lastUsername") as? String,
            let password = UserDefaults.standard.value(forKey: "lastPassword") as? String {
             let contactVC = ContactsTableViewController()
             contactVC.navigationItem.title = username
             contactVC.username = username
+            self.contactVC = contactVC
             self.navigationController.viewControllers = [contactVC]
-            socketManager.messageManager.login(username: username, password: password) { (loginResult) in
-                guard loginResult == "登录成功" else { return }
-                contactVC.loginSuccess = true
-                if AppDelegate.isPad() && !self.splitViewController.isCollapsed {
-                    if let _ = (AppDelegate.shared.navigationController.topViewController as? ContactsTableViewController) {
-                    }
+            isLoginInProgress = true
+            socketManager.messageManager.login(username: username, password: password) {
+                (loginResult) in
+                try? self.reachability.startNotifier()
+                self.isLoginInProgress = false
+                guard loginResult == "登录成功" else {
                     return
                 }
+                contactVC.loginSuccess = true
             }
         } else {
             self.navigationController.viewControllers = [JoinChatViewController()]
         }
+    }
+    
+    func getContactVC() -> ContactsTableViewController? {
+        return (tabBarController.viewControllers?.first as? UINavigationController)?.viewControllers.first as? ContactsTableViewController
     }
     
     func needRelogin() -> Bool {
@@ -218,6 +253,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void
     ) {
         print(userInfo)
+        // socket如果断开却没回调通知我的话，就算收到推送也会安静
+        if !WebSocketManager.shared.connected {
+            WebSocketManager.shared.connect()
+        }
     }
     
     func registerNotification() {
@@ -237,7 +276,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
         self.deviceToken = deviceToken.map { String(format: "%02.2hhx", arguments: [$0]) }.joined()
         print(self.deviceToken!)
-        // TODO: 使用过程中收到消息弹窗
     }
         
     // 点击推送通知才会调用
@@ -255,9 +293,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 notificationManager.processReplyAction(replyContent: input)
             }
         case "DO_NOT_DISTURT_ACTION":
-            WebSocketManager.shared.doNotDisturb(for: "", hour: 4) {
-                completionHandler()
-                print("已经调用completionHandler")
+            if let username = UserDefaults.standard.value(forKey: "lastUsername") as? String,
+               let password = UserDefaults.standard.value(forKey: "lastPassword") as? String {
+                WebSocketManager.shared.messageManager.login(username: username, password: password) { res in
+                    if res == "登录成功" {
+                        WebSocketManager.shared.doNotDisturb(for: "", hour: 4) {
+                            completionHandler()
+                            print("已经调用completionHandler")
+                        }
+                    } else {
+                        completionHandler()
+                    }
+                }
+
             }
             break
         default:

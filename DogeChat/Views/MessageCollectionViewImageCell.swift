@@ -50,7 +50,6 @@ class MessageCollectionViewImageCell: MessageCollectionViewBaseCell {
     
     override func apply(message: Message) {
         super.apply(message: message)
-        downloadImageIfNeeded()
     }
     
     func addGestureForImageView() {
@@ -60,7 +59,7 @@ class MessageCollectionViewImageCell: MessageCollectionViewBaseCell {
     }
     
     @objc func imageTapped() {
-        delegate?.imageViewTapped(self, imageView: animatedImageView, path: message.imageURL ?? "")
+        delegate?.imageViewTapped(self, imageView: animatedImageView, path: message.imageURL ?? "", isAvatar: false)
     }
     
     func layoutImageView() {

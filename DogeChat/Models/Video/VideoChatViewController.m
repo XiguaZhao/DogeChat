@@ -38,6 +38,7 @@ static CGFloat overlayWidth = 0;
     self = [super init];
     if (self) {
         self.modalPresentationStyle = UIModalPresentationFullScreen;
+        UIApplication.sharedApplication.idleTimerDisabled = YES;
     }
     return self;
 }
@@ -86,6 +87,7 @@ static CGFloat overlayWidth = 0;
     [super viewDidDisappear:animated];
     self.mainVideoView.exit = YES;
     [self.overlayVideoView.avSession stopRunning];
+    UIApplication.sharedApplication.idleTimerDisabled = false;
 }
 
 - (void)captureOutput:(AVCaptureOutput *)output didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection {

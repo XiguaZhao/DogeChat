@@ -7,27 +7,8 @@ extension ChatRoomViewController: UICollectionViewDataSource, UICollectionViewDe
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
-        guard let splitVC = self.splitViewController,
-              let contactVC = ((splitVC.viewControllers.first as? UITabBarController)?.viewControllers?.first as? UINavigationController)?.viewControllers.first as? ContactsTableViewController else { return }
-        if !splitVC.isCollapsed {
-            ContactsTableViewController.poppedChatVC = contactVC.navigationController?.popToRootViewController(animated: false)
-            if let popped = ContactsTableViewController.poppedChatVC, popped.count > 0 {
-                splitVC.showDetailViewController(UINavigationController(rootViewController: popped[0]), sender: nil)
-                return
-            }
-            if splitVC.viewControllers.count > 1, let chatroomVC = (splitVC.viewControllers[1] as? UINavigationController)?.topViewController as? ChatRoomViewController {
-                AppDelegate.shared.navigationController = (splitVC.viewControllers[1] as! UINavigationController)
-                DispatchQueue.main.async {
-                    chatroomVC.layoutViews(size: size)
-                    chatroomVC.collectionView.reloadData()
-                }
-            }
-            ContactsTableViewController.poppedChatVC = nil
-        } else {
-            if let nc = (splitVC.viewControllers.first as? UITabBarController)?.viewControllers?.first as? UINavigationController {
-                AppDelegate.shared.navigationController = nc
-            }
-        }
+        layoutViews(size: view.bounds.size)
+        collectionView.reloadData()
     }
         
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -51,6 +32,8 @@ extension ChatRoomViewController: UICollectionViewDataSource, UICollectionViewDe
             cellID = MessageCollectionViewImageCell.cellID
         case .draw:
             cellID = MessageCollectionViewDrawCell.cellID
+        case .track:
+            cellID = MessageCollectionViewTrackCell.cellID
         default:
             cellID = nil
         }
@@ -67,7 +50,39 @@ extension ChatRoomViewController: UICollectionViewDataSource, UICollectionViewDe
     }
         
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: collectionView.bounds.width, height: MessageCollectionViewBaseCell.height(for: messages[indexPath.item]))
+        return CGSize(width: view.bounds.width, height: MessageCollectionViewBaseCell.height(for: messages[indexPath.item]))
+    }
+        
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        (cell as? MessageCollectionViewImageCell)?.downloadImageIfNeeded()
+        if let cell = cell as? MessageCollectionViewDrawCell {
+            if #available(iOS 14.0, *) {
+                if cell.getPKView() == nil {
+                    cell.addPKView()
+                }
+            }
+            cell.downloadPKDataIfNeeded()
+        }
+        if let cell = cell as? MessageCollectionViewBaseCell {
+            cell.loadAvatar()
+            cell.layoutEmojis()
+        }
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        (cell as? MessageCollectionViewImageCell)?.animatedImageView.animatedImage = nil
+        if let cell = cell as? MessageCollectionViewBaseCell {
+            cell.avatarImageView.animatedImage = nil
+            for imageView in cell.emojis.values {
+                imageView.removeFromSuperview()
+            }
+        }
+        if #available(iOS 14.0, *) {
+            if let cell = (cell as? MessageCollectionViewDrawCell) {
+                cell.getPKView()?.removeFromSuperview()
+                cell.indicationNeighborView = nil
+            }
+        }
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
@@ -79,7 +94,7 @@ extension ChatRoomViewController: UICollectionViewDataSource, UICollectionViewDe
         }
         displayHistory()
     }
-    
+        
     //MARK: ContextMune
     @available(iOS 13.0, *)
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
@@ -95,6 +110,7 @@ extension ChatRoomViewController: UICollectionViewDataSource, UICollectionViewDe
             }
             var revokeAction: UIAction?
             var starEmojiAction: UIAction?
+            var addBackgroundColorAction: UIAction?
             if self.messages[indexPath.row].messageSender == .ourself && self.messages[indexPath.row].messageType != .join {
                 revokeAction = UIAction(title: "撤回") { (_) in
                     self.revoke(indexPath: indexPath)
@@ -106,9 +122,17 @@ extension ChatRoomViewController: UICollectionViewDataSource, UICollectionViewDe
                     self.manager.starAndUploadEmoji(filePath: imageUrl, isGif: isGif)
                 }
             }
+            if #available(iOS 14.0, *) {
+                if cell.message.messageType == .draw, let pkView = (cell as? MessageCollectionViewDrawCell)?.getPKView() {
+                    addBackgroundColorAction = UIAction(title: "添加背景颜色") { _ in
+                        pkView.backgroundColor = .lightGray
+                    }
+                }
+            }
             var children: [UIAction] = [copyAction]
             if revokeAction != nil { children.append(revokeAction!) }
             if starEmojiAction != nil { children.append(starEmojiAction!) }
+            if addBackgroundColorAction != nil { children.append(addBackgroundColorAction!) }
             let menu = UIMenu(title: "", image: nil, children: children)
             return menu
         }
@@ -118,7 +142,20 @@ extension ChatRoomViewController: UICollectionViewDataSource, UICollectionViewDe
         let alreadyUUIDs = self.messagesUUIDs
         let newUUIDs: Set<String> = Set(messages.map { $0.uuid })
         let filteredUUIDs = newUUIDs.subtracting(alreadyUUIDs)
-        let filtered = messages.filter { filteredUUIDs.contains($0.uuid)}
+        var filtered = messages.filter { filteredUUIDs.contains($0.uuid)}
+        filtered = filtered.filter { message in
+            if message.option != self.messageOption {
+                return false
+            } else if message.option == .toOne {
+                if message.messageSender == .ourself {
+                    return message.receiver == friendName
+                } else {
+                    return message.senderUsername == friendName
+                }
+            } else {
+                return true
+            }
+        }
         guard !filtered.isEmpty else {
             return
         }
@@ -132,11 +169,10 @@ extension ChatRoomViewController: UICollectionViewDataSource, UICollectionViewDe
             collectionView.insertItems(at: indexPaths)
             var scrollToBottom = !collectionView.isDragging
             let contentHeight = collectionView.contentSize.height
-            if contentHeight - collectionView.contentOffset.y > self.view.bounds.height {
+            if contentHeight - collectionView.contentOffset.y > self.view.bounds.height * 2 {
                 scrollToBottom = false
             }
             scrollToBottom = scrollToBottom || (messages.count == 1 && messages[0].messageSender == .ourself)
-            scrollToBottom = scrollToBottom && (drawingIndexPath == nil)
             if scrollToBottom, let indexPath = indexPaths.last {
                 collectionView.scrollToItem(at: indexPath, at: .bottom, animated: true)
             }
@@ -149,35 +185,6 @@ extension ChatRoomViewController: UICollectionViewDataSource, UICollectionViewDe
             return
         }
         messageInputBar.textView.resignFirstResponder()
-    }
-    
-    func emojiOutBounds(from cell: MessageCollectionViewBaseCell, gesture: UIGestureRecognizer) {
-        let point = gesture.location(in: collectionView)
-        guard let oldIndexPath = cell.indexPath else { return }
-        guard let newIndexPath = collectionView.indexPathForItem(at: point) else {
-            needReload(indexPath: [oldIndexPath])
-            return
-        }
-        if let (_emojiInfo, _messageIndex, _) = cell.getIndex(for: gesture),
-           let emojiInfo = _emojiInfo,
-           let messageIndex = _messageIndex {
-            messages[oldIndexPath.item].emojisInfo.remove(at: messageIndex)
-            let newPoint = gesture.location(in: collectionView.cellForItem(at: newIndexPath)?.contentView)
-            emojiInfo.x = newPoint.x / UIScreen.main.bounds.width
-            emojiInfo.y = newPoint.y / MessageCollectionViewBaseCell.height(for: messages[newIndexPath.item])
-            emojiInfo.lastModifiedBy = manager.messageManager.myName
-            messages[newIndexPath.item].emojisInfo.append(emojiInfo)
-            needReload(indexPath: [newIndexPath, oldIndexPath])
-            manager.sendEmojiInfos([messages[oldIndexPath.item], messages[newIndexPath.item]], receiver: friendName)
-        }
-    }
-    
-    func emojiInfoDidChange(from oldInfo: EmojiInfo?, to newInfo: EmojiInfo?, cell: MessageCollectionViewBaseCell) {
-        if let indexPahth = collectionView.indexPath(for: cell) {
-            needReload(indexPath: [indexPahth])
-            newInfo?.lastModifiedBy = manager.messageManager.myName
-            manager.sendEmojiInfos([messages[indexPahth.item]], receiver: friendName)
-        }
     }
     
     func needReload(indexPath: [IndexPath]) {

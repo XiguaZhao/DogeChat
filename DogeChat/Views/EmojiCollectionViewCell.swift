@@ -13,7 +13,7 @@ protocol EmojiSelectCellLongPressDelegate: AnyObject {
     func didLongPressEmojiCell(_ cell: EmojiCollectionViewCell)
 }
 
-class EmojiCollectionViewCell: UICollectionViewCell {
+class EmojiCollectionViewCell: DogeChatBaseCollectionViewCell {
     
     static let cellID = "EmojiCollectionViewCell"
     let emojiView = UIImageView()

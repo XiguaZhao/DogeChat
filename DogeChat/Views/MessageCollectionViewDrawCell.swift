@@ -18,7 +18,6 @@ class MessageCollectionViewDrawCell: MessageCollectionViewBaseCell {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        addPKView()
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -29,6 +28,7 @@ class MessageCollectionViewDrawCell: MessageCollectionViewBaseCell {
         super.prepareForReuse()
         if #available(iOS 14.0, *) {
             self.getPKView()?.drawing = PKDrawing()
+            self.getPKView()?.backgroundColor = .clear
         } 
     }
     
@@ -44,7 +44,6 @@ class MessageCollectionViewDrawCell: MessageCollectionViewBaseCell {
     override func apply(message: Message) {
         super.apply(message: message)
         tapGes.isEnabled = message.messageSender == .ourself
-        downloadPKDataIfNeeded()
     }
     
     // PencilKit相关
@@ -57,11 +56,15 @@ class MessageCollectionViewDrawCell: MessageCollectionViewBaseCell {
         if let pkDrawing = message.pkDrawing as? PKDrawing {
             let maxWidth = contentView.bounds.width * 0.8
             if pkDrawing.bounds.maxX > maxWidth {
-                let ratio = max(0, maxWidth / pkDrawing.bounds.maxX)
+                let ratio = message.drawScale ?? max(0, maxWidth / pkDrawing.bounds.maxX)
                 pkView.drawing = pkDrawing.transformed(using: CGAffineTransform(scaleX: ratio, y: ratio))
                 message.pkViewScale = ratio
             } else {
-                pkView.drawing = pkDrawing
+                if let scale = message.drawScale {
+                    pkView.drawing = pkDrawing.transformed(using: CGAffineTransform(scaleX: scale, y: scale))
+                } else {
+                    pkView.drawing = pkDrawing
+                }
             }
         }
     }
@@ -69,11 +72,13 @@ class MessageCollectionViewDrawCell: MessageCollectionViewBaseCell {
     func addPKView() {
         if #available(iOS 14.0, *) {
             let pkView = PKCanvasView()
+            pkView.backgroundColor = .clear
             pkView.drawingPolicy = .anyInput
             pkView.isUserInteractionEnabled = false
             self.contentView.addSubview(pkView)
             tapGes = UITapGestureRecognizer(target: self, action: #selector(pkViewTapAction(_:)))
             contentView.addGestureRecognizer(tapGes)
+            setNeedsLayout()
         }
     }
     
@@ -103,6 +108,7 @@ class MessageCollectionViewDrawCell: MessageCollectionViewBaseCell {
             if !message.isDrawing { //正在画的话已经做了实时更新，这里不需要再覆盖缓存
                 message.pkDrawing = pkDrawing
             }
+            setNeedsLayout()
         } else {
             guard let capturedMessage = self.message else { return }
             DispatchQueue.global().async {

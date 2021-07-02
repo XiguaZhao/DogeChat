@@ -14,7 +14,7 @@ extension ContactsTableViewController: ContactTableViewCellDelegate, UIContextMe
     func avatarTapped(_ cell: ContactTableViewCell?, path: String) {
         let browser = ImageBrowserViewController()
         browser.modalPresentationStyle = .fullScreen
-        browser.imagePath = WebSocketManager.shared.url_pre + path
+        browser.imagePaths = [WebSocketManager.shared.url_pre + path]
         appDelegate.navigationController.present(browser, animated: true, completion: nil)
     }
     
@@ -30,12 +30,11 @@ extension ContactsTableViewController: ContactTableViewCellDelegate, UIContextMe
             stackView.addInteraction(interaction)
         }
         self.navigationItem.titleView = stackView
-        if let height = self.navigationController?.navigationBar.bounds.height {
-            avatarImageView.mas_updateConstraints { make in
-                make?.width.mas_equalTo()(height)
-            }
-            avatarImageView.layer.cornerRadius = height / 2
+        avatarImageView.mas_updateConstraints { make in
+            make?.width.mas_equalTo()(avatarImageView.mas_height)
+            
         }
+        avatarImageView.layer.cornerRadius = 44 / 2
         stackView.isUserInteractionEnabled = true
         let tapAvatar = UITapGestureRecognizer(target: self, action: #selector(changeAvatarAction(_:)))
         stackView.addGestureRecognizer(tapAvatar)
@@ -45,7 +44,7 @@ extension ContactsTableViewController: ContactTableViewCellDelegate, UIContextMe
     func contextMenuInteraction(_ interaction: UIContextMenuInteraction, configurationForMenuAtLocation location: CGPoint) -> UIContextMenuConfiguration? {
         return .init(identifier: nil) {
             let browser = ImageBrowserViewController()
-            browser.imagePath = WebSocketManager.shared.messageManager.myAvatarUrl
+            browser.imagePaths = [WebSocketManager.shared.messageManager.myAvatarUrl]
             return browser
         } actionProvider: { _ in
             return nil

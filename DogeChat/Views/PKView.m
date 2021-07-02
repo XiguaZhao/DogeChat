@@ -40,7 +40,7 @@
         }
         CGRect bounds = [[PKDrawing alloc] initWithStrokes:@[newStroke]].bounds;
         BOOL shouldAutoOffset = NO;
-        if (CGRectGetMaxX(bounds) > canvasView.contentOffset.x + canvasView.bounds.size.width * 0.8) {
+        if (CGRectGetMaxX(bounds) > canvasView.contentOffset.x + canvasView.bounds.size.width * 0.7) {
             shouldAutoOffset = YES;
         }
         if (self.autoOffsetDelegate) {

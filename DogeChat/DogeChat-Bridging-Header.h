@@ -14,10 +14,7 @@
 #import "HJH264Decoder.h"
 #import "HJOpenGLView.h"
 #import <Masonry/Masonry.h>
-#import <YPTransition/YPTransition.h>
 #import "OverlayVideoView.h"
 #import "MainVideoView.h"
-#if CompileVideo
 #import "VideoChatViewController.h"
-#endif
 #import "PKView.h"

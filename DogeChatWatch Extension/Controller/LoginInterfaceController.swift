@@ -36,6 +36,7 @@ class LoginInterfaceController: WKInterfaceController {
         }
         SocketManager.shared.messageManager.login(username: username, password: password) { result in
             if result == "登录成功" {
+                isLogin = true
                 NotificationCenter.default.post(name: NSNotification.Name("canGetContacts"), object: nil)
                 UserDefaults.standard.setValue(self.username, forKey: "username")
                 UserDefaults.standard.setValue(self.password, forKey: "password")

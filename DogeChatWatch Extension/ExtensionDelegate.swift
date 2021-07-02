@@ -42,15 +42,23 @@ class ExtensionDelegate: NSObject, WKExtensionDelegate, UNUserNotificationCenter
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
         let nowTime = Date().timeIntervalSince1970
         let shouldReLogin = nowTime - lastEnterBackgroundTime >= 20 * 60
-        if shouldReLogin {
+        let loginBlock = {
+            isLogin = false
             if let password = UserDefaults.standard.value(forKey: "password") as? String {
                 SocketManager.shared.messageManager.login(username: SocketManager.shared.messageManager.myName, password: password) { res in
                     if res == "登录成功" {
+                        isLogin = true
                         SocketManager.shared.connect()
                     }
                 }
             }
+        }
+        if shouldReLogin {
+            loginBlock()
         } else {
+            if !isLogin {
+                loginBlock()
+            }
             SocketManager.shared.connect()
         }
     }

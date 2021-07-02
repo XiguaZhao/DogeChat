@@ -22,6 +22,8 @@ func contentForSpecialType(_ message: Message?) -> String {
         return "[速绘]"
     case .video:
         return "[视频]"
+    case .track:
+        return "[歌曲分享]"
     }
 }
 

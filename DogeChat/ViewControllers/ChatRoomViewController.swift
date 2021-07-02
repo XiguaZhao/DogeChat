@@ -5,12 +5,18 @@ import YPTransition
 import DogeChatUniversal
 import PhotosUI
 
-class ChatRoomViewController: UIViewController {
+func playHaptic(_ intensity: CGFloat = 1) {
+    if #available(iOS 13.0, *) {
+        HapticManager.shared.playHapticTransient(time: 0, intensity: Float(intensity), sharpness: 1)
+    }
+}
+
+class ChatRoomViewController: DogeChatViewController {
     
     static let numberOfHistory = 10
     static var needRotate = false
     let manager = WebSocketManager.shared
-    let collectionView = UICollectionView(frame: CGRect.zero, collectionViewLayout: ChatRootCollectionViewLayout())
+    let collectionView = DogeChatBaseCollectionView(frame: CGRect.zero, collectionViewLayout: ChatRootCollectionViewLayout())
     let messageInputBar = MessageInputView()
     var messageOption: MessageOption = .toAll
     var friendName = ""
@@ -28,7 +34,9 @@ class ChatRoomViewController: UIViewController {
     var username = ""
     var collectionViewTapGesture: UITapGestureRecognizer!
     var friendAvatarUrl = ""
-    var isInsertingHistory = false
+    var isFetchingHistory = false
+    var hapticInputIndex = 0
+    var pan: UIScreenEdgePanGestureRecognizer?
     
     var lastIndexPath: IndexPath {
         return IndexPath(row: messages.count-1, section: 0)
@@ -36,9 +44,9 @@ class ChatRoomViewController: UIViewController {
     
     let cache = NSCache<NSString, NSData>()
     
-    init() {
-        super.init(nibName: nil, bundle: nil)
-        self.hidesBottomBarWhenPushed = true
+    override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
+        super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
+        hidesBottomBarWhenPushed = true
     }
     
     required init?(coder: NSCoder) {
@@ -48,6 +56,8 @@ class ChatRoomViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         manager.messageManager.messageDelegate = self
+        messageInputBar.vc = self
+        emojiSelectView.vc = self
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillChange(notification:)), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(sendSuccess(notification:)), name: .sendSuccess, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(uploadSuccess(notification:)), name: .uploadSuccess, object: nil)
@@ -57,17 +67,46 @@ class ChatRoomViewController: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(receiveEmojiInfoChangedNotification(_:)), name: .emojiInfoChanged, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(receiveHistoryMessages(_:)), name: .receiveHistoryMessages, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(drawDataDownloadedSuccessNoti(_:)), name: .drawDataDownloadedSuccess, object: nil)
+        navigationItem.largeTitleDisplayMode = .never
         addRefreshController()
         loadViews()
         configureEmojiView()
         layoutViews(size: view.bounds.size)
         collectionViewTapGesture = UITapGestureRecognizer(target: self, action: #selector(tap))
         collectionView.addGestureRecognizer(collectionViewTapGesture)
+        pan = UIScreenEdgePanGestureRecognizer(target: self, action: #selector(panAction(_:)))
+        pan?.edges = .right
+        view.addGestureRecognizer(pan!)
     }
     
+    @objc func panAction(_ pan: UIScreenEdgePanGestureRecognizer) {
+        let maxOffset: CGFloat = 80
+        switch pan.state {
+        case .began:
+            collectionView.layer.masksToBounds = false
+        case .changed:
+            let startX = view.bounds.width
+            let endX = pan.location(in: view).x
+            let offsetX = min(maxOffset, (abs(endX - startX))/1.2)
+            collectionView.layer.transform = CATransform3DTranslate(CATransform3DIdentity, -offsetX, 0, 0)
+        case .ended:
+            recoverCollectionViewInset()
+        default:
+            break
+        }
+    }
+    
+    func recoverCollectionViewInset() {
+        UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 2, options: .curveLinear, animations: {
+            self.collectionView.layer.transform = CATransform3DIdentity
+        }, completion: { _ in
+            self.collectionView.layer.masksToBounds = true
+        })
+    }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        navigationController?.setToolbarHidden(true, animated: true)
         messageInputBar.textView.delegate = self
         UIView.performWithoutAnimation {
             messageInputBar.textView.resignFirstResponder()
@@ -91,7 +130,12 @@ class ChatRoomViewController: UIViewController {
             }
         }
     }
-        
+    
+    override func viewWillLayoutSubviews() {
+        super.viewWillLayoutSubviews()
+    }
+    
+            
     deinit {
         print("chat room VC deinit")
     }
@@ -105,10 +149,10 @@ class ChatRoomViewController: UIViewController {
         guard let message = userInfo?["message"] as? Message,
               let correctId = userInfo?["correctId"] as? Int else { return }
 
-        guard let index = messages.firstIndex(of: message) else { return }
+        guard let index = messages.firstIndex(where: {message.id == $0.id}) else { return }
         messages[index].id = correctId
         messages[index].sendStatus = .success
-        guard message.receiver == friendName || (message.receiver == "PublicPino" && friendName.isEmpty) else {
+        guard message.receiver == friendName || (message.receiver == "PublicPino" && messageOption == .toAll) else {
             return
         }
         let indexPath = IndexPath(row: index, section: 0)
@@ -130,7 +174,7 @@ class ChatRoomViewController: UIViewController {
 }
 
 //MARK - Message Input Bar
-extension ChatRoomViewController: MessageInputDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, PHPickerViewControllerDelegate {
+extension ChatRoomViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate, PHPickerViewControllerDelegate {
     @available(iOS 14, *)
     func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
         picker.dismiss(animated: true, completion: nil)
@@ -146,68 +190,11 @@ extension ChatRoomViewController: MessageInputDelegate, UIImagePickerControllerD
     
     func sendWasTapped(content: String) {
         guard !content.isEmpty else { return }
+        playHaptic()
         let wrappedMessage = processMessageString(for: content)
         manager.messageManager.notSendContent.append(wrappedMessage)
         insertNewMessageCell([wrappedMessage])
         manager.sendWrappedMessage(wrappedMessage)
-    }
-    
-    func addButtonTapped() {
-        let imagePicker = UIImagePickerController()
-        imagePicker.delegate = self
-        
-        messageInputBar.textView.resignFirstResponder()
-        let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
-        let popover = actionSheet.popoverPresentationController
-        popover?.sourceView = messageInputBar.addButton
-        popover?.sourceRect = CGRect(x: 0, y: 0, width: 100, height: 100)
-        actionSheet.addAction(UIAlertAction(title: "拍照/视频", style: .default, handler: { [weak self] (action) in
-            imagePicker.sourceType = .camera
-            imagePicker.mediaTypes = UIImagePickerController.availableMediaTypes(for: .camera)!
-            imagePicker.videoQuality = .typeIFrame1280x720
-            imagePicker.cameraCaptureMode = .photo
-            self?.present(imagePicker, animated: true, completion: nil)
-        }))
-        actionSheet.addAction(UIAlertAction(title: "从相册选择", style: .default, handler: { [weak self] (action) in
-            self?.present(imagePicker, animated: true, completion: nil)
-            self?.messageInputBar.textView.resignFirstResponder()
-        }))
-        if #available(iOS 14.0, *) {
-            actionSheet.addAction(UIAlertAction(title: "相册（多选，不支持gif）", style: .default, handler: { [weak self] _ in
-                var config = PHPickerConfiguration()
-                config.selectionLimit = 0
-                let picker = PHPickerViewController(configuration: config)
-                picker.delegate = self
-                self?.present(picker, animated: true, completion: nil)
-            }))
-        }
-        let startCallAction = { [weak self] in
-            guard let self = self else { return }
-            let uuid = UUID().uuidString
-            self.manager.sendCallRequst(to: self.friendName, uuid: uuid)
-            AppDelegate.shared.callManager.startCall(handle: self.friendName, uuid: uuid)
-        }
-        actionSheet.addAction(UIAlertAction(title: "语音通话", style: .default, handler: {  (action) in
-            startCallAction()
-        }))
-        actionSheet.addAction(UIAlertAction(title: "视频通话", style: .default, handler: { (action) in
-            startCallAction()
-            Recorder.sharedInstance().needSendVideo = true
-        }))
-        if #available(iOS 14.0, *) {
-            actionSheet.addAction(UIAlertAction(title: "速绘", style: .default, handler: { [weak self] (action) in
-                guard let self = self else { return }
-                let drawVC = DrawViewController()
-                drawVC.pkViewDelegate.dataChangedDelegate = self
-                let newMessage = Message(message: "", messageSender: .ourself, receiver: self.friendName, uuid: UUID().uuidString, sender: self.username, messageType: .draw, option: self.messageOption)
-                drawVC.message = newMessage
-                drawVC.modalPresentationStyle = .fullScreen
-                self.drawingIndexPath = IndexPath(item: self.messages.count, section: 0)
-                self.navigationController?.present(drawVC, animated: true, completion: nil)
-            }))
-        }
-        actionSheet.addAction(UIAlertAction(title: "取消", style: .cancel, handler: nil))
-        present(actionSheet, animated: true, completion: nil)
     }
     
     func sendCallRequest() {
@@ -247,7 +234,7 @@ extension ChatRoomViewController: MessageInputDelegate, UIImagePickerControllerD
     
     @objc func confirmSendPhoto() {
         guard let (_, imageURL) = self.latestPickedImageInfo else { return }
-        let message = Message(message: "", imageURL: imageURL.absoluteString, videoURL: nil, messageSender: .ourself, receiver: friendName, sender: username, messageType: .image, option: messageOption, date: NSDate().description, sendStatus: .fail)
+        let message = Message(message: "", imageURL: imageURL.absoluteString, videoURL: nil, messageSender: .ourself, receiver: friendName, sender: username, messageType: .image, option: messageOption, sendStatus: .fail)
         manager.messageManager.imageDict[message.uuid] = imageURL
         insertNewMessageCell([message])
         DispatchQueue.main.async { [self] in
@@ -275,7 +262,7 @@ extension ChatRoomViewController: MessageInputDelegate, UIImagePickerControllerD
     }
     
     private func processMessageString(for string: String) -> Message {
-        return Message(message: string, messageSender: .ourself, receiver: friendName, sender: username, messageType: .text, option: messageOption, id: manager.messageManager.maxId + 1, sendStatus: .fail)
+        return Message(message: string, messageSender: .ourself, receiver: friendName, sender: username, messageType: .text, option: messageOption, id: manager.messageManager.maxId + 1, sendStatus: .fail, fontSize: messageInputBar.textView.font!.pointSize)
     }
     
     private func configureEmojiView() {
@@ -292,20 +279,13 @@ extension ChatRoomViewController: MessageInputDelegate, UIImagePickerControllerD
 
 extension ChatRoomViewController: EmojiViewDelegate {
     func didSelectEmoji(filePath: String) {
-        let message = Message(message: filePath, imageURL: filePath, videoURL: nil, messageSender: .ourself, receiver: friendName, sender: username, messageType: .image, option: messageOption, id: manager.messageManager.maxId+1, date: Date().description, sendStatus: .fail)
+        let message = Message(message: filePath, imageURL: filePath, videoURL: nil, messageSender: .ourself, receiver: friendName, sender: username, messageType: .image, option: messageOption, id: manager.messageManager.maxId+1, sendStatus: .fail)
         manager.sendWrappedMessage(message)
         insertNewMessageCell([message])
     }
 }
 
-extension ChatRoomViewController: MessageTableViewCellDelegate {
-    func imageViewTapped(_ cell: MessageCollectionViewBaseCell, imageView: FLAnimatedImageView, path: String) {
-        let browser = ImageBrowserViewController()
-        browser.imagePath = path
-        browser.modalPresentationStyle = .fullScreen
-        browser.cache = cache
-        AppDelegate.shared.navigationController.present(browser, animated: true, completion: nil)
-    }
+extension ChatRoomViewController {
     
     override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
         if !AppDelegate.isPad() {
@@ -316,29 +296,6 @@ extension ChatRoomViewController: MessageTableViewCellDelegate {
     
     
     
-    //MARK: PKView手写
-    func pkViewTapped(_ cell: MessageCollectionViewBaseCell, pkView: UIView!) {
-        if let lastActive = activePKView {
-            lastActive.isUserInteractionEnabled = false
-            lastActive.resignFirstResponder()
-        }
-        activePKView = pkView
-        if let indexPath = collectionView.indexPath(for: cell) {
-            drawingIndexPath = indexPath
-        }
-        if #available(iOS 14.0, *) {
-
-            let drawVC = DrawViewController()
-            guard let pkView = pkView as? PKCanvasView else { return }
-            let message = messages[drawingIndexPath.item]
-            drawVC.message = message
-            drawVC.pkView.drawing = pkView.drawing.transformed(using: CGAffineTransform(scaleX: 1/message.pkViewScale, y: 1/message.pkViewScale))
-            print(message.pkViewScale)
-            drawVC.pkViewDelegate.dataChangedDelegate = self
-            drawVC.modalPresentationStyle = .fullScreen
-            self.navigationController?.present(drawVC, animated: true, completion: nil)
-        }
-    }
     
     @objc func drawDone() {
         self.navigationItem.rightBarButtonItem = nil
@@ -394,6 +351,9 @@ extension ChatRoomViewController: PKViewChangedDelegate {
         if let message = message as? Message {
             message.pkDrawing = pkView.drawing
             message.sendStatus = .fail
+            if let index = self.messages.firstIndex(where: { $0.uuid == message.uuid }) {
+                collectionView.reloadItems(at: [IndexPath(item: index, section: 0)])
+            }
             insertNewMessageCell([message]) { [weak self] in
                 self?.drawDone()
             }
@@ -437,7 +397,15 @@ extension ChatRoomViewController: MessageDelegate {
     }
     
     @objc func receiveHistoryMessages(_ noti: Notification) {
-        guard let messages = noti.userInfo?["messages"] as? [Message], let pages = noti.userInfo?["pages"] as? Int else { return }
+        navigationItem.title = friendName
+        guard let messages = noti.userInfo?["messages"] as? [Message], !messages.isEmpty, let pages = noti.userInfo?["pages"] as? Int else { return }
+        if messages[0].option != messageOption {
+            return
+        } else if messageOption == .toOne {
+            if (messages[0].messageSender == .ourself && messages[0].receiver != friendName) || (messages[0].messageSender == .someoneElse && messages[0].senderUsername != friendName) {
+                return
+            }
+        }
         self.pagesAndCurNum.pages = pages
         let filtered = messages.filter { !self.messagesUUIDs.contains($0.uuid) }.reversed() as [Message]
         let oldIndexPath = IndexPath(item: min(self.messages.count, filtered.count), section: 0)
@@ -481,9 +449,11 @@ extension ChatRoomViewController {
             self.collectionView.refreshControl?.endRefreshing()
             return
         }
+        navigationItem.title = "正在加载..."
         pagesAndCurNum.curNum = (self.messages.count / ChatRoomViewController.numberOfHistory) + 1
         manager.historyMessages(for: (messageOption == .toAll) ? "chatRoom" : friendName, pageNum: pagesAndCurNum.curNum)
         pagesAndCurNum.curNum += 1
+        isFetchingHistory = true
     }
     
     func revoke(indexPath: IndexPath) {
@@ -517,16 +487,23 @@ extension ChatRoomViewController {
 
 extension ChatRoomViewController: UITextViewDelegate {
     func textViewDidChange(_ textView: UITextView) {
+        showEmojiButton(textView.text.isEmpty)
         let oldFrame = messageInputBar.frame
         let textHeight = textView.contentSize.height
         let lineHeight = (textView.text as NSString).size(withAttributes: textView.typingAttributes).height
         let lineCount = Int(textHeight / lineHeight)
         let oldLineCount = Int((oldFrame.height - 20) / lineHeight)
         let lineCountChanged = lineCount - oldLineCount
-        let heightChanged = CGFloat(lineCountChanged) * lineHeight
+        var heightChanged = CGFloat(lineCountChanged) * lineHeight
         let frameOfTableView = collectionView.frame
+        if textView.text.isEmpty {
+            heightChanged = messageBarHeight - oldFrame.height
+        }
+        if textView.text.isEmpty {
+            textView.font = .systemFont(ofSize: 18)
+        }
         if heightChanged != 0 {
-            UIView.animate(withDuration: heightChanged != 0 ? 0.25 : 0) {
+            UIView.animate(withDuration:  0.25 ) {
                 self.messageInputBar.frame = CGRect(x: oldFrame.origin.x, y: oldFrame.origin.y-heightChanged, width: oldFrame.width, height: oldFrame.height+heightChanged)
                 self.collectionView.frame = CGRect(origin: frameOfTableView.origin, size: CGSize(width: frameOfTableView.width, height: frameOfTableView.height-heightChanged))
             } completion: { [self] (_) in
@@ -537,10 +514,12 @@ extension ChatRoomViewController: UITextViewDelegate {
     }
     
     func textViewShouldBeginEditing(_ textView: UITextView) -> Bool {
+        showEmojiButton(textView.text.isEmpty)
         return true
     }
     
     func textViewShouldEndEditing(_ textView: UITextView) -> Bool {
+        showEmojiButton(true)
         return true
     }
     
@@ -550,5 +529,23 @@ extension ChatRoomViewController: UITextViewDelegate {
             return false
         }
         return true
+    }
+    
+    func showEmojiButton(_ show: Bool) {
+        if messageInputBar.emojiButton.isHidden == !show {
+            return
+        }
+        let arrowButton = messageInputBar.upArrowButton
+        let emojiButton = messageInputBar.emojiButton
+        arrowButton.isHidden = false
+        emojiButton.isHidden = false
+        UIView.animate(withDuration: 0.2) {
+            arrowButton.alpha = show ? 0 : 1
+            emojiButton.alpha = show ? 1 : 0
+        } completion: { _ in
+            arrowButton.isHidden = show
+            emojiButton.isHidden = !show
+        }
+
     }
 }

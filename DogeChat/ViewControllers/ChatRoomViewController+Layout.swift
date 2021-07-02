@@ -9,7 +9,10 @@ extension ChatRoomViewController {
             return
         }
         if let userInfo = notification.userInfo {
-            let endFrame = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)!.cgRectValue
+            var endFrame = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)!.cgRectValue
+            if endFrame.height < 50 {
+                endFrame = CGRect(x: 0, y: AppDelegate.shared.window!.bounds.height, width: UIScreen.main.bounds.width, height: 0)
+            }
             let messageBarHeight = self.messageInputBar.bounds.size.height
             let point = CGPoint(x: self.messageInputBar.center.x, y: endFrame.origin.y - messageBarHeight/2.0)
             let shouldDown = endFrame.origin.y == AppDelegate.shared.window?.bounds.height ?? UIScreen.main.bounds.height
@@ -37,18 +40,17 @@ extension ChatRoomViewController {
     func loadViews() {
         navigationItem.title = (self.messageOption == .toOne) ? friendName : "群聊"
         navigationItem.backBarButtonItem?.title = "Run!"
-        if #available(iOS 13.0, *) {
-            collectionView.backgroundColor = .systemBackground
-        } else {
-            collectionView.backgroundColor = .white
-        }
+        collectionView.backgroundColor = .clear
+        collectionView.showsVerticalScrollIndicator = false
+        collectionView.layer.masksToBounds = false
         collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.dropDelegate = self
         collectionView.register(MessageCollectionViewTextCell.self, forCellWithReuseIdentifier: MessageCollectionViewTextCell.cellID)
         collectionView.register(MessageCollectionViewImageCell.self, forCellWithReuseIdentifier: MessageCollectionViewImageCell.cellID)
         collectionView.register(MessageCollectionViewDrawCell.self, forCellWithReuseIdentifier: MessageCollectionViewDrawCell.cellID)
-
+        collectionView.register(MessageCollectionViewTrackCell.self, forCellWithReuseIdentifier: MessageCollectionViewTrackCell.cellID)
+        collectionView.layer.masksToBounds = true
         view.addSubview(collectionView)
         view.addSubview(messageInputBar)
         

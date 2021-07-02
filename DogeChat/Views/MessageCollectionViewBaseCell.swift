@@ -8,16 +8,18 @@ let nameLabelStartX: CGFloat = 40 + 5 + 5
 let nameLabelStartY: CGFloat = 10
 let avatarWidth: CGFloat = 40
 let avatarMargin: CGFloat = 5
+var hapticIndex = 0
 
 protocol MessageTableViewCellDelegate: AnyObject {
-    func imageViewTapped(_ cell: MessageCollectionViewBaseCell, imageView: FLAnimatedImageView, path: String)
+    func imageViewTapped(_ cell: MessageCollectionViewBaseCell, imageView: FLAnimatedImageView, path: String, isAvatar: Bool)
     func emojiOutBounds(from cell: MessageCollectionViewBaseCell, gesture: UIGestureRecognizer)
     func emojiInfoDidChange(from oldInfo: EmojiInfo?, to newInfo: EmojiInfo?, cell: MessageCollectionViewBaseCell)
     func pkViewTapped(_ cell: MessageCollectionViewBaseCell, pkView: UIView!)
     func avatarDoubleTap(_ cell: MessageCollectionViewBaseCell)
+    func sharedTracksTap(_ cell: MessageCollectionViewBaseCell, tracks: [Track])
 }
 
-class MessageCollectionViewBaseCell: UICollectionViewCell {
+class MessageCollectionViewBaseCell: DogeChatBaseCollectionViewCell {
     weak var delegate: MessageTableViewCellDelegate?
     var message: Message!
     var indexPath: IndexPath!
@@ -26,7 +28,7 @@ class MessageCollectionViewBaseCell: UICollectionViewCell {
     var emojis = [EmojiInfo: FLAnimatedImageView]()
     var contentSize: CGSize = CGSize.zero
     var activeEmojiView: UIView?
-    static let emojiWidth: CGFloat = 150
+    static let emojiWidth: CGFloat = 80
     static let pkViewHeight: CGFloat = 100
     var cache: NSCache<NSString, NSData>!
     var indicationNeighborView: UIView?
@@ -34,11 +36,13 @@ class MessageCollectionViewBaseCell: UICollectionViewCell {
     let avatarImageView = FLAnimatedImageView()
     let doubleTapGes = UITapGestureRecognizer()
     let tapAvatar = UITapGestureRecognizer()
+    let timeLabel = UILabel()
     
     static let textCellIdentifier = "MessageCell"
     
     override init(frame: CGRect) {
         super.init(frame: frame)
+        self.backgroundColor = .clear
         nameLabel.textColor = .lightGray
         nameLabel.font = UIFont(name: "Helvetica", size: 10) 
         clipsToBounds = true
@@ -52,9 +56,14 @@ class MessageCollectionViewBaseCell: UICollectionViewCell {
         avatarImageView.isUserInteractionEnabled = true
         addDoubleTapForAvatar()
         
+        timeLabel.font = .systemFont(ofSize: 12)
+        timeLabel.numberOfLines = 2
+        timeLabel.adjustsFontSizeToFitWidth = true
+        
         contentView.addSubview(avatarImageView)
         contentView.addSubview(nameLabel)
         contentView.addSubview(indicator)
+        contentView.addSubview(timeLabel)
     }
         
     override func prepareForReuse() {
@@ -62,6 +71,7 @@ class MessageCollectionViewBaseCell: UICollectionViewCell {
         for emojiView in emojis.values {
             emojiView.removeFromSuperview()
         }
+        avatarImageView.animatedImage = nil
         emojis.removeAll()
     }
     
@@ -87,16 +97,23 @@ class MessageCollectionViewBaseCell: UICollectionViewCell {
         if message.messageType == .join {
             nameLabel.isHidden = true
         }
+        timeLabel.sizeToFit()
+        var timeLabelCenter = contentView.center
+        timeLabelCenter.x += (contentView.bounds.width / 2 + 5 + timeLabel.bounds.width / 2)
+        timeLabel.center = timeLabelCenter
     }
     
     func apply(message: Message) {
         self.message = message
         nameLabel.text = message.senderUsername
         doubleTapGes.isEnabled = message.messageSender == .someoneElse
+        timeLabel.text = message.date
+    }
+    
+    public func loadAvatar() {
         DispatchQueue.main.async {
-            self.loadAvatar()
+            self._loadAvatar()
         }
-        layoutEmojis()
     }
     
     @objc func tapAvatarAction(_ ges: UITapGestureRecognizer) {
@@ -115,11 +132,13 @@ class MessageCollectionViewBaseCell: UICollectionViewCell {
             }
         }
         if let url = url {
-            delegate?.imageViewTapped(self, imageView: avatarImageView, path: url)
+            delegate?.imageViewTapped(self, imageView: avatarImageView, path: url, isAvatar: true)
         }
     }
     
-    func loadAvatar() {
+    
+    
+    private func _loadAvatar() {
         let block: (String) -> Void = { [self] url in
             if let data = ContactTableViewCell.avatarCache[url] {
                 if url.hasSuffix(".gif") {
@@ -185,7 +204,7 @@ class MessageCollectionViewBaseCell: UICollectionViewCell {
     class func height(for message: Message) -> CGFloat {
         let maxSize = CGSize(width: 2*(AppDelegate.shared.navigationController.view.bounds.size.width/3), height: CGFloat.greatestFiniteMagnitude)
         let nameHeight = message.messageSender == .ourself ? 0 : (height(forText: message.senderUsername, fontSize: 10, maxSize: maxSize) + 4 )
-        let messageHeight = height(forText: message.message, fontSize: 17, maxSize: maxSize)
+        let messageHeight = height(forText: message.message, fontSize: message.fontSize, maxSize: maxSize)
         var height: CGFloat
         let screenWidth = AppDelegate.shared.navigationController.view.bounds.width
         switch message.messageType {
@@ -197,6 +216,10 @@ class MessageCollectionViewBaseCell: UICollectionViewCell {
             height = nameHeight + 180
         case .draw:
             if  #available(iOS 14.0, *) {
+                if let wantHeight = message.height {
+                    height = wantHeight
+                    break
+                }
                 height = nameHeight + pkViewHeight
                 if let pkDrawing = message.pkDrawing as? PKDrawing {
                     let bounds = pkDrawing.bounds
@@ -211,6 +234,8 @@ class MessageCollectionViewBaseCell: UICollectionViewCell {
             } else {
                 height = 0
             }
+        case .track:
+            height = 120
         }
         var wholeFrame = CGRect(x: 0, y: 0, width: screenWidth, height: max(0, height))
         for emojiInfo in message.emojisInfo {
@@ -240,13 +265,14 @@ class MessageCollectionViewBaseCell: UICollectionViewCell {
 // drop
 extension MessageCollectionViewBaseCell {
     func didDrop(imageLink: String, image: UIImage, point: CGPoint, cache: NSCache<NSString, NSData>) {
+        playHaptic()
         let width: CGFloat = MessageCollectionViewBaseCell.emojiWidth
         let emojiInfo = EmojiInfo(x: max(0, point.x/self.contentSize.width), y: max(0, point.y/self.contentSize.height), rotation: 0, scale: 1, imageLink: imageLink, lastModifiedBy: WebSocketManager.shared.messageManager.myName)
         message.emojisInfo.append(emojiInfo)
+        delegate?.emojiInfoDidChange(from: nil, to: emojiInfo, cell: self)
         let frame = CGRect(x: point.x - width / 2, y: point.y - width / 2, width: width, height: width)
         let contentBounds = CGRect(origin: CGPoint(x: 0, y: 0), size: self.contentSize)
         if !contentBounds.contains(frame) {
-            delegate?.emojiInfoDidChange(from: nil, to: emojiInfo, cell: self)
             return
         }
         let imageView = FLAnimatedImageView(frame: frame)
@@ -274,6 +300,7 @@ extension MessageCollectionViewBaseCell {
     
     func layoutEmojis() {
         for emojiInfo in message.emojisInfo {
+            let capturedMessage = message
             let width = emojiInfo.scale * MessageCollectionViewBaseCell.emojiWidth
             let contentSize = self.contentSize
             let size = CGSize(width: width, height: width)
@@ -281,11 +308,20 @@ extension MessageCollectionViewBaseCell {
             let imageView = FLAnimatedImageView(frame: CGRect(origin: origin, size: size))
             imageView.contentMode = .scaleAspectFit
             contentView.addSubview(imageView)
+            contentView.bringSubviewToFront(imageView)
             emojis[emojiInfo] = imageView
-            getCacheImage(from: cache, path: emojiInfo.imageLink) { (image, data) in
+            getCacheImage(from: cache, path: emojiInfo.imageLink) { [weak self] (image, data) in
+                guard let self = self, self.message == capturedMessage else {
+                    return
+                }
                 if let data = data {
                     if emojiInfo.imageLink.hasSuffix(".gif") {
-                        imageView.animatedImage = FLAnimatedImage(gifData: data)
+                        DispatchQueue.global().async {
+                            let image = FLAnimatedImage(gifData: data)
+                            DispatchQueue.main.async {
+                                imageView.animatedImage = image
+                            }
+                        }
                     } else {
                         imageView.image = UIImage(data: data)
                     }
@@ -324,6 +360,7 @@ extension MessageCollectionViewBaseCell {
     }
     
     @objc func beginReceiveGes(_ ges: UITapGestureRecognizer) {
+        playHaptic()
         if let view = ges.view, let gestures = view.gestureRecognizers {
             activeEmojiView = view
             for gesture in gestures {
@@ -354,6 +391,7 @@ extension MessageCollectionViewBaseCell {
                let emojiInfo = _emojiInfo,
                let messageIndex = _messageIndex,
                let dictIndex = _dictIndex {
+                playHaptic()
                 message.emojisInfo.remove(at: messageIndex)
                 emojis.remove(at: dictIndex)
                 // 发送更新的通知
@@ -366,6 +404,10 @@ extension MessageCollectionViewBaseCell {
         let scale = ges.scale
         guard let emojiView = activeEmojiView else { return }
         emojiView.transform = CGAffineTransform(scaleX: scale, y: scale)
+        hapticIndex += 1
+        var intensity = min(scale, 1)
+        intensity = max(0.4, scale)
+        if hapticIndex % 8 == 0 { playHaptic(intensity) }
         guard ges.state == .ended else { return }
         ges.isEnabled = false
         if let (_emojiInfo, _messageIndex, _) = getIndex(for: ges),
@@ -383,6 +425,7 @@ extension MessageCollectionViewBaseCell {
         let point = ges.location(in: contentView)
         emojiView.center = point
         guard ges.state == .ended else { return }
+        playHaptic()
         if !contentView.bounds.contains(point) { //超出当前cell了，要更换indexPath了
             delegate?.emojiOutBounds(from: self, gesture: ges)
         } else {

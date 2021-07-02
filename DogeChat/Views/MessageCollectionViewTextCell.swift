@@ -10,6 +10,8 @@ import UIKit
 import YPTransition
 import DogeChatUniversal
 
+let messageFontSize: CGFloat = 17
+
 class MessageCollectionViewTextCell: MessageCollectionViewBaseCell {
     
     static let cellID = "MessageCollectionViewTextCell"
@@ -54,7 +56,7 @@ class MessageCollectionViewTextCell: MessageCollectionViewBaseCell {
     
     func layoutForTextMessage() {
         messageLabel.textColor = .white
-        messageLabel.font = UIFont(name: "Helvetica", size: 17)
+        messageLabel.font = UIFont(name: "Helvetica", size: message.fontSize)
         let size = messageLabel.sizeThatFits(CGSize(width: 2*(bounds.size.width/3), height: CGFloat.greatestFiniteMagnitude))
         messageLabel.frame = CGRect(x: 0, y: 0, width: size.width + 32, height: size.height + 16)
     }

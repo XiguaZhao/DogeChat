@@ -57,7 +57,7 @@ class DrawViewController: UIViewController, PKViewAutoOffsetDelegate {
         pkView.contentInsetAdjustmentBehavior = .never
         pkView.backgroundColor = .gray
         pkView.delegate = pkViewDelegate
-        pkView.contentSize = CGSize(width: 2000, height: 1000)
+        pkView.contentSize = CGSize(width: 2000, height: 2000)
         toolPicker.setVisible(true, forFirstResponder: pkView)
         toolPicker.addObserver(pkViewDelegate)
         pkView.becomeFirstResponder()
@@ -86,6 +86,8 @@ class DrawViewController: UIViewController, PKViewAutoOffsetDelegate {
         forwardButton.sizeToFit()
         forwardButton.center = CGPoint(x: view.bounds.width - forwardButton.bounds.width - view.safeAreaInsets.right, y: view.center.y)
     }
+    
+    
     
     @objc func realTimerSwitchAction(_ switcher: UISwitch) {
         message.needRealTimeDraw = switcher.isOn

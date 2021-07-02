@@ -31,6 +31,8 @@ class ContactTableViewCell: UITableViewCell {
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
+        self.backgroundColor = .clear
+        self.selectionStyle = .none
         nameLabel.font = UIFont.systemFont(ofSize: 15)
         
         latestMessageLabel.textColor = .lightGray
@@ -90,6 +92,8 @@ class ContactTableViewCell: UITableViewCell {
                 text = message.message
             case .video:
                 text = "[视频]"
+            case .track:
+                text = "[歌曲分享]"
             }
             latestMessageLabel.text = text
             if latestMessageLabel.superview == nil {

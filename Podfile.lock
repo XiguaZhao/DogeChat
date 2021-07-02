@@ -18,7 +18,9 @@ PODS:
     - AFNetworking
     - SwiftyJSON
   - FLAnimatedImage (1.0.12)
+  - LookinServer (1.0.2)
   - Masonry (1.1.0)
+  - ReachabilitySwift (5.0.0)
   - RSAiOSWatchOS (0.1.0):
     - SwiftyRSA
   - SDWebImage (5.10.2):
@@ -40,7 +42,9 @@ DEPENDENCIES:
   - AFNetworking
   - DogeChatUniversal (from `/Users/zhaoxiguang/Workspace/DogeChatUniversal`)
   - FLAnimatedImage
+  - LookinServer
   - Masonry
+  - ReachabilitySwift
   - RSAiOSWatchOS (from `/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/RSAiOSWatchOS`)
   - SDWebImage
   - SwiftyJSON (from `https://github.com/SwiftyJSON/SwiftyJSON.git`, commit `2b6054efa051565954e1d2b9da831680026cd768`)
@@ -51,7 +55,9 @@ SPEC REPOS:
   trunk:
     - AFNetworking
     - FLAnimatedImage
+    - LookinServer
     - Masonry
+    - ReachabilitySwift
     - SDWebImage
     - Starscream
 
@@ -77,7 +83,9 @@ SPEC CHECKSUMS:
   AFNetworking: 7864c38297c79aaca1500c33288e429c3451fdce
   DogeChatUniversal: 3901d42c8cc1108179a4986679e23f323f528e8a
   FLAnimatedImage: 4a0b56255d9b05f18b6dd7ee06871be5d3b89e31
+  LookinServer: d6874df8b58096c8d463817b6baaa3abc21d31f7
   Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
+  ReachabilitySwift: 985039c6f7b23a1da463388634119492ff86c825
   RSAiOSWatchOS: b1e0f34d74ea956f6c9bbb1638189d028d4f8372
   SDWebImage: b969dcfc02c40a5da71eac0b03b8f1a0c794a86f
   Starscream: 5178aed56b316f13fa3bc55694e583d35dd414d9
@@ -85,6 +93,6 @@ SPEC CHECKSUMS:
   SwiftyRSA: 3b9c9179744217951facc6a3e9ae8d8c97061ffa
   YPTransition: 8a154d23457d4ac12ad188a7ebd8272174f7ff84
 
-PODFILE CHECKSUM: bfcfcb8abeadee95fc97fe60c887915cb2fab72c
+PODFILE CHECKSUM: bf425312a989e1f764c2b7c61fe0296289fcc556
 
 COCOAPODS: 1.10.1

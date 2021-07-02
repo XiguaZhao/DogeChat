@@ -15,10 +15,10 @@ import SwiftyJSON
     @objc optional func deleteEmoji(cell: EmojiCollectionViewCell)
 }
 
-class EmojiSelectView: UIView {
+class EmojiSelectView: DogeChatBlurView {
 
     weak var delegate: EmojiViewDelegate?
-    let collectionView: UICollectionView!
+    let collectionView: DogeChatBaseCollectionView!
     var emojis: [String] = WebSocketManager.shared.messageManager.emojiPaths {
         didSet {
             self.isHidden = false
@@ -32,7 +32,7 @@ class EmojiSelectView: UIView {
     let cache = NSCache<NSString, NSData>()
     
     override init(frame: CGRect) {
-        collectionView = UICollectionView(frame: frame, collectionViewLayout: UICollectionViewFlowLayout())
+        collectionView = DogeChatBaseCollectionView(frame: frame, collectionViewLayout: UICollectionViewFlowLayout())
         super.init(frame: frame)
         addSubview(collectionView)
         collectionView.register(EmojiCollectionViewCell.self, forCellWithReuseIdentifier: EmojiCollectionViewCell.cellID)
@@ -49,6 +49,7 @@ class EmojiSelectView: UIView {
     }
     
     private func configure() {
+        guard !AppDelegate.shared.immersive else { return }
         if #available(iOS 13.0, *) {
             collectionView.backgroundColor = .systemBackground
         } else {
@@ -145,6 +146,7 @@ extension EmojiSelectView: UICollectionViewDataSource, UICollectionViewDelegateF
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        playHaptic()
         delegate?.didSelectEmoji?(filePath: emojis[indexPath.item])
     }
     
@@ -160,25 +162,6 @@ extension EmojiSelectView: UICollectionViewDataSource, UICollectionViewDelegateF
         return cell
     }
     
-//    @available(iOS 13.0, *)
-//    func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
-//        guard let cell = collectionView.cellForItem(at: indexPath) as? EmojiCollectionViewCell else { return nil }
-//        let identifier = "\(indexPath.row)" as NSString
-//        return .init(identifier: identifier, previewProvider: nil) { (menu) -> UIMenu? in
-//            let deleteAction = UIAction(title: "删除") { [weak self, weak cell] _ in
-//                if let cell = cell {
-//                    self?.deleteEmoji(cell: cell)
-//                }
-//            }
-//            let avatarAction = UIAction(title: "设为自己头像") { [weak self, weak cell] _ in
-//                if let cell = cell {
-//                    self?.useAsSelfAvatar(cell: cell)
-//                }
-//            }
-//            return UIMenu(title: "", image: nil, children: [deleteAction, avatarAction])
-//        }
-//    }
-    
 }
 
 extension EmojiSelectView: UICollectionViewDragDelegate {
@@ -189,6 +172,7 @@ extension EmojiSelectView: UICollectionViewDragDelegate {
         guard let cell = weakCell, let image = cell.emojiView.image else { return [] }
         let dragItem = UIDragItem(itemProvider: NSItemProvider(object: image))
         dragItem.localObject = [cell.url?.absoluteString ?? "", cache]
+        playHaptic()
         return [dragItem]
     }
     

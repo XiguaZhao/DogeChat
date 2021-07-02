@@ -33,8 +33,8 @@ class HapticManager: NSObject {
         // Create and configure a haptic engine.
         do {
             engine = try CHHapticEngine()
-        } catch let error {
-            fatalError("Engine Creation Error: \(error)")
+        } catch _ {
+            return
         }
         
         // Mute audio to reduce latency for collision haptics.

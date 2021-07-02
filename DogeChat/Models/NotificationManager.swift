@@ -16,6 +16,7 @@ class NotificationManager: NSObject {
     static let shared = NotificationManager()
     var nowPushInfo: (sender: String, content: String) = ("", "")
     var actionCompletionHandler: (() -> Void)?
+    var quickReplyMessage: Message?
     var remoteNotificationUsername = "" {
         didSet {
             if remoteNotificationUsername != "" {
@@ -42,6 +43,11 @@ class NotificationManager: NSObject {
     
     @objc func quickReplyDone(_ noti: Notification) {
         WebSocketManager.shared.disconnect()
+        if let vc = AppDelegate.shared.navigationController.visibleViewController as? ChatRoomViewController {
+            if let message = quickReplyMessage {
+                vc.insertNewMessageCell([message])
+            }
+        }
         actionCompletionHandler?()
         actionCompletionHandler = nil
         print("快捷回复完成，调用completionHandler")
@@ -86,6 +92,7 @@ class NotificationManager: NSObject {
             guard let self = self, self.nowPushInfo.sender.count != 0 else { return }
             let option: MessageOption = self.nowPushInfo.sender == "群聊" ? .toAll : .toOne
             let message = Message(message: replyContent, imageURL: nil, videoURL: nil, messageSender: .ourself, receiver: self.nowPushInfo.sender, uuid: UUID().uuidString, sender: WebSocketManager.shared.messageManager.myName, messageType: .text, option: option, id: .max, sendStatus: .fail, emojisInfo: [])
+            self.quickReplyMessage = message
             WebSocketManager.shared.quickReplyUUID = message.uuid
             WebSocketManager.shared.connect()
             WebSocketManager.shared.messageManager.notSendContent.append(message)
