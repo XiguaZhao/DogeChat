@@ -49,7 +49,7 @@ DEPENDENCIES:
   - SDWebImage
   - SwiftyJSON (from `https://github.com/SwiftyJSON/SwiftyJSON.git`, commit `2b6054efa051565954e1d2b9da831680026cd768`)
   - SwiftyRSA (from `/Users/zhaoxiguang/Workspace/SwiftyRSA`)
-  - YPTransition (from `/Users/zhaoxiguang/youpin/YPTransition2`)
+  - YPTransition (from `/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/yptransition2`)
 
 SPEC REPOS:
   trunk:
@@ -72,7 +72,7 @@ EXTERNAL SOURCES:
   SwiftyRSA:
     :path: "/Users/zhaoxiguang/Workspace/SwiftyRSA"
   YPTransition:
-    :path: "/Users/zhaoxiguang/youpin/YPTransition2"
+    :path: "/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/yptransition2"
 
 CHECKOUT OPTIONS:
   SwiftyJSON:
@@ -93,6 +93,6 @@ SPEC CHECKSUMS:
   SwiftyRSA: 3b9c9179744217951facc6a3e9ae8d8c97061ffa
   YPTransition: 8a154d23457d4ac12ad188a7ebd8272174f7ff84
 
-PODFILE CHECKSUM: bf425312a989e1f764c2b7c61fe0296289fcc556
+PODFILE CHECKSUM: 5fde54756514e5315fd817dc3cdc8c4b2a428dfe
 
 COCOAPODS: 1.10.1
