@@ -11,46 +11,36 @@ import YPTransition
 
 class ImageBrowserViewController: UIViewController {
     
-    var imagePath: String!
-    let imageView = FLAnimatedImageView()
-    var scrollView: UIScrollView!
-    var imageData: Data!
     var cache: NSCache<NSString, NSData>!
-    var canRotate = true
+    var canRotate = false
+    var collectionView: UICollectionView!
+    var imagePaths = [String]()
+    var targetIndex = 0
+    
+    var nowIndexPath: IndexPath?
+    var _nowIndexPath: IndexPath?
+    var beginUpdateNewIndexPath = true
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        let flowLayout = UICollectionViewFlowLayout()
+        flowLayout.scrollDirection = .horizontal
+        collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: flowLayout)
+        collectionView.dataSource = self
+        collectionView.delegate = self
+        collectionView.register(ImageBrowserCell.self, forCellWithReuseIdentifier: ImageBrowserCell.cellID)
+        view.addSubview(collectionView)
+        
+        collectionView.scrollToItem(at: IndexPath(item: targetIndex, section: 0), at: .centeredHorizontally, animated: false)
+        collectionView.isPagingEnabled = true
+        
         if #available(iOS 13.0, *) {
             view.backgroundColor = .systemBackground
         } else {
             view.backgroundColor = .white
         }
-        scrollView = UIScrollView()
-        scrollView.bounds = scrollView.frame
-        scrollView.maximumZoomScale = 4
-        scrollView.contentInsetAdjustmentBehavior = .never
-        scrollView.delegate = self
-        view.addSubview(scrollView)
-        imageView.contentMode = .scaleAspectFit
-        if let data = imageData {
-            if imagePath.hasSuffix(".gif") {
-                imageView.animatedImage = FLAnimatedImage(gifData: data)
-            } else {
-                imageView.image = UIImage(data: data)
-            }
-        } else {
-            SDWebImageManager.shared.loadImage(with: URL(string: imagePath), options: .avoidDecodeImage, progress: nil) { [self] (image, data, error, cacheType, finished, url) in
-                if let data = data {
-                    cache?.setObject(data as NSData, forKey: imagePath as NSString)
-                    if imagePath.hasSuffix(".gif") {
-                        imageView.animatedImage = FLAnimatedImage(gifData: data)
-                    } else  {
-                        imageView.image = UIImage(data: data)
-                    }
-                }
-            }
-        }
-        scrollView.addSubview(imageView)
+        
         let swipeDownGesture = UISwipeGestureRecognizer(target: self, action: #selector(swipeDown))
         swipeDownGesture.direction = .down
         self.view.addGestureRecognizer(swipeDownGesture)
@@ -58,10 +48,29 @@ class ImageBrowserViewController: UIViewController {
         self.view.addGestureRecognizer(tap)
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        canRotate = true
+    }
+        
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        scrollView.frame = view.frame
-        imageView.frame = scrollView.frame
+        collectionView.frame = view.frame
+        if let indexPath = _nowIndexPath {
+            collectionView.isPagingEnabled = false
+            collectionView.scrollToItem(at: indexPath, at: .left, animated: false)
+            collectionView.isPagingEnabled = true
+        }
+    }
+    
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        beginUpdateNewIndexPath = false
+        _nowIndexPath = nowIndexPath
     }
     
     override var prefersStatusBarHidden: Bool {
@@ -73,23 +82,45 @@ class ImageBrowserViewController: UIViewController {
         self.dismiss(animated: true, completion: nil)
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-    }
-    
-    override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
-    }
-
 }
 
-extension ImageBrowserViewController: UIScrollViewDelegate {
+extension ImageBrowserViewController: UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
     
-    func viewForZooming(in scrollView: UIScrollView) -> UIView? {
-        return imageView
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        return view.bounds.size
+    }
+    
+    func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+        beginUpdateNewIndexPath = true
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return imagePaths.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        if let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ImageBrowserCell.cellID, for: indexPath) as? ImageBrowserCell {
+            cell.apply(imagePath: imagePaths[indexPath.item])
+            return cell
+        }
+        return UICollectionViewCell()
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        if beginUpdateNewIndexPath {
+            nowIndexPath = indexPath
+        }
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+        return .zero
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
+        return 0
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+        return 0
     }
 }

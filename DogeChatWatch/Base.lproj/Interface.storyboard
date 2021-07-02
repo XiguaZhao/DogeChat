@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder.WatchKit.Storyboard" version="3.0" toolsVersion="18122" targetRuntime="watchKit" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="AgC-eL-Hgc">
+    <device id="watch38"/>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="18093"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBWatchKitPlugin" version="18022"/>
+    </dependencies>
+    <scenes>
+        <!--chatroom-->
+        <scene sceneID="Oel-S1-J5h">
+            <objects>
+                <controller identifier="chatroom" id="xmZ-JB-zGm" customClass="ChatRoomInterfaceController" customModule="DogeChatWatch_Extension">
+                    <items>
+                        <table alignment="left" id="XGJ-b1-WxA">
+                            <items>
+                                <tableRow identifier="message" id="DH4-qc-ToP" customClass="MessageRow" customModule="DogeChatWatch_Extension">
+                                    <group key="rootItem" width="1" height="0.0" alignment="left" layout="vertical" id="GI3-YI-UHG">
+                                        <items>
+                                            <label alignment="left" id="e8q-FK-5Oa">
+                                                <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <fontDescription key="font" style="UICTFontTextStyleFootnote"/>
+                                            </label>
+                                            <label alignment="left" numberOfLines="0" id="f2Y-wG-8aA"/>
+                                            <imageView alignment="left" contentMode="scaleAspectFit" id="yGp-3t-UDk"/>
+                                        </items>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                    </group>
+                                    <connections>
+                                        <outlet property="image" destination="yGp-3t-UDk" id="Pmn-Vn-Sdv"/>
+                                        <outlet property="messageLabel" destination="f2Y-wG-8aA" id="I66-Vt-9yo"/>
+                                        <outlet property="nameLabel" destination="e8q-FK-5Oa" id="dOw-6p-iLF"/>
+                                    </connections>
+                                </tableRow>
+                            </items>
+                        </table>
+                        <group width="1" alignment="left" layout="vertical" id="H3y-nq-q2o">
+                            <items>
+                                <textField width="1" alignment="left" placeholder="请输入发送内容" id="J8l-W1-Lps">
+                                    <connections>
+                                        <action selector="inputAction:" destination="xmZ-JB-zGm" id="jcb-oI-PeX"/>
+                                    </connections>
+                                </textField>
+                                <button width="1" alignment="left" title="发送" id="1D8-RL-WyV">
+                                    <connections>
+                                        <action selector="sendAction" destination="xmZ-JB-zGm" id="7Wh-yf-ux9"/>
+                                    </connections>
+                                </button>
+                            </items>
+                        </group>
+                    </items>
+                    <connections>
+                        <outlet property="inputTF" destination="J8l-W1-Lps" id="elh-q2-Kz1"/>
+                        <outlet property="table" destination="XGJ-b1-WxA" id="Tdn-Ny-XFS"/>
+                    </connections>
+                </controller>
+            </objects>
+            <point key="canvasLocation" x="382" y="33"/>
+        </scene>
+        <!--login-->
+        <scene sceneID="teY-da-jyP">
+            <objects>
+                <controller identifier="login" id="wWe-2c-tI8" customClass="LoginInterfaceController" customModule="DogeChatWatch_Extension">
+                    <items>
+                        <textField width="1" alignment="left" placeholder="用户名" textContentType="username" id="pK4-U5-SXp">
+                            <connections>
+                                <action selector="usernameAction:" destination="wWe-2c-tI8" id="GZo-EH-HjP"/>
+                            </connections>
+                        </textField>
+                        <textField width="1" alignment="left" placeholder="密码" textContentType="password" id="Ci0-hB-pzz">
+                            <connections>
+                                <action selector="passwordAction:" destination="wWe-2c-tI8" id="9kJ-Yq-L7o"/>
+                            </connections>
+                        </textField>
+                        <button width="1" alignment="left" title="登录" id="1bv-Tx-kiS">
+                            <connections>
+                                <action selector="loginTap" destination="wWe-2c-tI8" id="MpH-sS-BEV"/>
+                            </connections>
+                        </button>
+                    </items>
+                    <connections>
+                        <outlet property="passwordTF" destination="Ci0-hB-pzz" id="M9A-Ew-uqZ"/>
+                        <outlet property="usernameTF" destination="pK4-U5-SXp" id="INU-99-Bhc"/>
+                    </connections>
+                </controller>
+            </objects>
+            <point key="canvasLocation" x="-36" y="33"/>
+        </scene>
+        <!--Interface Controller-->
+        <scene sceneID="MkT-Gx-gEf">
+            <objects>
+                <controller id="FfF-TQ-7z9"/>
+            </objects>
+            <point key="canvasLocation" x="176" y="-119"/>
+        </scene>
+        <!--Contact Interface Controller-->
+        <scene sceneID="aou-V4-d1y">
+            <objects>
+                <controller id="AgC-eL-Hgc" customClass="ContactInterfaceController" customModule="DogeChatWatch" customModuleProvider="target">
+                    <items>
+                        <table alignment="left" id="VYF-2o-3wG">
+                            <items>
+                                <tableRow identifier="contact" id="myT-xP-nPz" customClass="ContactsRowController" customModule="DogeChatWatch_Extension">
+                                    <group key="rootItem" width="1" alignment="left" layout="vertical" id="ZPf-cC-c6y">
+                                        <items>
+                                            <label alignment="left" text="Label" id="IGD-HR-JnH"/>
+                                            <label alignment="left" text="Label" id="agY-sn-zNK">
+                                                <fontDescription key="font" style="UICTFontTextStyleFootnote"/>
+                                            </label>
+                                        </items>
+                                    </group>
+                                    <connections>
+                                        <outlet property="latestMessageLabel" destination="agY-sn-zNK" id="yho-Ef-Lfb"/>
+                                        <outlet property="usernameLabel" destination="IGD-HR-JnH" id="bGa-dn-TXR"/>
+                                    </connections>
+                                </tableRow>
+                            </items>
+                        </table>
+                    </items>
+                    <connections>
+                        <outlet property="table" destination="VYF-2o-3wG" id="RPt-cQ-YQm"/>
+                    </connections>
+                </controller>
+            </objects>
+            <point key="canvasLocation" x="74" y="345"/>
+        </scene>
+        <!--Static Notification Interface Controller-->
+        <scene sceneID="AEw-b0-oYE">
+            <objects>
+                <notificationController id="YCC-NB-fut">
+                    <items>
+                        <label alignment="left" text="Alert Label" numberOfLines="0" id="IdU-wH-bcW"/>
+                    </items>
+                    <notificationCategory key="notificationCategory" identifier="myCategory" id="JfB-70-Muf"/>
+                    <connections>
+                        <outlet property="notificationAlertLabel" destination="IdU-wH-bcW" id="JKC-fr-R95"/>
+                        <segue destination="4sK-HA-Art" kind="relationship" relationship="dynamicNotificationInterface" id="kXh-Jw-8B1"/>
+                        <segue destination="eXb-UN-Cd0" kind="relationship" relationship="dynamicInteractiveNotificationInterface" id="mpB-YA-K8N"/>
+                    </connections>
+                </notificationController>
+            </objects>
+            <point key="canvasLocation" x="220" y="643"/>
+        </scene>
+        <!--Notification Controller-->
+        <scene sceneID="ZPc-GJ-vnh">
+            <objects>
+                <controller id="4sK-HA-Art" customClass="NotificationController" customModule="DogeChatWatch" customModuleProvider="target"/>
+            </objects>
+            <point key="canvasLocation" x="468" y="643"/>
+        </scene>
+        <!--Notification Controller-->
+        <scene sceneID="Niz-AI-uX2">
+            <objects>
+                <controller id="eXb-UN-Cd0" customClass="NotificationController" customModule="DogeChatWatch" customModuleProvider="target"/>
+            </objects>
+            <point key="canvasLocation" x="468" y="345"/>
+        </scene>
+    </scenes>
+</document>

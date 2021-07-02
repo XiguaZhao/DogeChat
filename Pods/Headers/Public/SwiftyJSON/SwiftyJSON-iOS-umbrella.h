@@ -1,0 +1,1 @@
+../../../Target Support Files/SwiftyJSON-iOS/SwiftyJSON-iOS-umbrella.h

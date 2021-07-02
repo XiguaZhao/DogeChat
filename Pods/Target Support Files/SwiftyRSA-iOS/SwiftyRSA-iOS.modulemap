@@ -1,0 +1,7 @@
+module SwiftyRSA {
+  umbrella header "SwiftyRSA-iOS-umbrella.h"
+  exclude header "SwiftyRSA-watchOS-umbrella.h"
+
+  export *
+  module * { export * }
+}

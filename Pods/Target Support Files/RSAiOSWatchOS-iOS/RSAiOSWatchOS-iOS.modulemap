@@ -1,0 +1,7 @@
+module RSAiOSWatchOS {
+  umbrella header "RSAiOSWatchOS-iOS-umbrella.h"
+  exclude header "RSAiOSWatchOS-watchOS-umbrella.h"
+
+  export *
+  module * { export * }
+}
