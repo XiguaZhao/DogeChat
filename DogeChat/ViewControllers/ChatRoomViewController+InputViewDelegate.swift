@@ -27,17 +27,18 @@ extension ChatRoomViewController: MessageInputDelegate, UIPopoverPresentationCon
             imagePicker.cameraCaptureMode = .photo
             self?.present(imagePicker, animated: true, completion: nil)
         }))
-        actionSheet.addAction(UIAlertAction(title: "从相册选择", style: .default, handler: { [weak self] (action) in
-            self?.present(imagePicker, animated: true, completion: nil)
-            self?.messageInputBar.textView.resignFirstResponder()
-        }))
         if #available(iOS 14.0, *) {
-            actionSheet.addAction(UIAlertAction(title: "相册（多选，不支持gif）", style: .default, handler: { [weak self] _ in
+            actionSheet.addAction(UIAlertAction(title: "相册", style: .default, handler: { [weak self] _ in
                 var config = PHPickerConfiguration()
                 config.selectionLimit = 0
                 let picker = PHPickerViewController(configuration: config)
                 picker.delegate = self
                 self?.present(picker, animated: true, completion: nil)
+            }))
+        } else {
+            actionSheet.addAction(UIAlertAction(title: "从相册选择", style: .default, handler: { [weak self] (action) in
+                self?.present(imagePicker, animated: true, completion: nil)
+                self?.messageInputBar.textView.resignFirstResponder()
             }))
         }
         let startCallAction = { [weak self] in
@@ -61,6 +62,7 @@ extension ChatRoomViewController: MessageInputDelegate, UIPopoverPresentationCon
                 let newMessage = Message(message: "", messageSender: .ourself, receiver: self.friendName, uuid: UUID().uuidString, sender: self.username, messageType: .draw, option: self.messageOption)
                 drawVC.message = newMessage
                 drawVC.modalPresentationStyle = .fullScreen
+                drawVC.chatRoomVC = self
                 self.drawingIndexPath = IndexPath(item: self.messages.count, section: 0)
                 self.navigationController?.present(drawVC, animated: true, completion: nil)
             }))

@@ -15,7 +15,7 @@ extension ChatRoomViewController: MessageTableViewCellDelegate {
         messageInputBar.textViewResign()
         let browser = ImageBrowserViewController()
         if !isAvatar {
-            let paths = (self.messages.filter { $0.messageType == .image }).compactMap { $0.imageURL }
+            let paths = (self.messages.filter { $0.messageType == .image }).compactMap { $0.imageLocalPath?.absoluteString ?? $0.imageURL }
             browser.imagePaths = paths
             if let index = paths.firstIndex(of: path) {
                 browser.targetIndex = index
@@ -24,19 +24,21 @@ extension ChatRoomViewController: MessageTableViewCellDelegate {
             browser.imagePaths = [path]
         }
         browser.modalPresentationStyle = .fullScreen
-        browser.cache = cache
         AppDelegate.shared.navigationController.present(browser, animated: true, completion: nil)
     }
 
     //MARK: PKView手写
     func pkViewTapped(_ cell: MessageCollectionViewBaseCell, pkView: UIView!) {
-        messageInputBar.textViewResign()
+        if messageInputBar.isActive {
+            messageInputBar.textViewResign()
+            return
+        }
         if let lastActive = activePKView {
             lastActive.isUserInteractionEnabled = false
             lastActive.resignFirstResponder()
         }
         activePKView = pkView
-        if let indexPath = collectionView.indexPath(for: cell) {
+        if let indexPath = tableView.indexPath(for: cell) {
             drawingIndexPath = indexPath
         }
         if #available(iOS 14.0, *) {
@@ -49,14 +51,15 @@ extension ChatRoomViewController: MessageTableViewCellDelegate {
             print(message.pkViewScale)
             drawVC.pkViewDelegate.dataChangedDelegate = self
             drawVC.modalPresentationStyle = .fullScreen
+            drawVC.chatRoomVC = self
             self.navigationController?.present(drawVC, animated: true, completion: nil)
         }
     }
 
     func emojiOutBounds(from cell: MessageCollectionViewBaseCell, gesture: UIGestureRecognizer) {
-        let point = gesture.location(in: collectionView)
+        let point = gesture.location(in: tableView)
         guard let oldIndexPath = cell.indexPath else { return }
-        guard let newIndexPath = collectionView.indexPathForItem(at: point) else {
+        guard let newIndexPath = tableView.indexPathForRow(at: point) else {
             needReload(indexPath: [oldIndexPath])
             return
         }
@@ -64,7 +67,7 @@ extension ChatRoomViewController: MessageTableViewCellDelegate {
            let emojiInfo = _emojiInfo,
            let messageIndex = _messageIndex {
             messages[oldIndexPath.item].emojisInfo.remove(at: messageIndex)
-            let newPoint = gesture.location(in: collectionView.cellForItem(at: newIndexPath)?.contentView)
+            let newPoint = gesture.location(in: tableView.cellForRow(at: newIndexPath)?.contentView)
             emojiInfo.x = newPoint.x / UIScreen.main.bounds.width
             emojiInfo.y = newPoint.y / MessageCollectionViewBaseCell.height(for: messages[newIndexPath.item])
             emojiInfo.lastModifiedBy = manager.messageManager.myName
@@ -75,7 +78,7 @@ extension ChatRoomViewController: MessageTableViewCellDelegate {
     }
     
     func emojiInfoDidChange(from oldInfo: EmojiInfo?, to newInfo: EmojiInfo?, cell: MessageCollectionViewBaseCell) {
-        if let indexPahth = collectionView.indexPath(for: cell) {
+        if let indexPahth = tableView.indexPath(for: cell) {
             needReload(indexPath: [indexPahth])
             newInfo?.lastModifiedBy = manager.messageManager.myName
             manager.sendEmojiInfos([messages[indexPahth.item]], receiver: friendName)

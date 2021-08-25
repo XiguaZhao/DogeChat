@@ -40,15 +40,32 @@ class ImageBrowserCell: UICollectionViewCell {
 
     func apply(imagePath: String) {
         self.imagePath = imagePath
-        SDWebImageManager.shared.loadImage(with: URL(string: imagePath), options: .avoidDecodeImage, progress: nil) { [self] (image, data, error, cacheType, finished, url) in
+        let block: (String, Data) -> Void = { [self] imagePath, data in
+            if imagePath.hasSuffix(".gif") {
+                imageView.animatedImage = FLAnimatedImage(gifData: data)
+            } else  {
+                imageView.image = UIImage(data: data)
+            }
+        }
+        if let data = cache?.object(forKey: imagePath as NSString) {
+            block(imagePath, data as Data)
+            return
+        }
+        if FileManager.default.fileExists(atPath: (imagePath as NSString).replacingOccurrences(of: "file://", with: "")) {
+            DispatchQueue.global().async {
+                if let data = try? Data(contentsOf: URL(string: imagePath)!) {
+                    DispatchQueue.main.async {
+                        block(imagePath, data)
+                    }
+                }
+            }
+            return
+        }
+        SDWebImageManager.shared.loadImage(with: URL(string: imagePath), options: [.avoidDecodeImage, .allowInvalidSSLCertificates], progress: nil) { [self] (image, data, error, cacheType, finished, url) in
             guard self.imagePath == imagePath else { return }
             if let data = data {
                 cache?.setObject(data as NSData, forKey: imagePath as NSString)
-                if imagePath.hasSuffix(".gif") {
-                    imageView.animatedImage = FLAnimatedImage(gifData: data)
-                } else  {
-                    imageView.image = UIImage(data: data)
-                }
+                block(imagePath, data)
             }
         }
         

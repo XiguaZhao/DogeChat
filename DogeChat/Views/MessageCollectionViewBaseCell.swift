@@ -1,7 +1,7 @@
 
 import UIKit
 import AVFoundation
-import YPTransition
+import DogeChatNetwork
 import DogeChatUniversal
 
 let nameLabelStartX: CGFloat = 40 + 5 + 5
@@ -19,14 +19,16 @@ protocol MessageTableViewCellDelegate: AnyObject {
     func sharedTracksTap(_ cell: MessageCollectionViewBaseCell, tracks: [Track])
 }
 
-class MessageCollectionViewBaseCell: DogeChatBaseCollectionViewCell {
+class MessageCollectionViewBaseCell: DogeChatTableViewCell {
     weak var delegate: MessageTableViewCellDelegate?
     var message: Message!
     var indexPath: IndexPath!
     let nameLabel = UILabel()
     let indicator = UIActivityIndicatorView()
     var emojis = [EmojiInfo: FLAnimatedImageView]()
-    var contentSize: CGSize = CGSize.zero
+    var contentSize: CGSize {
+        return self.contentView.bounds.size
+    }
     var activeEmojiView: UIView?
     static let emojiWidth: CGFloat = 80
     static let pkViewHeight: CGFloat = 100
@@ -40,8 +42,8 @@ class MessageCollectionViewBaseCell: DogeChatBaseCollectionViewCell {
     
     static let textCellIdentifier = "MessageCell"
     
-    override init(frame: CGRect) {
-        super.init(frame: frame)
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
         self.backgroundColor = .clear
         nameLabel.textColor = .lightGray
         nameLabel.font = UIFont(name: "Helvetica", size: 10) 
@@ -51,7 +53,7 @@ class MessageCollectionViewBaseCell: DogeChatBaseCollectionViewCell {
         avatarImageView.layer.masksToBounds = true
         avatarImageView.layer.cornerRadius = avatarWidth / 2
         tapAvatar.addTarget(self, action: #selector(tapAvatarAction(_:)))
-//        tapAvatar.delegate = self
+        //        tapAvatar.delegate = self
         avatarImageView.addGestureRecognizer(tapAvatar)
         avatarImageView.isUserInteractionEnabled = true
         addDoubleTapForAvatar()
@@ -59,13 +61,14 @@ class MessageCollectionViewBaseCell: DogeChatBaseCollectionViewCell {
         timeLabel.font = .systemFont(ofSize: 12)
         timeLabel.numberOfLines = 2
         timeLabel.adjustsFontSizeToFitWidth = true
+        timeLabel.isHidden = true
         
         contentView.addSubview(avatarImageView)
         contentView.addSubview(nameLabel)
         contentView.addSubview(indicator)
         contentView.addSubview(timeLabel)
     }
-        
+    
     override func prepareForReuse() {
         super.prepareForReuse()
         for emojiView in emojis.values {
@@ -97,10 +100,21 @@ class MessageCollectionViewBaseCell: DogeChatBaseCollectionViewCell {
         if message.messageType == .join {
             nameLabel.isHidden = true
         }
+        layoutEmojis()
         timeLabel.sizeToFit()
         var timeLabelCenter = contentView.center
         timeLabelCenter.x += (contentView.bounds.width / 2 + 5 + timeLabel.bounds.width / 2)
         timeLabel.center = timeLabelCenter
+    }
+    
+    func layoutEmojis() {
+        for (emojiInfo, imageView) in emojis {
+            let width = emojiInfo.scale * MessageCollectionViewBaseCell.emojiWidth
+            let contentSize = self.contentSize
+            let size = CGSize(width: width, height: width)
+            let origin = CGPoint(x: emojiInfo.x * contentSize.width - size.width / 2, y: max(0, emojiInfo.y) * contentSize.height - size.height / 2)
+            imageView.frame = CGRect(origin: origin, size: size)
+        }
     }
     
     func apply(message: Message) {
@@ -108,12 +122,12 @@ class MessageCollectionViewBaseCell: DogeChatBaseCollectionViewCell {
         nameLabel.text = message.senderUsername
         doubleTapGes.isEnabled = message.messageSender == .someoneElse
         timeLabel.text = message.date
+        loadAvatar()
+        addEmojis()
     }
     
     public func loadAvatar() {
-        DispatchQueue.main.async {
-            self._loadAvatar()
-        }
+        self._loadAvatar()
     }
     
     @objc func tapAvatarAction(_ ges: UITapGestureRecognizer) {
@@ -131,7 +145,7 @@ class MessageCollectionViewBaseCell: DogeChatBaseCollectionViewCell {
                 url = message.avatarUrl
             }
         }
-        if let url = url {
+        if let url = message.imageLocalPath?.absoluteString ?? url {
             delegate?.imageViewTapped(self, imageView: avatarImageView, path: url, isAvatar: true)
         }
     }
@@ -168,7 +182,7 @@ class MessageCollectionViewBaseCell: DogeChatBaseCollectionViewCell {
                 }
             } else {
                 let capturedMessage = self.message
-                SDWebImageManager.shared.loadImage(with: URL(string: url), options: .avoidDecodeImage, progress: nil) { image, data, _, _, _, _ in
+                SDWebImageManager.shared.loadImage(with: URL(string: url), options: [.avoidDecodeImage, .allowInvalidSSLCertificates], progress: nil) { image, data, _, _, _, _ in
                     guard capturedMessage?.uuid == self.message.uuid else { return }
                     if !isGif, let image = image { // is photo
                         let compressed = WebSocketManager.shared.messageManager.compressEmojis(image)
@@ -180,7 +194,7 @@ class MessageCollectionViewBaseCell: DogeChatBaseCollectionViewCell {
                             ContactTableViewCell.avatarCache[url] = data
                         }
                     }
-
+                    
                 }
             }
         }
@@ -202,18 +216,22 @@ class MessageCollectionViewBaseCell: DogeChatBaseCollectionViewCell {
     
     // 计算高度
     class func height(for message: Message) -> CGFloat {
-        let maxSize = CGSize(width: 2*(AppDelegate.shared.navigationController.view.bounds.size.width/3), height: CGFloat.greatestFiniteMagnitude)
+        let maxSize = CGSize(width: 2*(AppDelegate.shared.widthFor(side: .right)/3), height: CGFloat.greatestFiniteMagnitude)
         let nameHeight = message.messageSender == .ourself ? 0 : (height(forText: message.senderUsername, fontSize: 10, maxSize: maxSize) + 4 )
         let messageHeight = height(forText: message.message, fontSize: message.fontSize, maxSize: maxSize)
         var height: CGFloat
-        let screenWidth = AppDelegate.shared.navigationController.view.bounds.width
+        let screenWidth = AppDelegate.shared.widthFor(side: .right)
         switch message.messageType {
         case .join, .text:
             height = nameHeight + messageHeight + 32 + 16
-        case .image:
-            height = nameHeight + 150
-        case .video:
-            height = nameHeight + 180
+        case .image, .livePhoto, .video:
+            if let size = sizeForImage(message) {
+                let width = min(screenWidth * 0.5, size.width)
+                height = size.height * width / size.width + nameHeight + 30
+                message.imageSize = size
+            } else {
+                height = nameHeight + 150
+            }
         case .draw:
             if  #available(iOS 14.0, *) {
                 if let wantHeight = message.height {
@@ -221,21 +239,26 @@ class MessageCollectionViewBaseCell: DogeChatBaseCollectionViewCell {
                     break
                 }
                 height = nameHeight + pkViewHeight
-                if let pkDrawing = message.pkDrawing as? PKDrawing {
-                    let bounds = pkDrawing.bounds
-                    let maxWidth = AppDelegate.shared.navigationController.view.bounds.width * 0.8
+                let block: (CGRect) -> CGFloat = { bounds in
+                    let maxWidth = screenWidth * 0.8
                     if bounds.maxX > maxWidth {
                         let ratio = maxWidth / bounds.maxX
-                        height = bounds.height * ratio + nameHeight + bounds.origin.y * ratio + 30
+                        return bounds.height * ratio + nameHeight + bounds.origin.y * ratio + 30
                     } else {
-                        height = nameHeight + bounds.maxY + 20
+                        return nameHeight + bounds.maxY + 20
                     }
+                }
+                if let pkDrawing = message.pkDrawing as? PKDrawing {
+                    let bounds = pkDrawing.bounds
+                    height = block(bounds)
+                } else if let bounds = boundsForDraw(message) {
+                    height = block(bounds)
                 }
             } else {
                 height = 0
             }
         case .track:
-            height = 120
+            height = 0
         }
         var wholeFrame = CGRect(x: 0, y: 0, width: screenWidth, height: max(0, height))
         for emojiInfo in message.emojisInfo {
@@ -247,7 +270,37 @@ class MessageCollectionViewBaseCell: DogeChatBaseCollectionViewCell {
         return wholeFrame.height
     }
     
-    private class func height(forText text: String, fontSize: CGFloat, maxSize: CGSize) -> CGFloat {
+    class func boundsForDraw(_ message: Message) -> CGRect? {
+        if let str = message.pkDataURL {
+            var components = str.components(separatedBy: "+")
+            if components.count >= 4 {
+                let height = Int(components.removeLast())!
+                let width = Int(components.removeLast())!
+                let y = Int(components.removeLast())!
+                let x = Int(components.removeLast())!
+                return CGRect(x: x, y: y, width: width, height: height)
+            }
+        }
+        return nil
+    }
+    
+    class func sizeForImage(_ message: Message) -> CGSize? {
+        if message.imageSize != .zero {
+            return message.imageSize
+        }
+        guard var str = message.imageURL as NSString? else { return nil }
+        str = str.replacingOccurrences(of: ".jpeg", with: "") as NSString
+        str = str.replacingOccurrences(of: ".gif", with: "") as NSString
+        var components = str.components(separatedBy: "+")
+        if components.count >= 2 {
+            let height = Int(components.removeLast())!
+            let width = Int(components.removeLast())!
+            return CGSize(width: width, height: height)
+        }
+        return nil
+    }
+    
+    class func height(forText text: String, fontSize: CGFloat, maxSize: CGSize) -> CGFloat {
         let font = UIFont(name: "Helvetica", size: fontSize)!
         let attrString = NSAttributedString(string: text, attributes:[NSAttributedString.Key.font: font,
                                                                       NSAttributedString.Key.foregroundColor: UIColor.white])
@@ -298,14 +351,10 @@ extension MessageCollectionViewBaseCell {
         }
     }
     
-    func layoutEmojis() {
+    func addEmojis() {
         for emojiInfo in message.emojisInfo {
             let capturedMessage = message
-            let width = emojiInfo.scale * MessageCollectionViewBaseCell.emojiWidth
-            let contentSize = self.contentSize
-            let size = CGSize(width: width, height: width)
-            let origin = CGPoint(x: emojiInfo.x * contentSize.width - size.width / 2, y: max(0, emojiInfo.y) * contentSize.height - size.height / 2)
-            let imageView = FLAnimatedImageView(frame: CGRect(origin: origin, size: size))
+            let imageView = FLAnimatedImageView()
             imageView.contentMode = .scaleAspectFit
             contentView.addSubview(imageView)
             contentView.bringSubviewToFront(imageView)
@@ -432,7 +481,7 @@ extension MessageCollectionViewBaseCell {
             if let (_emojiInfo, _, _) = getIndex(for: ges),
                let emojiInfo = _emojiInfo {
                 guard let copy = emojiInfo.copy() as? EmojiInfo else { return }
-                emojiInfo.x = point.x / UIScreen.main.bounds.width
+                emojiInfo.x = point.x / AppDelegate.shared.widthFor(side: .right)
                 emojiInfo.y = point.y / contentSize.height
                 delegate?.emojiInfoDidChange(from: copy, to: emojiInfo, cell: self)
             }

@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import YPTransition
+import DogeChatNetwork
 import DogeChatUniversal
 
 @available(iOS 14.0, *)
@@ -21,6 +21,7 @@ class DrawViewController: UIViewController, PKViewAutoOffsetDelegate {
     var didSendNeedRealTime = false
     var cachedOffset: CGPoint = .zero
     let forwardButton = UIButton()
+    weak var chatRoomVC: ChatRoomViewController?
 
     override func viewDidLoad() {
         super.viewDidLoad()

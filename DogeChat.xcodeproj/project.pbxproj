@@ -38,6 +38,7 @@
 		071CF7B826609F8900897B01 /* MessageCollectionViewDrawCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 071CF7B726609F8900897B01 /* MessageCollectionViewDrawCell.swift */; };
 		071CF7D2266383BD00897B01 /* ContactTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 071CF7D0266383BC00897B01 /* ContactTableViewCell.swift */; };
 		0726D96C267E2E5B005B89DC /* ImageBrowserCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0726D96B267E2E5B005B89DC /* ImageBrowserCell.swift */; };
+		0735ABCA26CCF90D007B4ADE /* SDWebImageManager+TempModifyURLPre.m in Sources */ = {isa = PBXBuildFile; fileRef = 0735ABC926CCF90D007B4ADE /* SDWebImageManager+TempModifyURLPre.m */; };
 		0739FA3E25B9557A00B6A7AB /* ImageBrowserViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0739FA3D25B9557900B6A7AB /* ImageBrowserViewController.swift */; };
 		0739FA4425BA829E00B6A7AB /* PushKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0739FA4325BA829D00B6A7AB /* PushKit.framework */; };
 		0739FA4825BA855A00B6A7AB /* CallKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0739FA4725BA855A00B6A7AB /* CallKit.framework */; };
@@ -224,6 +225,8 @@
 		071CF7B726609F8900897B01 /* MessageCollectionViewDrawCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageCollectionViewDrawCell.swift; sourceTree = "<group>"; };
 		071CF7D0266383BC00897B01 /* ContactTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactTableViewCell.swift; sourceTree = "<group>"; };
 		0726D96B267E2E5B005B89DC /* ImageBrowserCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageBrowserCell.swift; sourceTree = "<group>"; };
+		0735ABC826CCF90D007B4ADE /* SDWebImageManager+TempModifyURLPre.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SDWebImageManager+TempModifyURLPre.h"; sourceTree = "<group>"; };
+		0735ABC926CCF90D007B4ADE /* SDWebImageManager+TempModifyURLPre.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "SDWebImageManager+TempModifyURLPre.m"; sourceTree = "<group>"; };
 		0739FA3D25B9557900B6A7AB /* ImageBrowserViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageBrowserViewController.swift; sourceTree = "<group>"; };
 		0739FA4325BA829D00B6A7AB /* PushKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PushKit.framework; path = System/Library/Frameworks/PushKit.framework; sourceTree = SDKROOT; };
 		0739FA4725BA855A00B6A7AB /* CallKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CallKit.framework; path = System/Library/Frameworks/CallKit.framework; sourceTree = SDKROOT; };
@@ -534,6 +537,15 @@
 			path = Controller;
 			sourceTree = "<group>";
 		};
+		0764B95126CE060E0058FDFC /* Category */ = {
+			isa = PBXGroup;
+			children = (
+				0735ABC826CCF90D007B4ADE /* SDWebImageManager+TempModifyURLPre.h */,
+				0735ABC926CCF90D007B4ADE /* SDWebImageManager+TempModifyURLPre.m */,
+			);
+			path = Category;
+			sourceTree = "<group>";
+		};
 		078032792486B28C00E370E0 /* DogeChatTests */ = {
 			isa = PBXGroup;
 			children = (
@@ -626,6 +638,7 @@
 				079317272643CDA2008EBB27 /* WebSocketManagerAdapter.swift */,
 				07D298DD266CBD3800C09F6C /* HapticManager.swift */,
 				0761FAF3266E342E00AE0171 /* HelperMethods.swift */,
+				0764B95126CE060E0058FDFC /* Category */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -1193,6 +1206,7 @@
 				0739FABC25BEEF6B00B6A7AB /* FloatWindow.swift in Sources */,
 				07ED6B6A268C2BE400F86DC0 /* MiniPlayerView.swift in Sources */,
 				0718AC2C268816B700E27B28 /* DogeChatBlurView.swift in Sources */,
+				0735ABCA26CCF90D007B4ADE /* SDWebImageManager+TempModifyURLPre.m in Sources */,
 				0718AC1C2687672200E27B28 /* DogeChatTableViewCell.swift in Sources */,
 				071379A426898E2E007EF6D6 /* MessageCollectionViewTrackCell.swift in Sources */,
 				07B8321626820A54009434AC /* SearchMusicViewController.swift in Sources */,

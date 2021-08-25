@@ -8,7 +8,7 @@
 
 import AppKit
 import DogeChatUniversal
-import YPTransition
+import DogeChatNetwork
 
 class ChatRoomViewController: NSViewController, NSTableViewDataSource, NSTableViewDelegate {
     

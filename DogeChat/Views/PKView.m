@@ -59,7 +59,7 @@
 }
 
 - (void)toolPickerSelectedToolDidChange:(PKToolPicker *)toolPicker {
-    if ([toolPicker.selectedTool isKindOfClass:[PKEraserTool class]]) {
+    if ([toolPicker.selectedTool isKindOfClass:[PKEraserTool class]] && ((PKEraserTool *)toolPicker.selectedTool).eraserType != PKEraserTypeVector) {
         toolPicker.selectedTool = [[PKEraserTool alloc] initWithEraserType:PKEraserTypeVector];
     }
     self.pkView.tool = toolPicker.selectedTool;

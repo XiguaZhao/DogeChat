@@ -8,7 +8,7 @@
 
 import DogeChatUniversal
 import MediaPlayer
-import YPTransition
+import DogeChatNetwork
 
 enum BlurImageSource {
     case customBlur
@@ -27,7 +27,7 @@ class PlayerManager: NSObject {
             playingMessage?.isPlaying = false
             if let chatVC = AppDelegate.shared.navigationController.visibleViewController as? ChatRoomViewController {
                 DispatchQueue.main.async {
-                    chatVC.collectionView.reloadData()
+                    chatVC.tableView.reloadData()
                 }
             }
         }

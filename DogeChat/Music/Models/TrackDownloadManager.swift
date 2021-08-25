@@ -8,7 +8,7 @@
 
 import UIKit
 import DogeChatUniversal
-import YPTransition
+import DogeChatNetwork
 
 protocol DownloadDelegate: AnyObject {
     func downloadUpdateProgress(_ track: Track, progress: Progress)

@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import YPTransition
+import DogeChatNetwork
 
 protocol EmojiSelectCellLongPressDelegate: AnyObject {
     func didLongPressEmojiCell(_ cell: EmojiCollectionViewCell)
@@ -63,7 +63,7 @@ class EmojiCollectionViewCell: DogeChatBaseCollectionViewCell {
             return
         }
         DispatchQueue.global().async {
-            self.imageDownloader.loadImage(with: url, options: .avoidDecodeImage) { (received, total, url) in
+            self.imageDownloader.loadImage(with: url, options: [.avoidDecodeImage, .allowInvalidSSLCertificates]) { (received, total, url) in
 
             } completed: { (image, data, error, cacheType, finished, url) in
                 guard capturedUrl == self.url else { return }

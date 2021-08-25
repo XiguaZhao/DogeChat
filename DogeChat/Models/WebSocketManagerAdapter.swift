@@ -7,9 +7,19 @@
 //
 
 import Foundation
-import YPTransition
+import DogeChatNetwork
 import SwiftyJSON
 import DogeChatUniversal
+
+func syncOnMainThread(block: () -> Void) {
+    if Thread.isMainThread {
+        block()
+    } else {
+        DispatchQueue.main.sync {
+            block()
+        }
+    }
+}
 
 class WebSocketManagerAdapter: NSObject {
     
@@ -147,7 +157,7 @@ class WebSocketManagerAdapter: NSObject {
         if let chatRoomVC = AppDelegate.shared.navigationController.topViewController as? ChatRoomViewController {
             if let index = chatRoomVC.messages.firstIndex(of: message) {
                 DispatchQueue.main.async {
-                    chatRoomVC.collectionView.reloadItems(at: [IndexPath(item: index, section: 0)])
+                    chatRoomVC.tableView.reloadRows(at: [IndexPath(item: index, section: 0)], with: .none)
                 }
                 chatRoomVC.messages[index].drawScale = nil
                 chatRoomVC.messages[index].height = nil
@@ -190,8 +200,8 @@ class WebSocketManagerAdapter: NSObject {
                     targetMessage.isDrawing = true
                     if let chatRoomVC = AppDelegate.shared.navigationController?.topViewController as? ChatRoomViewController {
                         if let index = chatRoomVC.messages.firstIndex(of: targetMessage) {
-                            DispatchQueue.main.async {
-                                if let cell = chatRoomVC.collectionView.cellForItem(at: IndexPath(item: index, section: 0)) as? MessageCollectionViewDrawCell, let drawing = targetMessage.pkDrawing as? PKDrawing {
+                            let block = {
+                                if let cell = chatRoomVC.tableView.cellForRow(at: IndexPath(item: index, section: 0)) as? MessageCollectionViewDrawCell, let drawing = targetMessage.pkDrawing as? PKDrawing {
                                     if let scale = targetMessage.drawScale {
                                         let transformedDrawing = drawing.transformed(using: CGAffineTransform(scaleX: scale, y: scale))
                                         guard let pkView = cell.getPKView() else { return }
@@ -199,18 +209,21 @@ class WebSocketManagerAdapter: NSObject {
                                         let bounds = transformedDrawing.bounds
                                         
                                         if bounds.maxX > pkView.bounds.width {
-                                            targetMessage.drawScale = max(0.17, (targetMessage.drawScale ?? 0.3) - 0.1)
-                                            chatRoomVC.collectionView.reloadItems(at: [IndexPath(item: index, section: 0)])
+                                            targetMessage.drawScale = max(0.17, (targetMessage.drawScale ?? 0.5) - 0.1)
+                                            chatRoomVC.tableView.reloadRows(at: [IndexPath(item: index, section: 0)], with: .none)
                                         } else if bounds.maxY > pkView.bounds.height {
                                             targetMessage.height! += 100
-                                            self.reloadAndScroll(index: index, collectionView: chatRoomVC.collectionView)
+                                            self.reloadAndScroll(index: index, collectionView: chatRoomVC.tableView)
                                         }
                                     } else {
-                                        targetMessage.drawScale = 0.3
+                                        targetMessage.drawScale = 0.5
                                         targetMessage.height = 200
-                                        self.reloadAndScroll(index: index, collectionView: chatRoomVC.collectionView)
+                                        self.reloadAndScroll(index: index, collectionView: chatRoomVC.tableView)
                                     }
                                 }
+                            }
+                            syncOnMainThread {
+                                block()
                             }
                         }
                     }
@@ -219,10 +232,10 @@ class WebSocketManagerAdapter: NSObject {
         }
     }
     
-    func reloadAndScroll(index: Int, collectionView: UICollectionView) {
+    func reloadAndScroll(index: Int, collectionView: UITableView) {
         let indexPath = IndexPath(item: index, section: 0)
-        collectionView.reloadItems(at: [indexPath])
-        collectionView.scrollToItem(at: indexPath, at: .bottom, animated: true)
+        collectionView.reloadRows(at: [indexPath], with: .none)
+        collectionView.scrollToRow(at: indexPath, at: .bottom, animated: true)
     }
     
 }
@@ -263,11 +276,11 @@ extension WebSocketManagerAdapter: VoiceDelegate, WebSocketDataDelegate {
         manager.sendVoiceData(data)
     }
     
-    func compressImage(_ image: UIImage, needSave: Bool = true) -> (image: UIImage, fileUrl: URL) {
+    func compressImage(_ image: UIImage, needSave: Bool = true) -> (image: UIImage, fileUrl: URL, size: CGSize) {
         var size = image.size
         let ratio = size.width / size.height
         let width: CGFloat = UIScreen.main.bounds.width
-        let height = width / ratio
+        let height = floor(width / ratio)
         size = CGSize(width: width, height: height)
         var result: UIImage!
         DispatchQueue.global().sync {
@@ -280,7 +293,7 @@ extension WebSocketManagerAdapter: VoiceDelegate, WebSocketDataDelegate {
         if needSave {
             try? result.jpegData(compressionQuality: 0.3)?.write(to: fileUrl)
         }
-        return (result, fileUrl)
+        return (result, fileUrl, result.size)
     }
 
 }
@@ -289,7 +302,7 @@ public func getCacheImage(from cache: NSCache<NSString, NSData>?, path: String, 
     if let data = cache?.object(forKey: path as NSString) {
         completion(nil, data as Data)
     } else {
-        SDWebImageManager.shared.loadImage(with: URL(string: path), options: .avoidDecodeImage, progress: nil) { (image, data, error, _, _, _) in
+        SDWebImageManager.shared.loadImage(with: URL(string: path), options: [.avoidDecodeImage, .allowInvalidSSLCertificates], progress: nil) { (image, data, error, _, _, _) in
             guard error == nil else { return }
             if let data = data {
                 cache?.setObject(data as NSData, forKey: path as NSString)

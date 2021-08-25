@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import YPTransition
+import DogeChatNetwork
 import DogeChatUniversal
 
 class MessageCollectionViewImageCell: MessageCollectionViewBaseCell {
@@ -23,10 +23,10 @@ class MessageCollectionViewImageCell: MessageCollectionViewBaseCell {
         return url.hasSuffix(".gif")
     }
 
-    override init(frame: CGRect) {
-        super.init(frame: frame)
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
         animatedImageView = FLAnimatedImageView()
-        
+        animatedImageView.layer.masksToBounds = true
         animatedImageView.contentMode = .scaleAspectFit
         contentView.addSubview(animatedImageView)
         addGestureForImageView()
@@ -39,6 +39,7 @@ class MessageCollectionViewImageCell: MessageCollectionViewBaseCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         animatedImageView.image = nil
+        animatedImageView.animatedImage = nil
     }
     
     override func layoutSubviews() {
@@ -50,6 +51,7 @@ class MessageCollectionViewImageCell: MessageCollectionViewBaseCell {
     
     override func apply(message: Message) {
         super.apply(message: message)
+        downloadImageIfNeeded()
     }
     
     func addGestureForImageView() {
@@ -59,19 +61,32 @@ class MessageCollectionViewImageCell: MessageCollectionViewBaseCell {
     }
     
     @objc func imageTapped() {
-        delegate?.imageViewTapped(self, imageView: animatedImageView, path: message.imageURL ?? "", isAvatar: false)
+        delegate?.imageViewTapped(self, imageView: animatedImageView, path: message.imageLocalPath?.absoluteString ?? message.imageURL ?? "", isAvatar: false)
     }
     
     func layoutImageView() {
-        animatedImageView.frame = CGRect(x: 0, y: 0, width: 120, height: 120)
+        if message.imageSize == .zero {
+            animatedImageView.frame = CGRect(x: 0, y: 0, width: 120, height: 120)
+            return
+        }
+        let maxSize = CGSize(width: 2*(AppDelegate.shared.widthFor(side: .right)/3), height: CGFloat.greatestFiniteMagnitude)
+        let nameHeight = message.messageSender == .ourself ? 0 : (MessageCollectionViewBaseCell.height(forText: message.senderUsername, fontSize: 10, maxSize: maxSize) + 4 )
+        let height = contentView.bounds.height - 30 - nameHeight
+        let width = message.imageSize.width * height / message.imageSize.height
+        animatedImageView.bounds = CGRect(x: 0, y: 0, width: width, height: height)
+        animatedImageView.layer.cornerRadius = min(width, height) / 12
     }
     
     func downloadImageIfNeeded() {
-        guard let imageUrl = message.imageURL else { return }
+        guard var imageUrl = message.imageURL else { return }
+        if let local = message.imageLocalPath {
+            imageUrl = local.absoluteString
+        }
         if imageUrl.hasPrefix("file://") {
             DispatchQueue.global().async {
                 if let imageUrl = WebSocketManager.shared.messageManager.imageDict[self.message.uuid] as? URL{
                     guard let data = try? Data(contentsOf: imageUrl) else { return }
+                    self.cache.setObject(data as NSData, forKey: self.message.imageURL! as NSString)
                     DispatchQueue.main.async {
                         if self.isGif {
                             self.animatedImageView.animatedImage = FLAnimatedImage(gifData: data)
@@ -101,7 +116,7 @@ class MessageCollectionViewImageCell: MessageCollectionViewBaseCell {
             }
         }
         
-        imageDownloader.loadImage(with: URL(string: imageUrl), options: .avoidDecodeImage) { (received, total, url) in
+        imageDownloader.loadImage(with: URL(string: imageUrl), options: [.avoidDecodeImage, .allowInvalidSSLCertificates]) { (received, total, url) in
         } completed: { [self] (image, data, error, cacheType, finished, url) in
             guard let capturedMessage = capturedMessage, capturedMessage.imageURL == message.imageURL else {
                 return

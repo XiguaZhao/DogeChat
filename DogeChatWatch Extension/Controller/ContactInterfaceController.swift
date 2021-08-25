@@ -12,6 +12,10 @@ import DogeChatUniversal
 
 var isLogin = false
 
+var url_pre: String {
+    SocketManager.shared.messageManager.url_pre
+}
+
 typealias ContactInfo = (name: String, avatarUrl: String, latestMessage: Message?)
 
 class ContactInterfaceController: WKInterfaceController {

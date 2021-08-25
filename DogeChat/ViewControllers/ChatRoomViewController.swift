@@ -1,7 +1,7 @@
 
 import UIKit
 import SwiftyJSON
-import YPTransition
+import DogeChatNetwork
 import DogeChatUniversal
 import PhotosUI
 
@@ -16,25 +16,24 @@ class ChatRoomViewController: DogeChatViewController {
     static let numberOfHistory = 10
     static var needRotate = false
     let manager = WebSocketManager.shared
-    let collectionView = DogeChatBaseCollectionView(frame: CGRect.zero, collectionViewLayout: ChatRootCollectionViewLayout())
+    let tableView = DogeChatTableView()
     let messageInputBar = MessageInputView()
     var messageOption: MessageOption = .toAll
     var friendName = ""
     var pagesAndCurNum = (pages: 1, curNum: 1)
     var originOfInputBar = CGPoint()
     var scrollBottom = true
-    var latestPickedImageInfo: (image: UIImage?, fileUrl: URL)?
+    var latestPickedImageInfos: [(image: UIImage?, fileUrl: URL, size: CGSize)] = []
     let emojiSelectView = EmojiSelectView()
     var messages = [Message]()
     var messagesUUIDs = Set<String>()
-    var isFirstTimeGetHistory = false
     let messageBarHeight:CGFloat = 60.0
     var activePKView: UIView!
     var drawingIndexPath: IndexPath!
     var username = ""
     var collectionViewTapGesture: UITapGestureRecognizer!
     var friendAvatarUrl = ""
-    var isFetchingHistory = false
+    var dontLayout = false
     var hapticInputIndex = 0
     var pan: UIScreenEdgePanGestureRecognizer?
     
@@ -66,31 +65,34 @@ class ChatRoomViewController: DogeChatViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(emojiButtonTapped), name: .emojiButtonTapped, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(receiveEmojiInfoChangedNotification(_:)), name: .emojiInfoChanged, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(receiveHistoryMessages(_:)), name: .receiveHistoryMessages, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(drawDataDownloadedSuccessNoti(_:)), name: .drawDataDownloadedSuccess, object: nil)
         navigationItem.largeTitleDisplayMode = .never
         addRefreshController()
         loadViews()
         configureEmojiView()
         layoutViews(size: view.bounds.size)
+        messageInputBar.updateBlurView(frame: messageInputBar.frame, needAnimation: false)
         collectionViewTapGesture = UITapGestureRecognizer(target: self, action: #selector(tap))
-        collectionView.addGestureRecognizer(collectionViewTapGesture)
+        tableView.addGestureRecognizer(collectionViewTapGesture)
         pan = UIScreenEdgePanGestureRecognizer(target: self, action: #selector(panAction(_:)))
         pan?.edges = .right
         view.addGestureRecognizer(pan!)
     }
-    
+        
     @objc func panAction(_ pan: UIScreenEdgePanGestureRecognizer) {
         let maxOffset: CGFloat = 80
+        dontLayout = true
         switch pan.state {
         case .began:
-            collectionView.layer.masksToBounds = false
+            tableView.layer.masksToBounds = false
+            tableView.visibleCells.forEach { ($0 as? MessageCollectionViewBaseCell)?.timeLabel.isHidden = false }
         case .changed:
             let startX = view.bounds.width
             let endX = pan.location(in: view).x
             let offsetX = min(maxOffset, (abs(endX - startX))/1.2)
-            collectionView.layer.transform = CATransform3DTranslate(CATransform3DIdentity, -offsetX, 0, 0)
+            tableView.layer.transform = CATransform3DTranslate(CATransform3DIdentity, -offsetX, 0, 0)
         case .ended:
             recoverCollectionViewInset()
+            dontLayout = false
         default:
             break
         }
@@ -98,9 +100,10 @@ class ChatRoomViewController: DogeChatViewController {
     
     func recoverCollectionViewInset() {
         UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 2, options: .curveLinear, animations: {
-            self.collectionView.layer.transform = CATransform3DIdentity
+            self.tableView.layer.transform = CATransform3DIdentity
         }, completion: { _ in
-            self.collectionView.layer.masksToBounds = true
+            self.tableView.layer.masksToBounds = true
+            self.tableView.visibleCells.forEach { ($0 as? MessageCollectionViewBaseCell)?.timeLabel.isHidden = true }
         })
     }
     
@@ -110,7 +113,7 @@ class ChatRoomViewController: DogeChatViewController {
         messageInputBar.textView.delegate = self
         UIView.performWithoutAnimation {
             messageInputBar.textView.resignFirstResponder()
-            collectionView.contentInset = .zero
+            tableView.contentInset = .zero
         }
     }
     
@@ -121,12 +124,10 @@ class ChatRoomViewController: DogeChatViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        layoutViews(size: view.bounds.size)
+        scrollBottom = false
         DispatchQueue.main.async { [self] in
-            scrollBottom = false
-            if collectionView.contentSize.height < view.bounds.height {
+            if tableView.contentSize.height < view.bounds.height {
                 displayHistory()
-                isFirstTimeGetHistory = true
             }
         }
     }
@@ -135,7 +136,13 @@ class ChatRoomViewController: DogeChatViewController {
         super.viewWillLayoutSubviews()
     }
     
-            
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        if !dontLayout {
+            layoutViews(size: view.bounds.size)
+        }
+    }
+    
     deinit {
         print("chat room VC deinit")
     }
@@ -156,11 +163,11 @@ class ChatRoomViewController: DogeChatViewController {
             return
         }
         let indexPath = IndexPath(row: index, section: 0)
-        if let indicator = (collectionView.cellForItem(at: indexPath) as? MessageCollectionViewBaseCell)?.indicator {
+        if let indicator = (tableView.cellForRow(at: indexPath) as? MessageCollectionViewBaseCell)?.indicator {
             indicator.stopAnimating()
-            indicator.removeFromSuperview()
+            indicator.isHidden = true
         } else {
-            collectionView.reloadItems(at: [indexPath])
+            tableView.reloadRows(at: [indexPath], with: .none)
         }
     }
     
@@ -181,8 +188,16 @@ extension ChatRoomViewController: UIImagePickerControllerDelegate, UINavigationC
         for result in results {
             result.itemProvider.loadObject(ofClass: UIImage.self) { [weak self] object, error in
                 if let image = object as? UIImage {
-                    self?.latestPickedImageInfo = WebSocketManagerAdapter.shared.compressImage(image)
-                    self?.confirmSendPhoto()
+                    result.itemProvider.loadItem(forTypeIdentifier: UTType.gif.identifier, options: nil) { gif, error in
+                        if let gifUrl = gif as? URL {
+                            self?.latestPickedImageInfos.append((image, gifUrl, image.size))
+                        } else {
+                            self?.latestPickedImageInfos.append(WebSocketManagerAdapter.shared.compressImage(image))
+                        }
+                        if self?.latestPickedImageInfos.count == results.count {
+                            self?.confirmSendPhoto()
+                        }
+                    }
                 }
             }
         }
@@ -216,14 +231,14 @@ extension ChatRoomViewController: UIImagePickerControllerDelegate, UINavigationC
             isGif = originalUrl_.absoluteString.hasSuffix(".gif")
             originalUrl = originalUrl_
         }
-        self.latestPickedImageInfo = (isGif ? (nil, originalUrl!) : WebSocketManagerAdapter.shared.compressImage(image))
+        self.latestPickedImageInfos = [(isGif ? (nil, originalUrl!, image.size) : WebSocketManagerAdapter.shared.compressImage(image))]
         picker.dismiss(animated: true) {
             guard !isGif else {
                 self.confirmSendPhoto()
                 return
             }
             let vc = ImageConfirmViewController()
-            if let image = self.latestPickedImageInfo?.image {
+            if let image = self.latestPickedImageInfos.first?.image {
                 vc.image = image
             } else {
                 vc.image = image
@@ -233,28 +248,30 @@ extension ChatRoomViewController: UIImagePickerControllerDelegate, UINavigationC
     }
     
     @objc func confirmSendPhoto() {
-        guard let (_, imageURL) = self.latestPickedImageInfo else { return }
-        let message = Message(message: "", imageURL: imageURL.absoluteString, videoURL: nil, messageSender: .ourself, receiver: friendName, sender: username, messageType: .image, option: messageOption, sendStatus: .fail)
-        manager.messageManager.imageDict[message.uuid] = imageURL
-        insertNewMessageCell([message])
-        DispatchQueue.main.async { [self] in
-            collectionView.scrollToItem(at: IndexPath(row: messages.count-1, section: 0), at: .bottom, animated: true)
+        let infos = self.latestPickedImageInfos
+        var newMessages = [Message]()
+        for (image, imageURL, size) in infos {
+            let message = Message(message: "", imageURL: imageURL.absoluteString, videoURL: nil, messageSender: .ourself, receiver: friendName, sender: username, messageType: .image, option: messageOption, sendStatus: .fail)
+            message.imageSize = size
+            manager.messageManager.imageDict[message.uuid] = imageURL
+            newMessages.append(message)
+            manager.uploadData(image!.pngData()!, path: "message/uploadImg", name: "upload", fileName: "+\(Int(image!.size.width))+\(Int(image!.size.height)).jpeg", needCookie: true, contentType: "image/jpeg", params: nil) { task, data in
+                let json = JSON(data as Any)
+                var filePath = json["filePath"].stringValue
+                filePath = WebSocketManager.shared.messageManager.encrypt.decryptMessage(filePath)
+                message.imageURL = filePath
+                message.message = message.imageURL ?? ""
+                message.imageLocalPath = imageURL
+                NotificationCenter.default.post(name: .uploadSuccess, object: nil, userInfo: ["message": message, "data": data ?? [:]])
+            }
         }
-        manager.uploadPhoto(imageUrl: imageURL, message: message) { (progress) in
-        } success: { (task, data) in
-            let json = JSON(data as Any)
-            var filePath = json["filePath"].stringValue
-            print(filePath)
-            filePath = WebSocketManager.shared.messageManager.encrypt.decryptMessage(filePath)
-            message.imageURL = WebSocketManager.shared.url_pre + filePath
-            message.message = message.imageURL ?? ""
-        }
-        self.latestPickedImageInfo = nil
+        insertNewMessageCell(newMessages, forceScrollBottom: true)
+        self.latestPickedImageInfos.removeAll()
     }
     
 
     func updateUploadProgress(_ progress: Progress, message: Message) {
-        let targetCell = collectionView.visibleCells.filter { cell in
+        let targetCell = tableView.visibleCells.filter { cell in
             guard let cell = cell as? MessageCollectionViewBaseCell else { return false }
             return cell.message.uuid == message.uuid
         }.first
@@ -287,42 +304,22 @@ extension ChatRoomViewController: EmojiViewDelegate {
 
 extension ChatRoomViewController {
     
-    override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
-        if !AppDelegate.isPad() {
-            return .portrait
-        }
-        return .all
-    }
-    
-    
-    
-    
     @objc func drawDone() {
         self.navigationItem.rightBarButtonItem = nil
         activePKView?.backgroundColor = .clear
         activePKView?.resignFirstResponder()
         activePKView?.isUserInteractionEnabled = false
-        collectionView.isScrollEnabled = true
+        tableView.isScrollEnabled = true
         collectionViewTapGesture.isEnabled = true
         activePKView = nil
         if let drawingIndexPath = drawingIndexPath {
-            collectionView.reloadItems(at: [drawingIndexPath])
-            collectionView.scrollToItem(at: drawingIndexPath, at: .bottom, animated: true)
+            tableView.reloadRows(at: [drawingIndexPath], with: .none)
+            tableView.scrollToRow(at: drawingIndexPath, at: .bottom, animated: true)
         }
         drawingIndexPath = nil
         self.navigationController?.interactivePopGestureRecognizer?.isEnabled = true
     }
-    
-    @objc func drawDataDownloadedSuccessNoti(_ noti: Notification) {
-        guard let message = noti.object as? Message else { return }
-        if let index = self.messages.firstIndex(of: message) {
-            let indexPath = IndexPath(item: index, section: 0)
-            UIView.performWithoutAnimation {
-                self.collectionView.reloadItems(at: [indexPath])
-            }
-        }
-    }
-    
+        
 }
 
 @available(iOS 14.0, *)
@@ -352,14 +349,19 @@ extension ChatRoomViewController: PKViewChangedDelegate {
             message.pkDrawing = pkView.drawing
             message.sendStatus = .fail
             if let index = self.messages.firstIndex(where: { $0.uuid == message.uuid }) {
-                collectionView.reloadItems(at: [IndexPath(item: index, section: 0)])
+                tableView.reloadRows(at: [IndexPath(item: index, section: 0)], with: .none)
             }
             insertNewMessageCell([message]) { [weak self] in
                 self?.drawDone()
             }
             guard !pkView.drawing.strokes.isEmpty else { return }
             let drawData = pkView.drawing.dataRepresentation()
-            WebSocketManager.shared.uploadData(drawData, path: "message/uploadImg", name: "upload", fileName: "", needCookie: false, contentType: "application/octet-stream", params: nil) { [weak self] task, data in
+            let bounds = pkView.drawing.bounds
+            let x = Int(bounds.origin.x)
+            let y = Int(bounds.origin.y)
+            let width = Int(bounds.size.width)
+            let height = Int(bounds.size.height)
+            WebSocketManager.shared.uploadData(drawData, path: "message/uploadImg", name: "upload", fileName: "+\(x)+\(y)+\(width)+\(height)", needCookie: false, contentType: "application/octet-stream", params: nil) { [weak self] task, data in
                 guard let _ = self, let data = data else { return }
                 let json = JSON(data)
                 guard json["status"].stringValue == "success" else {
@@ -367,7 +369,7 @@ extension ChatRoomViewController: PKViewChangedDelegate {
                     return
                 }
                 let filePath = WebSocketManager.shared.messageManager.encrypt.decryptMessage(json["filePath"].stringValue)
-                message.pkDataURL = WebSocketManager.shared.url_pre + filePath
+                message.pkDataURL = filePath
                 message.message = message.pkDataURL ?? ""
                 WebSocketManager.shared.sendDrawMessage(message)
                 ContactsTableViewController.pkDataCache[message.pkDataURL!] = drawData 
@@ -397,6 +399,7 @@ extension ChatRoomViewController: MessageDelegate {
     }
     
     @objc func receiveHistoryMessages(_ noti: Notification) {
+        let empty = self.messages.isEmpty
         navigationItem.title = friendName
         guard let messages = noti.userInfo?["messages"] as? [Message], !messages.isEmpty, let pages = noti.userInfo?["pages"] as? Int else { return }
         if messages[0].option != messageOption {
@@ -408,26 +411,37 @@ extension ChatRoomViewController: MessageDelegate {
         }
         self.pagesAndCurNum.pages = pages
         let filtered = messages.filter { !self.messagesUUIDs.contains($0.uuid) }.reversed() as [Message]
-        let oldIndexPath = IndexPath(item: min(self.messages.count, filtered.count), section: 0)
+        if filtered.isEmpty {
+            tableView.refreshControl?.endRefreshing()
+        }
+        let _ = IndexPath(item: min(self.messages.count, filtered.count), section: 0)
         
         self.messages.insert(contentsOf: filtered, at: 0)
         for message in filtered {
             self.messagesUUIDs.insert(message.uuid)
         }
         let indexPaths = [Int](0..<filtered.count).map{ IndexPath(item: $0, section: 0) }
-        UIView.performWithoutAnimation {
-            self.collectionView.insertItems(at: indexPaths)
+        var myselfIndexPaths = [IndexPath]()
+        var othersIndexPaths = [IndexPath]()
+        for (index, indexPath) in indexPaths.enumerated() {
+            if filtered[index].messageSender == .ourself {
+                myselfIndexPaths.append(indexPath)
+            } else {
+                othersIndexPaths.append(indexPath)
+            }
         }
-        if !self.isFirstTimeGetHistory {
-            self.collectionView.scrollToItem(at: oldIndexPath, at: .top, animated: false)
+        tableView.performBatchUpdates {
+            self.tableView.insertRows(at: myselfIndexPaths, with: .right)
+            self.tableView.insertRows(at: othersIndexPaths, with: .left)
+        } completion: { _ in
+            if empty && !indexPaths.isEmpty{
+                self.tableView.scrollToRow(at: IndexPath(row: self.tableView.numberOfRows(inSection: 0) - 1, section: 0), at: .bottom, animated: true)
+            } else {
+                self.tableView.refreshControl?.endRefreshing()
+            }
         }
-        else {
-            collectionView.scrollToItem(at: IndexPath(item: max(0, self.messages.count-1), section: 0), at: .bottom, animated: true)
-            isFirstTimeGetHistory = false
-        }
-
-        self.collectionView.refreshControl?.endRefreshing()
     }
+    
     
     func newFriendRequest() {
         guard let contactVC = navigationController?.viewControllers.filter({ $0 is ContactsTableViewController }).first as? ContactsTableViewController else { return }
@@ -441,19 +455,18 @@ extension ChatRoomViewController {
     func addRefreshController() {
         let controller = UIRefreshControl()
         controller.addTarget(self, action: #selector(displayHistory), for: .valueChanged)
-        //collectionView.refreshControl = controller
+        tableView.refreshControl = controller
     }
     
     @objc func displayHistory() {
         guard pagesAndCurNum.curNum <= pagesAndCurNum.pages else {
-            self.collectionView.refreshControl?.endRefreshing()
+            self.tableView.refreshControl?.endRefreshing()
             return
         }
         navigationItem.title = "正在加载..."
         pagesAndCurNum.curNum = (self.messages.count / ChatRoomViewController.numberOfHistory) + 1
         manager.historyMessages(for: (messageOption == .toAll) ? "chatRoom" : friendName, pageNum: pagesAndCurNum.curNum)
         pagesAndCurNum.curNum += 1
-        isFetchingHistory = true
     }
     
     func revoke(indexPath: IndexPath) {
@@ -476,7 +489,7 @@ extension ChatRoomViewController {
         case .toOne:
             manager.messageManager.messagesSingle.update(at: index, for: friendName, with: updatedMessage)
         }
-        collectionView.reloadItems(at: [IndexPath(row: index, section: 0)])
+        tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
     }
     
     func revokeMessage(_ id: Int) {
@@ -487,6 +500,9 @@ extension ChatRoomViewController {
 
 extension ChatRoomViewController: UITextViewDelegate {
     func textViewDidChange(_ textView: UITextView) {
+        if !textView.text.isEmpty {
+            dontLayout = true
+        }
         showEmojiButton(textView.text.isEmpty)
         let oldFrame = messageInputBar.frame
         let textHeight = textView.contentSize.height
@@ -495,7 +511,7 @@ extension ChatRoomViewController: UITextViewDelegate {
         let oldLineCount = Int((oldFrame.height - 20) / lineHeight)
         let lineCountChanged = lineCount - oldLineCount
         var heightChanged = CGFloat(lineCountChanged) * lineHeight
-        let frameOfTableView = collectionView.frame
+        let frameOfTableView = tableView.frame
         if textView.text.isEmpty {
             heightChanged = messageBarHeight - oldFrame.height
         }
@@ -505,10 +521,10 @@ extension ChatRoomViewController: UITextViewDelegate {
         if heightChanged != 0 {
             UIView.animate(withDuration:  0.25 ) {
                 self.messageInputBar.frame = CGRect(x: oldFrame.origin.x, y: oldFrame.origin.y-heightChanged, width: oldFrame.width, height: oldFrame.height+heightChanged)
-                self.collectionView.frame = CGRect(origin: frameOfTableView.origin, size: CGSize(width: frameOfTableView.width, height: frameOfTableView.height-heightChanged))
+                self.tableView.frame = CGRect(origin: frameOfTableView.origin, size: CGSize(width: frameOfTableView.width, height: frameOfTableView.height-heightChanged))
             } completion: { [self] (_) in
-                guard collectionView.numberOfItems(inSection: 0) > 0 else { return }
-                collectionView.scrollToItem(at: IndexPath(row: collectionView.numberOfItems(inSection: 0)-1, section: 0), at: .bottom, animated: true)
+                guard tableView.numberOfRows(inSection: 0) > 0 else { return }
+                tableView.scrollToRow(at: IndexPath(row: tableView.numberOfRows(inSection: 0)-1, section: 0), at: .bottom, animated: true)
             }
         } 
     }

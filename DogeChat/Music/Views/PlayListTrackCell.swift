@@ -8,7 +8,7 @@
 
 import UIKit
 import DogeChatUniversal
-import YPTransition
+import DogeChatNetwork
 
 class PlayListTrackCell: UITableViewCell {
 

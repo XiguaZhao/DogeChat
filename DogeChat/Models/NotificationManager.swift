@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import YPTransition
+import DogeChatNetwork
 import DogeChatUniversal
 
 class NotificationManager: NSObject {

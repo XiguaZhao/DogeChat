@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import YPTransition
+import DogeChatNetwork
 
 class ImageConfirmViewController: UIViewController {
 
@@ -31,7 +31,7 @@ class ImageConfirmViewController: UIViewController {
         guard let navigationController = self.navigationController else { return }
         for vc in navigationController.viewControllers {
             if vc.isKind(of: ChatRoomViewController.self) {
-                (vc as! ChatRoomViewController).latestPickedImageInfo = nil
+                (vc as! ChatRoomViewController).latestPickedImageInfos.removeAll()
             }
         }
         self.navigationController?.popViewController(animated: true)

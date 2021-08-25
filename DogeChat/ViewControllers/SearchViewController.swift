@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import YPTransition
+import DogeChatNetwork
 
 protocol AddContactDelegate: AnyObject {
     func addSuccess()

@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import YPTransition
+import DogeChatNetwork
 
 class NameAndPassword: NSObject, NSCoding {
     

@@ -4,10 +4,14 @@ import UserNotifications
 import PushKit
 import CallKit
 import Intents
-import YPTransition
+import DogeChatNetwork
 import RSAiOSWatchOS
 import DogeChatUniversal
 import Reachability
+
+enum SplitVCSide {
+    case left, right
+}
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -31,7 +35,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     let voipRegistry = PKPushRegistry(queue: DispatchQueue.main)
     var lastAppEnterBackgroundTime = NSDate().timeIntervalSince1970
     let webSocketAdapter = WebSocketManagerAdapter.shared
-    var contactVC: ContactsTableViewController?
+    weak var contactVC: ContactsTableViewController?
     var isIOS = true
     let splitVCDelegate = SplitViewControllerDelegate()
     var lastUserInterfaceStyle: UIUserInterfaceStyle = .unspecified
@@ -57,6 +61,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         splitViewController.delegate = splitVCDelegate
         splitViewController.preferredDisplayMode = .allVisible
         tabBarController = splitViewController.viewControllers[0] as? UITabBarController
+        tabBarController.viewControllers?.remove(at: 1)
         window?.rootViewController = splitViewController
         splitViewController.preferredPrimaryColumnWidthFraction = 0.35
         splitViewController.view.backgroundColor = .clear
@@ -114,24 +119,24 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
     }
     
-    func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {
-        if AppDelegate.isPad() {
-            return .all
-        } else {
-            if #available(iOS 14.0, *) {
-                if ChatRoomViewController.needRotate {
-                    return .landscape
-                } else {
-                    if let browser =  navigationController?.visibleViewController as? ImageBrowserViewController {
-                        return browser.canRotate ? .all : .portrait
-                    }
-                    return .portrait
-                }
-            } else {
-                return .portrait
-            }
-        }
-    }
+//    func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {
+//        if AppDelegate.isPad() {
+//            return .all
+//        } else {
+//            if #available(iOS 14.0, *) {
+//                if ChatRoomViewController.needRotate {
+//                    return .landscape
+//                } else {
+//                    if let browser =  navigationController?.visibleViewController as? ImageBrowserViewController {
+//                        return browser.canRotate ? .all : .portrait
+//                    }
+//                    return .portrait
+//                }
+//            } else {
+//                return .portrait
+//            }
+//        }
+//    }
     
     class func isLandscape() -> Bool {
         return UIDevice.current.orientation == .landscapeLeft || UIDevice.current.orientation == .landscapeRight
@@ -143,6 +148,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     class func isPhone() -> Bool {
         return UIDevice.current.userInterfaceIdiom == .phone
+    }
+    
+    func widthFor(side: SplitVCSide) -> CGFloat {
+        if splitViewController.isCollapsed {
+            return splitViewController.view.bounds.width
+        } else {
+            let ratio = splitViewController.preferredPrimaryColumnWidthFraction
+            switch side {
+            case .left:
+                return ratio * splitViewController.view.bounds.width
+            case .right:
+                return (1 - ratio) * splitViewController.view.bounds.width
+            }
+        }
     }
     
     func login() {
@@ -178,7 +197,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let nowTime = Date().timeIntervalSince1970
         return nowTime - lastAppEnterBackgroundTime >= 20 * 60
     }
+    
+    func applicationWillEnterForeground(_ application: UIApplication) {
+        //通知中心，控制中心，快捷访问都不会触发这里。重新登录的逻辑在这里可能更合适
+    }
         
+    func applicationWillResignActive(_ application: UIApplication) {
+        
+    }
+    
     func applicationDidBecomeActive(_ application: UIApplication) {
         print("become active")
         application.applicationIconBadgeNumber = 0

@@ -8,7 +8,7 @@
 
 import Foundation
 import SwiftyJSON
-import YPTransition
+import DogeChatNetwork
 
 extension ContactsTableViewController: ContactTableViewCellDelegate, UIContextMenuInteractionDelegate {
     func avatarTapped(_ cell: ContactTableViewCell?, path: String) {
@@ -53,7 +53,7 @@ extension ContactsTableViewController: ContactTableViewCellDelegate, UIContextMe
         
     @objc func updateMyAvatar(_ noti: Notification) {
         let url = noti.object as! String
-        SDWebImageManager.shared.loadImage(with: URL(string: url), options: .avoidDecodeImage, progress: nil) { [self] image, data, error, _, _, _ in
+        SDWebImageManager.shared.loadImage(with: URL(string: url), options: [.avoidDecodeImage, .allowInvalidSSLCertificates], progress: nil) { [self] image, data, error, _, _, _ in
             if url.hasSuffix(".gif") {
                 if let data = data {
                     avatarImageView.animatedImage = FLAnimatedImage(gifData: data)
@@ -67,7 +67,7 @@ extension ContactsTableViewController: ContactTableViewCellDelegate, UIContextMe
                 }
             }
             if let chatVC = navigationController?.visibleViewController as? ChatRoomViewController {
-                chatVC.collectionView.reloadData()
+                chatVC.tableView.reloadData()
             }
         }
     }
@@ -78,17 +78,17 @@ extension ContactsTableViewController: ContactTableViewCellDelegate, UIContextMe
         let newAvatarUrl = data["avatarUrl"].stringValue
         if let index = ContactsTableViewController.usersInfos.firstIndex(where: { $0.name == username }) {
             ContactsTableViewController.usersInfos[index].avatarUrl = newAvatarUrl
-            tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .fade)
+            tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
             if let chatVC = AppDelegate.shared.navigationController.visibleViewController as? ChatRoomViewController {
                 if chatVC.navigationItem.title == username {
-                    chatVC.collectionView.reloadData()
+                    chatVC.tableView.reloadData()
                 } else if chatVC.navigationItem.title == "群聊" {
                     let allMessage = chatVC.messages
                     let messagesWhoChangeAvatar = allMessage.filter { $0.senderUsername == username }
                     for message in messagesWhoChangeAvatar {
                         message.avatarUrl = manager.url_pre + newAvatarUrl
                     }
-                    chatVC.collectionView.reloadData()
+                    chatVC.tableView.reloadData()
                 }
             }
         }

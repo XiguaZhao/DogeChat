@@ -14,10 +14,14 @@ import DogeChatUniversal
 class SocketManager: NSObject, URLSessionDelegate, URLSessionWebSocketDelegate {
     static let shared = SocketManager()
     let messageManager = MessageManager()
-    let url_pre = "https://procwq.top/"
+    let url_pre = "https://121.5.152.193/"
     var socket: URLSessionWebSocketTask!
     var connected = false
     weak var receiveTimer: Timer?
+    lazy var session: URLSession = {
+        let sesssion = URLSession(configuration: URLSessionConfiguration.default, delegate: self, delegateQueue: nil)
+        return sesssion
+    }()
     
     override init() {
         super.init()
@@ -34,9 +38,9 @@ class SocketManager: NSObject, URLSessionDelegate, URLSessionWebSocketDelegate {
             receiveTimer?.invalidate()
             receiveTimer = nil
         }
-        var request = URLRequest(url: URL(string: "wss://procwq.top/webSocket")!)
+        var request = URLRequest(url: URL(string: "wss://121.5.152.193/webSocket")!)
         request.addValue("SESSION="+messageManager.cookie, forHTTPHeaderField: "Cookie")
-        self.socket = URLSession.shared.webSocketTask(with: request)
+        self.socket = session.webSocketTask(with: request)
         socket.resume()
         sendKey()
         sendToken()
@@ -107,23 +111,26 @@ class SocketManager: NSObject, URLSessionDelegate, URLSessionWebSocketDelegate {
             messageManager.encrypt.key = key
             getPublicUnreadMessage()
         case "PublicNewMessage":  // 收到群聊消息
-            let newMessage = messageManager.wrapMessage(messageJSON: json["data"])
-            processNewMessages([newMessage], isPublic: true)
+            if let newMessage = messageManager.wrapMessage(messageJSON: json["data"]) {
+                processNewMessages([newMessage], isPublic: true)
+            }
             NotificationCenter.default.post(name: .playSound, object: nil)
         case "getPublicUnreadMessage": // 群聊未读消息,socket连接上后会获取
             let messages = json["data"].arrayValue
             var newMessages = [Message]()
             for message in messages {
-                let newMessage = messageManager.wrapMessage(messageJSON: message)
-                newMessages.append(newMessage)
+                if let newMessage = messageManager.wrapMessage(messageJSON: message) {
+                    newMessages.append(newMessage)
+                }
             }
             processNewMessages(newMessages, isPublic: true)
         case "PersonalNewMessage": // 收到私人消息
             let data = json["data"].arrayValue
             var messages = [Message]()
             for msg in data {
-                let newMessage = messageManager.wrapMessage(messageJSON: msg)
-                messages.append(newMessage)
+                if let newMessage = messageManager.wrapMessage(messageJSON: msg) {
+                    messages.append(newMessage)
+                }
             }
             processNewMessages(messages, isPublic: false)
         case "getHistory":  // 获取群聊、个人历史记录
@@ -131,8 +138,9 @@ class SocketManager: NSObject, URLSessionDelegate, URLSessionWebSocketDelegate {
             let messages = json["data"]["records"].arrayValue
             var result = [Message]()
             for message in messages {
-                let newMessage = messageManager.wrapMessage(messageJSON: message, insertPosition: .top)
-                result.append(newMessage)
+                if let newMessage = messageManager.wrapMessage(messageJSON: message, insertPosition: .top) {
+                    result.append(newMessage)
+                }
             }
             NotificationCenter.default.post(name: .receiveHistoryMessages, object: nil, userInfo: ["messages": result, "pages": pages])
         default:
@@ -195,4 +203,8 @@ class SocketManager: NSObject, URLSessionDelegate, URLSessionWebSocketDelegate {
         }
     }
     
+    func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
+        let credential = URLCredential(trust: challenge.protectionSpace.serverTrust!)
+        completionHandler(.useCredential, credential)
+    }
 }

@@ -14,7 +14,7 @@ class DogeChatNavigationController: UINavigationController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        makeBlurViewForViewController(self, blurView: &blurView)
         NotificationCenter.default.addObserver(self, selector: #selector(forceDarkMode(noti:)), name: .immersive, object: nil)
     }
     

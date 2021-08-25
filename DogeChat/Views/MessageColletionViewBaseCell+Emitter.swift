@@ -6,7 +6,7 @@
 //  Copyright © 2021 Luke Parham. All rights reserved.
 //
 
-extension MessageCollectionViewBaseCell: UIGestureRecognizerDelegate {
+extension MessageCollectionViewBaseCell {
     
     func addDoubleTapForAvatar() {
         doubleTapGes.numberOfTapsRequired = 2
@@ -18,7 +18,7 @@ extension MessageCollectionViewBaseCell: UIGestureRecognizerDelegate {
         delegate?.avatarDoubleTap(self)
     }
     
-    func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRequireFailureOf otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+    override func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRequireFailureOf otherGestureRecognizer: UIGestureRecognizer) -> Bool {
         if gestureRecognizer == tapAvatar && otherGestureRecognizer == doubleTapGes {
             return true
         }

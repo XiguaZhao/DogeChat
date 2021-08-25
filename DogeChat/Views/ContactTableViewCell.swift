@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import YPTransition
+import DogeChatNetwork
 import DogeChatUniversal
 
 protocol ContactTableViewCellDelegate: AnyObject {
@@ -86,7 +86,7 @@ class ContactTableViewCell: UITableViewCell {
             switch message.messageType {
             case .draw:
                 text = "[速绘]"
-            case .image:
+            case .image, .livePhoto:
                 text = "[图片]"
             case .join, .text:
                 text = message.message
@@ -113,7 +113,7 @@ class ContactTableViewCell: UITableViewCell {
                 }
                 return
             }
-            SDWebImageManager.shared.loadImage(with: URL(string: avatarUrl), options: .avoidDecodeImage) { (received, total, url) in
+            SDWebImageManager.shared.loadImage(with: URL(string: avatarUrl), options: [.avoidDecodeImage, .allowInvalidSSLCertificates]) { (received, total, url) in
             } completed: { [self] (image, data, error, cacheType, finished, url) in
                 guard info.name == self.info.name else {
                     return

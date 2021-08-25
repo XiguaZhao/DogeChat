@@ -39,6 +39,10 @@ class DogeChatViewController: UIViewController {
         AppDelegate.shared.lastUserInterfaceStyle = UIScreen.main.traitCollection.userInterfaceStyle
     }
     
+    override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+        return .portrait
+    }
+    
     func recoverBackgroundColor() {
         if #available(iOS 13.0, *) {
             self.view.backgroundColor = .systemBackground
@@ -68,7 +72,8 @@ class DogeChatViewController: UIViewController {
             } else if let searchVC = self as? SearchMusicViewController {
                 needAnimation = false
                 searchVC.updateBgColor()
-            } else if self is ChatRoomViewController {
+            } else if let chatVC = self as? ChatRoomViewController {
+                tableView = chatVC.tableView
                 needAnimation = false
             } else if let contactVC = self as? ContactsTableViewController {
                 tableView = contactVC.tableView

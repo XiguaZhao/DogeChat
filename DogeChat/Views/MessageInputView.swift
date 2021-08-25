@@ -1,5 +1,5 @@
 import UIKit
-import YPTransition
+import DogeChatNetwork
 
 protocol MessageInputDelegate: AnyObject {
     func sendWasTapped(content: String)
@@ -22,6 +22,9 @@ class MessageInputView: DogeChatBlurView {
     var beginY: CGFloat = 0
     var frameShouldAnimate = true
     var directionUp = true
+    var isActive: Bool {
+        return self.frame.minY < AppDelegate.shared.splitViewController.view.bounds.height * 0.8
+    }
 
     override init(frame: CGRect) {
         super.init(frame: frame)

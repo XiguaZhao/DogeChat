@@ -1,7 +1,7 @@
 
 import UIKit
 import UserNotifications
-import YPTransition
+import DogeChatNetwork
 
 class JoinChatViewController: UIViewController {
     
@@ -104,6 +104,7 @@ extension JoinChatViewController: UITextFieldDelegate {
         manager.messageManager.login(username: username, password: password) { loginResult in
             if loginResult == "登录成功" {
                 let contactsTVC = ContactsTableViewController()
+                AppDelegate.shared.contactVC = contactsTVC
                 contactsTVC.username = username
                 contactsTVC.navigationItem.title = username
                 self.navigationController?.setViewControllers([contactsTVC], animated: true)

@@ -8,7 +8,7 @@
 
 import UIKit
 import DogeChatUniversal
-import YPTransition
+import DogeChatNetwork
 import SwiftyJSON
 
 let trackThumbCache = NSCache<NSString, NSData>()
@@ -124,7 +124,7 @@ class PlayListViewController: DogeChatViewController, SelectContactsDelegate {
     }
     
     deinit {
-        AppDelegate.shared.navigationController.interactivePopGestureRecognizer?.isEnabled = true
+        AppDelegate.shared.navigationController?.interactivePopGestureRecognizer?.isEnabled = true
     }
     
     override func viewWillDisappear(_ animated: Bool) {

@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import YPTransition
+import DogeChatNetwork
 import DogeChatUniversal
 
 class MessageCollectionViewDrawCell: MessageCollectionViewBaseCell {
@@ -15,9 +15,10 @@ class MessageCollectionViewDrawCell: MessageCollectionViewBaseCell {
     static let cellID = "MessageCollectionViewDrawCell"
     
     var tapGes = UITapGestureRecognizer()
-    
-    override init(frame: CGRect) {
-        super.init(frame: frame)
+        
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        addPKView()
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -44,6 +45,7 @@ class MessageCollectionViewDrawCell: MessageCollectionViewBaseCell {
     override func apply(message: Message) {
         super.apply(message: message)
         tapGes.isEnabled = message.messageSender == .ourself
+        downloadPKDataIfNeeded()
     }
     
     // PencilKit相关
@@ -102,7 +104,7 @@ class MessageCollectionViewDrawCell: MessageCollectionViewBaseCell {
     func downloadPKDataIfNeeded() {
         guard #available(iOS 14.0, *),
               let pkDataStr = message.pkDataURL,
-              let pkDataURL = URL(string: pkDataStr) else { return }
+              let pkDataURL = URL(string: url_pre + pkDataStr) else { return }
         if !message.needReDownload, let cachedPKData = ContactsTableViewController.pkDataCache[pkDataStr],
            let pkDrawing = try? PKDrawing(data: cachedPKData as Data) {
             if !message.isDrawing { //正在画的话已经做了实时更新，这里不需要再覆盖缓存
@@ -111,19 +113,22 @@ class MessageCollectionViewDrawCell: MessageCollectionViewBaseCell {
             setNeedsLayout()
         } else {
             guard let capturedMessage = self.message else { return }
-            DispatchQueue.global().async {
-                if let downloadedData = try? Data(contentsOf: pkDataURL),
+            session.get(pkDataURL.absoluteString, parameters: nil, headers: nil, progress: nil) { task, data in
+                if let downloadedData = data as? Data,
                    let pkDrawing = try? PKDrawing(data: downloadedData) {
                     ContactsTableViewController.pkDataWriteQueue.sync {
                         ContactsTableViewController.pkDataCache[pkDataStr] = downloadedData
                     }
                     capturedMessage.pkDrawing = pkDrawing
                     capturedMessage.needReDownload = false
-                    DispatchQueue.main.async {
-                        NotificationCenter.default.post(name: .drawDataDownloadedSuccess, object: capturedMessage)
+                    if capturedMessage == self.message {
+                        self.setNeedsLayout()
                     }
                 }
+            } failure: { task, error in
+                print(error)
             }
+            
         }
     }
 

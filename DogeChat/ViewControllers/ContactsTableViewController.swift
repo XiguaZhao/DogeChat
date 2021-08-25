@@ -8,11 +8,15 @@
 
 import UIKit
 import SwiftyJSON
-import YPTransition
+import DogeChatNetwork
 import DogeChatUniversal
 
 var url_pre: String {
     WebSocketManager.shared.url_pre
+}
+
+var session: AFHTTPSessionManager {
+    WebSocketManager.shared.messageManager.session
 }
 
 var isLogin: Bool {
@@ -122,7 +126,7 @@ class ContactsTableViewController: DogeChatViewController, UIImagePickerControll
     }
     
     @objc func connectedNoti(_ noti: Notification) {
-        self.navigationItem.titleView = self.titleView
+        setupMyAvatar()
         navigationItem.title = myName
     }
         
@@ -219,7 +223,7 @@ class ContactsTableViewController: DogeChatViewController, UIImagePickerControll
             content += message.message
         case .draw:
             content += "[速绘]"
-        case .image:
+        case .image, .livePhoto:
             content += "[图片]"
         case .video:
             content += "[视频]"
@@ -259,6 +263,10 @@ class ContactsTableViewController: DogeChatViewController, UIImagePickerControll
             manager.messageManager.messagesSingle[receiver]![index].sendStatus = .success
         }
         NotificationCenter.default.post(name: .updateLatesetMessage, object: message)
+    }
+    
+    override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+        return .portrait
     }
     
     @objc func uploadSuccess(notification: Notification) {

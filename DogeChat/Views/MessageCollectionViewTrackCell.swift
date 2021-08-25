@@ -8,7 +8,7 @@
 
 import UIKit
 import DogeChatUniversal
-import YPTransition
+import DogeChatNetwork
 
 let sharedTracksImageCache = NSCache<NSString, NSData>()
 
@@ -23,9 +23,11 @@ class MessageCollectionViewTrackCell: MessageCollectionViewBaseCell {
     let secondLineLabel = UILabel()
     let bgImageView = UIImageView()
     let playButton = UIButton()
+    let dontShow = true
     
-    override init(frame: CGRect) {
-        super.init(frame: frame)
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        if dontShow { return }
         let blurView = UIVisualEffectView(effect: UIBlurEffect(style: .regular))
         bgImageView.addSubview(blurView)
         bgImageView.contentMode = .scaleAspectFill
@@ -68,6 +70,7 @@ class MessageCollectionViewTrackCell: MessageCollectionViewBaseCell {
     
     override func layoutSubviews() {
         super.layoutSubviews()
+        if dontShow { return }
         layoutSharedTracksView()
         indicationNeighborView = bgImageView
         layoutIndicatorViewAndMainView()
@@ -97,6 +100,7 @@ class MessageCollectionViewTrackCell: MessageCollectionViewBaseCell {
     
     override func apply(message: Message) {
         super.apply(message: message)
+        if dontShow { return }
         setButtonImage()
         if !message.tracks.isEmpty {
             let tracks = message.tracks

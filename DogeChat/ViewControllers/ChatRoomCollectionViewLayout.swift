@@ -6,7 +6,7 @@
 //  Copyright © 2021 Xiguang Zhao. All rights reserved.
 //
 
-import YPTransition
+import DogeChatNetwork
 
 class ChatRootCollectionViewLayout: UICollectionViewFlowLayout {
     

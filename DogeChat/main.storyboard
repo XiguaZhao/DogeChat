@@ -71,7 +71,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="zVR-ux-2OQ" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-1528" y="364"/>
+            <point key="canvasLocation" x="-1420" y="342"/>
         </scene>
         <!--Root View Controller-->
         <scene sceneID="KTC-wF-asg">

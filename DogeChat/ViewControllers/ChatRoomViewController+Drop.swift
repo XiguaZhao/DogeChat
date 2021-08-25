@@ -5,11 +5,10 @@
 //  Created by 赵锡光 on 2021/4/12.
 //  Copyright © 2021 Xiguang Zhao. All rights reserved.
 //
-import YPTransition
+import DogeChatNetwork
 
-extension ChatRoomViewController: UICollectionViewDropDelegate {
-    
-    func collectionView(_ collectionView: UICollectionView, performDropWith coordinator: UICollectionViewDropCoordinator) {
+extension ChatRoomViewController: UITableViewDropDelegate {
+    func tableView(_ tableView: UITableView, performDropWith coordinator: UITableViewDropCoordinator) {
         guard let item = coordinator.items.first,
               let passedObject = item.dragItem.localObject as? [Any?],
               let imageLink = passedObject[0] as? String,
@@ -19,7 +18,7 @@ extension ChatRoomViewController: UICollectionViewDropDelegate {
             coordinator.session.loadObjects(ofClass: UIImage.self) { (images) in
                 for _image in images {
                     let image = _image as! UIImage
-                    if let cell = collectionView.cellForItem(at: destinationIndexPath) as? MessageCollectionViewBaseCell {
+                    if let cell = tableView.cellForRow(at: destinationIndexPath) as? MessageCollectionViewBaseCell {
                         cell.didDrop(imageLink: imageLink, image: image, point: coordinator.session.location(in: cell.contentView), cache: cache)
                     }
                 }
@@ -27,12 +26,11 @@ extension ChatRoomViewController: UICollectionViewDropDelegate {
         }
     }
     
-    
-    func collectionView(_ collectionView: UICollectionView, canHandle session: UIDropSession) -> Bool {
+    func tableView(_ tableView: UITableView, canHandle session: UIDropSession) -> Bool {
         return session.canLoadObjects(ofClass: UIImage.self)
     }
-    
-    func collectionView(_ collectionView: UICollectionView, dropSessionDidUpdate session: UIDropSession, withDestinationIndexPath destinationIndexPath: IndexPath?) -> UICollectionViewDropProposal {
+        
+    func tableView(_ tableView: UITableView, dropSessionDidUpdate session: UIDropSession, withDestinationIndexPath destinationIndexPath: IndexPath?) -> UITableViewDropProposal {
         return .init(operation: .copy)
     }
 }

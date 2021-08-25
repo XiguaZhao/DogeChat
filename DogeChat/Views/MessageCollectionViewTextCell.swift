@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import YPTransition
+import DogeChatNetwork
 import DogeChatUniversal
 
 let messageFontSize: CGFloat = 17
@@ -18,9 +18,9 @@ class MessageCollectionViewTextCell: MessageCollectionViewBaseCell {
     
     let messageLabel = Label()
     
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+
         messageLabel.layer.masksToBounds = true
         messageLabel.textColor = .white
         messageLabel.numberOfLines = 0

@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import YPTransition
+import DogeChatNetwork
 
 class ImageBrowserViewController: UIViewController {
     
@@ -100,6 +100,7 @@ extension ImageBrowserViewController: UICollectionViewDataSource, UICollectionVi
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         if let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ImageBrowserCell.cellID, for: indexPath) as? ImageBrowserCell {
+            cell.cache = cache
             cell.apply(imagePath: imagePaths[indexPath.item])
             return cell
         }

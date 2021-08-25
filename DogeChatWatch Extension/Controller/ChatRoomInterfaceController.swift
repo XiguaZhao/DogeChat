@@ -16,7 +16,7 @@ func contentForSpecialType(_ message: Message?) -> String {
     switch message.messageType {
     case .text, .join:
         return message.message
-    case .image:
+    case .image, .livePhoto:
         return "[图片]"
     case .draw:
         return "[速绘]"
@@ -139,9 +139,9 @@ class ChatRoomInterfaceController: WKInterfaceController {
                     messageRow.image.setWidth(width)
                     messageRow.image.setHeight(width / image.size.width * image.size.height)
                 } else {
-                    if let imageUrl = URL(string: url as String) {
+                    if let imageUrl = URL(string: url_pre + (url as String)) {
                         DispatchQueue.global().async {
-                            let task = URLSession.shared.dataTask(with: imageUrl) { data, response, error in
+                            let task = SocketManager.shared.session.dataTask(with: imageUrl) { data, response, error in
                                 guard let imageData = data,
                                       let image = UIImage(data: imageData) else { return }
                                 let compressedData = self.manager.messageManager.compressEmojis(image)
@@ -154,7 +154,6 @@ class ChatRoomInterfaceController: WKInterfaceController {
                             }
                             task.resume()
                         }
-                        
                     }
                 }
             } else {

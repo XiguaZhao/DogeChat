@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import YPTransition
+import DogeChatNetwork
 import SwiftyJSON
 
 @objc protocol EmojiViewDelegate: AnyObject {
@@ -115,7 +115,7 @@ extension EmojiSelectView: UICollectionViewDataSource, UICollectionViewDelegateF
             if indexPath.item >= emojis.count { continue }
             let imageLink = emojis[indexPath.item]
             if cache.object(forKey: imageLink as NSString) == nil {
-                SDWebImageManager.shared.loadImage(with: URL(string: imageLink), options: .avoidDecodeImage, context: [SDWebImageContextOption.imageCache: SDImageCacheType.memory], progress: nil) { [self] (image, data, error, cacheType, finished, url) in
+                SDWebImageManager.shared.loadImage(with: URL(string: imageLink), options: [.avoidDecodeImage, .allowInvalidSSLCertificates], context: [SDWebImageContextOption.imageCache: SDImageCacheType.memory], progress: nil) { [self] (image, data, error, cacheType, finished, url) in
                     guard error == nil else { return }
                     DispatchQueue.global().async {
                         if let data = data,
