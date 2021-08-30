@@ -13,11 +13,19 @@ extension ChatRoomViewController {
             if endFrame.height < 50 {
                 endFrame = CGRect(x: 0, y: AppDelegate.shared.window!.bounds.height, width: UIScreen.main.bounds.width, height: 0)
             }
-            let messageBarHeight = self.messageInputBar.bounds.size.height
-            let point = CGPoint(x: self.messageInputBar.center.x, y: endFrame.origin.y - messageBarHeight/2.0)
+            let additionalOffset: CGFloat = safeArea.bottom / 2
+            let messageBarHeight = self.messageInputBar.bounds.height
+            var point = CGPoint(x: self.messageInputBar.center.x, y: endFrame.origin.y - messageBarHeight/2.0)
             let shouldDown = endFrame.origin.y == AppDelegate.shared.window?.bounds.height ?? UIScreen.main.bounds.height
-            let inset = UIEdgeInsets(top: 0, left: 0, bottom: shouldDown ? 0 : endFrame.size.height, right: 0)
-            let offsetY = point.y - messageInputBar.center.y
+            let bottomInset: CGFloat
+            let safeAreaInsetBottom = safeArea.bottom
+            if !shouldDown {
+                bottomInset = AppDelegate.shared.navigationController.view.bounds.height - endFrame.minY - safeAreaInsetBottom + messageBarHeight - additionalOffset
+            } else {
+                bottomInset = messageBarHeight - safeAreaInsetBottom
+            }
+            let inset = UIEdgeInsets(top: 0, left: 0, bottom: bottomInset, right: 0)
+            var offsetY = point.y - messageInputBar.center.y
             var duration = 0.25
             if let _duration = userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? Int, _duration == 0 {
                 duration = 0
@@ -25,6 +33,8 @@ extension ChatRoomViewController {
             if !shouldDown {
                 dontLayout = true
             }
+            point.y += shouldDown ? 0 : additionalOffset
+            offsetY += shouldDown ? 0 : additionalOffset
             UIView.animate(withDuration: duration) { [self] in
                 self.messageInputBar.center = point
                 self.emojiSelectView.alpha = (shouldDown ? 0 : 1)
@@ -63,7 +73,8 @@ extension ChatRoomViewController {
     
     func layoutViews(size: CGSize) {
         let size = view.frame.size
-        tableView.frame = CGRect(x: 0, y: 0, width: size.width, height: size.height - messageBarHeight)
+        tableView.frame = CGRect(x: 0, y: 0, width: size.width, height: size.height)
+        tableView.contentInset = .init(top: 0, left: 0, bottom: messageBarHeight - UIApplication.shared.keyWindow!.safeAreaInsets.bottom, right: 0)
         messageInputBar.frame = CGRect(x: 0, y: size.height - messageBarHeight, width: size.width, height: messageBarHeight)
         
         let emojiViewHeight: CGFloat = MessageInputView.ratioOfEmojiView * view.bounds.height

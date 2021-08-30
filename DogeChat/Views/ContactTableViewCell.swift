@@ -94,6 +94,8 @@ class ContactTableViewCell: UITableViewCell {
                 text = "[视频]"
             case .track:
                 text = "[歌曲分享]"
+            case .voice:
+                text = "[语音]"
             }
             latestMessageLabel.text = text
             if latestMessageLabel.superview == nil {

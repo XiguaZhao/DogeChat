@@ -47,7 +47,7 @@ class PlayListsSelectVC: DogeChatViewController {
         let confirm = UIAlertAction(title: "确定", style: .default) { [weak self, weak alert] _ in
             guard let self = self, let alert = alert, let text = alert.textFields![0].text, !text.isEmpty else { return }
             if allPlayLists.contains(text) {
-                self.makeAlert(message: "已存在该播放列表", detail: nil, showTime: 0.5, completion: nil)
+                self.makeAutoAlert(message: "已存在该播放列表", detail: nil, showTime: 0.5, completion: nil)
                 return
             }
             self.playLists.append(text)

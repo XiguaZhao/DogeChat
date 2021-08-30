@@ -10,6 +10,23 @@ import UIKit
 import DogeChatNetwork
 import DogeChatUniversal
 
+func getPKDrawing(message: Message) -> Any? {
+    guard #available(iOS 14, *) else {
+        return nil
+    }
+    if let localURL = message.pkLocalURL, (localURL.lastPathComponent == message.pkDataURL || message.sendStatus == .fail) {
+        if let data = try? Data(contentsOf: localURL), let drawing = try? PKDrawing(data: data) {
+            return drawing
+        }
+    } else if let path = message.pkDataURL {
+        let fileName = path.components(separatedBy: "/").last!
+        if let url = fileURLAt(dirName: drawDir, fileName: fileName), let data = try? Data(contentsOf: url), let drawing = try? PKDrawing(data: data) {
+            return drawing
+        }
+    } 
+    return nil
+}
+
 class MessageCollectionViewDrawCell: MessageCollectionViewBaseCell {
     
     static let cellID = "MessageCollectionViewDrawCell"
@@ -30,14 +47,16 @@ class MessageCollectionViewDrawCell: MessageCollectionViewBaseCell {
         if #available(iOS 14.0, *) {
             self.getPKView()?.drawing = PKDrawing()
             self.getPKView()?.backgroundColor = .clear
-        } 
+        }
     }
     
     override func layoutSubviews() {
         super.layoutSubviews()
+        guard message != nil else { return }
         layoutForDrawMessage()
         if #available(iOS 14.0, *) {
             indicationNeighborView = getPKView()
+            self.getPKView()?.setContentOffset(.zero, animated: false)
         }
         layoutIndicatorViewAndMainView()
     }
@@ -55,18 +74,14 @@ class MessageCollectionViewDrawCell: MessageCollectionViewBaseCell {
         let rightMargin:CGFloat = 0
         pkView.frame = CGRect(x: 0, y: 0, width: 0.8 * contentView.bounds.width + 20 - rightMargin, height: contentView.bounds.height - 30)
         pkView.contentSize = CGSize(width: pkView.frame.width, height: 2000)
-        if let pkDrawing = message.pkDrawing as? PKDrawing {
+        if let pkDrawing = getPKDrawing(message: message) as? PKDrawing {
             let maxWidth = contentView.bounds.width * 0.8
             if pkDrawing.bounds.maxX > maxWidth {
-                let ratio = message.drawScale ?? max(0, maxWidth / pkDrawing.bounds.maxX)
+                let ratio = max(0, maxWidth / pkDrawing.bounds.maxX)
                 pkView.drawing = pkDrawing.transformed(using: CGAffineTransform(scaleX: ratio, y: ratio))
-                message.pkViewScale = ratio
+                message.drawScale = ratio
             } else {
-                if let scale = message.drawScale {
-                    pkView.drawing = pkDrawing.transformed(using: CGAffineTransform(scaleX: scale, y: scale))
-                } else {
-                    pkView.drawing = pkDrawing
-                }
+                pkView.drawing = pkDrawing
             }
         }
     }
@@ -80,6 +95,7 @@ class MessageCollectionViewDrawCell: MessageCollectionViewBaseCell {
             self.contentView.addSubview(pkView)
             tapGes = UITapGestureRecognizer(target: self, action: #selector(pkViewTapAction(_:)))
             contentView.addGestureRecognizer(tapGes)
+            tapGes.delegate = self
             setNeedsLayout()
         }
     }
@@ -102,34 +118,41 @@ class MessageCollectionViewDrawCell: MessageCollectionViewBaseCell {
         return nil
     }
     func downloadPKDataIfNeeded() {
-        guard #available(iOS 14.0, *),
-              let pkDataStr = message.pkDataURL,
-              let pkDataURL = URL(string: url_pre + pkDataStr) else { return }
-        if !message.needReDownload, let cachedPKData = ContactsTableViewController.pkDataCache[pkDataStr],
-           let pkDrawing = try? PKDrawing(data: cachedPKData as Data) {
-            if !message.isDrawing { //正在画的话已经做了实时更新，这里不需要再覆盖缓存
-                message.pkDrawing = pkDrawing
-            }
-            setNeedsLayout()
-        } else {
-            guard let capturedMessage = self.message else { return }
-            session.get(pkDataURL.absoluteString, parameters: nil, headers: nil, progress: nil) { task, data in
-                if let downloadedData = data as? Data,
-                   let pkDrawing = try? PKDrawing(data: downloadedData) {
-                    ContactsTableViewController.pkDataWriteQueue.sync {
-                        ContactsTableViewController.pkDataCache[pkDataStr] = downloadedData
-                    }
-                    capturedMessage.pkDrawing = pkDrawing
-                    capturedMessage.needReDownload = false
-                    if capturedMessage == self.message {
-                        self.setNeedsLayout()
-                    }
-                }
-            } failure: { task, error in
-                print(error)
-            }
-            
+        guard #available(iOS 14.0, *), let capturedMessage = message else { return }
+        let displayBlock: () -> Void = { [weak self] in
+            guard let self = self, capturedMessage == self.message else { return }
+            self.setNeedsLayout()
         }
+        if message.pkLocalURL != nil && message.sendStatus == .fail {
+            displayBlock()
+        } else if let name = message.pkDataURL?.components(separatedBy: "/").last, fileURLAt(dirName: drawDir, fileName: name) != nil {
+            displayBlock()
+        } else if let path = message.pkDataURL {
+            let completionBlock: (URLSessionTask, Any?) -> Void = { _ , data in
+                if let data = data as? Data {
+                    let fileName = path.components(separatedBy: "/").last!
+                    saveFileToDisk(dirName: drawDir, fileName: fileName, data: data)
+                    capturedMessage.pkLocalURL = fileURLAt(dirName: drawDir, fileName: fileName)
+                }
+                displayBlock()
+            }
+            if message.downloadTask == nil {
+                let task = session.get(url_pre + path, parameters: nil, headers: nil, progress: nil) { task, data in
+                    capturedMessage.downloadCompletion?(task, data)
+                } failure: { task, error in
+                    print(error)
+                }
+                message.downloadTask = task
+            }
+            message.downloadCompletion = completionBlock
+        }
+    }
+    
+    override func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+        if gestureRecognizer == tapGes {
+            return !tableView!.isEditing
+        }
+        return super.gestureRecognizerShouldBegin(gestureRecognizer)
     }
 
 }

@@ -15,7 +15,7 @@ import SwiftyJSON
     @objc optional func deleteEmoji(cell: EmojiCollectionViewCell)
 }
 
-class EmojiSelectView: DogeChatBlurView {
+class EmojiSelectView: DogeChatStaticBlurView {
 
     weak var delegate: EmojiViewDelegate?
     let collectionView: DogeChatBaseCollectionView!
@@ -41,22 +41,13 @@ class EmojiSelectView: DogeChatBlurView {
         collectionView.prefetchDataSource = self
         collectionView.dragDelegate = self
         collectionView.dragInteractionEnabled = true
-        configure()
+        collectionView.backgroundColor = .clear
     }
     
     deinit {
         SDWebImageManager.shared.imageCache.clear(with: .memory, completion: nil)
     }
-    
-    private func configure() {
-        guard !AppDelegate.shared.immersive else { return }
-        if #available(iOS 13.0, *) {
-            collectionView.backgroundColor = .systemBackground
-        } else {
-            collectionView.backgroundColor = .white
-        }
-    }
-    
+        
     override func layoutSubviews() {
         super.layoutSubviews()
         collectionView.frame = self.bounds

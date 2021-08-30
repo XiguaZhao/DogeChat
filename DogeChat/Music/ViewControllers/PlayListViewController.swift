@@ -155,7 +155,7 @@ class PlayListViewController: DogeChatViewController, SelectContactsDelegate {
         let all = Set(allTracks)
         let filtered = set.subtracting(all)
         NotificationCenter.default.post(name: .tracksInfoChanged, object: Array(filtered))
-        makeAlert(message: "已收藏", detail: nil, showTime: 0.2) {
+        makeAutoAlert(message: "已收藏", detail: nil, showTime: 0.2) {
             self.dismiss(animated: true, completion: nil)
         }
     }
@@ -275,7 +275,7 @@ class PlayListViewController: DogeChatViewController, SelectContactsDelegate {
                         chatVC.insertNewMessageCell([message])
                     }
                 }
-                self?.makeAlert(message: "发送成功", detail: nil, showTime: 0.2) {
+                self?.makeAutoAlert(message: "发送成功", detail: nil, showTime: 0.2) {
                     self?.dismiss(animated: true, completion: nil)
                 }
             }
@@ -356,7 +356,7 @@ class PlayListViewController: DogeChatViewController, SelectContactsDelegate {
         }
         saveTracksInfoToDisk()
         reloadData()
-        makeAlert(message: "已删除", detail: nil, showTime: 0.5, completion: nil)
+        makeAutoAlert(message: "已删除", detail: nil, showTime: 0.5, completion: nil)
     }
     
     @objc func deleteTrackNoti(_ noti: Notification) {
@@ -487,7 +487,7 @@ extension PlayListViewController: UITableViewDelegate, UITableViewDataSource {
                let index = PlayerManager.shared.playingList.firstIndex(where: { $0.id == nowPlayTrack.id }) {
                 PlayerManager.shared.playingList.insert(self.tracks[indexPath.row], at: index + 1)
                 handler(true)
-                self.makeAlert(message: "已插播", detail: nil, showTime: 0.2, completion: nil)
+                self.makeAutoAlert(message: "已插播", detail: nil, showTime: 0.2, completion: nil)
             } else {
                 handler(false)
             }
@@ -540,7 +540,7 @@ extension PlayListViewController: UITableViewDelegate, UITableViewDataSource {
     
 }
 
-extension PlayListViewController: DownloadDelegate, UIPopoverPresentationControllerDelegate {
+extension PlayListViewController: DownloadDelegate {
         
     func downloadUpdateProgress(_ track: Track, progress: Progress) {
         if let index = tracks.firstIndex(where: {track.id == $0.id}), let cell = tableView.cellForRow(at: IndexPath(row: index, section: 0)) as? PlayListTrackCell {
@@ -559,9 +559,6 @@ extension PlayListViewController: DownloadDelegate, UIPopoverPresentationControl
         saveTracksInfoToDisk()
     }
     
-    func adaptivePresentationStyle(for controller: UIPresentationController) -> UIModalPresentationStyle {
-        return .none
-    }
     
 }
 

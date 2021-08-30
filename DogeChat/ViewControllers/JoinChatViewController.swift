@@ -97,7 +97,7 @@ extension JoinChatViewController: UITextFieldDelegate {
     
     func login(username: String, password: String) {
         guard username.count != 0 && password.count != 0 else {
-            makeAlert(message: "信息不完整", detail: nil, showTime: 1, completion: nil)
+            makeAutoAlert(message: "信息不完整", detail: nil, showTime: 1, completion: nil)
             return
         }
         manager.messageManager.myName = username

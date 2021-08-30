@@ -18,6 +18,7 @@ enum BlurImageSource {
 class PlayerManager: NSObject {
     
     static let shared = PlayerManager()
+    var isMute = true
     var player = AVPlayer()
     var playMode: PlayMode = .normal
     var interruptTime = Date().timeIntervalSince1970
@@ -104,8 +105,8 @@ class PlayerManager: NSObject {
     
     override init() {
         super.init()
-        NotificationCenter.default.addObserver(self, selector: #selector(trackPlayToEndNoti(_:)), name: .AVPlayerItemDidPlayToEndTime, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(handleInterruption(notification:)), name: AVAudioSession.interruptionNotification, object: nil)
+//        NotificationCenter.default.addObserver(self, selector: #selector(trackPlayToEndNoti(_:)), name: .AVPlayerItemDidPlayToEndTime, object: nil)
+//        NotificationCenter.default.addObserver(self, selector: #selector(handleInterruption(notification:)), name: AVAudioSession.interruptionNotification, object: nil)
         makeSliderForRemoteControl()
     }
     
@@ -461,4 +462,7 @@ func recoverVC(_ vc: UIViewController, blurView: inout UIImageView!) {
     } completion: { [weak blurView] _ in
         blurView?.isHidden = true
     }
+}
+
+extension AVPlayer {
 }

@@ -26,7 +26,7 @@ public extension MessageManager {
             }
         }
         if size == nil {
-            size = CGSize(width: width, height: image.size.height * (width / image.size.width))
+            size = CGSize(width: width, height: floor(image.size.height * (width / image.size.width)))
         }
         UIGraphicsBeginImageContextWithOptions(size!, false, 0.0)
         DispatchQueue.global().sync {

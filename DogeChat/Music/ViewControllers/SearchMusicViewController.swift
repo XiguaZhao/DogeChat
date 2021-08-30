@@ -151,7 +151,7 @@ extension SearchMusicViewController: UISearchBarDelegate, UITableViewDelegate, U
     func downloadTap(cell: TrackSearchResultCell, sender: UIButton) {
         sender.isHidden = true
         cell.favoriteButton.isHidden = true
-        makeAlert(message: "已开始下载", detail: nil, showTime: 0.5) {
+        makeAutoAlert(message: "已开始下载", detail: nil, showTime: 0.5) {
         }
         if !MusicHttpManager.shared.favorites.contains(cell.track) {
             MusicHttpManager.shared.favorites.append(cell.track)
@@ -161,7 +161,7 @@ extension SearchMusicViewController: UISearchBarDelegate, UITableViewDelegate, U
     
     func favoriteTap(cell: TrackSearchResultCell, sender: UIButton) {
         sender.isHidden = true
-        makeAlert(message: "已收藏", detail: nil, showTime: 0.5) {
+        makeAutoAlert(message: "已收藏", detail: nil, showTime: 0.5) {
         }
         if !MusicHttpManager.shared.favorites.contains(cell.track) {
             MusicHttpManager.shared.favorites.append(cell.track)

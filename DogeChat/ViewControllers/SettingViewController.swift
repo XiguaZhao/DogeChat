@@ -91,7 +91,7 @@ class SettingViewController: DogeChatViewController, DatePickerChangeDelegate, U
                 } else {
                     UserDefaults.standard.setValue(nil, forKey: key)
                 }
-                self?.makeAlert(message: "修改完成，请重启", detail: nil, showTime: 1, completion: nil)
+                self?.makeAutoAlert(message: "修改完成，请重启", detail: nil, showTime: 1, completion: nil)
             }))
             alert.addAction(UIAlertAction(title: "取消", style: .cancel, handler: nil))
             self.present(alert, animated: true, completion: nil)
@@ -110,7 +110,7 @@ class SettingViewController: DogeChatViewController, DatePickerChangeDelegate, U
         case .resetHostAndWs:
             UserDefaults.standard.setValue(nil, forKey: "host")
             UserDefaults.standard.setValue(nil, forKey: "socketUrl")
-            self.makeAlert(message: "重置完成，请重启", detail: nil, showTime: 1, completion: nil)
+            self.makeAutoAlert(message: "重置完成，请重启", detail: nil, showTime: 1, completion: nil)
         case .switchImmersive:
             break
         case .customBlur:

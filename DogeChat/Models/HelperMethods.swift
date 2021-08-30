@@ -9,7 +9,7 @@
 import Foundation
 
 public extension UIViewController {
-    func makeAlert(message: String, detail: String?, showTime: TimeInterval, completion: (() -> Void)?) {
+    func makeAutoAlert(message: String, detail: String?, showTime: TimeInterval, completion: (() -> Void)?) {
         DispatchQueue.main.async {
             let alert = UIAlertController(title: message, message: detail, preferredStyle: .alert)
             self.present(alert, animated: true) { 
@@ -18,6 +18,11 @@ public extension UIViewController {
                 }
             }
         }
+    }
+    
+    func makeAlert(message: String, detail: String? = nil) -> UIAlertController {
+        let alert = UIAlertController(title: message, message: detail, preferredStyle: .alert)
+        return alert
     }
 }
 

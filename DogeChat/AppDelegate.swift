@@ -9,7 +9,7 @@ import RSAiOSWatchOS
 import DogeChatUniversal
 import Reachability
 
-enum SplitVCSide {
+@objc enum SplitVCSide: Int {
     case left, right
 }
 
@@ -42,7 +42,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var immersive: Bool {
         fileURLAt(dirName: "customBlur", fileName: userID) != nil || (PlayerManager.shared.isPlaying && UserDefaults.standard.bool(forKey: "immersive"))
     }
-    class var shared: AppDelegate {
+    @objc class var shared: AppDelegate {
         return UIApplication.shared.delegate as! AppDelegate
     }
     
@@ -150,7 +150,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return UIDevice.current.userInterfaceIdiom == .phone
     }
     
-    func widthFor(side: SplitVCSide) -> CGFloat {
+    @objc func widthFor(side: SplitVCSide) -> CGFloat {
         if splitViewController.isCollapsed {
             return splitViewController.view.bounds.width
         } else {

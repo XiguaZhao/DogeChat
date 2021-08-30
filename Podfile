@@ -15,6 +15,7 @@ pod 'DogeChatUniversal', :path => '/Users/zhaoxiguang/Library/Mobile Documents/c
 pod 'LookinServer'
 pod 'ReachabilitySwift'
 pod 'RSAiOSWatchOS', :path => '/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/RSAiOSWatchOS'
+pod 'LFAssetExportSession'
 end
 
 

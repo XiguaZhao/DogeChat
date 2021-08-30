@@ -10,6 +10,13 @@ import UIKit
 
 class DogeChatTableViewCell: UITableViewCell {
     
+    var willDisplayBlock: ((_ cell: DogeChatTableViewCell, _ tableView: UITableView) -> Void)?
+    var endDisplayBlock: ((_ cell: DogeChatTableViewCell, _ tableView: UITableView) -> Void)?
+    var centerDisplayBlock: ((_ cell: DogeChatTableViewCell, _ tableView: UITableView) -> Void)?
+    var resignCenterBlock: ((_ cell: DogeChatTableViewCell, _ tableView: UITableView) -> Void)?
+    
+    weak var tableView: UITableView?
+    
     static func cellID() -> String {
         return "DogeChatTableViewCell"
     }

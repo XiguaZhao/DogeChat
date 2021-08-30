@@ -29,7 +29,7 @@ class SignUpViewController: UIViewController {
         sender.setTitle("已发送", for: .disabled)
         sender.isEnabled = false
       } else {
-        self.makeAlert(message: status, detail: nil, showTime: 2, completion: nil)
+        self.makeAutoAlert(message: status, detail: nil, showTime: 2, completion: nil)
       }
     }
   }
@@ -38,21 +38,21 @@ class SignUpViewController: UIViewController {
     guard let username = username.text, let password = password.text, let confirm = confirmPassword.text, let email = email.text, let code = validationCode.text,
       [username, password, confirm, email, code].filter({$0.count != 0}).count == textFields.count
     else {
-      makeAlert(message: "信息不完整", detail: nil, showTime: 1, completion: nil)
+      makeAutoAlert(message: "信息不完整", detail: nil, showTime: 1, completion: nil)
       return
     }
     guard password == confirm else {
-      makeAlert(message: "密码不一致", detail: nil, showTime: 1, completion: nil)
+      makeAutoAlert(message: "密码不一致", detail: nil, showTime: 1, completion: nil)
       return
     }
     WebSocketManager.shared.signUp(username: username, password: password, repeatPassword: confirm, email: email, validationCode: code) { (status) in
       print(status)
       if status == "success" {
-        self.makeAlert(message: "注册成功", detail: "请记住用户名和密码", showTime: 2) {
+        self.makeAutoAlert(message: "注册成功", detail: "请记住用户名和密码", showTime: 2) {
           self.navigationController?.popViewController(animated: true)
         }
       } else {
-        self.makeAlert(message: status, detail: nil, showTime: 2, completion: nil)
+        self.makeAutoAlert(message: status, detail: nil, showTime: 2, completion: nil)
       }
     }
   }

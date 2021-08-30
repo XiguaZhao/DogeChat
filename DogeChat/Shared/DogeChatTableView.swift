@@ -21,6 +21,10 @@ class DogeChatTableView: UITableView {
         fatalError("init(coder:) has not been implemented")
     }
     
+    override func adjustedContentInsetDidChange() {
+        super.adjustedContentInsetDidChange()
+    }
+    
     func updateBgColor() {
         if AppDelegate.shared.immersive && UserDefaults.standard.bool(forKey: "immersive") {
             self.backgroundColor = .clear

@@ -10,7 +10,7 @@ import Foundation
 import DogeChatUniversal
 
 extension ChatRoomViewController: MessageTableViewCellDelegate {
-    
+        
     func imageViewTapped(_ cell: MessageCollectionViewBaseCell, imageView: FLAnimatedImageView, path: String, isAvatar: Bool) {
         messageInputBar.textViewResign()
         let browser = ImageBrowserViewController()
@@ -47,8 +47,7 @@ extension ChatRoomViewController: MessageTableViewCellDelegate {
             guard let pkView = pkView as? PKCanvasView else { return }
             let message = messages[drawingIndexPath.item]
             drawVC.message = message
-            drawVC.pkView.drawing = pkView.drawing.transformed(using: CGAffineTransform(scaleX: 1/message.pkViewScale, y: 1/message.pkViewScale))
-            print(message.pkViewScale)
+            drawVC.pkView.drawing = pkView.drawing
             drawVC.pkViewDelegate.dataChangedDelegate = self
             drawVC.modalPresentationStyle = .fullScreen
             drawVC.chatRoomVC = self

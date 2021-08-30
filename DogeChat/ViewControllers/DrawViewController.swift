@@ -106,11 +106,12 @@ class DrawViewController: UIViewController, PKViewAutoOffsetDelegate {
     
     
     @objc func confirmTapAction(_ sender: UIBarButtonItem) {
-        if !pkView.drawing.strokes.isEmpty {
-            pkViewDelegate.dataChangedDelegate?.pkViewDidFinishDrawing(pkView, message: message as Any)
-        }
         ChatRoomViewController.needRotate = false
-        self.dismiss(animated: true, completion: nil)
+        self.dismiss(animated: true) { [self] in
+            if !pkView.drawing.strokes.isEmpty {
+                pkViewDelegate.dataChangedDelegate?.pkViewDidFinishDrawing(pkView, message: message as Any)
+            }
+        }
     }
     
     @objc func returnTapAction(_ sender: UIBarButtonItem) {

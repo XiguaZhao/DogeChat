@@ -18,3 +18,5 @@
 #import "MainVideoView.h"
 #import "VideoChatViewController.h"
 #import "PKView.h"
+#import "LivePhotoGenerator.h"
+#import "LFAssetExportSession.h"

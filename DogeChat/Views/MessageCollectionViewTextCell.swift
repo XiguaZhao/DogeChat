@@ -9,14 +9,26 @@
 import UIKit
 import DogeChatNetwork
 import DogeChatUniversal
+import AVFoundation
 
 let messageFontSize: CGFloat = 17
 
 class MessageCollectionViewTextCell: MessageCollectionViewBaseCell {
     
     static let cellID = "MessageCollectionViewTextCell"
+    static let voicePlayer = AVPlayer()
+    static var voiceURL: URL?
     
     let messageLabel = Label()
+    let tapGes = UITapGestureRecognizer()
+    var isPlaying = false
+    var isEnd = false
+    var voiceURL: URL? {
+        if let name = message?.voiceURL?.components(separatedBy: "/").last {
+            return fileURLAt(dirName: voiceDir, fileName: name)
+        }
+        return nil
+    }
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -24,16 +36,29 @@ class MessageCollectionViewTextCell: MessageCollectionViewBaseCell {
         messageLabel.layer.masksToBounds = true
         messageLabel.textColor = .white
         messageLabel.numberOfLines = 0
+        messageLabel.isUserInteractionEnabled = true
         contentView.addSubview(messageLabel)
+        
+        tapGes.addTarget(self, action: #selector(tapAction))
+        messageLabel.addGestureRecognizer(tapGes)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(playToEnd(_:)), name: .AVPlayerItemDidPlayToEndTime, object: nil)
     }
     
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        tapGes.isEnabled = false
+        isPlaying = false
+    }
+    
     override func layoutSubviews() {
         super.layoutSubviews()
-        if message.messageType == .text {
+        guard message != nil else { return }
+        if message.messageType == .text || message.messageType == .voice {
             layoutForTextMessage()
             indicationNeighborView = messageLabel
             layoutIndicatorViewAndMainView()
@@ -45,12 +70,97 @@ class MessageCollectionViewTextCell: MessageCollectionViewBaseCell {
     
     override func apply(message: Message) {
         super.apply(message: message)
-        messageLabel.text = message.message
+        if message.messageType == .text || message.messageType == .join {
+            messageLabel.text = message.message
+        } else if message.messageType == .voice {
+            var count = message.voiceDuration
+            count = min(count, 25)
+            count = max(count, 3)
+            let str = Array(repeating: " ", count: count).joined()
+            messageLabel.text = message.messageSender == .someoneElse ? str + "\(message.voiceDuration)''" : "\(message.voiceDuration)''" + str
+        }
         if message.messageSender == .ourself {
             messageLabel.backgroundColor = UIColor(red: 24/255, green: 180/255, blue: 128/255, alpha: 1.0)
 
         } else {
             messageLabel.backgroundColor = #colorLiteral(red: 0.09282096475, green: 0.7103053927, blue: 1, alpha: 1)
+        }
+        downloadVoiceIfNeeded()
+    }
+    
+    @objc func playToEnd(_ noti: Notification) {
+        isPlaying = false
+        isEnd = true
+        try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+    }
+    
+    func playVoice() {
+        if AVAudioSession.sharedInstance().categoryOptions.contains(.mixWithOthers) {
+            try? AVAudioSession.sharedInstance().setCategory(.playback, options: [.allowBluetooth, .allowBluetoothA2DP])
+        }
+        if let path = message.voiceURL, let url = fileURLAt(dirName: voiceDir, fileName: path.components(separatedBy: "/").last!) {
+            let player = MessageCollectionViewTextCell.voicePlayer
+            player.replaceCurrentItem(with: AVPlayerItem(url: url))
+            player.seek(to: .zero)
+            player.play()
+            MessageCollectionViewTextCell.voiceURL = url
+            isEnd = false
+            isPlaying = true
+        }
+    }
+    
+    @objc func tapAction() {
+        if MessageCollectionViewTextCell.voiceURL == self.voiceURL {
+            if isPlaying {
+                MessageCollectionViewTextCell.voicePlayer.pause()
+                isPlaying = false
+            } else {
+                MessageCollectionViewTextCell.voicePlayer.play()
+                isPlaying = true
+            }
+            if isEnd || MessageCollectionViewTextCell.voicePlayer.currentItem == nil {
+                playVoice()
+                isPlaying = true
+            }
+        } else {
+            playVoice()
+        }
+    }
+    
+    func downloadVoiceIfNeeded() {
+        var url: URL?
+        guard let captured = self.message, message.messageType == .voice else { return }
+        let block: () -> Void = { [weak self] in
+            guard let self = self, captured == self.message, let url = url else { return }
+            self.message.videoLocalPath = url
+            self.tapGes.isEnabled = true
+            syncOnMainThread {
+                self.messageLabel.backgroundColor = #colorLiteral(red: 0.667152524, green: 0.4650295377, blue: 1, alpha: 1)
+            }
+        }
+        if message.voiceLocalPath != nil && message.sendStatus == .fail {
+            url = message.voiceLocalPath!
+            block()
+        } else if let _url = fileURLAt(dirName: voiceDir, fileName: self.message.voiceURL!.components(separatedBy: "/").last!) {
+            url = _url
+            block()
+        } else {
+            let fileName = self.message.voiceURL!.components(separatedBy: "/").last!
+            let completion: (URLSessionTask, Any?) -> Void = { task, data in
+                guard let data = data as? Data else { return }
+                saveFileToDisk(dirName: voiceDir, fileName: fileName, data: data)
+                url = fileURLAt(dirName: voiceDir, fileName: fileName)
+                block()
+            }
+            if message.downloadTask == nil {
+                let task = session.get(url_pre + message.voiceURL!, parameters: nil, headers: nil, progress: nil, success: { task, data in
+                    captured.downloadCompletion?(task, data)
+                }) { task, error in
+                    print(error)
+                }
+                message.downloadTask = task
+            }
+            message.downloadCompletion = completion
         }
     }
     

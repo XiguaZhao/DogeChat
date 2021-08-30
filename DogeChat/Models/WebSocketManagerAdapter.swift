@@ -11,21 +11,14 @@ import DogeChatNetwork
 import SwiftyJSON
 import DogeChatUniversal
 
-func syncOnMainThread(block: () -> Void) {
-    if Thread.isMainThread {
-        block()
-    } else {
-        DispatchQueue.main.sync {
-            block()
-        }
-    }
+var safeArea: UIEdgeInsets {
+    UIApplication.shared.keyWindow!.safeAreaInsets
 }
 
 class WebSocketManagerAdapter: NSObject {
     
     @objc static let shared = WebSocketManagerAdapter()
     let manager = WebSocketManager.shared
-    let queue = DispatchQueue(label: "com.zhaoxiguang.realtimeDrawing")
     @objc var readyToSendVideoData = false {
         didSet {
             guard readyToSendVideoData == true else { return }
@@ -152,17 +145,24 @@ class WebSocketManagerAdapter: NSObject {
     
     @objc func receiveDrawMessageUpdate(_ noti: Notification) {
         guard let message = noti.object as? Message else { return }
-        message.isDrawing = false
-        message.needReDownload = true
+        message.cellHeight = 0
         if let chatRoomVC = AppDelegate.shared.navigationController.topViewController as? ChatRoomViewController {
             if let index = chatRoomVC.messages.firstIndex(of: message) {
                 DispatchQueue.main.async {
                     chatRoomVC.tableView.reloadRows(at: [IndexPath(item: index, section: 0)], with: .none)
                 }
-                chatRoomVC.messages[index].drawScale = nil
-                chatRoomVC.messages[index].height = nil
             }
         }
+    }
+    
+    func getDrawCell(for message: Message) -> MessageCollectionViewDrawCell? {
+        guard let chatVC = AppDelegate.shared.navigationController.visibleViewController as? ChatRoomViewController else { return nil }
+        if let cells = chatVC.tableView.visibleCells as? [MessageCollectionViewBaseCell] {
+            if let index = cells.firstIndex(where: { $0.message == message }) {
+                return cells[index] as! MessageCollectionViewDrawCell
+            }
+        }
+        return nil
     }
     
     @objc func receiveRealTimeDrawData(noti: Notification) {
@@ -170,62 +170,21 @@ class WebSocketManagerAdapter: NSObject {
         let uuid = json["uuid"].stringValue
         let _ = json["sender"].stringValue
         if #available(iOS 14.0, *) {
-            DispatchQueue.global().async {
-                var hasChange = false
-                guard let targetMessage = WebSocketManager.shared.messageManager.drawMessages.first(where: { $0.uuid == uuid} ) else { return }
-                if let base64Str = json["base64Str"].string {
-                    guard let strokeData = Data(base64Encoded: base64Str) else { return }
-                    if let newDrawing = try? PKDrawing(data: strokeData) {
-                        if let pkDrawing = targetMessage.pkDrawing as? PKDrawing {
-                            self.queue.sync {
-                                targetMessage.pkDrawing = pkDrawing.appending(newDrawing)
-                            }
-                        } else {
-                            targetMessage.pkDrawing = newDrawing
+            guard let targetMessage = WebSocketManager.shared.messageManager.drawMessages.first(where: { $0.uuid == uuid} ) else { return }
+            if let base64Str = json["base64Str"].string {
+                guard let strokeData = Data(base64Encoded: base64Str) else { return }
+                if let newStroke = (try? PKDrawing(data: strokeData))?.transformed(using: CGAffineTransform(scaleX: targetMessage.drawScale, y: targetMessage.drawScale)) {
+                    if let cell = self.getDrawCell(for: targetMessage), let drawing = cell.getPKView()?.drawing {
+                        let wholeNewDrawing = drawing.appending(newStroke)
+                        cell.getPKView()!.drawing = wholeNewDrawing
+                        let newBounds = wholeNewDrawing.bounds
+                        let widthLack = newBounds.maxX > cell.getPKView()!.bounds.maxX
+                        let _ = newBounds.maxY > cell.getPKView()!.bounds.maxY
+                        if widthLack {
+                            cell.getPKView()!.drawing = cell.getPKView()!.drawing.transformed(using: CGAffineTransform(scaleX: 0.8, y: 0.8))
+                            targetMessage.drawScale *= 0.8
                         }
-                        hasChange = true
-                    }
-                }
-                else if let indexes = json["base64Str"].arrayObject as? [Int] {
-                    if let drawing = targetMessage.pkDrawing as? PKDrawing, drawing.strokes.count > indexes[0] {
-                        var newDrawing = drawing
-                        for index in indexes {
-                            newDrawing.strokes.remove(at: index)
-                        }
-                        targetMessage.pkDrawing = newDrawing
-                        hasChange = true
-                    }
-                }
-                if hasChange {
-                    targetMessage.isDrawing = true
-                    if let chatRoomVC = AppDelegate.shared.navigationController?.topViewController as? ChatRoomViewController {
-                        if let index = chatRoomVC.messages.firstIndex(of: targetMessage) {
-                            let block = {
-                                if let cell = chatRoomVC.tableView.cellForRow(at: IndexPath(item: index, section: 0)) as? MessageCollectionViewDrawCell, let drawing = targetMessage.pkDrawing as? PKDrawing {
-                                    if let scale = targetMessage.drawScale {
-                                        let transformedDrawing = drawing.transformed(using: CGAffineTransform(scaleX: scale, y: scale))
-                                        guard let pkView = cell.getPKView() else { return }
-                                        pkView.drawing = transformedDrawing
-                                        let bounds = transformedDrawing.bounds
-                                        
-                                        if bounds.maxX > pkView.bounds.width {
-                                            targetMessage.drawScale = max(0.17, (targetMessage.drawScale ?? 0.5) - 0.1)
-                                            chatRoomVC.tableView.reloadRows(at: [IndexPath(item: index, section: 0)], with: .none)
-                                        } else if bounds.maxY > pkView.bounds.height {
-                                            targetMessage.height! += 100
-                                            self.reloadAndScroll(index: index, collectionView: chatRoomVC.tableView)
-                                        }
-                                    } else {
-                                        targetMessage.drawScale = 0.5
-                                        targetMessage.height = 200
-                                        self.reloadAndScroll(index: index, collectionView: chatRoomVC.tableView)
-                                    }
-                                }
-                            }
-                            syncOnMainThread {
-                                block()
-                            }
-                        }
+                        cell.getPKView()?.scrollRectToVisible(newStroke.bounds, animated: true)
                     }
                 }
             }
@@ -295,7 +254,7 @@ extension WebSocketManagerAdapter: VoiceDelegate, WebSocketDataDelegate {
         }
         return (result, fileUrl, result.size)
     }
-
+    
 }
 
 public func getCacheImage(from cache: NSCache<NSString, NSData>?, path: String, completion: @escaping ((_ image: UIImage?, _ data: Data?) -> Void)) {

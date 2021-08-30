@@ -1,15 +1,28 @@
 import UIKit
 import DogeChatNetwork
 
-protocol MessageInputDelegate: AnyObject {
-    func sendWasTapped(content: String)
-    func addButtonTapped()
-    func voiceButtonTapped(_ sender: UIButton)
-    func textViewFontSizeChange(_ textView: UITextView, oldSize: CGFloat, newSize: CGFloat)
-    func textViewFontSizeChangeEnded(_ textView: UITextView)
+enum InputViewToolButtonType {
+    case voice
+    case camera
+    case photo
+    case livePhoto
+    case video
+    case draw
+    case add
 }
 
-class MessageInputView: DogeChatBlurView {
+protocol MessageInputDelegate: AnyObject {
+    func sendWasTapped(content: String)
+    func textViewFontSizeChange(_ textView: UITextView, oldSize: CGFloat, newSize: CGFloat)
+    func textViewFontSizeChangeEnded(_ textView: UITextView)
+    func toolButtonTap(_ button: UIButton, type: InputViewToolButtonType)
+}
+
+var messageBarHeight: CGFloat {
+    86 + safeArea.bottom
+}
+
+class MessageInputView: DogeChatStaticBlurView {
     weak var delegate: MessageInputDelegate?
     
     static let ratioOfEmojiView: CGFloat = 0.45
@@ -22,18 +35,28 @@ class MessageInputView: DogeChatBlurView {
     var beginY: CGFloat = 0
     var frameShouldAnimate = true
     var directionUp = true
+    var toolStack: UIStackView!
+    let cameraButton = UIButton()
+    let photoButton = UIButton()
+    let livePhotoButton = UIButton()
+    let videoButton = UIButton()
+    let drawButton = UIButton()
+    var lastInset: UIEdgeInsets = .zero
     var isActive: Bool {
         return self.frame.minY < AppDelegate.shared.splitViewController.view.bounds.height * 0.8
     }
 
     override init(frame: CGRect) {
         super.init(frame: frame)
-        
+                
+        let offset: CGFloat = 12
+        let width: CGFloat = 30
+
         textView.translatesAutoresizingMaskIntoConstraints = false
-        textView.layer.cornerRadius = 4
+        textView.layer.cornerRadius = 8
         textView.layer.borderColor = UIColor(red: 200/255, green: 200/255, blue: 200/255, alpha: 0.6).cgColor
-        textView.layer.borderWidth = 1
-        textView.font = UIFont.systemFont(ofSize: 18)
+        textView.layer.borderWidth = 2
+        textView.font = UIFont.systemFont(ofSize: 17)
         textView.returnKeyType = .send
         textView.backgroundColor = .clear
         addButton.translatesAutoresizingMaskIntoConstraints = false
@@ -41,11 +64,16 @@ class MessageInputView: DogeChatBlurView {
         upArrowButton.translatesAutoresizingMaskIntoConstraints = false
         voiceButton.translatesAutoresizingMaskIntoConstraints = false
         if #available(iOS 13.0, *) {
-            let largeConfig = UIImage.SymbolConfiguration(pointSize: 140, weight: .bold, scale: .large)
-            addButton.setImage(UIImage(systemName: "plus.circle", withConfiguration: largeConfig), for: .normal)
-            emojiButton.setImage(UIImage(systemName: "smiley", withConfiguration: largeConfig), for: .normal)
+            let largeConfig = UIImage.SymbolConfiguration(pointSize: 150, weight: .bold, scale: .large)
+            addButton.setImage(UIImage(systemName: "plus.circle.fill", withConfiguration: largeConfig), for: .normal)
+            emojiButton.setImage(UIImage(systemName: "smiley.fill", withConfiguration: largeConfig), for: .normal)
             upArrowButton.setImage(UIImage(systemName: "arrow.up", withConfiguration: largeConfig), for: .normal)
-            voiceButton.setImage(UIImage(systemName: "music.mic", withConfiguration: largeConfig), for: .normal)
+            voiceButton.setImage(UIImage(systemName: "mic.circle.fill", withConfiguration: largeConfig), for: .normal)
+            cameraButton.setImage(UIImage(systemName: "camera.circle.fill", withConfiguration: largeConfig), for: .normal)
+            photoButton.setImage(UIImage(named: "xiangce"), for: .normal)
+            livePhotoButton.setImage(UIImage(systemName: "livephoto", withConfiguration: largeConfig), for: .normal)
+            videoButton.setImage(UIImage(systemName: "video.circle.fill", withConfiguration: largeConfig), for: .normal)
+            drawButton.setImage(UIImage(systemName: "pencil.circle.fill", withConfiguration: largeConfig), for: .normal)
         } else {
             addButton.titleLabel?.text = "+"
             addButton.titleLabel?.textAlignment = .center
@@ -56,69 +84,135 @@ class MessageInputView: DogeChatBlurView {
             voiceButton.titleLabel?.text = "语音"
             voiceButton.titleLabel?.textAlignment = .center
         }
+                
         addButton.addTarget(self, action: #selector(addButtonTapped), for: .touchUpInside)
         emojiButton.addTarget(self, action: #selector(emojiButtonTapped), for: .touchUpInside)
         voiceButton.addTarget(self, action: #selector(voiceButtonTapped(_:)), for: .touchUpInside)
+        cameraButton.addTarget(self, action: #selector(cameraButtonTapped(_:)), for: .touchUpInside)
+        photoButton.addTarget(self, action: #selector(photoButtonTapped(_:)), for: .touchUpInside)
+        livePhotoButton.addTarget(self, action: #selector(livePhotoButtonTapped(_:)), for: .touchUpInside)
+        videoButton.addTarget(self, action: #selector(videoButtonTapped(_:)), for: .touchUpInside)
+        drawButton.addTarget(self, action: #selector(drawButtonTapped(_:)), for: .touchUpInside)
+        
+        toolStack = UIStackView(arrangedSubviews: [voiceButton, cameraButton, photoButton, livePhotoButton, videoButton, drawButton, addButton])
+        toolStack.alignment = .center
+        toolStack.distribution = .equalSpacing
+        
         let pan = UIPanGestureRecognizer(target: self, action: #selector(upArrowTouch(_:)))
         upArrowButton.addGestureRecognizer(pan)
         addSubview(textView)
-        addSubview(addButton)
         addSubview(emojiButton)
         addSubview(upArrowButton)
-        addSubview(voiceButton)
+        addSubview(toolStack)
+                
+        voiceButton.mas_makeConstraints { make in
+            make?.width.height().mas_equalTo()(width)
+        }
         
-        let offset: CGFloat = 5
-        NSLayoutConstraint.activate([
-            textView.leadingAnchor.constraint(equalTo: self.voiceButton.trailingAnchor, constant: offset),
-            textView.trailingAnchor.constraint(equalTo: self.emojiButton.leadingAnchor, constant: -offset),
-            textView.topAnchor.constraint(equalTo: self.topAnchor),
-            textView.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -20)
-        ])
+        cameraButton.mas_makeConstraints { make in
+            make?.width.height().mas_equalTo()(width)
+        }
+
+        photoButton.mas_makeConstraints { make in
+            make?.width.height().mas_equalTo()(width)
+        }
+
+        livePhotoButton.mas_makeConstraints { make in
+            make?.width.height().mas_equalTo()(width)
+        }
+
+        videoButton.mas_makeConstraints { make in
+            make?.width.height().mas_equalTo()(width)
+        }
+
+        drawButton.mas_makeConstraints { make in
+            make?.width.height().mas_equalTo()(width)
+        }
         
+        addButton.mas_makeConstraints { make in
+            make?.width.height().mas_equalTo()(width)
+        }
+
         upArrowButton.isHidden = true
         upArrowButton.mas_makeConstraints { make in
             make?.edges.equalTo()(emojiButton)?.offset()
         }
-                
-        voiceButton.mas_makeConstraints { [weak self] make in
-            make?.leading.equalTo()(self?.mas_leading)
-            make?.top.equalTo()(self?.addButton.mas_top)
-            make?.bottom.equalTo()(self?.addButton.mas_bottom)
-            make?.width.mas_equalTo()(30)
+        
+        emojiButton.mas_makeConstraints { make in
+            make?.trailing.equalTo()(self)?.offset()(-offset)
+            make?.centerY.equalTo()(self.textView)
+            make?.width.height().mas_equalTo()(width)
         }
         
-        NSLayoutConstraint.activate([
-            addButton.bottomAnchor.constraint(equalTo: textView.bottomAnchor, constant: -offset),
-            addButton.leadingAnchor.constraint(equalTo: emojiButton.trailingAnchor, constant: offset),
-            addButton.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -offset),
-            NSLayoutConstraint(item: addButton, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: 30),
-            NSLayoutConstraint(item: addButton, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: 30)
-        ])
-        
-        NSLayoutConstraint.activate([
-            emojiButton.leadingAnchor.constraint(equalTo: textView.trailingAnchor, constant: offset),
-            emojiButton.topAnchor.constraint(equalTo: addButton.topAnchor),
-            emojiButton.bottomAnchor.constraint(equalTo: addButton.bottomAnchor),
-            emojiButton.trailingAnchor.constraint(equalTo: addButton.leadingAnchor, constant: -offset),
-            NSLayoutConstraint(item: emojiButton, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: 30),
-            NSLayoutConstraint(item: emojiButton, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: 30)
-        ])
-        
     }
+    
+    override func safeAreaInsetsDidChange() {
+        super.safeAreaInsetsDidChange()
+        if safeAreaInsets.bottom != .zero {
+            setNeedsUpdateConstraints()
+        }
+    }
+    
+    override func updateConstraints() {
+        
+        let offset: CGFloat = 12
+        let width: CGFloat = 30
+
+        toolStack.mas_updateConstraints { make in
+            make?.leading.equalTo()(self)?.offset()(offset)
+            make?.trailing.equalTo()(self)?.offset()(-offset)
+            let middle: CGFloat = safeAreaInsets.bottom == 0 ? offset - 5 : offset - 3
+            make?.top.equalTo()(textView.mas_bottom)?.offset()(middle)
+        }
+        
+        textView.mas_updateConstraints { make in
+            make?.leading.equalTo()(self)?.offset()(offset)
+            make?.top.equalTo()(self)?.offset()(offset - 4)
+            make?.trailing.equalTo()(emojiButton.mas_leading)?.offset()(-offset)
+            let safeAreaBottom = safeAreaInsets.bottom == 0 ? -5 : safeArea.bottom - 14
+            make?.bottom.equalTo()(self)?.offset()(-(safeAreaBottom + width + offset * 2 - 6))
+        }
+        
+        super.updateConstraints()
+    }
+    
     
     @objc func textViewResign() {
         textView.resignFirstResponder()
+        if self.frame.maxY == self.superview!.bounds.maxY {
+            return
+        }
         let screenSize = AppDelegate.shared.window?.bounds.size ?? UIScreen.main.bounds.size
         let userInfo = [UIResponder.keyboardFrameEndUserInfoKey: NSValue(cgRect: CGRect(x: 0, y: screenSize.height, width: screenSize.width, height: screenSize.height))]
-        NotificationCenter.default.post(name: UIResponder.keyboardWillChangeFrameNotification, object: nil, userInfo: userInfo)
-    }
-    
-    @objc func addButtonTapped() {
-        delegate?.addButtonTapped()
+        NotificationCenter.default.post(name: UIResponder.keyboardWillChangeFrameNotification, object: self, userInfo: userInfo)
     }
     
     @objc func voiceButtonTapped(_ sender: UIButton) {
-        delegate?.voiceButtonTapped(sender)
+        delegate?.toolButtonTap(sender, type: .voice)
+    }
+    
+    @objc func photoButtonTapped(_ sender: UIButton) {
+        delegate?.toolButtonTap(sender, type: .photo)
+    }
+
+    @objc func cameraButtonTapped(_ sender: UIButton) {
+        delegate?.toolButtonTap(sender, type: .camera)
+    }
+
+    @objc func livePhotoButtonTapped(_ sender: UIButton) {
+        delegate?.toolButtonTap(sender, type: .livePhoto)
+    }
+    
+    @objc func videoButtonTapped(_ sender: UIButton) {
+        delegate?.toolButtonTap(sender, type: .video)
+    }
+
+    @objc func drawButtonTapped(_ sender: UIButton) {
+        delegate?.toolButtonTap(sender, type: .draw)
+    }
+
+    @objc func addButtonTapped(_ sender: UIButton) {
+        delegate?.toolButtonTap(sender, type: .add)
     }
     
     @objc func upArrowTouch(_ ges: UIPanGestureRecognizer) {
@@ -154,7 +248,7 @@ class MessageInputView: DogeChatBlurView {
             let screenSize = AppDelegate.shared.window?.bounds.size ?? UIScreen.main.bounds.size
             let ratio: CGFloat = MessageInputView.ratioOfEmojiView
             let userInfo = [UIResponder.keyboardFrameEndUserInfoKey: NSValue(cgRect: CGRect(x: 0, y: (1-ratio)*screenSize.height, width: screenSize.width, height: ratio*screenSize.height))]
-            NotificationCenter.default.post(name: UIResponder.keyboardWillChangeFrameNotification, object: nil, userInfo: userInfo)
+            NotificationCenter.default.post(name: UIResponder.keyboardWillChangeFrameNotification, object: self, userInfo: userInfo)
         }
         if textView.isFirstResponder {
             MessageInputView.becauseEmojiTapped = true

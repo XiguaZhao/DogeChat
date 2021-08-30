@@ -38,7 +38,6 @@ class ContactsTableViewController: DogeChatViewController, UIImagePickerControll
     var selectedIndexPath: IndexPath?
     let tableView = DogeChatTableView()
     var titleView: UIView?
-    static var pkDataCache = [String : Data]()
     static let pkDataWriteQueue = DispatchQueue(label: "com.zhaoxiguang.dogeChat.pkDataWrite")
     var appDelegate: AppDelegate {
         return UIApplication.shared.delegate as! AppDelegate
@@ -229,6 +228,8 @@ class ContactsTableViewController: DogeChatViewController, UIImagePickerControll
             content += "[视频]"
         case .track:
             content += "[歌曲分享]"
+        case .voice:
+            content += "[语音]"
         }
         if !(AppDelegate.shared.navigationController.visibleViewController is ContactsTableViewController) {
             AppDelegate.shared.pushWindow.assignValueForPush(sender: name, content: content)
@@ -340,7 +341,7 @@ class ContactsTableViewController: DogeChatViewController, UIImagePickerControll
             appDelegate.navigationController = nav
             self.showDetailViewController(nav, sender: self)
         } else {
-            self.navigationController?.pushViewController(chatRoomVC, animated: true)
+            self.navigationController?.setViewControllers([self, chatRoomVC], animated: true)
             AppDelegate.shared.navigationController = self.navigationController
         }
         unreadMessage[ContactsTableViewController.usernames[indexPath.row]] = 0

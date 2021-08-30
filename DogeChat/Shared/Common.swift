@@ -6,7 +6,12 @@
 //  Copyright © 2021 Luke Parham. All rights reserved.
 //
 
-import Foundation
+import UIKit
+
+let livePhotoDir = "livephotos"
+let videoDir = "videos"
+let voiceDir = "voice"
+let drawDir = "draws"
 
 var myName: String {
     (UserDefaults.standard.value(forKey: "lastUsername") as? String) ?? ""
@@ -18,6 +23,16 @@ var myPassWord: String {
 
 var maxID: Int {
     (UserDefaults.standard.value(forKey: "maxID") as? Int) ?? 0
+}
+
+public func syncOnMainThread(block: () -> Void) {
+    if Thread.isMainThread {
+        block()
+    } else {
+        DispatchQueue.main.sync {
+            block()
+        }
+    }
 }
 
 public func fileURLAt(dirName: String, fileName: String) -> URL? {
@@ -57,4 +72,36 @@ public func deleteFile(dirName: String, fileName: String) {
     let folderURL = documentsFolder.appendingPathComponent(folderName)
     let fileURL = folderURL.appendingPathComponent(fileName)
     try? fileManager.removeItem(at: fileURL)
+}
+
+extension String {
+    var fileURL: URL {
+        return URL(fileURLWithPath: self)
+    }
+    
+    func documentURLWithDir(_ dirName: Self) -> URL {
+        let url = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first!.fileURL.appendingPathComponent(dirName).appendingPathComponent(self)
+        return url
+    }
+    
+}
+
+extension UIImage {
+    func circle(width: CGFloat) -> UIImage {
+        UIGraphicsBeginImageContextWithOptions(CGSize(width: width, height: width), false, 0)
+        let context = UIGraphicsGetCurrentContext()
+        let rect = CGRect(x: 0, y: 0, width: width, height: width)
+        context?.addEllipse(in: rect)
+        context?.clip()
+        self.draw(in: CGRect(x: 0, y: 0, width: width, height: width))
+        let image = UIGraphicsGetImageFromCurrentImageContext()
+        UIGraphicsEndImageContext()
+        return image ?? self
+    }
+}
+
+extension CGRect {
+    var center: CGPoint {
+        return CGPoint(x: minX + width / 2, y: minY + height / 2)
+    }
 }

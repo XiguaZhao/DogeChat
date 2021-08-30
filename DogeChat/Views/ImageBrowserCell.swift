@@ -65,7 +65,9 @@ class ImageBrowserCell: UICollectionViewCell {
             guard self.imagePath == imagePath else { return }
             if let data = data {
                 cache?.setObject(data as NSData, forKey: imagePath as NSString)
-                block(imagePath, data)
+                DispatchQueue.main.async {
+                    block(imagePath, data)
+                }
             }
         }
         

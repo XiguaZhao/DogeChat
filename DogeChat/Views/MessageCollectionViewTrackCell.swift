@@ -27,7 +27,11 @@ class MessageCollectionViewTrackCell: MessageCollectionViewBaseCell {
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        if dontShow { return }
+        if dontShow {
+            timeLabel.isHidden = true
+            avatarImageView.isHidden = true
+            return
+        }
         let blurView = UIVisualEffectView(effect: UIBlurEffect(style: .regular))
         bgImageView.addSubview(blurView)
         bgImageView.contentMode = .scaleAspectFill

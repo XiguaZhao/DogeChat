@@ -8,7 +8,7 @@
 
 import UIKit
 
-class DogeChatViewController: UIViewController {
+class DogeChatViewController: UIViewController, UIPopoverPresentationControllerDelegate {
     
     var blurView: UIImageView!
     
@@ -104,6 +104,10 @@ class DogeChatViewController: UIViewController {
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
+    }
+
+    func adaptivePresentationStyle(for controller: UIPresentationController) -> UIModalPresentationStyle {
+        return .none
     }
 
 }
