@@ -1,0 +1,1 @@
+../../../Target Support Files/DogeChatNetwork/DogeChatNetwork-umbrella.h

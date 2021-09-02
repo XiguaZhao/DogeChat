@@ -1,7 +1,0 @@
-module YPTransition {
-  umbrella header "YPTransition-macOS-umbrella.h"
-  exclude header "YPTransition-iOS-umbrella.h"
-
-  export *
-  module * { export * }
-}

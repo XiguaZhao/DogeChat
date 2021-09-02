@@ -1,0 +1,6 @@
+module DogeChatNetwork {
+  umbrella header "DogeChatNetwork-umbrella.h"
+
+  export *
+  module * { export * }
+}

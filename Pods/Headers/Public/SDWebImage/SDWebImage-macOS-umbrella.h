@@ -1,1 +1,0 @@
-../../../Target Support Files/SDWebImage-macOS/SDWebImage-macOS-umbrella.h
