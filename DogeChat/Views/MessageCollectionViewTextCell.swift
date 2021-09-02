@@ -151,16 +151,16 @@ class MessageCollectionViewTextCell: MessageCollectionViewBaseCell {
                 saveFileToDisk(dirName: voiceDir, fileName: fileName, data: data)
                 url = fileURLAt(dirName: voiceDir, fileName: fileName)
                 block()
+                captured.isDownloading = false
             }
-            if message.downloadTask == nil {
+            if !message.isDownloading {
+                message.isDownloading = true
                 let task = session.get(url_pre + message.voiceURL!, parameters: nil, headers: nil, progress: nil, success: { task, data in
-                    captured.downloadCompletion?(task, data)
+                    completion(task, data)
                 }) { task, error in
                     print(error)
                 }
-                message.downloadTask = task
             }
-            message.downloadCompletion = completion
         }
     }
     

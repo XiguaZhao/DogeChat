@@ -135,16 +135,16 @@ class MessageCollectionViewDrawCell: MessageCollectionViewBaseCell {
                     capturedMessage.pkLocalURL = fileURLAt(dirName: drawDir, fileName: fileName)
                 }
                 displayBlock()
+                capturedMessage.isDownloading = false
             }
-            if message.downloadTask == nil {
+            if !message.isDownloading {
+                message.isDownloading = true
                 let task = session.get(url_pre + path, parameters: nil, headers: nil, progress: nil) { task, data in
-                    capturedMessage.downloadCompletion?(task, data)
+                    completionBlock(task, data)
                 } failure: { task, error in
                     print(error)
                 }
-                message.downloadTask = task
             }
-            message.downloadCompletion = completionBlock
         }
     }
     

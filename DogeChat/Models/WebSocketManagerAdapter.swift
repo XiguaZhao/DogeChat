@@ -15,6 +15,22 @@ var safeArea: UIEdgeInsets {
     UIApplication.shared.keyWindow!.safeAreaInsets
 }
 
+func isLandscape() -> Bool {
+    return UIDevice.current.orientation == .landscapeLeft || UIDevice.current.orientation == .landscapeRight
+}
+
+func isPad() -> Bool {
+    return UIDevice.current.userInterfaceIdiom == .pad
+}
+
+func isPhone() -> Bool {
+    return UIDevice.current.userInterfaceIdiom == .phone
+}
+
+func isMac() -> Bool {
+    return !AppDelegate.shared.isIOS
+}
+
 class WebSocketManagerAdapter: NSObject {
     
     @objc static let shared = WebSocketManagerAdapter()
@@ -190,13 +206,7 @@ class WebSocketManagerAdapter: NSObject {
             }
         }
     }
-    
-    func reloadAndScroll(index: Int, collectionView: UITableView) {
-        let indexPath = IndexPath(item: index, section: 0)
-        collectionView.reloadRows(at: [indexPath], with: .none)
-        collectionView.scrollToRow(at: indexPath, at: .bottom, animated: true)
-    }
-    
+        
 }
 
 extension WebSocketManagerAdapter: VoiceDelegate, WebSocketDataDelegate {

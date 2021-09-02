@@ -46,7 +46,10 @@
 - (NSData *)generateStillImageURL:(NSURL *)imageURL uuid:(NSString *)uuid {
     UIImage *image = [[UIImage alloc] initWithData:[NSData dataWithContentsOfURL:imageURL]];
     CGFloat screenWidth = [[AppDelegate shared] widthForSide:SplitVCSideRight] * 0.5;
-    CGSize size = CGSizeMake(screenWidth, screenWidth / image.size.width * image.size.height);
+    if (image.size.width / UIScreen.mainScreen.scale < screenWidth) {
+        screenWidth = image.size.width / UIScreen.mainScreen.scale;
+    }
+    CGSize size = CGSizeMake(screenWidth, floor(screenWidth / image.size.width * image.size.height));
     UIGraphicsBeginImageContextWithOptions(size, NO, 0);
     [image drawInRect:CGRectMake(0, 0, size.width, size.height)];
     image = UIGraphicsGetImageFromCurrentImageContext();

@@ -13,6 +13,11 @@ import Reachability
     case left, right
 }
 
+enum PushAction: String {
+    case REPLY_ACTION
+    case DO_NOT_DISTURT_ACTION
+}
+
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
     
@@ -137,18 +142,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 //            }
 //        }
 //    }
-    
-    class func isLandscape() -> Bool {
-        return UIDevice.current.orientation == .landscapeLeft || UIDevice.current.orientation == .landscapeRight
-    }
-    
-    class func isPad() -> Bool {
-        return UIDevice.current.userInterfaceIdiom == .pad
-    }
-    
-    class func isPhone() -> Bool {
-        return UIDevice.current.userInterfaceIdiom == .phone
-    }
     
     @objc func widthFor(side: SplitVCSide) -> CGFloat {
         if splitViewController.isCollapsed {
@@ -307,7 +300,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
     // 点击推送通知才会调用
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
-        if response.actionIdentifier.count > 0 { launchedByPushAction = true }
+        if PushAction(rawValue: response.actionIdentifier) != nil {
+            launchedByPushAction = true
+        } else {
+            //TODO: 这里可以做自动打开目的地界面
+        }
         guard let userInfo = response.notification.request.content.userInfo as? [String: AnyObject],
               let aps = userInfo["aps"] as? [String: AnyObject] else { return }
         notificationManager.processRemoteNotification(aps)

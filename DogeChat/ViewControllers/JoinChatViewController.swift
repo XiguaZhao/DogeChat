@@ -12,6 +12,7 @@ class JoinChatViewController: UIViewController {
     let passwordTF = UITextField()
     let loginButton = UIButton()
     let signUpButton = UIButton()
+    let forgetButton = UIButton()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -37,11 +38,14 @@ class JoinChatViewController: UIViewController {
         
         loginButton.setTitle("登录", for: .normal)
         signUpButton.setTitle("注册", for: .normal)
+        forgetButton.setTitle("忘记密码", for: .normal)
         loginButton.setTitleColor(.systemBlue, for: .normal)
         signUpButton.setTitleColor(.systemBlue, for: .normal)
-        let buttonStackView = UIStackView(arrangedSubviews: [loginButton, signUpButton])
+        forgetButton.setTitleColor(.systemBlue, for: .normal)
+        let buttonStackView = UIStackView(arrangedSubviews: [loginButton, signUpButton, forgetButton])
+        [loginButton, signUpButton, forgetButton].forEach { $0.titleLabel?.font = .systemFont(ofSize: 15) }
         buttonStackView.axis = .horizontal
-        buttonStackView.distribution = .fillEqually
+        buttonStackView.spacing = 30
         
         let stackView = UIStackView(arrangedSubviews: [topStackView, buttonStackView])
         stackView.axis = .vertical
@@ -66,9 +70,23 @@ class JoinChatViewController: UIViewController {
         
         loginButton.addTarget(self, action: #selector(loginTapped), for: .touchUpInside)
         signUpButton.addTarget(self, action: #selector(signUpTapped), for: .touchUpInside)
+        forgetButton.addTarget(self, action: #selector(forgetTapped), for: .touchUpInside)
         
         let tap = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         view.addGestureRecognizer(tap)
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        if let username = UserDefaults.standard.value(forKey: "lastUsername") as? String,
+           let password = UserDefaults.standard.value(forKey: "lastPassword") as? String {
+            usernameTF.text = username
+            passwordTF.text = password
+        }
+    }
+    
+    @objc func forgetTapped() {
+        navigationController?.pushViewController(SignUpViewController(type: .modify), animated: true)
     }
         
     @objc func loginTapped() {
@@ -108,8 +126,12 @@ extension JoinChatViewController: UITextFieldDelegate {
                 contactsTVC.username = username
                 contactsTVC.navigationItem.title = username
                 self.navigationController?.setViewControllers([contactsTVC], animated: true)
-                contactsTVC.loginSuccess = true
-                NotificationCenter.default.post(name: .updateMyAvatar, object: WebSocketManager.shared.messageManager.myAvatarUrl)
+                contactsTVC.refreshContacts {
+                    WebSocketManager.shared.connect()
+                }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                    NotificationCenter.default.post(name: .updateMyAvatar, object: WebSocketManager.shared.messageManager.myAvatarUrl)
+                }
                 UserDefaults.standard.setValue(username, forKey: "lastUsername")
                 UserDefaults.standard.setValue(password, forKey: "lastPassword")
             } else {

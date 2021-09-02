@@ -32,6 +32,7 @@ extension ChatRoomViewController {
             }
             if !shouldDown {
                 dontLayout = true
+                tableView.setContentOffset(tableView.contentOffset, animated: false)
             }
             point.y += shouldDown ? 0 : additionalOffset
             offsetY += shouldDown ? 0 : additionalOffset
@@ -42,8 +43,11 @@ extension ChatRoomViewController {
                 self.tableView.contentInset = inset
                 if !shouldDown {
                     if self.messageInputBar.textView.isFirstResponder || (tableView.indexPathsForVisibleRows ?? []).contains(IndexPath(item: max(0, tableView.numberOfRows(inSection: 0) - 1), section: 0)) {
-                        guard tableView.numberOfRows(inSection: 0) != 0 else { return }
-                        tableView.scrollToRow(at: IndexPath(row: tableView.numberOfRows(inSection: 0) - 1, section: 0), at: .bottom, animated: false)
+                        if let visibles = self.tableView.indexPathsForVisibleRows, !self.messages.isEmpty, visibles.contains(IndexPath(row: self.messages.count - 1, section: 0)), self.tableView.contentOffset.y > 0 {
+                            self.tableView.contentOffset = CGPoint(x: 0, y: self.tableView.contentSize.height - self.tableView.bounds.height + inset.bottom + safeArea.bottom)
+                        } else {
+                            self.needScrollToBottom = true
+                        }
                     }
                 }
             } completion: { finished in
@@ -65,12 +69,21 @@ extension ChatRoomViewController {
         tableView.register(MessageCollectionViewDrawCell.self, forCellReuseIdentifier: MessageCollectionViewDrawCell.cellID)
         tableView.register(MessageCollectionViewTrackCell.self, forCellReuseIdentifier: MessageCollectionViewTrackCell.cellID)
         tableView.layer.masksToBounds = true
+        
+        emojiSelectView.delegate = self
+
         view.addSubview(tableView)
         view.addSubview(messageInputBar)
-        
+        view.addSubview(emojiSelectView)
+
         messageInputBar.delegate = self
+        
+        pan = UIScreenEdgePanGestureRecognizer(target: self, action: #selector(panAction(_:)))
+        pan?.edges = .right
+        view.addGestureRecognizer(pan!)
+
     }
-    
+        
     func layoutViews(size: CGSize) {
         let size = view.frame.size
         tableView.frame = CGRect(x: 0, y: 0, width: size.width, height: size.height)
@@ -81,5 +94,65 @@ extension ChatRoomViewController {
         emojiSelectView.frame = CGRect(x: 0, y: messageInputBar.frame.maxY, width: size.width, height: emojiViewHeight)
     }
     
+    @objc func panAction(_ pan: UIScreenEdgePanGestureRecognizer) {
+        let maxOffset: CGFloat = 80
+        dontLayout = true
+        switch pan.state {
+        case .began:
+            tableView.layer.masksToBounds = false
+            tableView.visibleCells.forEach { ($0 as? MessageCollectionViewBaseCell)?.timeLabel.isHidden = false }
+        case .changed:
+            let startX = view.bounds.width
+            let endX = pan.location(in: view).x
+            let offsetX = min(maxOffset, (abs(endX - startX))/1.2)
+            tableView.layer.transform = CATransform3DTranslate(CATransform3DIdentity, -offsetX, 0, 0)
+        case .ended:
+            recoverCollectionViewInset()
+            dontLayout = false
+        default:
+            break
+        }
+    }
+    
+    func recoverCollectionViewInset() {
+        UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 2, options: .curveLinear, animations: {
+            self.tableView.layer.transform = CATransform3DIdentity
+        }, completion: { _ in
+            self.tableView.layer.masksToBounds = true
+            self.tableView.visibleCells.forEach { ($0 as? MessageCollectionViewBaseCell)?.timeLabel.isHidden = true }
+        })
+    }
+    
+    
+    func textViewDidChange(_ textView: UITextView) {
+        dontLayout = true
+        showEmojiButton(textView.text.isEmpty)
+        let oldFrame = messageInputBar.frame
+        let textHeight = textView.contentSize.height
+        let lineHeight = (textView.text as NSString).size(withAttributes: textView.typingAttributes).height
+        let lineCount = Int(textHeight / lineHeight)
+        let oldLineCount = Int((oldFrame.height - (safeArea.bottom + 46)) / lineHeight)
+        let lineCountChanged = lineCount - oldLineCount
+        var heightChanged = CGFloat(lineCountChanged) * lineHeight
+        var tableViewInset = tableView.contentInset
+        if textView.text.isEmpty {
+            heightChanged = messageBarHeight - oldFrame.height
+        }
+        tableViewInset.bottom += heightChanged
+        if heightChanged != 0 {
+            self.shouldIgnoreScroll = true
+            UIView.animate(withDuration:  0.2 ) { [weak self] in
+                guard let self = self else { return }
+                self.messageInputBar.frame = CGRect(x: oldFrame.origin.x, y: oldFrame.origin.y-heightChanged, width: oldFrame.width, height: oldFrame.height+heightChanged)
+                self.tableView.contentInset = tableViewInset
+            } completion: { [weak self] (finish) in
+                self?.needScrollToBottom = true
+                if textView.text.isEmpty {
+                    textView.font = .systemFont(ofSize: 18)
+                }
+            }
+        }
+    }
+
 }
 

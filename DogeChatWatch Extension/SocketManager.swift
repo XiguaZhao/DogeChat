@@ -175,7 +175,7 @@ class SocketManager: NSObject, URLSessionDelegate, URLSessionWebSocketDelegate {
     func sendMessage(_ message: Message) {
         let paras = messageManager.sendMessage(message.message, to: message.receiver, from: message.senderUsername, option: message.option, uuid: message.uuid, type: message.messageType.rawValue)
         send(params: paras, failure: nil)
-        messageManager.sendWrappedMessage(message)
+        messageManager.saveSendMessage(message)
     }
     
     func processNewMessages(_ messages: [Message], isPublic: Bool) {

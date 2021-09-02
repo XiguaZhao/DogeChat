@@ -170,17 +170,19 @@ class MessageCollectionViewImageCell: MessageCollectionViewBaseCell, PHLivePhoto
                 saveFileToDisk(dirName: videoDir, fileName: fileName, data: data)
                 url = fileURLAt(dirName: videoDir, fileName: fileName)
                 block(true)
+                captured?.isDownloading = true
             }
-            if message.downloadTask == nil {
-                let task = session.get(url_pre + message.videoURL!, parameters: nil, headers: nil, progress: nil, success: { task, data in
-                    captured?.downloadCompletion?(task, data)
+            if !message.isDownloading {
+                message.isDownloading = true
+                let task = session.get(url_pre + message.videoURL!, parameters: nil, headers: nil, progress: { [weak self] progress in
+                    self?.delegate?.downloadProgressUpdate(progress: progress, message: captured!)
+                }, success: { task, data in
+                    completion(task, data)
                     print("videoDone")
                 }) { task, error in
                     print(error)
                 }
-                message.downloadTask = task
             }
-            message.downloadCompletion = completion
         }
     }
     
@@ -239,20 +241,22 @@ class MessageCollectionViewImageCell: MessageCollectionViewBaseCell, PHLivePhoto
                    let localVideoURL = fileURLAt(dirName: livePhotoDir, fileName: videoName) {
                     livePhotoLoadBlock(localImageURL, localVideoURL, true)
                 }
+                capturedMessage?.isDownloading = false
             }
-            if message.downloadTask == nil {
-                let task = session.get(imageURL.absoluteString, parameters: nil, headers: nil, progress: nil, success: { task, data in
+            if !message.isDownloading {
+                message.isDownloading = true
+                session.get(imageURL.absoluteString, parameters: nil, headers: nil, progress: nil, success: { task, data in
                     guard let data = data as? Data else { return }
                     print("liveImageDone")
                     saveFileToDisk(dirName: livePhotoDir, fileName: imageName, data: data)
-                    session.get(videoURL.absoluteString, parameters: nil, headers: nil, progress: nil, success: { task, videoData in
-                        capturedMessage?.downloadCompletion?(task, videoData)
+                    session.get(videoURL.absoluteString, parameters: nil, headers: nil, progress: { [weak self] progress in
+                        self?.delegate?.downloadProgressUpdate(progress: progress, message: capturedMessage!)
+                    }, success: { task, videoData in
+                        completion(task, videoData)
                         print("liveVideoDone")
                     }, failure: nil)
                 }, failure: nil)
-                message.downloadTask = task
             }
-            message.downloadCompletion = completion
         }
     }
     
@@ -346,7 +350,13 @@ class MessageCollectionViewImageCell: MessageCollectionViewBaseCell, PHLivePhoto
             }
         }
         
-        imageDownloader.loadImage(with: URL(string: imageUrl), options: [.avoidDecodeImage, .allowInvalidSSLCertificates]) { (received, total, url) in
+        imageDownloader.loadImage(with: URL(string: imageUrl), options: [.avoidDecodeImage, .allowInvalidSSLCertificates]) { [weak self] (received, total, url) in
+            guard let self = self, capturedMessage == self.message else { return }
+            let progress = Progress()
+            progress.totalUnitCount = Int64(total)
+            progress.completedUnitCount = Int64(received)
+            self.delegate?.downloadProgressUpdate(progress: progress, message: capturedMessage!)
+            
         } completed: { [self] (image, data, error, cacheType, finished, url) in
             guard let capturedMessage = capturedMessage, capturedMessage.imageURL == message.imageURL else {
                 return

@@ -4,6 +4,7 @@ import AVFoundation
 import DogeChatNetwork
 import DogeChatUniversal
 import PhotosUI
+import DACircularProgress
 
 let nameLabelStartX: CGFloat = 40 + 5 + 5
 let nameLabelStartY: CGFloat = 10
@@ -18,6 +19,7 @@ protocol MessageTableViewCellDelegate: AnyObject {
     func pkViewTapped(_ cell: MessageCollectionViewBaseCell, pkView: UIView!)
     func avatarDoubleTap(_ cell: MessageCollectionViewBaseCell)
     func sharedTracksTap(_ cell: MessageCollectionViewBaseCell, tracks: [Track])
+    func downloadProgressUpdate(progress: Progress, message: Message)
 }
 
 class MessageCollectionViewBaseCell: DogeChatTableViewCell {
@@ -41,6 +43,7 @@ class MessageCollectionViewBaseCell: DogeChatTableViewCell {
     let avatarDoubleTapGes = UITapGestureRecognizer()
     let avatapSingleTapGes = UITapGestureRecognizer()
     let timeLabel = UILabel()
+    let progress = DACircularProgressView()
     
     static let textCellIdentifier = "MessageCell"
     
@@ -59,6 +62,7 @@ class MessageCollectionViewBaseCell: DogeChatTableViewCell {
         avatarImageView.isUserInteractionEnabled = true
         addDoubleTapForAvatar()
         
+        
         timeLabel.font = .systemFont(ofSize: 12)
         timeLabel.numberOfLines = 2
         timeLabel.adjustsFontSizeToFitWidth = true
@@ -68,8 +72,12 @@ class MessageCollectionViewBaseCell: DogeChatTableViewCell {
         contentView.addSubview(nameLabel)
         contentView.addSubview(indicator)
         contentView.addSubview(timeLabel)
+        contentView.addSubview(progress)
         
         indicator.startAnimating()
+        progress.isHidden = true
+        progress.thicknessRatio = 0.3
+        progress.bounds = CGRect(x: 0, y: 0, width: 25, height: 25)
     }
         
     override func prepareForReuse() {
@@ -79,6 +87,7 @@ class MessageCollectionViewBaseCell: DogeChatTableViewCell {
         }
         avatarImageView.animatedImage = nil
         emojis.removeAll()
+        progress.isHidden = true
     }
     
     override func layoutSubviews() {
@@ -94,6 +103,9 @@ class MessageCollectionViewBaseCell: DogeChatTableViewCell {
         } else {
             nameLabel.isHidden = true
             indicator.isHidden = message.sendStatus == .success
+            if message.sendStatus == .fail {
+                indicator.startAnimating()
+            }
             avatarImageView.frame = CGRect(x: 0, y: 0, width: avatarWidth, height: avatarWidth)
             avatarImageView.center = CGPoint(x: contentView.bounds.width - avatarImageView.bounds.width / 2 - avatarMargin, y: contentView.center.y)
         }
@@ -205,12 +217,13 @@ class MessageCollectionViewBaseCell: DogeChatTableViewCell {
         switch message.messageSender {
         case .ourself:
             targetView.center = CGPoint(x: contentView.bounds.width - (targetView.bounds.width / 2) - nameLabelStartX - safeAreaInsets.right, y: contentView.center.y)
+            indicator.center = CGPoint(x: targetView.frame.minX - 30, y: targetView.center.y)
         case .someoneElse:
             targetView.center = CGPoint(x: targetView.bounds.width / 2 + nameLabelStartX, y: contentView.center.y + (nameLabel.bounds.height + nameLabelStartY) / 2)
             avatarImageView.center = CGPoint(x: avatarMargin + avatarWidth / 2, y: targetView.center.y)
+            indicator.center = CGPoint(x: targetView.frame.maxX + 30, y: targetView.center.y)
         }
-        indicator.center = CGPoint(x: targetView.frame.minX - 30, y: targetView.center.y)
-        
+        progress.center = indicator.center
     }
     
     

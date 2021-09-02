@@ -104,6 +104,10 @@ class MessageInputView: DogeChatStaticBlurView {
         addSubview(emojiButton)
         addSubview(upArrowButton)
         addSubview(toolStack)
+        
+        if isMac() {
+            toolStack.isHidden = true
+        }
                 
         voiceButton.mas_makeConstraints { make in
             make?.width.height().mas_equalTo()(width)
@@ -114,7 +118,7 @@ class MessageInputView: DogeChatStaticBlurView {
         }
 
         photoButton.mas_makeConstraints { make in
-            make?.width.height().mas_equalTo()(width)
+            make?.width.height().mas_equalTo()(width - 3)
         }
 
         livePhotoButton.mas_makeConstraints { make in
@@ -170,7 +174,7 @@ class MessageInputView: DogeChatStaticBlurView {
             make?.top.equalTo()(self)?.offset()(offset - 4)
             make?.trailing.equalTo()(emojiButton.mas_leading)?.offset()(-offset)
             let safeAreaBottom = safeAreaInsets.bottom == 0 ? -5 : safeArea.bottom - 14
-            make?.bottom.equalTo()(self)?.offset()(-(safeAreaBottom + width + offset * 2 - 6))
+            make?.bottom.equalTo()(self)?.offset()(-(safeAreaBottom + (isMac() ? 0 : width) + offset * 2 - 6))
         }
         
         super.updateConstraints()
@@ -265,9 +269,9 @@ class MessageInputView: DogeChatStaticBlurView {
     
     @objc func sendTapped() {
         if let delegate = delegate, let message = textView.text {
-            delegate.sendWasTapped(content:  message)
             textView.text = ""
             textView.delegate?.textViewDidChange?(textView)
+            delegate.sendWasTapped(content:  message)
         }
     }
     

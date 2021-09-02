@@ -69,9 +69,9 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
 
                 
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        guard scrollView == tableView, scrollView.contentOffset.y == -tableView.safeAreaInsets.top else {
-            return
-        }
+    }
+    
+    func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
     }
         
     //MARK: ContextMune
@@ -99,7 +99,8 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
             var addBackgroundColorAction: UIAction?
             if self.messages[indexPath.row].messageSender == .ourself && self.messages[indexPath.row].messageType != .join {
                 revokeAction = UIAction(title: "撤回") { [weak self] (_) in
-                    self?.revoke(indexPath: indexPath)
+                    guard let self = self else { return }
+                    self.revoke(message: self.messages[indexPath.row])
                 }
             }
             if let imageUrl = cell.message.imageURL, cell.message.sendStatus == .success {
@@ -225,49 +226,6 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
         return tableView.isEditing || messageInputBar.isActive
     }
     
-        
-    func insertNewMessageCell(_ messages: [Message], position: InsertPosition = .bottom, index: Int = 0, forceScrollBottom: Bool = false, completion: (()->Void)? = nil) {
-        let alreadyUUIDs = self.messagesUUIDs
-        let newUUIDs: Set<String> = Set(messages.map { $0.uuid })
-        let filteredUUIDs = newUUIDs.subtracting(alreadyUUIDs)
-        var filtered = messages.filter { filteredUUIDs.contains($0.uuid)}
-        filtered = filtered.filter { message in
-            if message.option != self.messageOption {
-                return false
-            } else if message.option == .toOne {
-                if message.messageSender == .ourself {
-                    return message.receiver == friendName
-                } else {
-                    return message.senderUsername == friendName
-                }
-            } else {
-                return true
-            }
-        }
-        guard !filtered.isEmpty else {
-            return
-        }
-        DispatchQueue.main.async { [self] in
-            var indexPaths: [IndexPath] = []
-            for message in filtered {
-                indexPaths.append(IndexPath(row: self.messages.count, section: 0))
-                self.messages.append(message)
-                self.messagesUUIDs.insert(message.uuid)
-            }
-            tableView.insertRows(at: indexPaths, with: .none)
-            var scrollToBottom = !tableView.isDragging
-            let contentHeight = tableView.contentSize.height
-            if contentHeight - tableView.contentOffset.y > self.view.bounds.height * 2 {
-                scrollToBottom = false
-            }
-            scrollToBottom = scrollToBottom || (messages.count == 1 && messages[0].messageSender == .ourself)
-            scrollToBottom = scrollToBottom || forceScrollBottom
-            if scrollToBottom, let indexPath = indexPaths.last {
-                tableView.scrollToRow(at: indexPath, at: .bottom, animated: true)
-            }
-            completion?()
-        }
-    }
 
     
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {

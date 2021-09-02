@@ -10,6 +10,16 @@ import Foundation
 import DogeChatUniversal
 
 extension ChatRoomViewController: MessageTableViewCellDelegate {
+    
+    func downloadProgressUpdate(progress: Progress, message: Message) {
+        syncOnMainThread {
+            if let index = self.messages.firstIndex(where: { $0.uuid == message.uuid }) {
+                let hud = (self.tableView.cellForRow(at: IndexPath(row: index, section: 0)) as? MessageCollectionViewBaseCell)?.progress
+                hud?.isHidden = progress.fractionCompleted >= 1
+                hud?.setProgress(CGFloat(progress.fractionCompleted), animated: false)
+            }
+        }
+    }
         
     func imageViewTapped(_ cell: MessageCollectionViewBaseCell, imageView: FLAnimatedImageView, path: String, isAvatar: Bool) {
         messageInputBar.textViewResign()

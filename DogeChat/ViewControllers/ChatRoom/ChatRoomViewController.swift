@@ -38,6 +38,14 @@ class ChatRoomViewController: DogeChatViewController {
     var dontLayout = false
     var hapticInputIndex = 0
     var pan: UIScreenEdgePanGestureRecognizer?
+    var needScrollToBottom = false {
+        didSet {
+            if needScrollToBottom {
+                scrollBotton()
+            }
+        }
+    }
+    var shouldIgnoreScroll = false
     
     var lastIndexPath: IndexPath {
         return IndexPath(row: messages.count-1, section: 0)
@@ -65,44 +73,11 @@ class ChatRoomViewController: DogeChatViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(emojiButtonTapped), name: .emojiButtonTapped, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(receiveEmojiInfoChangedNotification(_:)), name: .emojiInfoChanged, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(receiveHistoryMessages(_:)), name: .receiveHistoryMessages, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(displayHistoryIfNeeded), name: .connected, object: nil)
         navigationItem.largeTitleDisplayMode = .never
         addRefreshController()
         loadViews()
-        configureEmojiView()
         layoutViews(size: view.bounds.size)
-        pan = UIScreenEdgePanGestureRecognizer(target: self, action: #selector(panAction(_:)))
-        pan?.edges = .right
-        view.addGestureRecognizer(pan!)
-        tableView.allowsSelection = true
-    }
-    
-    @objc func panAction(_ pan: UIScreenEdgePanGestureRecognizer) {
-        let maxOffset: CGFloat = 80
-        dontLayout = true
-        switch pan.state {
-        case .began:
-            tableView.layer.masksToBounds = false
-            tableView.visibleCells.forEach { ($0 as? MessageCollectionViewBaseCell)?.timeLabel.isHidden = false }
-        case .changed:
-            let startX = view.bounds.width
-            let endX = pan.location(in: view).x
-            let offsetX = min(maxOffset, (abs(endX - startX))/1.2)
-            tableView.layer.transform = CATransform3DTranslate(CATransform3DIdentity, -offsetX, 0, 0)
-        case .ended:
-            recoverCollectionViewInset()
-            dontLayout = false
-        default:
-            break
-        }
-    }
-    
-    func recoverCollectionViewInset() {
-        UIView.animate(withDuration: 0.3, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 2, options: .curveLinear, animations: {
-            self.tableView.layer.transform = CATransform3DIdentity
-        }, completion: { _ in
-            self.tableView.layer.masksToBounds = true
-            self.tableView.visibleCells.forEach { ($0 as? MessageCollectionViewBaseCell)?.timeLabel.isHidden = true }
-        })
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -122,10 +97,8 @@ class ChatRoomViewController: DogeChatViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         scrollBottom = false
-        DispatchQueue.main.async { [self] in
-            if tableView.contentSize.height < view.bounds.height {
-                displayHistory()
-            }
+        DispatchQueue.main.async {
+            self.displayHistoryIfNeeded()
         }
     }
     
@@ -146,23 +119,39 @@ class ChatRoomViewController: DogeChatViewController {
         try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
     }
     
-    @objc func tap() {
-        messageInputBar.textViewResign()
+    func scrollBotton() {
+        if self.needScrollToBottom {
+            if !messages.isEmpty {
+                tableView.scrollToRow(at: IndexPath(row: messages.count - 1, section: 0), at: .bottom, animated: true)
+            }
+        }
+    }
+    
+    @objc func displayHistoryIfNeeded() {
+        if tableView.contentSize.height < view.bounds.height {
+            displayHistory()
+        }
     }
     
     @objc func sendSuccess(notification: Notification) {
         let userInfo = notification.userInfo
         guard let message = userInfo?["message"] as? Message,
-              let correctId = userInfo?["correctId"] as? Int else { return }
-        
-        guard let index = messages.firstIndex(of: message) else { return }
-        messages[index].id = correctId
-        messages[index].sendStatus = .success
+              let correctId = userInfo?["correctId"] as? Int else {
+            return
+        }
+        message.id = correctId
+        message.sendStatus = .success
+        guard let index = messages.firstIndex(of: message) else {
+            return
+        }
         guard message.receiver == friendName || (message.receiver == "PublicPino" && messageOption == .toAll) else {
             return
         }
         let indexPath = IndexPath(row: index, section: 0)
-        tableView.cellForRow(at: indexPath)?.setNeedsLayout()
+        if let cell = tableView.cellForRow(at: indexPath) {
+            cell.layoutIfNeeded()
+            cell.setNeedsLayout()
+        } 
     }
     
     @objc func uploadSuccess(notification: Notification) {
@@ -194,8 +183,6 @@ extension ChatRoomViewController: UIImagePickerControllerDelegate, UINavigationC
         }
     }
     
-    
-    
     func updateUploadProgress(_ progress: Progress, message: Message) {
         let targetCell = tableView.visibleCells.filter { cell in
             guard let cell = cell as? MessageCollectionViewBaseCell else { return false }
@@ -206,11 +193,6 @@ extension ChatRoomViewController: UIImagePickerControllerDelegate, UINavigationC
     
     private func processMessageString(for string: String) -> Message {
         return Message(message: string, messageSender: .ourself, receiver: friendName, sender: username, messageType: .text, option: messageOption, id: manager.messageManager.maxId + 1, sendStatus: .fail, fontSize: messageInputBar.textView.font!.pointSize)
-    }
-    
-    private func configureEmojiView() {
-        emojiSelectView.delegate = self
-        view.addSubview(emojiSelectView)
     }
     
     @objc func emojiButtonTapped() {
@@ -390,7 +372,8 @@ extension ChatRoomViewController {
         } completion: { _ in
             if empty && !indexPaths.isEmpty{
                 self.tableView.scrollToRow(at: IndexPath(row: self.tableView.numberOfRows(inSection: 0) - 1, section: 0), at: .bottom, animated: true)
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) { [weak self] in
+                    guard let self = self else { return }
                     self.scrollViewDidEndDecelerating(self.tableView)
                 }
             } else {
@@ -400,8 +383,8 @@ extension ChatRoomViewController {
     }
     
     
-    func revoke(indexPath: IndexPath) {
-        let id = messages[indexPath.row].id
+    func revoke(message: Message) {
+        let id = message.id
         manager.revokeMessage(id: id)
     }
     
@@ -431,36 +414,6 @@ extension ChatRoomViewController {
 }
 
 extension ChatRoomViewController: UITextViewDelegate {
-    func textViewDidChange(_ textView: UITextView) {
-        if !textView.text.isEmpty {
-            dontLayout = true
-        }
-        showEmojiButton(textView.text.isEmpty)
-        let oldFrame = messageInputBar.frame
-        let textHeight = textView.contentSize.height
-        let lineHeight = (textView.text as NSString).size(withAttributes: textView.typingAttributes).height
-        let lineCount = Int(textHeight / lineHeight)
-        let oldLineCount = Int((oldFrame.height - (safeArea.bottom + 46)) / lineHeight)
-        let lineCountChanged = lineCount - oldLineCount
-        var heightChanged = CGFloat(lineCountChanged) * lineHeight
-        var tableViewInset = tableView.contentInset
-        if textView.text.isEmpty {
-            heightChanged = messageBarHeight - oldFrame.height
-        }
-        if textView.text.isEmpty {
-            textView.font = .systemFont(ofSize: 18)
-        }
-        tableViewInset.bottom += heightChanged
-        if heightChanged != 0 {
-            UIView.animate(withDuration:  0.25 ) {
-                self.messageInputBar.frame = CGRect(x: oldFrame.origin.x, y: oldFrame.origin.y-heightChanged, width: oldFrame.width, height: oldFrame.height+heightChanged)
-                self.tableView.contentInset = tableViewInset
-            } completion: { [self] (_) in
-                guard tableView.numberOfRows(inSection: 0) > 0 else { return }
-                tableView.scrollToRow(at: IndexPath(row: tableView.numberOfRows(inSection: 0)-1, section: 0), at: .bottom, animated: true)
-            }
-        } 
-    }
     
     func textViewShouldBeginEditing(_ textView: UITextView) -> Bool {
         showEmojiButton(textView.text.isEmpty)

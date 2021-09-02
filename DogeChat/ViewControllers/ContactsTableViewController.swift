@@ -47,17 +47,6 @@ class ContactsTableViewController: DogeChatViewController, UIImagePickerControll
             if loginSuccess {
                 refreshContacts()
             }
-            let waitToProcessNotificationUsername = NotificationManager.shared.remoteNotificationUsername
-            if loginSuccess && waitToProcessNotificationUsername != ""{
-                if let index = ContactsTableViewController.usernames.firstIndex(of: waitToProcessNotificationUsername) {
-                    if self.navigationController?.topViewController?.navigationItem.title == waitToProcessNotificationUsername {
-                        return
-                    }
-                    appDelegate.tabBarController.selectedViewController = appDelegate.navigationController
-                    tableView(self.tableView, didSelectRowAt: IndexPath(row: index, section: 0))
-                    NotificationManager.shared.remoteNotificationUsername = ""
-                }
-            }
         }
     }
     
@@ -137,7 +126,7 @@ class ContactsTableViewController: DogeChatViewController, UIImagePickerControll
         self.present(vc, animated: true)
     }
     
-    @objc func refreshContacts() {
+    @objc func refreshContacts(completion: (()->Void)? = nil) {
         manager.messageManager.getContacts { [weak self] userInfos, error  in
             guard let self = self else { return }
             if error != nil {
@@ -150,6 +139,7 @@ class ContactsTableViewController: DogeChatViewController, UIImagePickerControll
             ContactsTableViewController.usersInfos = userInfos
             self.tableView.reloadData()
             self.navigationItem.title = self.username
+            completion?()
         }
         #if targetEnvironment(macCatalyst)
         if appDelegate.needRelogin() {
@@ -231,7 +221,7 @@ class ContactsTableViewController: DogeChatViewController, UIImagePickerControll
         case .voice:
             content += "[语音]"
         }
-        if !(AppDelegate.shared.navigationController.visibleViewController is ContactsTableViewController) {
+        if !(AppDelegate.shared.navigationController.visibleViewController is ContactsTableViewController) && isPhone() {
             AppDelegate.shared.pushWindow.assignValueForPush(sender: name, content: content)
         }
         if tableView.numberOfRows(inSection: 0) != 0 {
