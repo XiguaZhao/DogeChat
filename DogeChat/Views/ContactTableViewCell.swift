@@ -86,8 +86,10 @@ class ContactTableViewCell: UITableViewCell {
             switch message.messageType {
             case .draw:
                 text = "[速绘]"
-            case .image, .livePhoto:
+            case .image:
                 text = "[图片]"
+            case .livePhoto:
+                text = "[Live Photo]"
             case .join, .text:
                 text = message.message
             case .video:

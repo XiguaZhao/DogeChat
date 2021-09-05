@@ -87,9 +87,7 @@ class DrawViewController: UIViewController, PKViewAutoOffsetDelegate {
         forwardButton.sizeToFit()
         forwardButton.center = CGPoint(x: view.bounds.width - forwardButton.bounds.width - view.safeAreaInsets.right, y: view.center.y)
     }
-    
-    
-    
+        
     @objc func realTimerSwitchAction(_ switcher: UISwitch) {
         message.needRealTimeDraw = switcher.isOn
         if switcher.isOn && !didSendNeedRealTime {

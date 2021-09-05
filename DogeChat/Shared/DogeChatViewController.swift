@@ -23,9 +23,6 @@ class DogeChatViewController: UIViewController, UIPopoverPresentationControllerD
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        if self is ContactsTableViewController || self is PlayListViewController {
-            additionalSafeAreaInsets = UIEdgeInsets(top: 0, left: 0, bottom: 60, right: 0)
-        }
 
         NotificationCenter.default.addObserver(self, selector: #selector(forceDarkMode(noti:)), name: .immersive, object: nil)
         toggleBlurView(force: AppDelegate.shared.immersive)
@@ -38,11 +35,7 @@ class DogeChatViewController: UIViewController, UIPopoverPresentationControllerD
         }
         AppDelegate.shared.lastUserInterfaceStyle = UIScreen.main.traitCollection.userInterfaceStyle
     }
-    
-    override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
-        return .portrait
-    }
-    
+        
     func recoverBackgroundColor() {
         if #available(iOS 13.0, *) {
             self.view.backgroundColor = .systemBackground
@@ -77,6 +70,13 @@ class DogeChatViewController: UIViewController, UIPopoverPresentationControllerD
                 needAnimation = false
             } else if let contactVC = self as? ContactsTableViewController {
                 tableView = contactVC.tableView
+            } else {
+                if #available(iOS 13.0, *) {
+                    if let historyVC = self as? HistoryVC {
+                        tableView = historyVC.tableView
+                        needAnimation = false
+                    }
+                } 
             }
             if let tableView = tableView {
                 makeBlurViewForViewController(self, blurView: &blurView, needAnimation: needAnimation, addToThisView: tableView)

@@ -91,6 +91,16 @@ extension ChatRoomViewController: MessageInputDelegate, VoiceRecordDelegate {
             startCallAction()
             Recorder.sharedInstance().needSendVideo = true
         }))
+        if #available(iOS 13.0, *) {
+            actionSheet.addAction(UIAlertAction(title: "历史记录", style: .default, handler: { [weak self] (action) in
+                guard let self = self else { return }
+                let vc = HistoryVC()
+                vc.option = self.messageOption
+                vc.name = self.friendName
+                vc.cache = self.cache
+                self.navigationController?.pushViewController(vc, animated: true)
+            }))
+        }
         actionSheet.addAction(UIAlertAction(title: "取消", style: .cancel, handler: nil))
         present(actionSheet, animated: true, completion: nil)
     }

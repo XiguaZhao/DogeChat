@@ -30,8 +30,8 @@ extension ContactsTableViewController: ContactTableViewCellDelegate, UIContextMe
             stackView.addInteraction(interaction)
         }
         self.navigationItem.titleView = stackView
-        avatarImageView.mas_updateConstraints { make in
-            make?.width.mas_equalTo()(avatarImageView.mas_height)
+        avatarImageView.mas_updateConstraints { [weak self] make in
+            make?.width.mas_equalTo()(self?.avatarImageView.mas_height)
             
         }
         avatarImageView.layer.cornerRadius = 44 / 2

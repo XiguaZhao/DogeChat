@@ -124,24 +124,24 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
     }
     
-//    func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {
-//        if AppDelegate.isPad() {
-//            return .all
-//        } else {
-//            if #available(iOS 14.0, *) {
-//                if ChatRoomViewController.needRotate {
-//                    return .landscape
-//                } else {
-//                    if let browser =  navigationController?.visibleViewController as? ImageBrowserViewController {
-//                        return browser.canRotate ? .all : .portrait
-//                    }
-//                    return .portrait
-//                }
-//            } else {
-//                return .portrait
-//            }
-//        }
-//    }
+    func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {
+        if isPad() {
+            return .all
+        } else {
+            if #available(iOS 14.0, *) {
+                if ChatRoomViewController.needRotate {
+                    return .landscape
+                } else {
+                    if let browser =  navigationController?.visibleViewController as? ImageBrowserViewController {
+                        return browser.canRotate ? .all : .portrait
+                    }
+                    return .portrait
+                }
+            } else {
+                return .portrait
+            }
+        }
+    }
     
     @objc func widthFor(side: SplitVCSide) -> CGFloat {
         if splitViewController.isCollapsed {

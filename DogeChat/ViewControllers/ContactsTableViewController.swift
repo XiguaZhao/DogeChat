@@ -55,8 +55,8 @@ class ContactsTableViewController: DogeChatViewController, UIImagePickerControll
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationItem.largeTitleDisplayMode = .never
         view.addSubview(tableView)
-        tableView.mas_makeConstraints { make in
-            make?.edges.equalTo()(self.view)
+        tableView.mas_makeConstraints { [weak self] make in
+            make?.edges.equalTo()(self?.view)
         }
         tableView.delegate = self
         tableView.dataSource = self
@@ -255,11 +255,7 @@ class ContactsTableViewController: DogeChatViewController, UIImagePickerControll
         }
         NotificationCenter.default.post(name: .updateLatesetMessage, object: message)
     }
-    
-    override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
-        return .portrait
-    }
-    
+        
     @objc func uploadSuccess(notification: Notification) {
         guard let message = notification.userInfo?["message"] as? Message,
               let data = notification.userInfo?["data"] else { return }
