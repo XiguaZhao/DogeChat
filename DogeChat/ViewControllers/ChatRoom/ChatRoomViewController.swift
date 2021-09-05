@@ -139,11 +139,11 @@ class ChatRoomViewController: DogeChatViewController {
               let correctId = userInfo?["correctId"] as? Int else {
             return
         }
-        message.id = correctId
-        message.sendStatus = .success
         guard let index = messages.firstIndex(of: message) else {
             return
         }
+        self.messages[index].sendStatus = .success
+        self.messages[index].id = correctId
         guard message.receiver == friendName || (message.receiver == "PublicPino" && messageOption == .toAll) else {
             return
         }

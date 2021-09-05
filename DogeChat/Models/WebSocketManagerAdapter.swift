@@ -135,7 +135,7 @@ class WebSocketManagerAdapter: NSObject {
                 manager.postNotification(message: message)
             }
         }
-        if newMessages.count != 0 {
+        if newMessages.filter({$0.messageSender == .someoneElse}).count != 0 {
             playSound()
         }
     }
