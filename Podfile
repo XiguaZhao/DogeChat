@@ -5,6 +5,7 @@ target 'DogeChat' do
   # Comment the next line if you don't want to use dynamic frameworks
 #  use_frameworks!
 pod 'DACircularProgress'
+pod 'MJRefresh'
 pod 'AFNetworking'
 pod 'SwiftyJSON', :git => 'https://github.com/SwiftyJSON/SwiftyJSON.git', :commit => '2b6054efa051565954e1d2b9da831680026cd768'
 pod 'SwiftyRSA', :path => '/Users/zhaoxiguang/Workspace/SwiftyRSA'

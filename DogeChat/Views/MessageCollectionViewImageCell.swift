@@ -43,15 +43,15 @@ class MessageCollectionViewImageCell: MessageCollectionViewBaseCell, PHLivePhoto
         livePhotoView.layer.masksToBounds = true
         livePhotoView.addSubview(livePhotoBadgeView)
         livePhotoBadgeView.image = PHLivePhotoView.livePhotoBadgeImage(options: .overContent)
-        livePhotoBadgeView.mas_makeConstraints { make in
-            make?.leading.top().equalTo()(livePhotoView)?.offset()(5)
+        livePhotoBadgeView.mas_makeConstraints { [weak self] make in
+            make?.leading.top().equalTo()(self?.livePhotoView)?.offset()(5)
         }
-        livePhotoView.mas_makeConstraints { make in
-            make?.edges.equalTo()(self.animatedImageView)
+        livePhotoView.mas_makeConstraints { [weak self] make in
+            make?.edges.equalTo()(self?.animatedImageView)
         }
         livePhotoView.delegate = self
-        videoView.mas_makeConstraints { make in
-            make?.edges.equalTo()(self.animatedImageView)
+        videoView.mas_makeConstraints { [weak self] make in
+            make?.edges.equalTo()(self?.animatedImageView)
         }
         addGestureForImageView()
         addGestureForVideoView()
@@ -73,9 +73,8 @@ class MessageCollectionViewImageCell: MessageCollectionViewBaseCell, PHLivePhoto
         centerDisplayBlock = { [weak player, weak self] _ , _ in
             guard let self = self, let player = player else { return }
             self.livePhotoView.startPlayback(with: .full)
-            guard let videoPath = self.message?.videoURL, let url = fileURLAt(dirName: videoDir, fileName:videoPath.components(separatedBy: "/").last!) else { return }
             if player.currentTime() == .zero || self.videoEnd {
-                self.playVideo(url: url, playNow: true)
+                self.playVideo()
             }
         }
     }
@@ -112,9 +111,18 @@ class MessageCollectionViewImageCell: MessageCollectionViewBaseCell, PHLivePhoto
             makeLivePhoto()
         } else if message.messageType == .video {
             makeVideo()
-        } else {
+        }
+    }
+    
+    func loadImageIfNeeded() {
+        if message.messageType == .image {
             downloadImageIfNeeded()
         }
+    }
+    
+    func cleanAnimatedImageView() {
+        self.animatedImageView.animatedImage = nil
+        self.animatedImageView.image = nil
     }
     
     func deactiveSession() {
@@ -124,6 +132,11 @@ class MessageCollectionViewImageCell: MessageCollectionViewBaseCell, PHLivePhoto
     func activeSession() {
         try? AVAudioSession.sharedInstance().setCategory(.playback, options: PlayerManager.shared.isMute ? .mixWithOthers : .duckOthers)
         try? AVAudioSession.sharedInstance().setActive(true, options: .notifyOthersOnDeactivation)
+    }
+    
+    func playVideo() {
+        guard let videoPath = self.message?.videoURL, let url = fileURLAt(dirName: videoDir, fileName:videoPath.components(separatedBy: "/").last!) else { return }
+        self.playVideo(url: url, playNow: true)
     }
     
     func playVideo(url: URL, playNow: Bool) {
@@ -174,7 +187,7 @@ class MessageCollectionViewImageCell: MessageCollectionViewBaseCell, PHLivePhoto
             }
             if !message.isDownloading {
                 message.isDownloading = true
-                let task = session.get(url_pre + message.videoURL!, parameters: nil, headers: nil, progress: { [weak self] progress in
+                session.get(url_pre + message.videoURL!, parameters: nil, headers: nil, progress: { [weak self] progress in
                     self?.delegate?.downloadProgressUpdate(progress: progress, message: captured!)
                 }, success: { task, data in
                     completion(task, data)
@@ -287,7 +300,11 @@ class MessageCollectionViewImageCell: MessageCollectionViewBaseCell, PHLivePhoto
         if isPlaying {
             player.pause()
         } else {
-            player.play()
+            if videoEnd {
+                playVideo()
+            } else {
+                player.play()
+            }
         }
         isPlaying.toggle()
     }

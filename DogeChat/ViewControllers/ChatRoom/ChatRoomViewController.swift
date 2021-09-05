@@ -335,6 +335,7 @@ extension ChatRoomViewController {
     }
     
     @objc func receiveHistoryMessages(_ noti: Notification) {
+        guard navigationController?.visibleViewController == self else { return }
         let empty = self.messages.count < ChatRoomViewController.numberOfHistory
         navigationItem.title = friendName
         guard let messages = noti.userInfo?["messages"] as? [Message], !messages.isEmpty, let pages = noti.userInfo?["pages"] as? Int else { return }

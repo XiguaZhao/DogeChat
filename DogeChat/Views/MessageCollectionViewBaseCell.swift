@@ -24,9 +24,10 @@ protocol MessageTableViewCellDelegate: AnyObject {
 
 class MessageCollectionViewBaseCell: DogeChatTableViewCell {
     weak var delegate: MessageTableViewCellDelegate?
-    @objc var message: Message!
+    var message: Message!
     var indexPath: IndexPath!
     let nameLabel = UILabel()
+    var isHistory = false
     var tapContentView: UITapGestureRecognizer!
     let indicator = UIActivityIndicatorView()
     var emojis = [EmojiInfo: FLAnimatedImageView]()
@@ -82,11 +83,9 @@ class MessageCollectionViewBaseCell: DogeChatTableViewCell {
         
     override func prepareForReuse() {
         super.prepareForReuse()
-        for emojiView in emojis.values {
-            emojiView.removeFromSuperview()
-        }
+        cleanEmojis()
+        avatarImageView.image = nil
         avatarImageView.animatedImage = nil
-        emojis.removeAll()
         progress.isHidden = true
     }
     
@@ -132,10 +131,25 @@ class MessageCollectionViewBaseCell: DogeChatTableViewCell {
     func apply(message: Message) {
         self.message = message
         nameLabel.text = message.senderUsername
+        if isHistory {
+            nameLabel.text = message.senderUsername + "   " + (message.date).replacingOccurrences(of: "\n", with: "  ")
+        }
         avatarDoubleTapGes.isEnabled = message.messageSender == .someoneElse
         timeLabel.text = message.date
-        loadAvatar()
-        addEmojis()
+//        loadAvatar()
+//        addEmojis()
+    }
+    
+    func cleanEmojis() {
+        for emojiView in emojis.values {
+            emojiView.removeFromSuperview()
+        }
+        emojis.removeAll()
+    }
+    
+    func cleanAvatar() {
+        self.avatarImageView.animatedImage = nil
+        self.avatarImageView.image = nil
     }
     
     public func loadAvatar() {
@@ -194,8 +208,8 @@ class MessageCollectionViewBaseCell: DogeChatTableViewCell {
                 }
             } else {
                 let capturedMessage = self.message
-                SDWebImageManager.shared.loadImage(with: URL(string: url), options: [.avoidDecodeImage, .allowInvalidSSLCertificates], progress: nil) { image, data, _, _, _, _ in
-                    guard capturedMessage?.uuid == self.message.uuid else { return }
+                SDWebImageManager.shared.loadImage(with: URL(string: url), options: [.avoidDecodeImage, .allowInvalidSSLCertificates], progress: nil) { [weak self] image, data, _, _, _, _ in
+                    guard let self = self, capturedMessage?.uuid == self.message.uuid else { return }
                     if !isGif, let image = image { // is photo
                         let compressed = WebSocketManager.shared.messageManager.compressEmojis(image)
                         self.avatarImageView.image = UIImage(data: compressed)

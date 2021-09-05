@@ -56,10 +56,16 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
     }
     
     func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        (cell as? MessageCollectionViewBaseCell)?.cleanEmojis()
+        (cell as? MessageCollectionViewImageCell)?.cleanAvatar()
+        (cell as? MessageCollectionViewImageCell)?.cleanAnimatedImageView()
         (cell as? DogeChatTableViewCell)?.endDisplayBlock?(cell as! DogeChatTableViewCell, tableView)
     }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        (cell as? MessageCollectionViewBaseCell)?.addEmojis()
+        (cell as? MessageCollectionViewBaseCell)?.loadAvatar()
+        (cell as? MessageCollectionViewImageCell)?.loadImageIfNeeded()
         (cell as? DogeChatTableViewCell)?.willDisplayBlock?(cell as! DogeChatTableViewCell, tableView)
     }
     

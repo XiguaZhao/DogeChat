@@ -67,7 +67,6 @@
 		0761F5872684AC2B00E27B07 /* PlayListTrackCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0761F5862684AC2A00E27B07 /* PlayListTrackCell.swift */; };
 		0761FAAC266CC98600AE0171 /* MessageColletionViewBaseCell+Emitter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0761FAAB266CC98600AE0171 /* MessageColletionViewBaseCell+Emitter.swift */; };
 		0761FAAE266CE87400AE0171 /* EmojiEmitterLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0761FAAD266CE87400AE0171 /* EmojiEmitterLayer.swift */; };
-		0761FAB0266CFEE100AE0171 /* ChatRoom+Emitter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0761FAAF266CFEE100AE0171 /* ChatRoom+Emitter.swift */; };
 		0761FAF4266E342E00AE0171 /* HelperMethods.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0761FAF3266E342E00AE0171 /* HelperMethods.swift */; };
 		0761FAFE266E484C00AE0171 /* Interface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0761FAFC266E484C00AE0171 /* Interface.storyboard */; };
 		0761FB00266E484E00AE0171 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0761FAFF266E484E00AE0171 /* Assets.xcassets */; };
@@ -82,6 +81,7 @@
 		0761FB31266E48CC00AE0171 /* ContactInterfaceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0761FB30266E48CC00AE0171 /* ContactInterfaceController.swift */; };
 		0761FB38266E577900AE0171 /* MessageRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0761FB37266E577900AE0171 /* MessageRow.swift */; };
 		0761FB3A266E57B000AE0171 /* ChatRoomInterfaceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0761FB39266E57B000AE0171 /* ChatRoomInterfaceController.swift */; };
+		076B209626E466A800BCD003 /* ChatRoom+Emitter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 076B209326E466A800BCD003 /* ChatRoom+Emitter.swift */; };
 		077F4B8126DE0C5000C50D0D /* ChatRoom+InsertMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 077F4B8026DE0C5000C50D0D /* ChatRoom+InsertMessage.swift */; };
 		078E66A22658C0D600E5277E /* PKView.m in Sources */ = {isa = PBXBuildFile; fileRef = 078E66A12658C0D600E5277E /* PKView.m */; };
 		078E66A6265A310F00E5277E /* DrawViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 078E66A5265A310F00E5277E /* DrawViewController.swift */; };
@@ -264,7 +264,6 @@
 		0761F5862684AC2A00E27B07 /* PlayListTrackCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayListTrackCell.swift; sourceTree = "<group>"; };
 		0761FAAB266CC98600AE0171 /* MessageColletionViewBaseCell+Emitter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MessageColletionViewBaseCell+Emitter.swift"; sourceTree = "<group>"; };
 		0761FAAD266CE87400AE0171 /* EmojiEmitterLayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiEmitterLayer.swift; sourceTree = "<group>"; };
-		0761FAAF266CFEE100AE0171 /* ChatRoom+Emitter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChatRoom+Emitter.swift"; sourceTree = "<group>"; };
 		0761FAF3266E342E00AE0171 /* HelperMethods.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelperMethods.swift; sourceTree = "<group>"; };
 		0761FAFA266E484C00AE0171 /* DogeChatWatch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DogeChatWatch.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0761FAFD266E484C00AE0171 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Interface.storyboard; sourceTree = "<group>"; };
@@ -283,6 +282,7 @@
 		0761FB30266E48CC00AE0171 /* ContactInterfaceController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactInterfaceController.swift; sourceTree = "<group>"; };
 		0761FB37266E577900AE0171 /* MessageRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageRow.swift; sourceTree = "<group>"; };
 		0761FB39266E57B000AE0171 /* ChatRoomInterfaceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatRoomInterfaceController.swift; sourceTree = "<group>"; };
+		076B209326E466A800BCD003 /* ChatRoom+Emitter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ChatRoom+Emitter.swift"; sourceTree = "<group>"; };
 		077F4B8026DE0C5000C50D0D /* ChatRoom+InsertMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChatRoom+InsertMessage.swift"; sourceTree = "<group>"; };
 		078032712486B13E00E370E0 /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Platforms/iPhoneOS.platform/Developer/Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		0780327A2486B28C00E370E0 /* DogeChatTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DogeChatTests.swift; sourceTree = "<group>"; };
@@ -545,10 +545,10 @@
 				077F4B8026DE0C5000C50D0D /* ChatRoom+InsertMessage.swift */,
 				07E1BAFB267F86B000559A3B /* ChatRoom+InputViewDelegate.swift */,
 				071379A72689DCBD007EF6D6 /* ChatRoom+CellDelegate.swift */,
-				0761FAAF266CFEE100AE0171 /* ChatRoom+Emitter.swift */,
 				07B3F5D3262470D70016B5C9 /* ChatRoom+Drop.swift */,
 				AEA5A1781EC362150041C7B4 /* ChatRoom+TableDelegate.swift */,
 				AEA5A1761EC3618C0041C7B4 /* ChatRoom+Layout.swift */,
+				076B209326E466A800BCD003 /* ChatRoom+Emitter.swift */,
 			);
 			path = ChatRoom;
 			sourceTree = "<group>";
@@ -835,6 +835,7 @@
 				AEC6BF391EAF320E007CA6E5 /* Resources */,
 				07C6AF9B247D1AF80007222F /* Embed Watch Content */,
 				073FDF5E25B2871C00FE01CD /* Embed App Extensions */,
+				ECDED6EF6F3D41F3A61824CC /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -977,6 +978,24 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
+		ECDED6EF6F3D41F3A61824CC /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-DogeChat/Pods-DogeChat-resources.sh",
+				"${PODS_ROOT}/MJRefresh/MJRefresh/MJRefresh.bundle",
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${UNLOCALIZED_RESOURCES_FOLDER_PATH}/MJRefresh.bundle",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-DogeChat/Pods-DogeChat-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		F1C0C8662FD77ABA1F11BFC8 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -1062,6 +1081,7 @@
 				0718AC102685DE9F00E27B28 /* PlayerManager.swift in Sources */,
 				07ED6B6C268C2C2500F86DC0 /* MiniPlayerCell.swift in Sources */,
 				071CF7B826609F8900897B01 /* MessageCollectionViewDrawCell.swift in Sources */,
+				076B209626E466A800BCD003 /* ChatRoom+Emitter.swift in Sources */,
 				073FDF6A25B2A35000FE01CD /* NotificationManager.swift in Sources */,
 				079317282643CDA2008EBB27 /* WebSocketManagerAdapter.swift in Sources */,
 				071379A82689DCBD007EF6D6 /* ChatRoom+CellDelegate.swift in Sources */,
@@ -1073,7 +1093,6 @@
 				0718AC2826878E8900E27B28 /* DogeChatNavigationController.swift in Sources */,
 				0718AC0D2685CEAE00E27B28 /* Common.swift in Sources */,
 				AEC6BF3F1EAF320E007CA6E5 /* AppDelegate.swift in Sources */,
-				0761FAB0266CFEE100AE0171 /* ChatRoom+Emitter.swift in Sources */,
 				07B8321426820512009434AC /* PlayListViewController.swift in Sources */,
 				AEA5A1771EC3618C0041C7B4 /* ChatRoom+Layout.swift in Sources */,
 				07AB7B0B248F2A7A005306A1 /* SignUpViewController.swift in Sources */,

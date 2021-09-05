@@ -54,8 +54,8 @@ class VoiceViewController: DogeChatViewController, AVAudioRecorderDelegate {
         
         let width: CGFloat = 50
         
-        stack.mas_makeConstraints { make in
-            make?.center.equalTo()(self.view)
+        stack.mas_makeConstraints { [weak self] make in
+            make?.center.equalTo()(self?.view)
         }
         
         stopButton.mas_makeConstraints { make in
