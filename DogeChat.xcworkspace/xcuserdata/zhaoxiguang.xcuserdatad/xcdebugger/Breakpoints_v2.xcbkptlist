@@ -108,8 +108,8 @@
             filePath = "DogeChat/ViewControllers/ContactsTableViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "249"
-            endingLineNumber = "249"
+            startingLineNumber = "248"
+            endingLineNumber = "248"
             landmarkName = "sendSuccess(notification:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -124,8 +124,8 @@
             filePath = "DogeChat/ViewControllers/ContactsTableViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "254"
-            endingLineNumber = "254"
+            startingLineNumber = "253"
+            endingLineNumber = "253"
             landmarkName = "sendSuccess(notification:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -400,8 +400,8 @@
             filePath = "DogeChat/Views/MessageCollectionViewImageCell.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "220"
-            endingLineNumber = "220"
+            startingLineNumber = "233"
+            endingLineNumber = "233"
             landmarkName = "makeLivePhoto()"
             landmarkType = "7">
          </BreakpointContent>
@@ -440,10 +440,10 @@
             filePath = "DogeChat/Views/MessageCollectionViewImageCell.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "255"
-            endingLineNumber = "255"
-            landmarkName = "makeLivePhoto()"
-            landmarkType = "7">
+            startingLineNumber = "268"
+            endingLineNumber = "268"
+            landmarkName = "MessageCollectionViewImageCell"
+            landmarkType = "3">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -508,6 +508,23 @@
                   offsetFromSymbolStart = "32">
                </Location>
             </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "EDFC9739-A18D-436F-A20A-4C12D4C32B7D"
+            shouldBeEnabled = "Yes"
+            condition = "indexPath.row == 9"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "DogeChat/ViewControllers/ChatRoom/ChatRoom+TableDelegate.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "86"
+            endingLineNumber = "86"
+            landmarkName = "tableView(_:contextMenuConfigurationForRowAt:point:)"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>
