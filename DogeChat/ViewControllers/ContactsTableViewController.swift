@@ -186,9 +186,13 @@ class ContactsTableViewController: DogeChatViewController, UIImagePickerControll
         }
         var index = 0
         if message.option == .toOne {
-            index = ContactsTableViewController.usernames.firstIndex(of: message.senderUsername) ?? 0
+            let friendName = message.messageSender == .ourself ? message.receiver : message.senderUsername
+            index = ContactsTableViewController.usernames.firstIndex(of: friendName) ?? 0
         }
-        if self.navigationController?.topViewController?.navigationItem.title == (message.receiver == "" ? "群聊" : message.senderUsername) {
+        let friendName = (message.messageSender == .ourself ? message.receiver : message.senderUsername)
+        if let visibleVC = self.navigationController?.visibleViewController,
+            visibleVC is ChatRoomViewController,
+            visibleVC.navigationItem.title == (message.option == .toAll ? "群聊" : friendName) {
             if let chatroomVC = self.navigationController?.topViewController as? ChatRoomViewController,
                chatroomVC.messageOption == message.option {
                 unreadMessage[(index == 0 ? "群聊" : message.senderUsername)] = 0
@@ -197,10 +201,10 @@ class ContactsTableViewController: DogeChatViewController, UIImagePickerControll
             }
         }
         if message.option == .toOne {
-            if let originalNumber = unreadMessage[message.senderUsername] {
-                unreadMessage[message.senderUsername] = originalNumber + 1
+            if let originalNumber = unreadMessage[friendName] {
+                unreadMessage[friendName] = originalNumber + 1
             } else {
-                unreadMessage[message.senderUsername] = 1
+                unreadMessage[friendName] = 1
             }
         } else {
             unreadMessage["群聊"] = (unreadMessage["群聊"] ?? 0) + 1
