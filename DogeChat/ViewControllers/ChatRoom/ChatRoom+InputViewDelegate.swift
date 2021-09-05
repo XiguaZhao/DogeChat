@@ -117,6 +117,11 @@ extension ChatRoomViewController: MessageInputDelegate, VoiceRecordDelegate {
         textViewDidChange(textView)
     }
     
+    @objc func pasteImageAction(_ noti: Notification) {
+        guard let item = noti.object as? NSItemProvider else { return }
+        processItemProviders([item])
+    }
+    
     func voiceButtonTapped(_ sender: UIButton) {
         let voiceVC = VoiceViewController()
         voiceVC.modalPresentationStyle = .popover
@@ -166,16 +171,33 @@ extension ChatRoomViewController: MessageInputDelegate, VoiceRecordDelegate {
                 }
             }
         } else {
-            for result in results {
-                result.itemProvider.loadObject(ofClass: UIImage.self) { [weak self] object, error in
-                    if let image = object as? UIImage {
-                        result.itemProvider.loadItem(forTypeIdentifier: UTType.gif.identifier, options: nil) { gif, error in
-                            if let gifUrl = gif as? URL {
-                                self?.latestPickedImageInfos.append((image, gifUrl, image.size))
+            processItemProviders(results.map { $0.itemProvider })
+        }
+    }
+    
+    func processItemProviders(_ items: [NSItemProvider]) {
+        for item in items {
+            item.loadObject(ofClass: UIImage.self) { [weak self] object, error in
+                if let image = object as? UIImage {
+                    if #available(iOS 14.0, *) {
+                        item.loadItem(forTypeIdentifier: UTType.gif.identifier, options: nil) { gif, error in
+                            if var gifUrl = gif as? URL {
+                                if !gifUrl.absoluteString.hasSuffix(".gif") { //从剪贴板过来的
+                                    let newURL = createDir(name: pasteDir).appendingPathComponent(UUID().uuidString).appendingPathExtension("gif")
+                                    let _ = gifUrl.startAccessingSecurityScopedResource()
+                                    try? FileManager.default.copyItem(at: gifUrl, to: newURL)
+                                    gifUrl.stopAccessingSecurityScopedResource()
+                                    gifUrl = newURL
+                                }
+                                if let success = try? gifUrl.checkResourceIsReachable(), success {
+                                    self?.latestPickedImageInfos.append((image, gifUrl, image.size))
+                                } else {
+                                    self?.latestPickedImageInfos.append(WebSocketManagerAdapter.shared.compressImage(image))
+                                }
                             } else {
                                 self?.latestPickedImageInfos.append(WebSocketManagerAdapter.shared.compressImage(image))
                             }
-                            if self?.latestPickedImageInfos.count == results.count {
+                            if self?.latestPickedImageInfos.count == items.count {
                                 self?.confirmSendPhoto()
                             }
                         }
@@ -184,7 +206,6 @@ extension ChatRoomViewController: MessageInputDelegate, VoiceRecordDelegate {
             }
         }
     }
-    
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         if let type = info[.mediaType] as? String, type == "public.movie" {

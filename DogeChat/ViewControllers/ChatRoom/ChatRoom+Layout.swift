@@ -64,6 +64,7 @@ extension ChatRoomViewController {
         tableView.dataSource = self
         tableView.delegate = self
         tableView.dropDelegate = self
+        tableView.dragDelegate = self
         tableView.register(MessageCollectionViewTextCell.self, forCellReuseIdentifier: MessageCollectionViewTextCell.cellID)
         tableView.register(MessageCollectionViewImageCell.self, forCellReuseIdentifier: MessageCollectionViewImageCell.cellID)
         tableView.register(MessageCollectionViewDrawCell.self, forCellReuseIdentifier: MessageCollectionViewDrawCell.cellID)
@@ -141,12 +142,14 @@ extension ChatRoomViewController {
         tableViewInset.bottom += heightChanged
         if heightChanged != 0 {
             self.shouldIgnoreScroll = true
+            let finalFrame = CGRect(x: oldFrame.origin.x, y: oldFrame.origin.y-heightChanged, width: oldFrame.width, height: oldFrame.height+heightChanged)
             UIView.animate(withDuration:  0.2 ) { [weak self] in
                 guard let self = self else { return }
-                self.messageInputBar.frame = CGRect(x: oldFrame.origin.x, y: oldFrame.origin.y-heightChanged, width: oldFrame.width, height: oldFrame.height+heightChanged)
+                self.messageInputBar.frame = finalFrame
                 self.tableView.contentInset = tableViewInset
             } completion: { [weak self] (finish) in
-                self?.needScrollToBottom = true
+                guard let tableView = self?.tableView else { return }
+                tableView.setContentOffset(CGPoint(x: 0, y: tableView.contentSize.height - finalFrame.minY), animated: true)
                 if textView.text.isEmpty {
                     textView.font = .systemFont(ofSize: 18)
                 }

@@ -23,6 +23,7 @@ class ChatRoomViewController: DogeChatViewController {
     var pagesAndCurNum = (pages: 1, curNum: 1)
     var originOfInputBar = CGPoint()
     var scrollBottom = true
+    var activeSwipeIndexPath: IndexPath?
     var latestPickedImageInfos: [(image: UIImage?, fileUrl: URL, size: CGSize)] = []
     var pickedLivePhotos: [(imageURL: URL, videoURL: URL, size: CGSize, live: PHLivePhoto)] = []
     var pickedVideos: (url: URL, size: CGSize)?
@@ -74,6 +75,7 @@ class ChatRoomViewController: DogeChatViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(receiveEmojiInfoChangedNotification(_:)), name: .emojiInfoChanged, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(receiveHistoryMessages(_:)), name: .receiveHistoryMessages, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(displayHistoryIfNeeded), name: .connected, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(pasteImageAction(_:)), name: .pasteImage, object: nil)
         navigationItem.largeTitleDisplayMode = .never
         addRefreshController()
         loadViews()

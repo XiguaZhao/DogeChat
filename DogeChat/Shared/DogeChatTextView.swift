@@ -8,7 +8,7 @@
 
 import UIKit
 
-class DogeChatTextView: UITextView {
+class DogeChatTextView: UITextView, UITextPasteDelegate {
 
     override init(frame: CGRect, textContainer: NSTextContainer?) {
         super.init(frame: frame, textContainer: textContainer)
@@ -16,6 +16,7 @@ class DogeChatTextView: UITextView {
             self.backgroundColor = .clear
         }
         NotificationCenter.default.addObserver(self, selector: #selector(forceDarkMode(noti:)), name: .immersive, object: nil)
+        self.pasteDelegate = self
     }
     
     required init?(coder: NSCoder) {
@@ -32,5 +33,27 @@ class DogeChatTextView: UITextView {
             }
         }
     }
-
+    
+    func textPasteConfigurationSupporting(_ textPasteConfigurationSupporting: UITextPasteConfigurationSupporting, transform item: UITextPasteItem) {
+        if item.itemProvider.canLoadObject(ofClass: String.self) {
+            _ = item.itemProvider.loadObject(ofClass: String.self) { str, error in
+                if let str = str {
+                    item.setResult(string: str)
+                } else {
+                    item.setNoResult()
+                }
+            }
+        } else if item.itemProvider.canLoadObject(ofClass: UIImage.self) {
+            item.setNoResult()
+            NotificationCenter.default.post(name: .pasteImage, object: item.itemProvider)
+        }
+    }
+    
+    override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
+        if action == #selector(UITextView.paste(_:)) {
+            return true
+        }
+        return super.canPerformAction(action, withSender: sender)
+    }
+    
 }

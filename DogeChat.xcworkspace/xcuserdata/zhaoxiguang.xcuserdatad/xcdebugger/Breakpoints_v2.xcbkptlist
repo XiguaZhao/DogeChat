@@ -449,22 +449,6 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "C05359B5-A6DB-4163-9619-7D0076474D9E"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "DogeChat/ViewControllers/ChatRoom/ChatRoomViewController.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "124"
-            endingLineNumber = "124"
-            landmarkName = "scrollBotton()"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
             uuid = "5B0710CF-4F75-48ED-82E7-F40C68F3EB2E"
             shouldBeEnabled = "No"
             ignoreCount = "0"
@@ -508,23 +492,6 @@
                   offsetFromSymbolStart = "32">
                </Location>
             </Locations>
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "EDFC9739-A18D-436F-A20A-4C12D4C32B7D"
-            shouldBeEnabled = "Yes"
-            condition = "indexPath.row == 9"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "DogeChat/ViewControllers/ChatRoom/ChatRoom+TableDelegate.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "86"
-            endingLineNumber = "86"
-            landmarkName = "tableView(_:contextMenuConfigurationForRowAt:point:)"
-            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

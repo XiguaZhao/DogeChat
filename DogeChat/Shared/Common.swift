@@ -12,6 +12,7 @@ let livePhotoDir = "livephotos"
 let videoDir = "videos"
 let voiceDir = "voice"
 let drawDir = "draws"
+let pasteDir = "paste"
 
 var myName: String {
     (UserDefaults.standard.value(forKey: "lastUsername") as? String) ?? ""
@@ -84,6 +85,12 @@ extension String {
         return url
     }
     
+}
+
+extension URL {
+    var filePath: String {
+        return self.absoluteString.replacingOccurrences(of: "file://", with: "")
+    }
 }
 
 extension UIImage {

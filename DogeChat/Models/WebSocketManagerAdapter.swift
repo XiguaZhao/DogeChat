@@ -248,7 +248,7 @@ extension WebSocketManagerAdapter: VoiceDelegate, WebSocketDataDelegate {
     func compressImage(_ image: UIImage, needSave: Bool = true) -> (image: UIImage, fileUrl: URL, size: CGSize) {
         var size = image.size
         let ratio = size.width / size.height
-        let width: CGFloat = UIScreen.main.bounds.width
+        let width: CGFloat = min(image.size.width / UIScreen.main.scale, UIScreen.main.bounds.width)
         let height = floor(width / ratio)
         size = CGSize(width: width, height: height)
         var result: UIImage!
