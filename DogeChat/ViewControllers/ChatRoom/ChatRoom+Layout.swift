@@ -156,6 +156,21 @@ extension ChatRoomViewController {
             }
         }
     }
+    
+    func makeNavBarUI() {
+        var total: CGFloat = 0
+        for message in messages.reversed() {
+            total += MessageCollectionViewBaseCell.height(for: message)
+            if total > tableView.bounds.height - tableView.contentInset.top {
+                if let bar = self.navigationController?.navigationBar,
+                   let blurView = bar.subviews.first?.subviews.first as? UIVisualEffectView {
+                    blurView.alpha = 1
+                }
+                return
+            }
+        }
+        
+    }
 
 }
 

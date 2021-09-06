@@ -15,9 +15,8 @@ extension ChatRoomViewController: UITableViewDragDelegate {
         let message = messages[indexPath.row]
         guard message.messageType == .image || message.messageType == .text else { return [] }
         var items = [UIDragItem]()
-        let cell = tableView.cellForRow(at: indexPath)
         if message.messageType == .text {
-            let str = ((cell as! MessageCollectionViewTextCell).messageLabel.text ?? "") as NSString
+            let str = message.message as NSString
             let item = UIDragItem(itemProvider: NSItemProvider(object: str))
             items.append(item)
         } else if message.messageType == .image {
@@ -44,9 +43,11 @@ extension ChatRoomViewController: UITableViewDragDelegate {
         } else if message.messageType == .image {
             rect = (cell as! MessageCollectionViewImageCell).animatedImageView.frame
         }
-        guard let rect = rect, let targetView = cell.indicationNeighborView else {
+        guard var rect = rect, let targetView = cell.indicationNeighborView else {
             return nil
         }
+        let offset = cell.bounds.width - cell.contentView.bounds.width
+        rect.origin.x += offset
         let path = UIBezierPath(roundedRect: rect, cornerRadius: targetView.layer.cornerRadius)
         preview.visiblePath = path
         return preview

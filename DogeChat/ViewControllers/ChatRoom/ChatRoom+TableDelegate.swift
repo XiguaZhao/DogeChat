@@ -113,7 +113,13 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
             }
         }
         saveEmoji.backgroundColor = #colorLiteral(red: 0.4666666687, green: 0.7647058964, blue: 0.2666666806, alpha: 1)
-        var actions = [UIContextualAction]()
+        let multiSelection = UIContextualAction(style: .normal, title: "多选") { [weak self] action, view, handler in
+            guard let self = self else { return }
+            handler(true)
+            self.makeMultiSelection(indexPath)
+        }
+        multiSelection.backgroundColor = #colorLiteral(red: 0.2392156869, green: 0.6745098233, blue: 0.9686274529, alpha: 1)
+        var actions = [multiSelection]
         if messages[indexPath.row].messageType == .image {
             actions.append(saveEmoji)
         }
@@ -137,7 +143,7 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
             }
         }
         return UIContextMenuConfiguration(identifier: identifier, previewProvider: nil
-        ) { [weak self, weak cell, weak tableView] (menuElement) -> UIMenu? in
+        ) { [weak self, weak cell] (menuElement) -> UIMenu? in
             guard let self = self, let cell = cell else { return nil }
             let copyAction = UIAction(title: "复制") { (_) in
                 if let textCell = cell as? MessageCollectionViewTextCell {
@@ -169,12 +175,7 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
             }
             let multiSelect = UIAction(title: "多选") { [weak self] _ in
                 guard let self = self else { return }
-                tableView?.allowsMultipleSelection = true
-                tableView?.allowsMultipleSelectionDuringEditing = true
-                tableView?.setEditing(true, animated: true)
-                let cancel = UIBarButtonItem(title: "取消", style: .plain, target: self, action: #selector(self.cancelItemAction))
-                let share = UIBarButtonItem(title: "转发", style: .plain, target: self, action: #selector(self.didFinishMultiSelection(_:)))
-                self.navigationItem.setRightBarButtonItems([cancel, share], animated: true)
+                self.makeMultiSelection(indexPath)
             }
             var children: [UIAction] = [copyAction, multiSelect]
             if revokeAction != nil { children.append(revokeAction!) }
@@ -182,6 +183,19 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
             if addBackgroundColorAction != nil { children.append(addBackgroundColorAction!) }
             let menu = UIMenu(title: "", image: nil, children: children)
             return menu
+        }
+    }
+    
+    func makeMultiSelection(_ indexPath: IndexPath? = nil) {
+        tableView.allowsMultipleSelection = true
+        tableView.allowsMultipleSelectionDuringEditing = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
+            guard let self = self else { return }
+            self.tableView.setEditing(true, animated: true)
+            self.tableView.selectRow(at: indexPath, animated: true, scrollPosition: .none)
+            let cancel = UIBarButtonItem(title: "取消", style: .plain, target: self, action: #selector(self.cancelItemAction))
+            let share = UIBarButtonItem(title: "转发", style: .plain, target: self, action: #selector(self.didFinishMultiSelection(_:)))
+            self.navigationItem.setRightBarButtonItems([cancel, share], animated: true)
         }
     }
     
@@ -289,7 +303,8 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
     }
     
     func tableView(_ tableView: UITableView, shouldHighlightRowAt indexPath: IndexPath) -> Bool {
-        return tableView.isEditing || messageInputBar.isActive
+        let should = tableView.isEditing || messageInputBar.isActive
+        return should
     }
     
 

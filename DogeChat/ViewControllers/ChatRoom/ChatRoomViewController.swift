@@ -65,6 +65,7 @@ class ChatRoomViewController: DogeChatViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        makeNavBarUI()
         manager.messageManager.messageDelegate = self
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillChange(notification:)), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(sendSuccess(notification:)), name: .sendSuccess, object: nil)
