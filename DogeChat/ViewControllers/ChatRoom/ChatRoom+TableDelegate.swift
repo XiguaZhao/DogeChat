@@ -79,6 +79,57 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
     
     func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
     }
+    
+    func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        let share = UIContextualAction(style: .normal, title: "转发") { [weak self] action, view, handler in
+            guard let self = self else { return }
+            handler(true)
+            self.activeSwipeIndexPath = indexPath
+            let contactVC = SelectContactsViewController()
+            contactVC.modalPresentationStyle = .formSheet
+            contactVC.delegate = self
+            self.present(contactVC, animated: true)
+        }
+        let revoke = UIContextualAction(style: .destructive, title: "撤回") { [weak self] action, view, handler in
+            guard let self = self else { return }
+            self.revoke(message: self.messages[indexPath.row])
+            handler(true)
+        }
+        share.backgroundColor = #colorLiteral(red: 0.2392156869, green: 0.6745098233, blue: 0.9686274529, alpha: 1)
+        let configuration = UISwipeActionsConfiguration(actions: [share, revoke])
+        configuration.performsFirstActionWithFullSwipe = true
+        return configuration
+    }
+    
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        let saveEmoji = UIContextualAction(style: .normal, title: "收藏表情") { [weak tableView, weak self] action, view, handler in
+            guard let self = self else { return }
+            handler(true)
+            if let cell = tableView?.cellForRow(at: indexPath) as? MessageCollectionViewImageCell {
+                if let imageUrl = cell.message.imageURL, cell.message.sendStatus == .success {
+                    let isGif = imageUrl.hasSuffix(".gif")
+                    self.manager.starAndUploadEmoji(filePath: imageUrl, isGif: isGif)
+                }
+            }
+        }
+        saveEmoji.backgroundColor = #colorLiteral(red: 0.4666666687, green: 0.7647058964, blue: 0.2666666806, alpha: 1)
+        let multiSelection = UIContextualAction(style: .normal, title: "多选") { [weak self] action, view, handler in
+            guard let self = self else { return }
+            handler(true)
+            self.makeMultiSelection(indexPath)
+        }
+        multiSelection.backgroundColor = #colorLiteral(red: 0.2392156869, green: 0.6745098233, blue: 0.9686274529, alpha: 1)
+        var actions = [multiSelection]
+        if messages[indexPath.row].messageType == .image {
+            actions.append(saveEmoji)
+        }
+        if actions.isEmpty {
+            return nil
+        }
+        let config = UISwipeActionsConfiguration(actions: actions)
+        config.performsFirstActionWithFullSwipe = true
+        return config
+    }
         
     //MARK: ContextMune
     @available(iOS 13.0, *)
@@ -92,7 +143,7 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
             }
         }
         return UIContextMenuConfiguration(identifier: identifier, previewProvider: nil
-        ) { [weak self, weak cell, weak tableView] (menuElement) -> UIMenu? in
+        ) { [weak self, weak cell] (menuElement) -> UIMenu? in
             guard let self = self, let cell = cell else { return nil }
             let copyAction = UIAction(title: "复制") { (_) in
                 if let textCell = cell as? MessageCollectionViewTextCell {
@@ -122,11 +173,9 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
                     }
                 }
             }
-            let multiSelect = UIAction(title: "多选") {_ in
-                tableView?.allowsMultipleSelection = true
-                tableView?.allowsMultipleSelectionDuringEditing = true
-                tableView?.setEditing(true, animated: true)
-                self.navigationItem.setRightBarButton(UIBarButtonItem(title: "转发", style: .plain, target: self, action: #selector(self.didFinishMultiSelection(_:))), animated: true)
+            let multiSelect = UIAction(title: "多选") { [weak self] _ in
+                guard let self = self else { return }
+                self.makeMultiSelection(indexPath)
             }
             var children: [UIAction] = [copyAction, multiSelect]
             if revokeAction != nil { children.append(revokeAction!) }
@@ -135,6 +184,26 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
             let menu = UIMenu(title: "", image: nil, children: children)
             return menu
         }
+    }
+    
+    func makeMultiSelection(_ indexPath: IndexPath? = nil) {
+        tableView.allowsMultipleSelection = true
+        tableView.allowsMultipleSelectionDuringEditing = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
+            guard let self = self else { return }
+            self.tableView.setEditing(true, animated: true)
+            self.tableView.selectRow(at: indexPath, animated: true, scrollPosition: .none)
+            let cancel = UIBarButtonItem(title: "取消", style: .plain, target: self, action: #selector(self.cancelItemAction))
+            let share = UIBarButtonItem(title: "转发", style: .plain, target: self, action: #selector(self.didFinishMultiSelection(_:)))
+            self.navigationItem.setRightBarButtonItems([cancel, share], animated: true)
+        }
+    }
+    
+    @objc func cancelItemAction() {
+        activeSwipeIndexPath = nil
+        tableView.setEditing(false, animated: true)
+        navigationItem.setRightBarButtonItems(nil, animated: true)
+        tableView.indexPathsForVisibleRows?.forEach { tableView.deselectRow(at: $0, animated: true) }
     }
         
     @objc func didFinishMultiSelection(_ button: UIBarButtonItem) {
@@ -153,11 +222,17 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
     func didSelectContacts(_ contacts: [String], vc: SelectContactsViewController) {
         defer {
             vc.dismiss(animated: true) {
-                self.navigationItem.setRightBarButton(nil, animated: true)
-                self.tableView.setEditing(false, animated: true)
+                self.cancelItemAction()
+                self.activeSwipeIndexPath = nil
             }
         }
-        guard let selectedIndexPaths = tableView.indexPathsForSelectedRows else {
+        var selectedIndexPaths: [IndexPath]?
+        if let _selectedIndexPaths = tableView.indexPathsForSelectedRows {
+            selectedIndexPaths = _selectedIndexPaths
+        } else if let _selectedIndexPath = activeSwipeIndexPath {
+            selectedIndexPaths = [_selectedIndexPath]
+        }
+        guard let selectedIndexPaths = selectedIndexPaths else {
             return
         }
         let selectedMessages = selectedIndexPaths.map { self.messages[$0.row].copied() }
@@ -216,8 +291,7 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
     
     func didCancelSelectContacts(_ vc: SelectContactsViewController) {
         vc.dismiss(animated: true) {
-            self.navigationItem.setRightBarButton(nil, animated: true)
-            self.tableView.setEditing(false, animated: true)
+            self.cancelItemAction()
         }
     }
     
@@ -229,7 +303,8 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
     }
     
     func tableView(_ tableView: UITableView, shouldHighlightRowAt indexPath: IndexPath) -> Bool {
-        return tableView.isEditing || messageInputBar.isActive
+        let should = tableView.isEditing || messageInputBar.isActive
+        return should
     }
     
 

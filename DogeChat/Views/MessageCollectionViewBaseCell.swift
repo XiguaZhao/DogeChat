@@ -120,11 +120,17 @@ class MessageCollectionViewBaseCell: DogeChatTableViewCell {
     
     func layoutEmojis() {
         for (emojiInfo, imageView) in emojis {
+            let emojiSize = MessageCollectionViewBaseCell.sizeFromStr(emojiInfo.imageLink)
             let width = emojiInfo.scale * MessageCollectionViewBaseCell.emojiWidth
             let contentSize = self.contentSize
-            let size = CGSize(width: width, height: width)
+            var size = CGSize(width: width, height: width)
+            if let emojiSize = emojiSize {
+                size = CGSize(width: width, height: width / emojiSize.width * emojiSize.height)
+            }
             let origin = CGPoint(x: emojiInfo.x * contentSize.width - size.width / 2, y: max(0, emojiInfo.y) * contentSize.height - size.height / 2)
             imageView.frame = CGRect(origin: origin, size: size)
+            imageView.layer.masksToBounds = true
+            imageView.layer.cornerRadius = min(size.width, size.height) / 10
         }
     }
     
@@ -323,7 +329,12 @@ class MessageCollectionViewBaseCell: DogeChatTableViewCell {
         } else if message.videoURL != nil {
             _str = message.videoURL
         }
-        guard var str = _str as NSString? else { return nil }
+        guard let str = _str else { return nil }
+        return sizeFromStr(str)
+    }
+    
+    class func sizeFromStr(_ str: String) -> CGSize? {
+        var str = str as NSString
         str = str.replacingOccurrences(of: ".jpeg", with: "") as NSString
         str = str.replacingOccurrences(of: ".gif", with: "") as NSString
         str = str.replacingOccurrences(of: ".mov", with: "") as NSString

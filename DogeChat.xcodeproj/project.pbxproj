@@ -108,6 +108,7 @@
 		07ED6B70268C53DF00F86DC0 /* DogeChatTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07ED6B6F268C53DF00F86DC0 /* DogeChatTabBarController.swift */; };
 		07ED6B72268D740F00F86DC0 /* LyricViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07ED6B71268D740F00F86DC0 /* LyricViewController.swift */; };
 		07ED6B74268D7BCE00F86DC0 /* SplitViewControllerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07ED6B73268D7BCE00F86DC0 /* SplitViewControllerDelegate.swift */; };
+		07F858C626E4C27A00F370F8 /* ChatRoom+Drag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07F858C526E4C27A00F370F8 /* ChatRoom+Drag.swift */; };
 		07FEB845266F898800255F8F /* LoginInterfaceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07FEB844266F898800255F8F /* LoginInterfaceController.swift */; };
 		AE909BEB1EB54099009D9D95 /* MessageCollectionViewBaseCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE909BEA1EB54099009D9D95 /* MessageCollectionViewBaseCell.swift */; };
 		AE909BEF1EB54C4B009D9D95 /* Label.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE909BEE1EB54C4B009D9D95 /* Label.swift */; };
@@ -326,6 +327,7 @@
 		07ED6B6F268C53DF00F86DC0 /* DogeChatTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DogeChatTabBarController.swift; sourceTree = "<group>"; };
 		07ED6B71268D740F00F86DC0 /* LyricViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LyricViewController.swift; sourceTree = "<group>"; };
 		07ED6B73268D7BCE00F86DC0 /* SplitViewControllerDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplitViewControllerDelegate.swift; sourceTree = "<group>"; };
+		07F858C526E4C27A00F370F8 /* ChatRoom+Drag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChatRoom+Drag.swift"; sourceTree = "<group>"; };
 		07FEB844266F898800255F8F /* LoginInterfaceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginInterfaceController.swift; sourceTree = "<group>"; };
 		07FEB84A267102A400255F8F /* DogeChatWatch Extension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "DogeChatWatch Extension.entitlements"; sourceTree = "<group>"; };
 		0A4AEF28A524D18B5C8ECDC5 /* Pods-DogeChatWatch Extension.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DogeChatWatch Extension.release.xcconfig"; path = "Target Support Files/Pods-DogeChatWatch Extension/Pods-DogeChatWatch Extension.release.xcconfig"; sourceTree = "<group>"; };
@@ -545,10 +547,11 @@
 				077F4B8026DE0C5000C50D0D /* ChatRoom+InsertMessage.swift */,
 				07E1BAFB267F86B000559A3B /* ChatRoom+InputViewDelegate.swift */,
 				071379A72689DCBD007EF6D6 /* ChatRoom+CellDelegate.swift */,
-				07B3F5D3262470D70016B5C9 /* ChatRoom+Drop.swift */,
 				AEA5A1781EC362150041C7B4 /* ChatRoom+TableDelegate.swift */,
 				AEA5A1761EC3618C0041C7B4 /* ChatRoom+Layout.swift */,
 				076B209326E466A800BCD003 /* ChatRoom+Emitter.swift */,
+				07F858C526E4C27A00F370F8 /* ChatRoom+Drag.swift */,
+				07B3F5D3262470D70016B5C9 /* ChatRoom+Drop.swift */,
 			);
 			path = ChatRoom;
 			sourceTree = "<group>";
@@ -1079,6 +1082,7 @@
 				0718AC122686F61100E27B28 /* PlayListsSelectVC.swift in Sources */,
 				07E001DA248CA56800D4A287 /* SelectShortcutTVC.swift in Sources */,
 				0718AC102685DE9F00E27B28 /* PlayerManager.swift in Sources */,
+				07F858C626E4C27A00F370F8 /* ChatRoom+Drag.swift in Sources */,
 				07ED6B6C268C2C2500F86DC0 /* MiniPlayerCell.swift in Sources */,
 				071CF7B826609F8900897B01 /* MessageCollectionViewDrawCell.swift in Sources */,
 				076B209626E466A800BCD003 /* ChatRoom+Emitter.swift in Sources */,

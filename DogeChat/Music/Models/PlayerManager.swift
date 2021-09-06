@@ -18,7 +18,7 @@ enum BlurImageSource {
 class PlayerManager: NSObject {
     
     static let shared = PlayerManager()
-    var isMute = true
+    var isMute = false
     var player = AVPlayer()
     var playMode: PlayMode = .normal
     var interruptTime = Date().timeIntervalSince1970

@@ -18,6 +18,13 @@ extension ContactsTableViewController: ContactTableViewCellDelegate, UIContextMe
         appDelegate.navigationController.present(browser, animated: true, completion: nil)
     }
     
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        DispatchQueue.main.async {
+            self.setupMyAvatar()
+        }
+    }
+    
     func setupMyAvatar() {
         let label = UILabel()
         label.text = self.username
@@ -34,7 +41,11 @@ extension ContactsTableViewController: ContactTableViewCellDelegate, UIContextMe
             make?.width.mas_equalTo()(self?.avatarImageView.mas_height)
             
         }
-        avatarImageView.layer.cornerRadius = 44 / 2
+        if let navBar = self.navigationController?.navigationBar {
+            avatarImageView.layer.cornerRadius = navBar.bounds.height / 2
+        } else {
+            avatarImageView.layer.cornerRadius = 44 / 2
+        }
         stackView.isUserInteractionEnabled = true
         let tapAvatar = UITapGestureRecognizer(target: self, action: #selector(changeAvatarAction(_:)))
         stackView.addGestureRecognizer(tapAvatar)
