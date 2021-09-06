@@ -123,7 +123,8 @@ class WebSocketManagerAdapter: NSObject {
                 chatVC.insertNewMessageCell(newMessages)
             } else { // newMessages中包含了多个联系人，属于当前聊天界面的插入，不属于的发通知给ContactTVC更新小红点
                 for message in newMessages {
-                    if message.option == chatVC.messageOption && message.senderUsername == vcTitle {
+                    let friendName = message.messageSender == .ourself ? message.receiver : message.senderUsername
+                    if message.option == chatVC.messageOption && friendName == vcTitle {
                         chatVC.insertNewMessageCell([message])
                     } else {
                         manager.postNotification(message: message)

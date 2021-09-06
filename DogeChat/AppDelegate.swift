@@ -103,8 +103,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         if UserDefaults.standard.value(forKey: "immersive") == nil {
             UserDefaults.standard.setValue(true, forKey: "immersive")
         }
-//        INPreferences.requestSiriAuthorization { (status) in
-//        }
         setupReachability()
         return true
     }
@@ -113,9 +111,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         reachability.whenReachable = { reach in
             if !isLogin {
                 WebSocketManager.shared.messageManager.login(username: myName, password: myPassWord) { res in
-                    WebSocketManager.shared.connect()
                     if res == "登录成功", let contactVC = self.getContactVC() {
-                        contactVC.loginSuccess = true
+                        contactVC.refreshContacts {
+                            WebSocketManager.shared.connect()
+                        }
                     }
                 }
             } else {

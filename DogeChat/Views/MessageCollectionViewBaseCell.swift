@@ -339,9 +339,7 @@ class MessageCollectionViewBaseCell: DogeChatTableViewCell {
         str = str.replacingOccurrences(of: ".gif", with: "") as NSString
         str = str.replacingOccurrences(of: ".mov", with: "") as NSString
         var components = str.components(separatedBy: "+")
-        if components.count >= 2 {
-            let height = Int(components.removeLast())!
-            let width = Int(components.removeLast())!
+        if components.count >= 2, let height = Int(components.removeLast()), let width = Int(components.removeLast()) {
             return CGSize(width: width, height: height)
         }
         return nil

@@ -179,7 +179,7 @@ class ContactsTableViewController: DogeChatViewController, UIImagePickerControll
     }
     
     @objc func receiveNewMessage(notification: Notification) {
-        guard let message = notification.object as? Message else { return }
+        guard let message = notification.object as? Message, message.messageSender != .ourself else { return }
         if navigationController?.topViewController != self, let indexPath = tableView.indexPathForSelectedRow {
             if ContactsTableViewController.usernames[indexPath.row] == message.senderUsername && message.option == .toOne { return }
             if indexPath.row == 0 && message.option == .toAll { return }
