@@ -54,12 +54,13 @@ extension ChatRoomViewController {
             if self.shouldIgnoreScroll {
                 self.shouldIgnoreScroll = false
             } else {
-                needScrollToBottom = true
+                needScrollToBottom = scrollToBottom
             }
             completion?()
         }
     }
     
+    // TODO: 发送文件的也需要加到未发送数组中（比如别的app拖过来这时候还没连接上）
     
     @objc func confirmSendPhoto() {
         let infos = self.latestPickedImageInfos

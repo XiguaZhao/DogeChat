@@ -139,7 +139,7 @@ class MessageCollectionViewDrawCell: MessageCollectionViewBaseCell {
             }
             if !message.isDownloading {
                 message.isDownloading = true
-                let task = session.get(url_pre + path, parameters: nil, headers: nil, progress: nil) { task, data in
+                let _ = session.get(url_pre + path, parameters: nil, headers: nil, progress: nil) { task, data in
                     completionBlock(task, data)
                 } failure: { task, error in
                     print(error)

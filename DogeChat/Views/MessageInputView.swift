@@ -56,7 +56,7 @@ class MessageInputView: DogeChatStaticBlurView {
         textView.layer.cornerRadius = 8
         textView.layer.borderColor = UIColor(red: 200/255, green: 200/255, blue: 200/255, alpha: 0.6).cgColor
         textView.layer.borderWidth = 2
-        textView.font = UIFont.systemFont(ofSize: 17)
+        textView.font = UIFont.systemFont(ofSize: 18)
         textView.returnKeyType = .send
         textView.backgroundColor = .clear
         addButton.translatesAutoresizingMaskIntoConstraints = false
@@ -106,7 +106,9 @@ class MessageInputView: DogeChatStaticBlurView {
         addSubview(toolStack)
         
         if isMac() {
-            toolStack.isHidden = true
+            livePhotoButton.isHidden = true
+            videoButton.isHidden = true
+            drawButton.isHidden = true
         }
                 
         voiceButton.mas_makeConstraints { make in
@@ -174,7 +176,7 @@ class MessageInputView: DogeChatStaticBlurView {
             make?.top.equalTo()(self)?.offset()(offset - 4)
             make?.trailing.equalTo()(emojiButton.mas_leading)?.offset()(-offset)
             let safeAreaBottom = safeAreaInsets.bottom == 0 ? -5 : safeArea.bottom - 14
-            make?.bottom.equalTo()(self)?.offset()(-(safeAreaBottom + (isMac() ? 0 : width) + offset * 2 - 6))
+            make?.bottom.equalTo()(self)?.offset()(-(safeAreaBottom + width + offset * 2 - 6))
         }
         
         super.updateConstraints()

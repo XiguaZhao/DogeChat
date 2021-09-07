@@ -23,7 +23,7 @@ class MessageCollectionViewTrackCell: MessageCollectionViewBaseCell {
     let secondLineLabel = UILabel()
     let bgImageView = UIImageView()
     let playButton = UIButton()
-    let dontShow = true
+    let dontShow = false
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -106,6 +106,7 @@ class MessageCollectionViewTrackCell: MessageCollectionViewBaseCell {
         super.apply(message: message)
         if dontShow { return }
         setButtonImage()
+        let captured = message
         if !message.tracks.isEmpty {
             let tracks = message.tracks
             firstLineLabel.text = tracks[0].name
@@ -116,6 +117,7 @@ class MessageCollectionViewTrackCell: MessageCollectionViewBaseCell {
             }
             if let imageData = sharedTracksImageCache.object(forKey: tracks[0].albumImageUrl as NSString) {
                 bgImageView.image = UIImage(data: imageData as Data)
+                return
             }
             SDWebImageManager.shared.loadImage(with: URL(string: tracks[0].albumImageUrl), options: .avoidDecodeImage, progress: nil) { [weak self] image, _, _, _, _, _ in
                 guard let image = image else { return }
@@ -128,14 +130,20 @@ class MessageCollectionViewTrackCell: MessageCollectionViewBaseCell {
                 }
             }
         } else {
-            DispatchQueue.global().async { [weak self] in
-                if let url = URL(string: url_pre + message.message),
-                   let tracksData = try? Data(contentsOf: url),
-                   let tracks = try? JSONDecoder().decode([Track].self, from: tracksData) {
-                    message.tracks = tracks
-                    DispatchQueue.main.async {
-                        self?.apply(message: message)
-                    }
+            if !message.isDownloading {
+                message.isDownloading = true
+                if let url = URL(string: url_pre + message.message) {
+                    session.get(url.absoluteString, parameters: nil, headers: nil, progress: nil, success: { task, data in
+                        guard let tracksData = data as? Data,
+                              let tracks = try? JSONDecoder().decode([Track].self, from: tracksData) else { return }
+                        captured.tracks = tracks
+                        captured.isDownloading = false
+                        DispatchQueue.main.async {
+                            if captured == self.message {
+                                self.apply(message: message)
+                            }
+                        }
+                    }, failure: nil)
                 }
             }
         }

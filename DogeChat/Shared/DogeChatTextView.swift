@@ -24,7 +24,7 @@ class DogeChatTextView: UITextView, UITextPasteDelegate {
     }
     
     @objc func forceDarkMode(noti: Notification) {
-        let force = noti.object as! Bool
+        let force = isForceDarkMode
         if #available(iOS 13.0, *) {
             if force {
                 self.overrideUserInterfaceStyle = .dark

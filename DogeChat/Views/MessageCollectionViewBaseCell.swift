@@ -254,14 +254,20 @@ class MessageCollectionViewBaseCell: DogeChatTableViewCell {
         let messageHeight = height(forText: message.message, fontSize: message.fontSize, maxSize: maxSize)
         var height: CGFloat
         let screenWidth = AppDelegate.shared.widthFor(side: .right)
+        let screenHeight = AppDelegate.shared.heightFor(side: .right)
         switch message.messageType {
         case .join, .text, .voice:
             height = nameHeight + messageHeight + 32 + 16
         case .image, .livePhoto, .video:
             if let size = sizeForImageOrVideo(message) {
                 let scale: CGFloat = message.messageType == .image ? 0.5 : 0.65
-                let width = min(screenWidth * scale, size.width)
-                height = size.height * width / size.width + nameHeight + 30
+                if screenWidth < screenHeight {
+                    let width = min(screenWidth * scale, size.width)
+                    height = size.height * width / size.width + nameHeight + 30
+                } else {
+                    height = min(screenHeight * scale, size.height) + nameHeight + 30
+                    
+                }
                 message.imageSize = size
             } else {
                 height = nameHeight + 150
@@ -292,7 +298,7 @@ class MessageCollectionViewBaseCell: DogeChatTableViewCell {
                 height = 0
             }
         case .track:
-            height = 0
+            height = 120
         }
         var wholeFrame = CGRect(x: 0, y: 0, width: screenWidth, height: max(0, height))
         for emojiInfo in message.emojisInfo {
@@ -364,36 +370,9 @@ class MessageCollectionViewBaseCell: DogeChatTableViewCell {
 extension MessageCollectionViewBaseCell {
     func didDrop(imageLink: String, image: UIImage, point: CGPoint, cache: NSCache<NSString, NSData>) {
         playHaptic()
-        let width: CGFloat = MessageCollectionViewBaseCell.emojiWidth
         let emojiInfo = EmojiInfo(x: max(0, point.x/self.contentSize.width), y: max(0, point.y/self.contentSize.height), rotation: 0, scale: 1, imageLink: imageLink, lastModifiedBy: WebSocketManager.shared.messageManager.myName)
         message.emojisInfo.append(emojiInfo)
         delegate?.emojiInfoDidChange(from: nil, to: emojiInfo, cell: self)
-        let frame = CGRect(x: point.x - width / 2, y: point.y - width / 2, width: width, height: width)
-        let contentBounds = CGRect(origin: CGPoint(x: 0, y: 0), size: self.contentSize)
-        if !contentBounds.contains(frame) {
-            return
-        }
-        let imageView = FLAnimatedImageView(frame: frame)
-        imageView.contentMode = .scaleAspectFit
-        contentView.addSubview(imageView)
-        if let data = self.cache.object(forKey: imageLink as NSString) {
-            contentView.layer.masksToBounds = false
-            if imageLink.hasSuffix(".gif") {
-                imageView.animatedImage = FLAnimatedImage(gifData: data as Data)
-            } else {
-                imageView.image = UIImage(data: data as Data)
-            }
-        } else if (!imageLink.hasSuffix(".gif")), let imageData = cache.object(forKey: imageLink as NSString) {
-            imageView.image = UIImage(data: imageData as Data)
-        } else { // 到这里就需要来加载gif图了
-            SDWebImageManager.shared.loadImage(with: URL(string: imageLink), options: .avoidDecodeImage, progress: nil) { (image, data, error, _, _, _) in
-                guard error == nil, let data = data else { return }
-                imageView.animatedImage = FLAnimatedImage(gifData: data)
-                DispatchQueue.global().async {
-                    self.cache.setObject(data as NSData, forKey: imageLink as NSString)
-                }
-            }
-        }
     }
     
     func addEmojis() {

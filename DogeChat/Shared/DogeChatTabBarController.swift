@@ -37,7 +37,7 @@ class DogeChatTabBarController: UITabBarController, UITabBarControllerDelegate {
         let miniPlayer = MiniPlayerView()
         miniPlayerView = miniPlayer
         miniPlayer.isHidden = true
-        self.view.insertSubview(miniPlayer, belowSubview: self.tabBar)
+//        self.view.insertSubview(miniPlayer, belowSubview: self.tabBar)
     }
     
     override func viewWillLayoutSubviews() {

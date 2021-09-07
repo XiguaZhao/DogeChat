@@ -142,18 +142,27 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
     }
     
-    @objc func widthFor(side: SplitVCSide) -> CGFloat {
+    private func sizeFor(side: SplitVCSide) -> CGSize {
+        let height = splitViewController.view.bounds.height
         if splitViewController.isCollapsed {
-            return splitViewController.view.bounds.width
+            return splitViewController.view.bounds.size
         } else {
             let ratio = splitViewController.preferredPrimaryColumnWidthFraction
             switch side {
             case .left:
-                return ratio * splitViewController.view.bounds.width
+                return CGSize(width:ratio * splitViewController.view.bounds.size.width, height: height)
             case .right:
-                return (1 - ratio) * splitViewController.view.bounds.width
+                return CGSize(width: (1 - ratio) * splitViewController.view.bounds.width, height: height)
             }
         }
+    }
+    
+    @objc func widthFor(side: SplitVCSide) -> CGFloat {
+        return sizeFor(side: side).width
+    }
+    
+    @objc func heightFor(side: SplitVCSide) -> CGFloat {
+        return sizeFor(side: side).height
     }
     
     func login() {

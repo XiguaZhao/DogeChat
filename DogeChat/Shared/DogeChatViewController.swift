@@ -24,8 +24,8 @@ class DogeChatViewController: UIViewController, UIPopoverPresentationControllerD
         super.viewDidLoad()
         
 
-        NotificationCenter.default.addObserver(self, selector: #selector(forceDarkMode(noti:)), name: .immersive, object: nil)
-        toggleBlurView(force: AppDelegate.shared.immersive)
+        NotificationCenter.default.addObserver(self, selector: #selector(immersive(noti:)), name: .immersive, object: nil)
+        toggleBlurView(force: AppDelegate.shared.immersive, needAnimation: false)
     }
     
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -48,33 +48,27 @@ class DogeChatViewController: UIViewController, UIPopoverPresentationControllerD
         super.viewDidAppear(animated)
     }
     
-    func toggleBlurView(force: Bool) {
+    func toggleBlurView(force: Bool, needAnimation: Bool) {
         if force {
             var tableView: UITableView?
-            var needAnimation = true
             if let playListVC = self as? PlayListViewController  {
                 tableView = playListVC.tableView
-                if playListVC.type == .share {
-                    needAnimation = false
-                }
             } else if let selectPlayListVC = self as? PlayListsSelectVC {
                 tableView = selectPlayListVC.tableView
-                needAnimation = false
             } else if let settingVC = self as? SettingViewController {
                 tableView = settingVC.tableView
             } else if let searchVC = self as? SearchMusicViewController {
-                needAnimation = false
-                searchVC.updateBgColor()
+                tableView = searchVC.tableView
             } else if let chatVC = self as? ChatRoomViewController {
                 tableView = chatVC.tableView
-                needAnimation = false
             } else if let contactVC = self as? ContactsTableViewController {
                 tableView = contactVC.tableView
+            } else if let selectContact = self as? SelectContactsViewController {
+                tableView = selectContact.tableView
             } else {
                 if #available(iOS 13.0, *) {
                     if let historyVC = self as? HistoryVC {
                         tableView = historyVC.tableView
-                        needAnimation = false
                     }
                 } 
             }
@@ -91,10 +85,10 @@ class DogeChatViewController: UIViewController, UIPopoverPresentationControllerD
         }
     }
     
-    @objc func forceDarkMode(noti: Notification) {
+    @objc func immersive(noti: Notification) {
         let force = noti.object as! Bool
         DispatchQueue.main.async {
-            self.toggleBlurView(force: force)
+            self.toggleBlurView(force: force, needAnimation: true)
         }
     }
     

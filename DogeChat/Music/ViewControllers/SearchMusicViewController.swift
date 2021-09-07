@@ -16,7 +16,9 @@ class SearchMusicViewController: DogeChatViewController {
     var segment: UISegmentedControl!
     var page = 1
     
-    let sources: [TrackSource] = [.netease, .qq, .migu]
+    var country: TrackCountry = .US
+    
+    let sources: [TrackSource] = [.appleMusic]
     
     var results = [Track]()
     
@@ -24,7 +26,7 @@ class SearchMusicViewController: DogeChatViewController {
         super.viewDidLoad()
         navigationItem.title = "搜索"
         navigationItem.largeTitleDisplayMode = .never
-        segment = UISegmentedControl(items: ["网易云", "QQ", "咪咕"])
+        segment = UISegmentedControl(items: ["Music (Preview)"])
         searchBar.delegate = self
         updateBgColor()
         segment.selectedSegmentIndex = 0
@@ -53,7 +55,7 @@ class SearchMusicViewController: DogeChatViewController {
             make?.top.equalTo()(self?.segment.mas_bottom)
         }
         
-        let loadMore = UIBarButtonItem(title: "加载更多", style: .plain, target: self, action: #selector(loadMoreAction(_:)))
+        let loadMore = UIBarButtonItem(title: "切换中/美", style: .plain, target: self, action: #selector(switchCountry(_:)))
         navigationItem.setRightBarButton(loadMore, animated: true)
     }
     
@@ -79,13 +81,15 @@ class SearchMusicViewController: DogeChatViewController {
         }
     }
     
-    @objc func loadMoreAction(_ sender: UIBarButtonItem) {
+    @objc func switchCountry(_ sender: UIBarButtonItem) {
         guard let text = searchBar.text, !text.isEmpty else { return }
         page += 1
-        navigationItem.title = "正在加载更多"
-        MusicHttpManager.shared.getTracks(from: sources[segment.selectedSegmentIndex], name: text, page: page) { tracks in
-            self.reloadDataWithMoreTracks(tracks)
-        }
+        navigationItem.title = "切换中..."
+        self.country = country == .CN ? .US : .CN
+//        MusicHttpManager.shared.getTracks(from: sources[segment.selectedSegmentIndex], input: text, page: page, country: self.country) { tracks in
+//            self.reloadDataWithMoreTracks(tracks)
+//        }
+        searchTapped()
     }
     
     func reloadDataWithMoreTracks(_ tracks: [Track]) {
@@ -142,7 +146,7 @@ extension SearchMusicViewController: UISearchBarDelegate, UITableViewDelegate, U
     func searchTapped() {
         guard let text = searchBar.text, !text.isEmpty else { return }
         self.navigationItem.title = "正在搜索..."
-        MusicHttpManager.shared.getTracks(from: sources[segment.selectedSegmentIndex], name: text, page: page) { tracks in
+        MusicHttpManager.shared.getTracks(from: sources[segment.selectedSegmentIndex], input: text, page: page, country: country) { tracks in
             self.results.removeAll()
             self.reloadDataWithMoreTracks(tracks)
         }

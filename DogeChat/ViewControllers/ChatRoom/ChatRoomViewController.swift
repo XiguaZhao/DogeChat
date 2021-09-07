@@ -119,7 +119,7 @@ class ChatRoomViewController: DogeChatViewController {
     deinit {
         print("chat room VC deinit")
         MessageCollectionViewTextCell.voicePlayer.replaceCurrentItem(with: nil)
-        try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+//        try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
     }
     
     func scrollBotton() {
@@ -301,8 +301,9 @@ extension ChatRoomViewController: MessageDelegate {
         guard let message = notification.object as? Message, message.option == messageOption else {
             return
         }
-        if message.option == .toOne && message.senderUsername != friendName { return }
-        insertNewMessageCell([message])
+        let newMessageFriendName = message.messageSender == .ourself ? message.receiver : message.senderUsername
+        if message.option == .toOne && newMessageFriendName != friendName { return }
+        insertNewMessageCell([message], forceScrollBottom: true)
     }
     
     func updateOnlineNumber(to newNumber: Int) {

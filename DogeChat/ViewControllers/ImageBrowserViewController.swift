@@ -55,6 +55,9 @@ class ImageBrowserViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         canRotate = true
+        if isMac() {
+            collectionView.scrollToItem(at: IndexPath(item: targetIndex, section: 0), at: .centeredHorizontally, animated: true)
+        }
     }
         
     override func viewDidLayoutSubviews() {

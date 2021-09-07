@@ -78,6 +78,10 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
     }
     
     func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
+        guard scrollView == self.tableView else {
+            return
+        }
+        print(scrollView.contentSize)
     }
     
     func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
@@ -313,7 +317,9 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
         guard scrollView == tableView else {
             return
         }
-        messageInputBar.textViewResign()
+        if messageInputBar.textView.isFirstResponder {
+            messageInputBar.textViewResign()
+        }
     }
     
     func needReload(indexPath: [IndexPath]) {

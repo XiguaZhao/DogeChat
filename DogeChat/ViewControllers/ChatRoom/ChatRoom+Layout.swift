@@ -139,19 +139,26 @@ extension ChatRoomViewController {
         if textView.text.isEmpty {
             heightChanged = messageBarHeight - oldFrame.height
         }
+        let finalFrame = CGRect(x: oldFrame.origin.x, y: oldFrame.origin.y-heightChanged, width: oldFrame.width, height: oldFrame.height+heightChanged)
         tableViewInset.bottom += heightChanged
+        self.shouldIgnoreScroll = heightChanged != 0
         if heightChanged != 0 {
-            self.shouldIgnoreScroll = true
-            let finalFrame = CGRect(x: oldFrame.origin.x, y: oldFrame.origin.y-heightChanged, width: oldFrame.width, height: oldFrame.height+heightChanged)
-            UIView.animate(withDuration:  0.2 ) { [weak self] in
+            UIView.animate(withDuration: 0.2) { [weak self] in
                 guard let self = self else { return }
                 self.messageInputBar.frame = finalFrame
                 self.tableView.contentInset = tableViewInset
             } completion: { [weak self] (finish) in
                 guard let tableView = self?.tableView else { return }
                 tableView.setContentOffset(CGPoint(x: 0, y: tableView.contentSize.height - finalFrame.minY), animated: true)
-                if textView.text.isEmpty {
-                    textView.font = .systemFont(ofSize: 18)
+//                if textView.text.isEmpty {
+//                    textView.font = .systemFont(ofSize: 18)
+//                }
+            }
+        } else {
+            if textView.text.isEmpty && textView.font?.pointSize != 18 {
+                self.shouldIgnoreScroll = true
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) { [self] in
+                    tableView.setContentOffset(CGPoint(x: 0, y: tableView.contentSize.height - finalFrame.minY), animated: true)
                 }
             }
         }

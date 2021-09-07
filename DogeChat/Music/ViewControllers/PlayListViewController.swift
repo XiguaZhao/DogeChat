@@ -49,6 +49,7 @@ class PlayListViewController: DogeChatViewController, SelectContactsDelegate {
     var message: Message!
     var playListName: String?
     var selectedTracks = [Track]()
+    var activeSwipeIndexPath: IndexPath?
     var tracks = [Track]() {
         didSet {
             DispatchQueue.main.async {
@@ -60,7 +61,7 @@ class PlayListViewController: DogeChatViewController, SelectContactsDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        navigationController?.navigationBar.prefersLargeTitles = true
+        navigationItem.largeTitleDisplayMode = .always
         view.backgroundColor = .clear
         view.addSubview(tableView)
         tableView.backgroundColor = .clear
@@ -77,7 +78,6 @@ class PlayListViewController: DogeChatViewController, SelectContactsDelegate {
             NotificationCenter.default.addObserver(self, selector: #selector(nowPlayingTrackChanged(_:)), name: .nowPlayingTrackChanged, object: nil)
             NotificationCenter.default.addObserver(self, selector: #selector(deleteTrackNoti(_:)), name: .deleteTrack, object: nil)
             NotificationCenter.default.addObserver(self, selector: #selector(pauseTrack(_:)), name: .toggleTrack, object: nil)
-            NotificationCenter.default.addObserver(self, selector: #selector(tracksInfoChanged(_:)), name: .tracksInfoChanged, object: nil)
             loadTracksFromDiskForType(playListType)
             TrackDownloadManager.shared.delegate = self
             tableView.mas_makeConstraints { [weak self] make in
@@ -108,6 +108,7 @@ class PlayListViewController: DogeChatViewController, SelectContactsDelegate {
                 make?.edges.equalTo()(self?.view)
             }
         }
+        NotificationCenter.default.addObserver(self, selector: #selector(tracksInfoChanged(_:)), name: .tracksInfoChanged, object: nil)
         configureBarButtons()
     }
     
@@ -162,11 +163,11 @@ class PlayListViewController: DogeChatViewController, SelectContactsDelegate {
     
     func configureBarButtons() {
         let searchButton = UIBarButtonItem(barButtonSystemItem: .search, target: self, action: #selector(searchAction(_:)))
-        let playListButton = UIBarButtonItem(title: "列表", style: .plain, target: self, action: #selector(choosePlayList))
+        let _ = UIBarButtonItem(title: "列表", style: .plain, target: self, action: #selector(choosePlayList))
         editButton = UIBarButtonItem(title: "编辑", style: .plain, target: self, action: #selector(editAction(_:)))
-        var barItems: [UIBarButtonItem] = [editButton, playListButton, searchButton]
+        var barItems: [UIBarButtonItem] = [editButton, searchButton]
         if type == .share {
-            barItems.remove(at: 2)
+//            barItems.remove(at: 2)
             barItems.remove(at: 1)
         }
         navigationItem.setRightBarButtonItems(barItems, animated: true)
@@ -242,17 +243,25 @@ class PlayListViewController: DogeChatViewController, SelectContactsDelegate {
         present(alert, animated: true, completion: nil)
     }
     
-    @objc func shareMultiAction(_ sender: UIBarButtonItem) {
-        guard let indexPaths = tableView.indexPathsForSelectedRows else { return }
+    @objc func shareMultiAction(_ sender: UIBarButtonItem!) {
+        var indexPaths: [IndexPath]?
+        if let _indexPaths = tableView.indexPathsForSelectedRows {
+            indexPaths = _indexPaths
+        } else if let _indexPath = activeSwipeIndexPath {
+            indexPaths = [_indexPath]
+        }
+        guard let indexPaths = indexPaths else { return }
         self.selectedTracks = indexPaths.map { tracks[$0.row] }
         
         let selectContactsVC = SelectContactsViewController()
         selectContactsVC.delegate = self
+        if let sender = sender {
+            selectContactsVC.preferredContentSize = CGSize(width: 300, height: 400)
+            let popover = selectContactsVC.popoverPresentationController
+            popover?.barButtonItem = sender
+            popover?.delegate = self
+        } 
         selectContactsVC.modalPresentationStyle = .popover
-        selectContactsVC.preferredContentSize = CGSize(width: 300, height: 400)
-        let popover = selectContactsVC.popoverPresentationController
-        popover?.barButtonItem = sender
-        popover?.delegate = self
 
         present(selectContactsVC, animated: true, completion: nil)
         
@@ -287,12 +296,16 @@ class PlayListViewController: DogeChatViewController, SelectContactsDelegate {
         vc.dismiss(animated: true, completion: nil)
         guard !selectedTracks.isEmpty && !contacts.isEmpty else { return }
         shareTracksToFriends(contacts, tracks: self.selectedTracks)
-        editAction(editButton)
+        if tableView.isEditing {
+            editAction(editButton)
+        }
     }
     
     func didCancelSelectContacts(_ vc: SelectContactsViewController) {
         vc.dismiss(animated: true, completion: nil)
-        editAction(editButton)
+        if tableView.isEditing {
+            editAction(editButton)
+        }
     }
     
     @objc func addMultiToAction(_ sender: UIBarButtonItem) {
@@ -319,10 +332,18 @@ class PlayListViewController: DogeChatViewController, SelectContactsDelegate {
     @objc func searchAction(_ sender: UIBarButtonItem) {
         let searchVC = SearchMusicViewController()
         searchVC.modalPresentationStyle = .fullScreen
-        if let split = splitViewController, split.isCollapsed {
-            navigationController?.pushViewController(searchVC, animated: true)
+        if let vcs = AppDelegate.shared.tabBarController.viewControllers,
+           vcs.count > 1,
+           let nav = vcs[1] as? UINavigationController,
+           nav.viewControllers.first is PlayListViewController {
+            if let split = splitViewController, split.isCollapsed {
+                navigationController?.pushViewController(searchVC, animated: true)
+            } else {
+                let nav = DogeChatNavigationController(rootViewController: searchVC)
+                showDetailViewController(nav, sender: self)
+            }
         } else {
-            showDetailViewController(searchVC, sender: self)
+            navigationController?.pushViewController(searchVC, animated: true)
         }
     }
     
@@ -516,8 +537,9 @@ extension PlayListViewController: UITableViewDelegate, UITableViewDataSource {
             download?.backgroundColor = #colorLiteral(red: 0.2392156869, green: 0.6745098233, blue: 0.9686274529, alpha: 1)
 
         }
-        let addToPlayList = UIContextualAction(style: .normal, title: "添加到") { [weak self] action, view, handler in
-            self?.addTrackToPlayList(tracks: [track])
+        let addToPlayList = UIContextualAction(style: .normal, title: "分享") { [weak self] action, view, handler in
+            self?.activeSwipeIndexPath = indexPath
+            self?.shareMultiAction(nil)
             handler(true)
         }
         addToPlayList.backgroundColor = #colorLiteral(red: 0.4666666687, green: 0.7647058964, blue: 0.2666666806, alpha: 1)

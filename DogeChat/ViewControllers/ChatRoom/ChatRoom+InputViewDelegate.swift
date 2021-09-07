@@ -84,13 +84,15 @@ extension ChatRoomViewController: MessageInputDelegate, VoiceRecordDelegate {
             self.manager.sendCallRequst(to: self.friendName, uuid: uuid)
             AppDelegate.shared.callManager.startCall(handle: self.friendName, uuid: uuid)
         }
-        actionSheet.addAction(UIAlertAction(title: "语音通话", style: .default, handler: {  (action) in
-            startCallAction()
-        }))
-        actionSheet.addAction(UIAlertAction(title: "视频通话", style: .default, handler: { (action) in
-            startCallAction()
-            Recorder.sharedInstance().needSendVideo = true
-        }))
+        if !isMac() {
+            actionSheet.addAction(UIAlertAction(title: "语音通话", style: .default, handler: {  (action) in
+                startCallAction()
+            }))
+            actionSheet.addAction(UIAlertAction(title: "视频通话", style: .default, handler: { (action) in
+                startCallAction()
+                Recorder.sharedInstance().needSendVideo = true
+            }))
+        }
         if #available(iOS 13.0, *) {
             actionSheet.addAction(UIAlertAction(title: "历史记录", style: .default, handler: { [weak self] (action) in
                 guard let self = self else { return }
@@ -101,6 +103,9 @@ extension ChatRoomViewController: MessageInputDelegate, VoiceRecordDelegate {
                 self.navigationController?.pushViewController(vc, animated: true)
             }))
         }
+        actionSheet.addAction(UIAlertAction(title: "Music", style: .default, handler: { [weak self] _ in
+            self?.shareMusic()
+        }))
         actionSheet.addAction(UIAlertAction(title: "取消", style: .cancel, handler: nil))
         present(actionSheet, animated: true, completion: nil)
     }
@@ -120,6 +125,11 @@ extension ChatRoomViewController: MessageInputDelegate, VoiceRecordDelegate {
     @objc func pasteImageAction(_ noti: Notification) {
         guard let item = noti.object as? NSItemProvider else { return }
         processItemProviders([item])
+    }
+    
+    func shareMusic() {
+        let vc = PlayListViewController()
+        navigationController?.pushViewController(vc, animated: true)
     }
     
     func voiceButtonTapped(_ sender: UIButton) {

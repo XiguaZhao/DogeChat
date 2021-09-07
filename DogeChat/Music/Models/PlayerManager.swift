@@ -105,8 +105,8 @@ class PlayerManager: NSObject {
     
     override init() {
         super.init()
-//        NotificationCenter.default.addObserver(self, selector: #selector(trackPlayToEndNoti(_:)), name: .AVPlayerItemDidPlayToEndTime, object: nil)
-//        NotificationCenter.default.addObserver(self, selector: #selector(handleInterruption(notification:)), name: AVAudioSession.interruptionNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(trackPlayToEndNoti(_:)), name: .AVPlayerItemDidPlayToEndTime, object: player.currentItem)
+        NotificationCenter.default.addObserver(self, selector: #selector(handleInterruption(notification:)), name: AVAudioSession.interruptionNotification, object: nil)
         makeSliderForRemoteControl()
     }
     
@@ -124,11 +124,12 @@ class PlayerManager: NSObject {
             if let newestURL = newestURL {
                 url = newestURL
             } else {
-                MusicHttpManager.shared.getTrackWithID(track.id, source: track.source) { tracks in
+                MusicHttpManager.shared.getTrackWithID(track.id, source: track.source, country: track.country) { tracks in
                     if let track = tracks.first {
                         self.playTrack(track, newestURL: URL(string: track.musicLinkUrl))
                     }
                 }
+                return
             }
         }
         if let url = url {
@@ -308,6 +309,7 @@ class PlayerManager: NSObject {
                 self?.deactivateSession()
                 self?.isPlaying = false
                 self?.nowPlayingTrack = nil
+                NotificationCenter.default.post(name: .immersive, object: AppDelegate.shared.immersive)
             }
         }
     }

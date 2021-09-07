@@ -26,6 +26,10 @@ var maxID: Int {
     (UserDefaults.standard.value(forKey: "maxID") as? Int) ?? 0
 }
 
+var isForceDarkMode: Bool {
+    UserDefaults.standard.bool(forKey: "forceDarkMode")
+}
+
 public func syncOnMainThread(block: () -> Void) {
     if Thread.isMainThread {
         block()
