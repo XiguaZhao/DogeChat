@@ -105,3 +105,107 @@ class DogeChatViewController: UIViewController, UIPopoverPresentationControllerD
     }
 
 }
+
+func makeBlurViewForViewController(_ vc: UIViewController, blurView: inout UIImageView!, needAnimation: Bool = true, addToThisView: UIView? = nil) {
+    var targetImage: UIImage?
+    if UserDefaults.standard.bool(forKey: "immersive") && PlayerManager.shared.nowAlbumImage != nil && PlayerManager.shared.isPlaying {
+        targetImage = PlayerManager.shared.nowAlbumImage
+    } else if fileURLAt(dirName: "customBlur", fileName: userID) != nil && PlayerManager.shared.customImage != nil {
+        targetImage = PlayerManager.shared.customImage
+    }
+    guard let targetImage = targetImage else { return }
+    if #available(iOS 13.0, *) {
+        let interfaceStyle: UIUserInterfaceStyle
+        if UserDefaults.standard.bool(forKey: "forceDarkMode") {
+            interfaceStyle = .dark
+        } else {
+            interfaceStyle = .unspecified
+        }
+        AppDelegate.shared.window?.overrideUserInterfaceStyle = interfaceStyle
+        vc.navigationController?.overrideUserInterfaceStyle = interfaceStyle
+        vc.splitViewController?.overrideUserInterfaceStyle = interfaceStyle
+        vc.tabBarController?.overrideUserInterfaceStyle = interfaceStyle
+        vc.overrideUserInterfaceStyle = interfaceStyle
+
+        vc.view.backgroundColor = .clear
+    }
+    vc.view.backgroundColor = .clear
+    var style: UIBlurEffect.Style
+    if UserDefaults.standard.bool(forKey: "forceDarkMode") {
+        style = .dark
+    } else {
+        style = .regular
+    }
+    if style == .regular && UIScreen.main.traitCollection.userInterfaceStyle == .light {
+        if #available(iOS 13.0, *) {
+            style = .extraLight
+        }
+    }
+    if blurView == nil {
+        blurView = UIImageView(image: targetImage)
+        PlayerManager.shared.blurView = blurView
+        blurView.alpha = 0
+        blurView.isHidden = false
+        blurView.contentMode = .scaleAspectFill
+        let blurEffect = UIBlurEffect(style: style)
+        let blurEffectView = UIVisualEffectView(effect: blurEffect)
+        blurView.addSubview(blurEffectView)
+        blurEffectView.mas_updateConstraints { make in
+            make?.edges.equalTo()(blurView)
+        }
+        blurView.layer.masksToBounds = true
+        let view = vc.view
+        if let askedView = addToThisView as? UITableView {
+            askedView.backgroundView = blurView
+            blurView.frame = askedView.frame
+        } else {
+            if let view = view {
+                view.addSubview(blurView)
+                view.sendSubviewToBack(blurView)
+                blurView.mas_updateConstraints { [weak view] make in
+                    make?.edges.equalTo()(view)
+                }
+            }
+        }
+        if needAnimation {
+            UIView.animate(withDuration: 0.5) { [weak blurView] in
+                blurView?.alpha = 1
+            }
+        } else {
+            blurView.alpha = 1
+        }
+    } else {
+        blurView.isHidden = false
+        for view in blurView.subviews {
+            if let blurEffectView = view as? UIVisualEffectView {
+                blurEffectView.effect = UIBlurEffect(style: style)
+                break
+            }
+        }
+        UIView.animate(withDuration: 0.5) { [weak blurView] in
+            blurView?.alpha = 0.5
+        } completion: { [weak blurView] _ in
+            blurView?.image = targetImage
+            UIView.animate(withDuration: 0.5) { [weak blurView] in
+                blurView?.alpha = 1
+            }
+        }
+    }
+}
+
+func recoverVC(_ vc: UIViewController, blurView: inout UIImageView!) {
+    if #available(iOS 13.0, *) {
+        vc.view.backgroundColor = .systemBackground
+        AppDelegate.shared.window?.overrideUserInterfaceStyle = .unspecified
+        vc.navigationController?.overrideUserInterfaceStyle = .unspecified
+        vc.splitViewController?.overrideUserInterfaceStyle = .unspecified
+        vc.tabBarController?.overrideUserInterfaceStyle = .unspecified
+        vc.overrideUserInterfaceStyle = .unspecified
+        vc.view.backgroundColor = .systemBackground
+    }
+    UIView.animate(withDuration: 0.5) { [weak blurView] in
+        blurView?.alpha = 0
+    } completion: { [weak blurView] _ in
+        blurView?.isHidden = true
+    }
+}

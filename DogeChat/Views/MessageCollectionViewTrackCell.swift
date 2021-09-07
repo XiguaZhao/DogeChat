@@ -123,10 +123,12 @@ class MessageCollectionViewTrackCell: MessageCollectionViewBaseCell {
                 guard let image = image else { return }
                 DispatchQueue.global().async {
                     let compressed = compressImage(image: image, needBig: false, askedSize: CGSize(width: 100, height: 100))
-                    DispatchQueue.main.async {
-                        self?.bgImageView.image = UIImage(data: compressed)
-                    }
                     sharedTracksImageCache.setObject(compressed as NSData, forKey: tracks[0].albumImageUrl as NSString)
+                    DispatchQueue.main.async {
+                        if self?.message == captured {
+                            self?.bgImageView.image = UIImage(data: compressed)
+                        }
+                    }
                 }
             }
         } else {

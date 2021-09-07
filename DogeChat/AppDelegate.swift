@@ -47,6 +47,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var immersive: Bool {
         fileURLAt(dirName: "customBlur", fileName: userID) != nil || (PlayerManager.shared.isPlaying && UserDefaults.standard.bool(forKey: "immersive"))
     }
+    var isForceDarkMode: Bool {
+        UserDefaults.standard.bool(forKey: "forceDarkMode") && immersive
+    }
     @objc class var shared: AppDelegate {
         return UIApplication.shared.delegate as! AppDelegate
     }
