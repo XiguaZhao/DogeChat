@@ -146,17 +146,15 @@ class MessageCollectionViewTextCell: MessageCollectionViewBaseCell {
             block()
         } else {
             let fileName = self.message.voiceURL!.components(separatedBy: "/").last!
-            let completion: (URLSessionTask, Any?) -> Void = { task, data in
-                guard let data = data as? Data else { return }
-                saveFileToDisk(dirName: voiceDir, fileName: fileName, data: data)
-                url = fileURLAt(dirName: voiceDir, fileName: fileName)
-                block()
-                captured.isDownloading = false
-            }
             if !message.isDownloading {
                 message.isDownloading = true
-                let task = session.get(url_pre + message.voiceURL!, parameters: nil, headers: nil, progress: nil, success: { task, data in
-                    completion(task, data)
+                let _ = session.get(url_pre + message.voiceURL!, parameters: nil, headers: nil, progress: { progress in
+                    self.delegate?.downloadProgressUpdate(progress: progress, message: captured)
+                }, success: { [weak self] task, data in
+                    guard let data = data as? Data else { return }
+                    saveFileToDisk(dirName: voiceDir, fileName: fileName, data: data)
+                    captured.isDownloading = false
+                    self?.delegate?.downloadSuccess(message: captured)
                 }) { task, error in
                     print(error)
                 }

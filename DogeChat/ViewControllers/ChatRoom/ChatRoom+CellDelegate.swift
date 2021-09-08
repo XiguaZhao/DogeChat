@@ -20,6 +20,20 @@ extension ChatRoomViewController: MessageTableViewCellDelegate {
             }
         }
     }
+    
+    func downloadSuccess(message: Message) {
+        syncOnMainThread {
+            if let index = self.messages.firstIndex(where: { $0.uuid == message.uuid }) {
+                let indexPath = IndexPath(row: index, section: 0)
+                if let cell = self.tableView.cellForRow(at: indexPath) as? MessageCollectionViewBaseCell {
+                    (cell as? MessageCollectionViewImageCell)?.playNow = true
+                    cell.apply(message: message)
+                    cell.layoutIfNeeded()
+                    cell.setNeedsLayout()
+                }
+            }
+        }
+    }
         
     func imageViewTapped(_ cell: MessageCollectionViewBaseCell, imageView: FLAnimatedImageView, path: String, isAvatar: Bool) {
         messageInputBar.textViewResign()

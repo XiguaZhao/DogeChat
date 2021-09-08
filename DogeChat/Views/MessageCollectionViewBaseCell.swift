@@ -20,6 +20,7 @@ protocol MessageTableViewCellDelegate: AnyObject {
     func avatarDoubleTap(_ cell: MessageCollectionViewBaseCell)
     func sharedTracksTap(_ cell: MessageCollectionViewBaseCell, tracks: [Track])
     func downloadProgressUpdate(progress: Progress, message: Message)
+    func downloadSuccess(message: Message)
 }
 
 class MessageCollectionViewBaseCell: DogeChatTableViewCell {
