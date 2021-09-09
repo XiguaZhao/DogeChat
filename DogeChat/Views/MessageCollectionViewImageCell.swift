@@ -187,7 +187,7 @@ class MessageCollectionViewImageCell: MessageCollectionViewBaseCell, PHLivePhoto
             }
             if !message.isDownloading {
                 message.isDownloading = true
-                session.get(url_pre + message.videoURL!, parameters: nil, headers: nil, progress: { [weak self] progress in
+                session.get(url_pre + message.videoURL!, parameters: nil, headers: ["Cookie": "SESSION="+cookie], progress: { [weak self] progress in
                     self?.delegate?.downloadProgressUpdate(progress: progress, message: captured!)
                 }, success: { task, data in
                     completion(task, data)
@@ -258,11 +258,11 @@ class MessageCollectionViewImageCell: MessageCollectionViewBaseCell, PHLivePhoto
             }
             if !message.isDownloading {
                 message.isDownloading = true
-                session.get(imageURL.absoluteString, parameters: nil, headers: nil, progress: nil, success: { task, data in
+                session.get(imageURL.absoluteString, parameters: nil, headers: ["Cookie": "SESSION="+cookie], progress: nil, success: { task, data in
                     guard let data = data as? Data else { return }
                     print("liveImageDone")
                     saveFileToDisk(dirName: livePhotoDir, fileName: imageName, data: data)
-                    session.get(videoURL.absoluteString, parameters: nil, headers: nil, progress: { [weak self] progress in
+                    session.get(videoURL.absoluteString, parameters: nil, headers: ["Cookie": "SESSION="+self.cookie], progress: { [weak self] progress in
                         self?.delegate?.downloadProgressUpdate(progress: progress, message: capturedMessage!)
                     }, success: { task, videoData in
                         completion(task, videoData)

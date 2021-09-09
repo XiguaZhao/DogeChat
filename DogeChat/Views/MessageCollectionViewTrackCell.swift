@@ -135,7 +135,7 @@ class MessageCollectionViewTrackCell: MessageCollectionViewBaseCell {
             if !message.isDownloading {
                 message.isDownloading = true
                 if let url = URL(string: url_pre + message.message) {
-                    session.get(url.absoluteString, parameters: nil, headers: nil, progress: nil, success: { task, data in
+                    session.get(url.absoluteString, parameters: nil, headers: ["Cookie": "SESSION="+cookie], progress: nil, success: { task, data in
                         guard let tracksData = data as? Data,
                               let tracks = try? JSONDecoder().decode([Track].self, from: tracksData) else { return }
                         captured.tracks = tracks

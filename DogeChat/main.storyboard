@@ -23,10 +23,10 @@
             </objects>
             <point key="canvasLocation" x="750" y="-681"/>
         </scene>
-        <!--Split View Controller-->
+        <!--Doge Chat Split View Controller-->
         <scene sceneID="ijE-0c-6MT">
             <objects>
-                <splitViewController id="Ker-fq-rFq" sceneMemberID="viewController">
+                <splitViewController id="Ker-fq-rFq" customClass="DogeChatSplitViewController" customModule="DogeChat" customModuleProvider="target" sceneMemberID="viewController">
                     <userDefinedRuntimeAttributes>
                         <userDefinedRuntimeAttribute type="number" keyPath="gutterWidth">
                             <integer key="value" value="2"/>
@@ -52,7 +52,6 @@
                     </tabBar>
                     <connections>
                         <segue destination="73m-2C-Avi" kind="relationship" relationship="viewControllers" id="dF3-Gi-WRe"/>
-                        <segue destination="WrQ-ga-1RZ" kind="relationship" relationship="viewControllers" id="0S2-lI-uUS"/>
                         <segue destination="QJ7-1B-WKH" kind="relationship" relationship="viewControllers" id="q5s-3U-fgW"/>
                     </connections>
                 </tabBarController>

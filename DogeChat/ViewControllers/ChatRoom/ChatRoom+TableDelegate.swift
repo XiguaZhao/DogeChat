@@ -50,6 +50,8 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
         cell.indexPath = indexPath
         cell.delegate = self
         cell.cache = cache
+        cell.username = username
+        cell.contactDataSource = self.contactVC
         cell.apply(message: message)
         cell.tableView = tableView
         return cell
@@ -90,6 +92,7 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
             handler(true)
             self.activeSwipeIndexPath = indexPath
             let contactVC = SelectContactsViewController()
+            contactVC.dataSourcea = self.contactVC
             contactVC.modalPresentationStyle = .formSheet
             contactVC.delegate = self
             self.present(contactVC, animated: true)
@@ -213,6 +216,7 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
     @objc func didFinishMultiSelection(_ button: UIBarButtonItem) {
         let selectContactsVC = SelectContactsViewController()
         selectContactsVC.delegate = self
+        selectContactsVC.dataSourcea = self.contactVC
         selectContactsVC.modalPresentationStyle = .popover
         selectContactsVC.preferredContentSize = CGSize(width: 300, height: 400)
         let popover = selectContactsVC.popoverPresentationController
@@ -246,7 +250,7 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
             }
             for message in selectedMessages {
                 message.uuid = UUID().uuidString
-                message.senderUsername = myName
+                message.senderUsername = username
                 message.receiver = contact
                 message.id = maxID + 1
                 message.option = contact == "群聊" ? .toAll : .toOne
@@ -327,7 +331,7 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
     }
     
     @objc func receiveEmojiInfoChangedNotification(_ noti: Notification) {
-        guard let (receiver, sender) = noti.object as? (String, String), let message = noti.userInfo?["message"] as? Message else { return }
+        guard let (receiver, sender) = noti.userInfo?["receiverAndSender"] as? (String, String), let message = noti.userInfo?["message"] as? Message else { return }
         if (receiver == "PublicPino" && navigationItem.title == "群聊") || sender == friendName {
             if let index = messages.firstIndex(of: message) { // 消息存在
                 let indexPath = IndexPath(item: index, section: 0)

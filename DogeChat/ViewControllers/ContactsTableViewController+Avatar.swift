@@ -63,7 +63,7 @@ extension ContactsTableViewController: ContactTableViewCellDelegate, UIContextMe
     }
         
     @objc func updateMyAvatar(_ noti: Notification) {
-        let url = noti.object as! String
+        let url = noti.userInfo?["path"] as! String
         SDWebImageManager.shared.loadImage(with: URL(string: url), options: [.avoidDecodeImage, .allowInvalidSSLCertificates], progress: nil) { [self] image, data, error, _, _, _ in
             if url.hasSuffix(".gif") {
                 if let data = data {
@@ -84,11 +84,11 @@ extension ContactsTableViewController: ContactTableViewCellDelegate, UIContextMe
     }
     
     @objc func friendChangeAvatar(_ noti: Notification) {
-        let data = noti.object as! JSON
+        let data = noti.userInfo?["data"] as! JSON
         let username = data["username"].stringValue
         let newAvatarUrl = data["avatarUrl"].stringValue
-        if let index = ContactsTableViewController.usersInfos.firstIndex(where: { $0.name == username }) {
-            ContactsTableViewController.usersInfos[index].avatarUrl = newAvatarUrl
+        if let index = self.usersInfos.firstIndex(where: { $0.name == username }) {
+            self.usersInfos[index].avatarUrl = newAvatarUrl
             tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
             if let chatVC = AppDelegate.shared.navigationController.visibleViewController as? ChatRoomViewController {
                 if chatVC.navigationItem.title == username {

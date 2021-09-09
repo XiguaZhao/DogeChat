@@ -20,7 +20,10 @@ extension ChatRoomViewController: UITableViewDragDelegate {
             let item = UIDragItem(itemProvider: NSItemProvider(object: str))
             items.append(item)
         } else if message.messageType == .image {
-            var imagePath = message.imageURL ?? ""
+            var imagePath = message.imageURL ?? "/"
+            if imagePath.isEmpty {
+                imagePath = "/"
+            }
             imagePath.removeFirst()
             let str = url_pre + imagePath
             if let key = SDWebImageManager.shared.cacheKey(for: URL(string: str)),

@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import DogeChatNetwork
 
 public extension UIViewController {
     func makeAutoAlert(message: String, detail: String?, showTime: TimeInterval, completion: (() -> Void)?) {
@@ -34,5 +35,21 @@ public extension String {
         let image = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
         return image!
+    }
+}
+
+func socketForUsername(_ username: String) -> WebSocketManager {
+    return WebSocketManager.shared.usersToSocketManager[username]!
+}
+
+func adapterForUsername(_ username: String) -> WebSocketManagerAdapter {
+    return WebSocketManagerAdapter.shared.usernameToAdapter[username]!
+}
+
+func windowForView(_ view: UIView) -> UIWindow? {
+    if #available(iOS 13.0, *) {
+        return (view.window?.windowScene?.delegate as? SceneDelegate)?.window
+    } else {
+        return AppDelegate.shared.window
     }
 }

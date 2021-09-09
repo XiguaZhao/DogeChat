@@ -16,7 +16,7 @@ extension ChatRoomViewController {
             let additionalOffset: CGFloat = safeArea.bottom / 2
             let messageBarHeight = self.messageInputBar.bounds.height
             var point = CGPoint(x: self.messageInputBar.center.x, y: endFrame.origin.y - messageBarHeight/2.0)
-            let shouldDown = endFrame.origin.y == AppDelegate.shared.window?.bounds.height ?? UIScreen.main.bounds.height
+            let shouldDown = endFrame.origin.y == windowForView(self.view)?.bounds.height ?? UIScreen.main.bounds.height
             let bottomInset: CGFloat
             let safeAreaInsetBottom = safeArea.bottom
             if !shouldDown {

@@ -22,7 +22,15 @@ protocol MessageTableViewCellDelegate: AnyObject {
     func downloadProgressUpdate(progress: Progress, message: Message)
 }
 
+protocol ContactDataSource: AnyObject {
+    var usernames: [String] { get }
+    var userInfos: [UserInfo] { get }
+}
+
 class MessageCollectionViewBaseCell: DogeChatTableViewCell {
+    var cookie: String {
+        socketForUsername(username).cookie
+    }
     weak var delegate: MessageTableViewCellDelegate?
     var message: Message!
     var indexPath: IndexPath!
@@ -34,6 +42,7 @@ class MessageCollectionViewBaseCell: DogeChatTableViewCell {
     var contentSize: CGSize {
         return self.contentView.bounds.size
     }
+    var username = ""
     var activeEmojiView: UIView?
     static let emojiWidth: CGFloat = 80
     static let pkViewHeight: CGFloat = 100
@@ -44,6 +53,7 @@ class MessageCollectionViewBaseCell: DogeChatTableViewCell {
     let avatarDoubleTapGes = UITapGestureRecognizer()
     let avatapSingleTapGes = UITapGestureRecognizer()
     let timeLabel = UILabel()
+    weak var contactDataSource: ContactDataSource?
     let progress = DACircularProgressView()
     
     static let textCellIdentifier = "MessageCell"
@@ -170,8 +180,9 @@ class MessageCollectionViewBaseCell: DogeChatTableViewCell {
         } else {
             switch message.option {
             case .toOne:
-                if let index = ContactsTableViewController.usernames.firstIndex(of: username) {
-                    url = WebSocketManager.shared.url_pre +  ContactsTableViewController.usersInfos[index].avatarUrl
+                if let index = contactDataSource?.usernames.firstIndex(of: username),
+                   let path = contactDataSource?.userInfos[index].avatarUrl {
+                    url = WebSocketManager.shared.url_pre + path
                 }
             case .toAll:
                 url = message.avatarUrl
@@ -195,11 +206,12 @@ class MessageCollectionViewBaseCell: DogeChatTableViewCell {
             }
         }
         if message.messageSender == .ourself {
-            let url = WebSocketManager.shared.messageManager.myAvatarUrl
+            let url = socketForUsername(username).messageManager.myAvatarUrl
             block(url)
         } else if message.option == .toOne {
-            if let index = ContactsTableViewController.usersInfos.firstIndex(where: { $0.name == message.senderUsername }) {
-                let url = WebSocketManager.shared.url_pre +  ContactsTableViewController.usersInfos[index].avatarUrl
+            if let index = contactDataSource?.userInfos.firstIndex(where: { $0.name == message.senderUsername }),
+               let path = contactDataSource?.userInfos[index].avatarUrl {
+                let url = WebSocketManager.shared.url_pre + path
                 block(url)
             }
         } else { // 群聊 someoneElse

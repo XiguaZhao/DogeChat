@@ -100,6 +100,7 @@ extension ChatRoomViewController: MessageInputDelegate, VoiceRecordDelegate {
                 vc.option = self.messageOption
                 vc.name = self.friendName
                 vc.cache = self.cache
+                vc.username = self.username
                 self.navigationController?.pushViewController(vc, animated: true)
             }))
         }
@@ -123,12 +124,13 @@ extension ChatRoomViewController: MessageInputDelegate, VoiceRecordDelegate {
     }
     
     @objc func pasteImageAction(_ noti: Notification) {
-        guard let item = noti.object as? NSItemProvider else { return }
+        guard let item = noti.userInfo?["itemProvider"] as? NSItemProvider else { return }
         processItemProviders([item])
     }
     
     func shareMusic() {
         let vc = PlayListViewController()
+        vc.username = username
         navigationController?.pushViewController(vc, animated: true)
     }
     

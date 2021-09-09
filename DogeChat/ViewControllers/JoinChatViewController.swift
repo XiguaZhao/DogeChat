@@ -2,10 +2,10 @@
 import UIKit
 import UserNotifications
 import DogeChatNetwork
+import RSAiOSWatchOS
 
 class JoinChatViewController: UIViewController {
     
-    let manager = WebSocketManager.shared
     let usernameLabel = UILabel()
     let passwordLabel = UILabel()
     let usernameTF = UITextField()
@@ -118,19 +118,37 @@ extension JoinChatViewController: UITextFieldDelegate {
             makeAutoAlert(message: "信息不完整", detail: nil, showTime: 1, completion: nil)
             return
         }
+        guard !WebSocketManager.shared.usersToSocketManager.keys.contains(username) else {
+            makeAutoAlert(message: "该账号已登录", detail: nil, showTime: 1, completion: nil)
+            return
+        }
+        let manager: WebSocketManager
+        if #available(iOS 13.0, *) {
+            let socketManager = WebSocketManager()
+            let adapter = WebSocketManagerAdapter(manager: socketManager, username: username)
+            WebSocketManager.shared.usersToSocketManager[username] = socketManager
+            WebSocketManagerAdapter.shared.usernameToAdapter[username] = adapter
+            manager = socketManager
+            socketManager.messageManager.encrypt = EncryptMessage()
+        } else {
+            WebSocketManagerAdapter.shared.username = username
+            WebSocketManagerAdapter.shared.manager = WebSocketManager.shared
+            manager = WebSocketManager.shared
+        }
         manager.messageManager.myName = username
         manager.messageManager.login(username: username, password: password) { loginResult in
             if loginResult == "登录成功" {
                 let contactsTVC = ContactsTableViewController()
                 AppDelegate.shared.contactVC = contactsTVC
                 contactsTVC.username = username
+                contactsTVC.password = password
                 contactsTVC.navigationItem.title = username
                 self.navigationController?.setViewControllers([contactsTVC], animated: true)
                 contactsTVC.refreshContacts {
-                    WebSocketManager.shared.connect()
+                    socketForUsername(username).connect()
                 }
                 DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                    NotificationCenter.default.post(name: .updateMyAvatar, object: WebSocketManager.shared.messageManager.myAvatarUrl)
+                    NotificationCenter.default.post(name: .updateMyAvatar, object: username, userInfo: ["path": socketForUsername(username).messageManager.myAvatarUrl])
                 }
                 UserDefaults.standard.setValue(username, forKey: "lastUsername")
                 UserDefaults.standard.setValue(password, forKey: "lastPassword")

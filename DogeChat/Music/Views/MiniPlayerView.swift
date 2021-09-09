@@ -53,7 +53,6 @@ class MiniPlayerView: UIView, UICollectionViewDataSource, UICollectionViewDelega
         }
         let tap = UITapGestureRecognizer(target: self, action: #selector(tapAction(_:)))
         self.addGestureRecognizer(tap)
-        tap.isEnabled = (myName == "赵锡光" || myName == "仙城最靓的仔" || myName == "西瓜" || myName == "username2")
     }
     
     required init?(coder: NSCoder) {

@@ -14,14 +14,6 @@ let voiceDir = "voice"
 let drawDir = "draws"
 let pasteDir = "paste"
 
-var myName: String {
-    (UserDefaults.standard.value(forKey: "lastUsername") as? String) ?? ""
-}
-
-var myPassWord: String {
-    (UserDefaults.standard.value(forKey: "lastPassword") as? String) ?? ""
-}
-
 var maxID: Int {
     (UserDefaults.standard.value(forKey: "maxID") as? Int) ?? 0
 }
@@ -111,4 +103,16 @@ extension CGRect {
     var center: CGPoint {
         return CGPoint(x: minX + width / 2, y: minY + height / 2)
     }
+}
+
+extension Dictionary where Key == String {
+    
+    mutating func remove(key: String) -> Value? {
+        if let index = self.index(forKey: key) {
+            return self.remove(at: index).value
+        } else {
+            return nil
+        }
+    }
+    
 }

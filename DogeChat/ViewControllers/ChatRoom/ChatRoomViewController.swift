@@ -15,7 +15,13 @@ class ChatRoomViewController: DogeChatViewController {
     
     static let numberOfHistory = 10
     static var needRotate = false
-    let manager = WebSocketManager.shared
+    var manager: WebSocketManager {
+        if #available(iOS 13.0, *) {
+            return socketForUsername(username)
+        } else {
+            return WebSocketManager.shared
+        }
+    }
     let tableView = DogeChatTableView()
     let messageInputBar = MessageInputView()
     var messageOption: MessageOption = .toAll
@@ -37,6 +43,7 @@ class ChatRoomViewController: DogeChatViewController {
     var collectionViewTapGesture: UITapGestureRecognizer!
     var friendAvatarUrl = ""
     var dontLayout = false
+    weak var contactVC: ContactsTableViewController?
     var hapticInputIndex = 0
     var pan: UIScreenEdgePanGestureRecognizer?
     var needScrollToBottom = false {
@@ -68,15 +75,15 @@ class ChatRoomViewController: DogeChatViewController {
         makeNavBarUI()
         manager.messageManager.messageDelegate = self
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillChange(notification:)), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(sendSuccess(notification:)), name: .sendSuccess, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(uploadSuccess(notification:)), name: .uploadSuccess, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(receiveNewMessageNotification(_:)), name: .receiveNewMessage, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(sendSuccess(notification:)), name: .sendSuccess, object: username)
+        NotificationCenter.default.addObserver(self, selector: #selector(uploadSuccess(notification:)), name: .uploadSuccess, object: username)
+        NotificationCenter.default.addObserver(self, selector: #selector(receiveNewMessageNotification(_:)), name: .receiveNewMessage, object: username)
         NotificationCenter.default.addObserver(self, selector: #selector(confirmSendPhoto), name: .confirmSendPhoto, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(emojiButtonTapped), name: .emojiButtonTapped, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(receiveEmojiInfoChangedNotification(_:)), name: .emojiInfoChanged, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(receiveHistoryMessages(_:)), name: .receiveHistoryMessages, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(displayHistoryIfNeeded), name: .connected, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(pasteImageAction(_:)), name: .pasteImage, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(emojiButtonTapped), name: .emojiButtonTapped, object: messageInputBar)
+        NotificationCenter.default.addObserver(self, selector: #selector(receiveEmojiInfoChangedNotification(_:)), name: .emojiInfoChanged, object: username)
+        NotificationCenter.default.addObserver(self, selector: #selector(receiveHistoryMessages(_:)), name: .receiveHistoryMessages, object: username)
+        NotificationCenter.default.addObserver(self, selector: #selector(displayHistoryIfNeeded), name: .connected, object: username)
+        NotificationCenter.default.addObserver(self, selector: #selector(pasteImageAction(_:)), name: .pasteImage, object: messageInputBar.textView)
         navigationItem.largeTitleDisplayMode = .never
         addRefreshController()
         loadViews()
@@ -99,6 +106,10 @@ class ChatRoomViewController: DogeChatViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        AppDelegate.shared.navigationController = self.navigationController
+        if #available(iOS 13.0, *) {
+            (self.view.window?.windowScene?.delegate as? SceneDelegate)?.navigationController = self.navigationController
+        }
         scrollBottom = false
         DispatchQueue.main.async {
             self.displayHistoryIfNeeded()
@@ -298,7 +309,7 @@ extension ChatRoomViewController: PKViewChangedDelegate {
 extension ChatRoomViewController: MessageDelegate {
     
     @objc func receiveNewMessageNotification(_ notification: Notification) {
-        guard let message = notification.object as? Message, message.option == messageOption else {
+        guard let message = notification.userInfo?["message"] as? Message, message.option == messageOption else {
             return
         }
         let newMessageFriendName = message.messageSender == .ourself ? message.receiver : message.senderUsername

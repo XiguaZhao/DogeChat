@@ -45,6 +45,7 @@ class PlayListViewController: DogeChatViewController, SelectContactsDelegate {
             
         }
     }
+    var username = ""
     var type: PlayListVCType = .normal
     var message: Message!
     var playListName: String?
@@ -255,6 +256,7 @@ class PlayListViewController: DogeChatViewController, SelectContactsDelegate {
         
         let selectContactsVC = SelectContactsViewController()
         selectContactsVC.delegate = self
+        selectContactsVC.dataSourcea = contactVC()
         if let sender = sender {
             selectContactsVC.preferredContentSize = CGSize(width: 300, height: 400)
             let popover = selectContactsVC.popoverPresentationController
@@ -267,10 +269,14 @@ class PlayListViewController: DogeChatViewController, SelectContactsDelegate {
         
     }
     
+    func contactVC() -> ContactsTableViewController {
+        return ((self.splitViewController?.viewControllers.first as? UITabBarController)?.viewControllers?.first as? UINavigationController)?.viewControllers.first as! ContactsTableViewController
+    }
+    
     func shareTracksToFriends(_ friends: [String], tracks: [Track]) {
         if let tracksData = try? JSONEncoder().encode(selectedTracks) {
             WebSocketManager.shared.uploadData(tracksData, path: "message/uploadImg", name: "upload", fileName: "", needCookie: false, contentType: "application/octet-stream", params: nil) { [weak self] task, data in
-                guard let _ = self, let data = data else { return }
+                guard let self = self, let data = data else { return }
                 let json = JSON(data)
                 guard json["status"].stringValue == "success" else {
                     print("上传失败")
@@ -278,14 +284,14 @@ class PlayListViewController: DogeChatViewController, SelectContactsDelegate {
                 }
                 let filePath = WebSocketManager.shared.messageManager.encrypt.decryptMessage(json["filePath"].stringValue)
                 for friend in friends {
-                    let message = Message(message: filePath, messageSender: .ourself, receiver: friend, sender: myName, messageType: .track, option:friend == "群聊" ? .toAll : .toOne, tracks: tracks)
+                    let message = Message(message: filePath, messageSender: .ourself, receiver: friend, sender: self.username, messageType: .track, option:friend == "群聊" ? .toAll : .toOne, tracks: tracks)
                     WebSocketManager.shared.sendWrappedMessage(message)
                     if let chatVC = AppDelegate.shared.navigationController.visibleViewController as? ChatRoomViewController {
                         chatVC.insertNewMessageCell([message])
                     }
                 }
-                self?.makeAutoAlert(message: "发送成功", detail: nil, showTime: 0.2) {
-                    self?.dismiss(animated: true, completion: nil)
+                self.makeAutoAlert(message: "发送成功", detail: nil, showTime: 0.2) {
+                    self.dismiss(animated: true, completion: nil)
                 }
             }
 

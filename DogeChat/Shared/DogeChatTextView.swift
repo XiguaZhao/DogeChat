@@ -45,7 +45,7 @@ class DogeChatTextView: UITextView, UITextPasteDelegate {
             }
         } else if item.itemProvider.canLoadObject(ofClass: UIImage.self) {
             item.setNoResult()
-            NotificationCenter.default.post(name: .pasteImage, object: item.itemProvider)
+            NotificationCenter.default.post(name: .pasteImage, object: self, userInfo: ["itemProvider": item.itemProvider])
         }
     }
     

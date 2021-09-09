@@ -260,11 +260,11 @@ class MessageInputView: DogeChatStaticBlurView {
             MessageInputView.becauseEmojiTapped = true
             self.textView.resignFirstResponder()
             DispatchQueue.main.async {
-                NotificationCenter.default.post(name: .emojiButtonTapped, object: nil)
+                NotificationCenter.default.post(name: .emojiButtonTapped, object: self)
                 block()
             }
         } else {
-            NotificationCenter.default.post(name: .emojiButtonTapped, object: nil)
+            NotificationCenter.default.post(name: .emojiButtonTapped, object: self)
             block()
         }
     }

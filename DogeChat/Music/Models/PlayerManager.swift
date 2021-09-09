@@ -304,12 +304,14 @@ class PlayerManager: NSObject {
     }
     
     @objc func trackPlayToEndNoti(_ noti: Notification) {
-        playNextTrack() { [weak self] success in
-            if !success {
-                self?.deactivateSession()
-                self?.isPlaying = false
-                self?.nowPlayingTrack = nil
-                NotificationCenter.default.post(name: .immersive, object: AppDelegate.shared.immersive)
+        if isPlaying {
+            playNextTrack() { [weak self] success in
+                if !success {
+                    self?.deactivateSession()
+                    self?.isPlaying = false
+                    self?.nowPlayingTrack = nil
+                    NotificationCenter.default.post(name: .immersive, object: AppDelegate.shared.immersive)
+                }
             }
         }
     }

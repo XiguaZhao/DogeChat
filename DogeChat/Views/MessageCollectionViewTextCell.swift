@@ -155,7 +155,7 @@ class MessageCollectionViewTextCell: MessageCollectionViewBaseCell {
             }
             if !message.isDownloading {
                 message.isDownloading = true
-                let task = session.get(url_pre + message.voiceURL!, parameters: nil, headers: nil, progress: nil, success: { task, data in
+                _ = session.get(url_pre + message.voiceURL!, parameters: nil, headers: ["Cookie": "SESSION="+cookie], progress: nil, success: { task, data in
                     completion(task, data)
                 }) { task, error in
                     print(error)

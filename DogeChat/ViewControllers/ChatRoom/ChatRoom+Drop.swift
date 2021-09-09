@@ -42,7 +42,7 @@ extension ChatRoomViewController: UITableViewDropDelegate {
                         guard let self = self, let str = str else {
                             return
                         }
-                        let message = Message(message: str, messageSender: .ourself, sender: myName, messageType: .text, option: self.messageOption)
+                        let message = Message(message: str, messageSender: .ourself, sender: self.username, messageType: .text, option: self.messageOption)
                         message.receiver = self.friendName
                         message.sendStatus = .fail
                         textMessages.append(message)

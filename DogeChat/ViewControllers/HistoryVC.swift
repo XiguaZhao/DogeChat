@@ -23,6 +23,7 @@ class HistoryVC: DogeChatViewController {
     var name = ""
     var messages = [Message]()
     var uuids = Set<String>()
+    var username = ""
     var tableView = DogeChatTableView()
     var dataSource: UITableViewDiffableDataSource<Section, Message>!
     let slider = UISlider()
@@ -56,7 +57,7 @@ class HistoryVC: DogeChatViewController {
         configRefresh()
         
                 
-        NotificationCenter.default.addObserver(self, selector: #selector(receiveHistory(_:)), name: .receiveHistoryMessages, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(receiveHistory(_:)), name: .receiveHistoryMessages, object: username)
         
         let leftLabel = UILabel()
         leftLabel.text = "最新"

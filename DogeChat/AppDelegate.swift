@@ -39,7 +39,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var isLoginInProgress = false
     let voipRegistry = PKPushRegistry(queue: DispatchQueue.main)
     var lastAppEnterBackgroundTime = NSDate().timeIntervalSince1970
-    let webSocketAdapter = WebSocketManagerAdapter.shared
     weak var contactVC: ContactsTableViewController?
     var isIOS = true
     let splitVCDelegate = SplitViewControllerDelegate()
@@ -102,7 +101,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 }
             }
         }
-        login()
+        if #available(iOS 13.0, *) {
+        } else {
+            login()
+        }
         if UserDefaults.standard.value(forKey: "immersive") == nil {
             UserDefaults.standard.setValue(true, forKey: "immersive")
         }
@@ -111,19 +113,31 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func setupReachability() {
-        reachability.whenReachable = { reach in
-            if !isLogin {
-                WebSocketManager.shared.messageManager.login(username: myName, password: myPassWord) { res in
-                    if res == "登录成功", let contactVC = self.getContactVC() {
-                        contactVC.refreshContacts {
-                            WebSocketManager.shared.connect()
-                        }
-                    }
-                }
-            } else {
-                WebSocketManager.shared.connect()
-            }
-        }
+//        reachability.whenReachable = { reach in
+//            if !isLogin {
+//                WebSocketManager.shared.messageManager.login(username: myName, password: myPassWord) { res in
+//                    if res == "登录成功", let contactVC = self.getContactVC() {
+//                        contactVC.refreshContacts {
+//                            WebSocketManager.shared.connect()
+//                        }
+//                    }
+//                }
+//            } else {
+//                WebSocketManager.shared.connect()
+//            }
+//        }
+    }
+    
+    @available(iOS 13.0, *)
+    func application(_ application: UIApplication, didDiscardSceneSessions sceneSessions: Set<UISceneSession>) {
+        
+    }
+    
+    @available(iOS 13.0, *)
+    func application(_ application: UIApplication,
+                     configurationForConnecting connectingSceneSession: UISceneSession,
+                     options: UIScene.ConnectionOptions) -> UISceneConfiguration {
+        return UISceneConfiguration(name: "Default Configuration", sessionRole: connectingSceneSession.role)
     }
     
     func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {
@@ -146,6 +160,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     private func sizeFor(side: SplitVCSide) -> CGSize {
+        let splitViewController: UISplitViewController
+        if #available(iOS 13.0, *) {
+            splitViewController = ((UIApplication.shared.windows.filter({ $0.isKeyWindow }).first?.windowScene?.delegate as? SceneDelegate)?.splitVC)!
+        } else {
+            splitViewController = self.splitViewController
+        }
         let height = splitViewController.view.bounds.height
         if splitViewController.isCollapsed {
             return splitViewController.view.bounds.size
@@ -176,6 +196,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             let contactVC = ContactsTableViewController()
             contactVC.navigationItem.title = username
             contactVC.username = username
+            contactVC.password = password
             self.contactVC = contactVC
             self.navigationController.viewControllers = [contactVC]
             isLoginInProgress = true
@@ -187,6 +208,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                     return
                 }
                 contactVC.loginSuccess = true
+                WebSocketManagerAdapter.shared.username = username
+                WebSocketManagerAdapter.shared.manager = WebSocketManager.shared
             }
         } else {
             self.navigationController.viewControllers = [JoinChatViewController()]
@@ -403,14 +426,14 @@ extension AppDelegate: FloatWindowTouchDelegate {
     func tapPush(_ window: FloatWindow!, sender: String, content: String) {
         self.tabBarController.selectedViewController = navigationController
         if let contactVC = navigationController.viewControllers.first as? ContactsTableViewController,
-           let index = ContactsTableViewController.usernames.firstIndex(of: sender) {
+           let index = contactVC.usernames.firstIndex(of: sender) {
             contactVC.tableView(contactVC.tableView, didSelectRowAt: IndexPath(row: index, section: 0))
         }
     }
     
     func tapAlwaysDisplay(_ window: FloatWindow!, name: String) {
         if window.alwayDisplayType == .shouldDismiss {
-            webSocketAdapter.readyToSendVideoData = false
+            WebSocketManagerAdapter.shared.readyToSendVideoData = false
             Recorder.sharedInstance().needSendVideo = false
             guard let call = callManager.callWithUUID(socketManager.nowCallUUID) else { return }
             call.end()

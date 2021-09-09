@@ -97,9 +97,11 @@
 		07B3F5D4262470D70016B5C9 /* ChatRoom+Drop.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07B3F5D3262470D70016B5C9 /* ChatRoom+Drop.swift */; };
 		07B8321426820512009434AC /* PlayListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07B8321326820512009434AC /* PlayListViewController.swift */; };
 		07B8321626820A54009434AC /* SearchMusicViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07B8321526820A54009434AC /* SearchMusicViewController.swift */; };
+		07BD40DF26E7667700F2761D /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07BD40DE26E7667700F2761D /* SceneDelegate.swift */; };
 		07C9632F25E3B53900C2BF4C /* ImageConfirmViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07C9632D25E3B53900C2BF4C /* ImageConfirmViewController.swift */; };
 		07C9633025E3B53900C2BF4C /* ImageConfirmViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 07C9632E25E3B53900C2BF4C /* ImageConfirmViewController.xib */; };
 		07D298DE266CBD3800C09F6C /* HapticManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07D298DD266CBD3800C09F6C /* HapticManager.swift */; };
+		07DDE8CD26E8BFE800573D0A /* DogeChatSplitViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07DDE8CC26E8BFE800573D0A /* DogeChatSplitViewController.swift */; };
 		07E001DA248CA56800D4A287 /* SelectShortcutTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07E001D9248CA56800D4A287 /* SelectShortcutTVC.swift */; };
 		07E1BAFC267F86B000559A3B /* ChatRoom+InputViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07E1BAFB267F86B000559A3B /* ChatRoom+InputViewDelegate.swift */; };
 		07E1BAFE267F8CBA00559A3B /* VoiceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07E1BAFD267F8CBA00559A3B /* VoiceViewController.swift */; };
@@ -316,9 +318,11 @@
 		07B3F5D3262470D70016B5C9 /* ChatRoom+Drop.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChatRoom+Drop.swift"; sourceTree = "<group>"; };
 		07B8321326820512009434AC /* PlayListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayListViewController.swift; sourceTree = "<group>"; };
 		07B8321526820A54009434AC /* SearchMusicViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchMusicViewController.swift; sourceTree = "<group>"; };
+		07BD40DE26E7667700F2761D /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		07C9632D25E3B53900C2BF4C /* ImageConfirmViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageConfirmViewController.swift; sourceTree = "<group>"; };
 		07C9632E25E3B53900C2BF4C /* ImageConfirmViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ImageConfirmViewController.xib; sourceTree = "<group>"; };
 		07D298DD266CBD3800C09F6C /* HapticManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticManager.swift; sourceTree = "<group>"; };
+		07DDE8CC26E8BFE800573D0A /* DogeChatSplitViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DogeChatSplitViewController.swift; sourceTree = "<group>"; };
 		07E001D9248CA56800D4A287 /* SelectShortcutTVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectShortcutTVC.swift; sourceTree = "<group>"; };
 		07E1BAFB267F86B000559A3B /* ChatRoom+InputViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChatRoom+InputViewDelegate.swift"; sourceTree = "<group>"; };
 		07E1BAFD267F8CBA00559A3B /* VoiceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceViewController.swift; sourceTree = "<group>"; };
@@ -676,6 +680,7 @@
 				0718AC2B268816B700E27B28 /* DogeChatBlurView.swift */,
 				07ED6B6F268C53DF00F86DC0 /* DogeChatTabBarController.swift */,
 				079BA83326D76DC100E2C8BB /* DogeChatStaticBlurView.swift */,
+				07DDE8CC26E8BFE800573D0A /* DogeChatSplitViewController.swift */,
 			);
 			path = Shared;
 			sourceTree = "<group>";
@@ -758,6 +763,7 @@
 			isa = PBXGroup;
 			children = (
 				AEC6BF3E1EAF320E007CA6E5 /* AppDelegate.swift */,
+				07BD40DE26E7667700F2761D /* SceneDelegate.swift */,
 				073FDF6525B289A800FE01CD /* DogeChat.entitlements */,
 				AEC6BF4A1EAF320E007CA6E5 /* Info.plist */,
 				0799068525B3D44B0083C1B8 /* main.storyboard */,
@@ -1054,6 +1060,7 @@
 				AEC6BF411EAF320E007CA6E5 /* JoinChatViewController.swift in Sources */,
 				0760E10125E74BD30030337E /* HJOpenGLView.m in Sources */,
 				0761F58326835D8800E27B07 /* TrackSearchResultCell.swift in Sources */,
+				07BD40DF26E7667700F2761D /* SceneDelegate.swift in Sources */,
 				0761F5852683671900E27B07 /* TrackDownloadManager.swift in Sources */,
 				0726D96C267E2E5B005B89DC /* ImageBrowserCell.swift in Sources */,
 				075557322665D4B000F63F55 /* Recorder.m in Sources */,
@@ -1069,6 +1076,7 @@
 				0718AC1E2687683800E27B28 /* DogeChatBaseCollectionView.swift in Sources */,
 				07ED6B70268C53DF00F86DC0 /* DogeChatTabBarController.swift in Sources */,
 				0718AC182687650800E27B28 /* DogeChatBaseView.swift in Sources */,
+				07DDE8CD26E8BFE800573D0A /* DogeChatSplitViewController.swift in Sources */,
 				0702F7E6247E62B200B22846 /* ContactsTableViewController.swift in Sources */,
 				07ED6B74268D7BCE00F86DC0 /* SplitViewControllerDelegate.swift in Sources */,
 				AE909BF11EB63FDB009D9D95 /* MessageInputView.swift in Sources */,

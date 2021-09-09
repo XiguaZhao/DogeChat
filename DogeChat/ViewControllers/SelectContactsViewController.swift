@@ -15,7 +15,10 @@ protocol SelectContactsDelegate: AnyObject {
 
 class SelectContactsViewController: DogeChatViewController, UITableViewDataSource {
     
-    let contacts = ContactsTableViewController.usernames
+    var contacts: [String] {
+        dataSourcea?.usernames ?? []
+    }
+    weak var dataSourcea: ContactDataSource?
     let tableView = DogeChatTableView()
     let toolBar = UIToolbar()
     var confirmButton: UIBarButtonItem!

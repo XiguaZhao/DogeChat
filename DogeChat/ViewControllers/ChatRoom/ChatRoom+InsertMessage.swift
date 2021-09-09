@@ -79,7 +79,7 @@ extension ChatRoomViewController {
                 message.imageURL = filePath
                 message.message = message.imageURL ?? ""
                 message.imageLocalPath = imageURL
-                NotificationCenter.default.post(name: .uploadSuccess, object: nil, userInfo: ["message": message])
+                NotificationCenter.default.post(name: .uploadSuccess, object: self.username, userInfo: ["message": message])
                 SDWebImageManager.shared.loadImage(with: URL(string: filePath), options: [.avoidDecodeImage, .allowInvalidSSLCertificates], progress: nil) { _, _, _, _, _, _ in
                     
                 }
@@ -94,22 +94,22 @@ extension ChatRoomViewController {
             self.voiceInfo = nil
         }
         guard let info = self.voiceInfo else { return }
-        let message = Message(message: "", messageSender: .ourself, sender: myName, messageType: .voice, option: messageOption)
+        let message = Message(message: "", messageSender: .ourself, sender: username, messageType: .voice, option: messageOption)
         message.receiver = friendName
         message.voiceLocalPath = info.url
         message.voiceDuration = info.duration
         message.sendStatus = .fail
-        WebSocketManager.shared.uploadPhoto(imageUrl: info.url, message: message, size: .zero, voiceDuration: info.duration) { [weak self] progress in
+        manager.uploadPhoto(imageUrl: info.url, message: message, size: .zero, voiceDuration: info.duration) { [weak self] progress in
             self?.downloadProgressUpdate(progress: progress, message: message)
-        } success: { task, data in
-            guard let data = data as? Data else { return }
+        } success: { [weak self] task, data in
+            guard let self = self, let data = data as? Data else { return }
             let json = JSON(data as Any)
             var voicePath = json["filePath"].stringValue
             voicePath = WebSocketManager.shared.messageManager.encrypt.decryptMessage(voicePath)
             print(voicePath)
             message.voiceURL = voicePath
             message.message = voicePath
-            NotificationCenter.default.post(name: .uploadSuccess, object: nil, userInfo: ["message": message])
+            NotificationCenter.default.post(name: .uploadSuccess, object: self.username, userInfo: ["message": message])
             DispatchQueue.global().async {
                 let dir = createDir(name: voiceDir)
                 let newVoiceUrl = dir.appendingPathComponent(voicePath.components(separatedBy: "/").last!)
@@ -125,23 +125,23 @@ extension ChatRoomViewController {
             self.pickedVideos = nil
         }
         guard let info = self.pickedVideos else { return }
-        let message = Message(message: "", messageSender: .ourself, sender: myName, messageType: .video, option: messageOption)
+        let message = Message(message: "", messageSender: .ourself, sender: username, messageType: .video, option: messageOption)
         message.videoLocalPath = info.url
         message.receiver = friendName
         message.imageSize = info.size
         message.sendStatus = .fail
-        WebSocketManager.shared.uploadPhoto(imageUrl: info.url, message: message, size: info.size) { [weak self] progress in
+        manager.uploadPhoto(imageUrl: info.url, message: message, size: info.size) { [weak self] progress in
             self?.downloadProgressUpdate(progress: progress, message: message)
 
-        } success: { task, data in
-            guard let data = data as? Data else { return }
+        } success: { [weak self] task, data in
+            guard let self = self, let data = data as? Data else { return }
             let json = JSON(data as Any)
             var videoPath = json["filePath"].stringValue
             videoPath = WebSocketManager.shared.messageManager.encrypt.decryptMessage(videoPath)
             print(videoPath)
             message.message = videoPath
             message.videoURL = videoPath
-            NotificationCenter.default.post(name: .uploadSuccess, object: nil, userInfo: ["message": message])
+            NotificationCenter.default.post(name: .uploadSuccess, object: self.username, userInfo: ["message": message])
             DispatchQueue.global().async {
                 let dir = createDir(name: videoDir)
                 let newVideoUrl = dir.appendingPathComponent(videoPath.components(separatedBy: "/").last!)
@@ -155,7 +155,7 @@ extension ChatRoomViewController {
     func sendLivePhotos() {
         var newMessages = [Message]()
         for livePhoto in pickedLivePhotos {
-            let message = Message(message: "", messageSender: .ourself, sender: myName, messageType: .livePhoto, option: messageOption)
+            let message = Message(message: "", messageSender: .ourself, sender: username, messageType: .livePhoto, option: messageOption)
             message.imageURL = livePhoto.imageURL.absoluteString
             message.videoURL = livePhoto.videoURL.absoluteString
             message.receiver = friendName
@@ -163,16 +163,18 @@ extension ChatRoomViewController {
             message.imageSize = livePhoto.size
             message.sendStatus = .fail
             newMessages.append(message)
-            WebSocketManager.shared.uploadPhoto(imageUrl: livePhoto.imageURL, message: message, size: livePhoto.size) { _ in
+            manager.uploadPhoto(imageUrl: livePhoto.imageURL, message: message, size: livePhoto.size) { _ in
                 
-            } success: { task, data in
+            } success: { [weak self] task, data in
+                guard let self = self else { return }
                 let json = JSON(data as Any)
                 var imagePath = json["filePath"].stringValue
                 imagePath = WebSocketManager.shared.messageManager.encrypt.decryptMessage(imagePath)
                 print(imagePath)
-                WebSocketManager.shared.uploadPhoto(imageUrl: livePhoto.videoURL, message: message, size: livePhoto.size) { [weak self] progress in
+                self.manager.uploadPhoto(imageUrl: livePhoto.videoURL, message: message, size: livePhoto.size) { [weak self] progress in
                     self?.downloadProgressUpdate(progress: progress, message: message)
-                } success: { task, data in
+                } success: { [weak self] task, data in
+                    guard let self = self else { return }
                     let json = JSON(data as Any)
                     var videoPath = json["filePath"].stringValue
                     videoPath = WebSocketManager.shared.messageManager.encrypt.decryptMessage(videoPath)
@@ -180,7 +182,7 @@ extension ChatRoomViewController {
                     message.imageURL = imagePath
                     message.videoURL = videoPath
                     message.message = imagePath + " " + videoPath
-                    NotificationCenter.default.post(name: .uploadSuccess, object: nil, userInfo: ["message": message])
+                    NotificationCenter.default.post(name: .uploadSuccess, object: self.username, userInfo: ["message": message])
                     DispatchQueue.global().async {
                         let dir = createDir(name: livePhotoDir)
                         let newImageUrl = dir.appendingPathComponent(imagePath.components(separatedBy: "/").last!)
