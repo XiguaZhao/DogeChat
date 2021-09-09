@@ -43,15 +43,15 @@
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            symbolName = "-[UICollectionView scrollToItemAtIndexPath:atScrollPosition:animated:]"
+            symbolName = "-[UITableView scrollToRowAtIndexPath:atScrollPosition:animated:]"
             moduleName = "">
             <Locations>
                <Location
-                  uuid = "6FD87BF9-36D5-42D2-A7C0-02A3FE3043FF - 3a548f4d139b132d"
+                  uuid = "6FD87BF9-36D5-42D2-A7C0-02A3FE3043FF - d6b2c17d95ac5c30"
                   shouldBeEnabled = "Yes"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
-                  symbolName = "-[UICollectionView scrollToItemAtIndexPath:atScrollPosition:animated:]"
+                  symbolName = "-[UITableView scrollToRowAtIndexPath:atScrollPosition:animated:]"
                   moduleName = "UIKitCore"
                   usesParentBreakpointCondition = "Yes"
                   offsetFromSymbolStart = "0">
@@ -108,9 +108,9 @@
             filePath = "DogeChat/ViewControllers/ContactsTableViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "258"
-            endingLineNumber = "258"
-            landmarkName = "sendSuccess(notification:)"
+            startingLineNumber = "270"
+            endingLineNumber = "270"
+            landmarkName = "uploadSuccess(notification:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -439,10 +439,10 @@
             filePath = "DogeChat/ViewControllers/ChatRoom/ChatRoom+Drag.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "46"
-            endingLineNumber = "46"
+            startingLineNumber = "49"
+            endingLineNumber = "49"
             landmarkName = "tableView(_:dragPreviewParametersForRowAt:)"
-            landmarkType = "7">
+            landmarkType = "9">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -471,16 +471,32 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "1EC968D1-354D-420F-A1B3-3DA88CF7ED99"
+            uuid = "DCBC9201-C58C-4070-BEF1-66731785BEF4"
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "DogeChat/Views/MessageCollectionViewImageCell.swift"
+            filePath = "DogeChat/SceneDelegate.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "212"
-            endingLineNumber = "212"
-            landmarkName = "makeLivePhoto()"
+            startingLineNumber = "38"
+            endingLineNumber = "38"
+            landmarkName = "stateRestorationActivity(for:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "8E75D87F-5BFA-4175-AE06-1E567BAD34E1"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "DogeChat/SceneDelegate.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "33"
+            endingLineNumber = "33"
+            landmarkName = "scene(_:willConnectTo:options:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

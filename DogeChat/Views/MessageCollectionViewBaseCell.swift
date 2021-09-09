@@ -28,7 +28,7 @@ class MessageCollectionViewBaseCell: DogeChatTableViewCell {
     var message: Message!
     var indexPath: IndexPath!
     let nameLabel = UILabel()
-    var isHistory = false
+    var isHistory = true
     var tapContentView: UITapGestureRecognizer!
     let indicator = UIActivityIndicatorView()
     var emojis = [EmojiInfo: FLAnimatedImageView]()

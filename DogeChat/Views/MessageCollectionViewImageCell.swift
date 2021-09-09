@@ -128,12 +128,16 @@ class MessageCollectionViewImageCell: MessageCollectionViewBaseCell, PHLivePhoto
     }
     
     func deactiveSession() {
-        try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+        if !PlayerManager.shared.isPlaying {
+            try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+        }
     }
     
     func activeSession() {
-        try? AVAudioSession.sharedInstance().setCategory(.playback, options: PlayerManager.shared.isMute ? .mixWithOthers : .duckOthers)
-        try? AVAudioSession.sharedInstance().setActive(true, options: .notifyOthersOnDeactivation)
+        if !PlayerManager.shared.isPlaying {
+            try? AVAudioSession.sharedInstance().setCategory(.playback, options: PlayerManager.shared.isMute ? .mixWithOthers : .duckOthers)
+            try? AVAudioSession.sharedInstance().setActive(true, options: .notifyOthersOnDeactivation)
+        }
     }
     
     func playVideo() {

@@ -97,6 +97,13 @@ class ChatRoomViewController: DogeChatViewController {
         messageInputBar.textView.resignFirstResponder()
     }
     
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        if !PlayerManager.shared.isPlaying {
+            try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+        }
+    }
+    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         scrollBottom = false
@@ -119,7 +126,6 @@ class ChatRoomViewController: DogeChatViewController {
     deinit {
         print("chat room VC deinit")
         MessageCollectionViewTextCell.voicePlayer.replaceCurrentItem(with: nil)
-//        try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
     }
     
     func scrollBotton() {
@@ -340,7 +346,15 @@ extension ChatRoomViewController {
     
     @objc func receiveHistoryMessages(_ noti: Notification) {
         guard navigationController?.visibleViewController == self else { return }
-        let empty = self.messages.count < ChatRoomViewController.numberOfHistory
+        var empty = true
+        var tempHeight: CGFloat = 0
+        for message in self.messages.reversed() {
+            tempHeight += MessageCollectionViewBaseCell.height(for: message)
+            if tempHeight >= tableView.bounds.height {
+                empty = false
+                break
+            }
+        }
         navigationItem.title = friendName
         guard let messages = noti.userInfo?["messages"] as? [Message], !messages.isEmpty, let pages = noti.userInfo?["pages"] as? Int else { return }
         if messages[0].option != messageOption {
