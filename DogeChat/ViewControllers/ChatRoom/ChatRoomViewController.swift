@@ -20,9 +20,9 @@ class ChatRoomViewController: DogeChatViewController {
     let messageInputBar = MessageInputView()
     var messageOption: MessageOption = .toAll
     var friendName = ""
+    var heightCache = [Int : CGFloat]()
     var pagesAndCurNum = (pages: 1, curNum: 1)
     var originOfInputBar = CGPoint()
-    var scrollBottom = true
     var activeSwipeIndexPath: IndexPath?
     var latestPickedImageInfos: [(image: UIImage?, fileUrl: URL, size: CGSize)] = []
     var pickedLivePhotos: [(imageURL: URL, videoURL: URL, size: CGSize, live: PHLivePhoto)] = []
@@ -46,7 +46,6 @@ class ChatRoomViewController: DogeChatViewController {
             }
         }
     }
-    var shouldIgnoreScroll = false
     
     var lastIndexPath: IndexPath {
         return IndexPath(row: messages.count-1, section: 0)
@@ -80,7 +79,6 @@ class ChatRoomViewController: DogeChatViewController {
         navigationItem.largeTitleDisplayMode = .never
         addRefreshController()
         loadViews()
-        layoutViews(size: view.bounds.size)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -106,7 +104,6 @@ class ChatRoomViewController: DogeChatViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        scrollBottom = false
         DispatchQueue.main.async {
             self.displayHistoryIfNeeded()
         }
@@ -126,6 +123,10 @@ class ChatRoomViewController: DogeChatViewController {
     deinit {
         print("chat room VC deinit")
         MessageCollectionViewTextCell.voicePlayer.replaceCurrentItem(with: nil)
+    }
+    
+    func contentHeight() -> CGFloat {
+        return heightCache.values.reduce(0, +)
     }
     
     func scrollBotton() {

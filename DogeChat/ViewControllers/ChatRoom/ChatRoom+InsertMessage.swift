@@ -51,11 +51,7 @@ extension ChatRoomViewController {
             UIView.performWithoutAnimation {
                 self.tableView.insertRows(at: indexPaths, with: .none)
             }
-            if self.shouldIgnoreScroll {
-                self.shouldIgnoreScroll = false
-            } else {
-                needScrollToBottom = scrollToBottom
-            }
+            needScrollToBottom = scrollToBottom
             completion?()
         }
     }
