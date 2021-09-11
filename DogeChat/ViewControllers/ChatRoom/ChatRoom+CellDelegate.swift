@@ -54,10 +54,11 @@ extension ChatRoomViewController: MessageTableViewCellDelegate {
         if #available(iOS 14.0, *) {
 
             let drawVC = DrawViewController()
+            drawVC.username = username
             guard let pkView = pkView as? PKCanvasView else { return }
             let message = messages[drawingIndexPath.item]
             drawVC.message = message
-            drawVC.pkView.drawing = pkView.drawing
+            drawVC.pkView.drawing = pkView.drawing.transformed(using: CGAffineTransform(scaleX: 1/message.drawScale, y: 1/message.drawScale))
             drawVC.pkViewDelegate.dataChangedDelegate = self
             drawVC.modalPresentationStyle = .fullScreen
             drawVC.chatRoomVC = self
@@ -78,7 +79,7 @@ extension ChatRoomViewController: MessageTableViewCellDelegate {
             messages[oldIndexPath.item].emojisInfo.remove(at: messageIndex)
             let newPoint = gesture.location(in: tableView.cellForRow(at: newIndexPath)?.contentView)
             emojiInfo.x = newPoint.x / UIScreen.main.bounds.width
-            emojiInfo.y = newPoint.y / MessageCollectionViewBaseCell.height(for: messages[newIndexPath.item])
+            emojiInfo.y = newPoint.y / MessageCollectionViewBaseCell.height(for: messages[newIndexPath.item], username: username)
             emojiInfo.lastModifiedBy = manager.messageManager.myName
             messages[newIndexPath.item].emojisInfo.append(emojiInfo)
             needReload(indexPath: [newIndexPath, oldIndexPath])
@@ -96,6 +97,7 @@ extension ChatRoomViewController: MessageTableViewCellDelegate {
     
     func sharedTracksTap(_ cell: MessageCollectionViewBaseCell, tracks: [Track]) {
         let vc = PlayListViewController()
+        vc.username = username
         vc.tracks = tracks
         vc.type = .share
         vc.message = cell.message

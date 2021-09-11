@@ -15,7 +15,15 @@ let trackThumbCache = NSCache<NSString, NSData>()
 let tracksDirName = "tracks"
 let dirName = "trackInfos"
 var userID: String {
-    (UserDefaults.standard.value(forKey: "userID") as? String) ?? ""
+    var userID: String! = ""
+    if let dict = (UserDefaults.standard.value(forKey: usernameToIdKey) as? [String: String]) {
+        if #available(iOS 13, *) {
+            userID = dict[(UIApplication.shared.windows.first(where: { $0.isKeyWindow })?.windowScene?.delegate as? SceneDelegate)?.username ?? ""] ?? UserDefaults.standard.value(forKey: "userID") as? String ?? ""
+        } else {
+            userID = UserDefaults.standard.value(forKey: "userID") as? String ?? ""
+        }
+    }
+    return userID
 }
 var allTracks = [Track]()
 var allPlayLists = ["收藏", "已下载", "QQ音乐", "网易云音乐", "咪咕音乐"]
@@ -74,8 +82,8 @@ class PlayListViewController: DogeChatViewController, SelectContactsDelegate {
         tableView.translatesAutoresizingMaskIntoConstraints = false
         switch type {
         case .normal:
-            NotificationCenter.default.addObserver(self, selector: #selector(downloadOrFavTrackNoti(_:)), name: .downloadTrack, object: nil)
-            NotificationCenter.default.addObserver(self, selector: #selector(downloadOrFavTrackNoti(_:)), name: .favoriteTrack, object: nil)
+            NotificationCenter.default.addObserver(self, selector: #selector(downloadOrFavTrackNoti(_:)), name: .downloadTrack, object: username)
+            NotificationCenter.default.addObserver(self, selector: #selector(downloadOrFavTrackNoti(_:)), name: .favoriteTrack, object: username)
             NotificationCenter.default.addObserver(self, selector: #selector(nowPlayingTrackChanged(_:)), name: .nowPlayingTrackChanged, object: nil)
             NotificationCenter.default.addObserver(self, selector: #selector(deleteTrackNoti(_:)), name: .deleteTrack, object: nil)
             NotificationCenter.default.addObserver(self, selector: #selector(pauseTrack(_:)), name: .toggleTrack, object: nil)
@@ -109,7 +117,7 @@ class PlayListViewController: DogeChatViewController, SelectContactsDelegate {
                 make?.edges.equalTo()(self?.view)
             }
         }
-        NotificationCenter.default.addObserver(self, selector: #selector(tracksInfoChanged(_:)), name: .tracksInfoChanged, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(tracksInfoChanged(_:)), name: .tracksInfoChanged, object: username)
         configureBarButtons()
     }
     
@@ -156,7 +164,7 @@ class PlayListViewController: DogeChatViewController, SelectContactsDelegate {
         let set = Set(selectedTracks)
         let all = Set(allTracks)
         let filtered = set.subtracting(all)
-        NotificationCenter.default.post(name: .tracksInfoChanged, object: Array(filtered))
+        NotificationCenter.default.post(name: .tracksInfoChanged, object: username, userInfo: ["tracks": Array(filtered)])
         makeAutoAlert(message: "已收藏", detail: nil, showTime: 0.2) {
             self.dismiss(animated: true, completion: nil)
         }
@@ -175,18 +183,27 @@ class PlayListViewController: DogeChatViewController, SelectContactsDelegate {
     }
     
     func allPlayListsChanged() {
-        saveTracksInfoToDisk()
+        saveTracksInfoToDisk(username: username)
     }
     
     @objc func tracksInfoChanged(_ noti: Notification) {
-        let tracks = noti.object as! [Track]
+        let tracks = noti.userInfo?["tracks"] as! [Track]
+        var filtered = [Track]()
         for track in tracks {
             track.playTime = 0
             track.state = .favorited
             track.playLists.removeAll()
+            if !allTracks.contains(where: { $0.id == track.id }) {
+                filtered.append(track)
+            }
         }
-        allTracks += tracks
-        saveTracksInfoToDisk()
+        if filtered.isEmpty {
+            loadTracksFromDiskForType(.allFavorite, playListName: nil)
+            reloadData()
+            return
+        }
+        allTracks += filtered
+        saveTracksInfoToDisk(username: username)
         reloadData()
     }
     
@@ -197,7 +214,7 @@ class PlayListViewController: DogeChatViewController, SelectContactsDelegate {
     @objc func editAction(_ sender: UIBarButtonItem) {
         if tableView.isEditing { //说明编辑完成了
             if type == .normal {
-                saveTracksInfoToDisk()
+                saveTracksInfoToDisk(username: username)
                 reloadData()
             }
         }
@@ -255,15 +272,10 @@ class PlayListViewController: DogeChatViewController, SelectContactsDelegate {
         self.selectedTracks = indexPaths.map { tracks[$0.row] }
         
         let selectContactsVC = SelectContactsViewController()
+        selectContactsVC.username = username
         selectContactsVC.delegate = self
         selectContactsVC.dataSourcea = contactVC()
-        if let sender = sender {
-            selectContactsVC.preferredContentSize = CGSize(width: 300, height: 400)
-            let popover = selectContactsVC.popoverPresentationController
-            popover?.barButtonItem = sender
-            popover?.delegate = self
-        } 
-        selectContactsVC.modalPresentationStyle = .popover
+        selectContactsVC.modalPresentationStyle = .formSheet
 
         present(selectContactsVC, animated: true, completion: nil)
         
@@ -275,19 +287,25 @@ class PlayListViewController: DogeChatViewController, SelectContactsDelegate {
     
     func shareTracksToFriends(_ friends: [String], tracks: [Track]) {
         if let tracksData = try? JSONEncoder().encode(selectedTracks) {
-            WebSocketManager.shared.uploadData(tracksData, path: "message/uploadImg", name: "upload", fileName: "", needCookie: false, contentType: "application/octet-stream", params: nil) { [weak self] task, data in
+            socketForUsername(username).uploadData(tracksData, path: "message/uploadImg", name: "upload", fileName: "", needCookie: true, contentType: "application/octet-stream", params: nil) { [weak self] task, data in
                 guard let self = self, let data = data else { return }
                 let json = JSON(data)
                 guard json["status"].stringValue == "success" else {
                     print("上传失败")
                     return
                 }
-                let filePath = WebSocketManager.shared.messageManager.encrypt.decryptMessage(json["filePath"].stringValue)
+                let filePath = socketForUsername(self.username).messageManager.encrypt.decryptMessage(json["filePath"].stringValue)
                 for friend in friends {
                     let message = Message(message: filePath, messageSender: .ourself, receiver: friend, sender: self.username, messageType: .track, option:friend == "群聊" ? .toAll : .toOne, tracks: tracks)
-                    WebSocketManager.shared.sendWrappedMessage(message)
-                    if let chatVC = AppDelegate.shared.navigationController.visibleViewController as? ChatRoomViewController {
-                        chatVC.insertNewMessageCell([message])
+                    socketForUsername(self.username).sendWrappedMessage(message)
+                    if #available(iOS 13, *) {
+                        if let chatVC = (self.view.window?.windowScene?.delegate as? SceneDelegate)?.navigationController.visibleViewController as? ChatRoomViewController {
+                            chatVC.insertNewMessageCell([message])
+                        }
+                    } else {
+                        if let chatVC = AppDelegate.shared.navigationController?.visibleViewController as? ChatRoomViewController {
+                            chatVC.insertNewMessageCell([message])
+                        }
                     }
                 }
                 self.makeAutoAlert(message: "发送成功", detail: nil, showTime: 0.2) {
@@ -324,21 +342,23 @@ class PlayListViewController: DogeChatViewController, SelectContactsDelegate {
         guard let indexPaths = tableView.indexPathsForSelectedRows else { return }
         let selectedTracks = indexPaths.map { tracks[$0.row] }
         for track in selectedTracks {
-            TrackDownloadManager.shared.startDownload(track: track)
+            TrackDownloadManager.shared.startDownload(track: track, username: username)
         }
         editAction(editButton)
     }
     
     @objc func choosePlayList() {
         let vc = PlayListsSelectVC()
+        vc.username = username
         vc.playLists = allPlayLists
         navigationController?.pushViewController(vc, animated: true)
     }
     
     @objc func searchAction(_ sender: UIBarButtonItem) {
         let searchVC = SearchMusicViewController()
+        searchVC.username = username
         searchVC.modalPresentationStyle = .fullScreen
-        if let vcs = AppDelegate.shared.tabBarController.viewControllers,
+        if let vcs = self.tabBarController?.viewControllers,
            vcs.count > 1,
            let nav = vcs[1] as? UINavigationController,
            nav.viewControllers.first is PlayListViewController {
@@ -354,10 +374,10 @@ class PlayListViewController: DogeChatViewController, SelectContactsDelegate {
     }
     
     @objc func downloadOrFavTrackNoti(_ noti: Notification) {
-        let track = noti.object as! Track
+        let track = noti.userInfo?["track"] as! Track
         if allTracks.contains(where: { $0.id == track.id }) { return }
         allTracks.append(track)
-        saveTracksInfoToDisk()
+        saveTracksInfoToDisk(username: username)
         reloadData()
     }
     
@@ -381,7 +401,7 @@ class PlayListViewController: DogeChatViewController, SelectContactsDelegate {
                 deleteFile(dirName: tracksDirName, fileName: deleted.id + ".mp3")
             }
         }
-        saveTracksInfoToDisk()
+        saveTracksInfoToDisk(username: username)
         reloadData()
         makeAutoAlert(message: "已删除", detail: nil, showTime: 0.5, completion: nil)
     }
@@ -393,7 +413,7 @@ class PlayListViewController: DogeChatViewController, SelectContactsDelegate {
     
     
     func loadTracksFromDiskForType(_ type: PlayListType, playListName: String? = nil) {
-        if let url = fileURLAt(dirName: dirName, fileName: userID),
+        if let userID = userIDFor(username: username), let url = fileURLAt(dirName: dirName, fileName: userID),
            let data = try? Data(contentsOf: url), let store = try? JSONDecoder().decode(TrackStore.self, from: data) {
             let tracks = store.tracks
             if !store.playLists.isEmpty {
@@ -426,7 +446,7 @@ class PlayListViewController: DogeChatViewController, SelectContactsDelegate {
             navigationItem.title = title
         }
     }
-            
+          
 }
 
 extension PlayListViewController: UITableViewDelegate, UITableViewDataSource {
@@ -487,7 +507,7 @@ extension PlayListViewController: UITableViewDelegate, UITableViewDataSource {
             var download: UIAction?
             if track.state != .downloaded {
                 download = UIAction(title: "下载") { _ in
-                    TrackDownloadManager.shared.startDownload(track: self.tracks[indexPath.row])
+                    TrackDownloadManager.shared.startDownload(track: self.tracks[indexPath.row], username: self.username)
                 }
             }
             let delete = UIAction(title: "删除") { [weak self] _ in
@@ -536,8 +556,9 @@ extension PlayListViewController: UITableViewDelegate, UITableViewDataSource {
         let track = self.tracks[indexPath.row]
         var download: UIContextualAction?
         if !(track.state == .downloaded) {
-            download = UIContextualAction(style: .normal, title: "下载") { action, view, handler in
-                TrackDownloadManager.shared.startDownload(track: track)
+            download = UIContextualAction(style: .normal, title: "下载") { [weak self] action, view, handler in
+                guard let self = self else { return }
+                TrackDownloadManager.shared.startDownload(track: track, username: self.username)
                 handler(true)
             }
             download?.backgroundColor = #colorLiteral(red: 0.2392156869, green: 0.6745098233, blue: 0.9686274529, alpha: 1)
@@ -561,6 +582,7 @@ extension PlayListViewController: UITableViewDelegate, UITableViewDataSource {
     func addTrackToPlayList(tracks: [Track]) {
         let vc = PlayListsSelectVC()
         vc.type = .addTrack
+        vc.username = username
         vc.tracks = tracks
         vc.playLists = allPlayLists
         navigationController?.pushViewController(vc, animated: true)
@@ -584,25 +606,27 @@ extension PlayListViewController: DownloadDelegate {
             cell.artistLabel.isHidden = false
             tracK.state = .downloaded
         }
-        saveTracksInfoToDisk()
+        saveTracksInfoToDisk(username: username)
     }
     
     
 }
 
-func saveTracksInfoToDisk() {
+func saveTracksInfoToDisk(username: String) {
     do {
         checkTrackState()
         let store = TrackStore(tracks: allTracks, playLists: allPlayLists)
         let data = try JSONEncoder().encode(store)
-        saveFileToDisk(dirName: dirName, fileName: userID, data: data)
+        if let userID = userIDFor(username: username) {
+            saveFileToDisk(dirName: dirName, fileName: userID, data: data)
+        }
     } catch let error {
         print(error)
     }
 }
 
-func loadAllTracks() {
-    if let url = fileURLAt(dirName: dirName, fileName: userID),
+func loadAllTracks(username: String) {
+    if let userID = userIDFor(username: username), let url = fileURLAt(dirName: dirName, fileName: userID),
        let data = try? Data(contentsOf: url), let store = try? JSONDecoder().decode(TrackStore.self, from: data) {
         allTracks = store.tracks
         allPlayLists = store.playLists

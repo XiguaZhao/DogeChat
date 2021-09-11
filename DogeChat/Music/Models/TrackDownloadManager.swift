@@ -28,12 +28,12 @@ class TrackDownloadManager: NSObject {
         session.responseSerializer = AFCompoundResponseSerializer()
     }
     
-    func startDownload(track: Track, newesetURL: URL? = nil) {
+    func startDownload(track: Track, username: String, newesetURL: URL? = nil) {
         guard !track.isDownloaded else { return }
         if newesetURL == nil {
             MusicHttpManager.shared.getTrackWithID(track.id, source: .qq) { tracks in
                 if let track = tracks.first {
-                    self.startDownload(track: track, newesetURL: URL(string: track.musicLinkUrl))
+                    self.startDownload(track: track, username: username, newesetURL: URL(string: track.musicLinkUrl))
                 }
             }
             return
@@ -81,7 +81,7 @@ class TrackDownloadManager: NSObject {
             }
         }
         task.resume()
-        NotificationCenter.default.post(name: .downloadTrack, object: track)
+        NotificationCenter.default.post(name: .downloadTrack, object: username, userInfo: ["track" : track])
     }
     
     

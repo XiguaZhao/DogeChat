@@ -15,6 +15,7 @@ class SearchMusicViewController: DogeChatViewController {
     let tableView = DogeChatTableView()
     var segment: UISegmentedControl!
     var page = 1
+    var username = ""
     
     var country: TrackCountry = .US
     
@@ -160,7 +161,7 @@ extension SearchMusicViewController: UISearchBarDelegate, UITableViewDelegate, U
         if !MusicHttpManager.shared.favorites.contains(cell.track) {
             MusicHttpManager.shared.favorites.append(cell.track)
         }
-        TrackDownloadManager.shared.startDownload(track: cell.track)
+        TrackDownloadManager.shared.startDownload(track: cell.track, username: username)
     }
     
     func favoriteTap(cell: TrackSearchResultCell, sender: UIButton) {
@@ -171,6 +172,6 @@ extension SearchMusicViewController: UISearchBarDelegate, UITableViewDelegate, U
             MusicHttpManager.shared.favorites.append(cell.track)
         }
         cell.track.state = .favorited
-        NotificationCenter.default.post(name: .favoriteTrack, object: cell.track)
+        NotificationCenter.default.post(name: .favoriteTrack, object: username, userInfo: ["track": cell.track as Any])
     }
 }

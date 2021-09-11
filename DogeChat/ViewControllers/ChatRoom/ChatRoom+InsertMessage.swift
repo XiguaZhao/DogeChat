@@ -72,10 +72,11 @@ extension ChatRoomViewController {
             newMessages.append(message)
             manager.uploadPhoto(imageUrl: imageURL, message: message, size: size) { [weak self] progress in
                 self?.downloadProgressUpdate(progress: progress, message: message)
-            } success: { task, data in
+            } success: { [weak self] task, data in
+                guard let self = self else { return }
                 let json = JSON(data as Any)
                 var filePath = json["filePath"].stringValue
-                filePath = WebSocketManager.shared.messageManager.encrypt.decryptMessage(filePath)
+                filePath = socketForUsername(self.username).messageManager.encrypt.decryptMessage(filePath)
                 message.imageURL = filePath
                 message.message = message.imageURL ?? ""
                 message.imageLocalPath = imageURL
@@ -105,7 +106,7 @@ extension ChatRoomViewController {
             guard let self = self, let data = data as? Data else { return }
             let json = JSON(data as Any)
             var voicePath = json["filePath"].stringValue
-            voicePath = WebSocketManager.shared.messageManager.encrypt.decryptMessage(voicePath)
+            voicePath = socketForUsername(self.username).messageManager.encrypt.decryptMessage(voicePath)
             print(voicePath)
             message.voiceURL = voicePath
             message.message = voicePath
@@ -137,7 +138,7 @@ extension ChatRoomViewController {
             guard let self = self, let data = data as? Data else { return }
             let json = JSON(data as Any)
             var videoPath = json["filePath"].stringValue
-            videoPath = WebSocketManager.shared.messageManager.encrypt.decryptMessage(videoPath)
+            videoPath = socketForUsername(self.username).messageManager.encrypt.decryptMessage(videoPath)
             print(videoPath)
             message.message = videoPath
             message.videoURL = videoPath
@@ -169,7 +170,7 @@ extension ChatRoomViewController {
                 guard let self = self else { return }
                 let json = JSON(data as Any)
                 var imagePath = json["filePath"].stringValue
-                imagePath = WebSocketManager.shared.messageManager.encrypt.decryptMessage(imagePath)
+                imagePath = socketForUsername(self.username).messageManager.encrypt.decryptMessage(imagePath)
                 print(imagePath)
                 self.manager.uploadPhoto(imageUrl: livePhoto.videoURL, message: message, size: livePhoto.size) { [weak self] progress in
                     self?.downloadProgressUpdate(progress: progress, message: message)
@@ -177,7 +178,7 @@ extension ChatRoomViewController {
                     guard let self = self else { return }
                     let json = JSON(data as Any)
                     var videoPath = json["filePath"].stringValue
-                    videoPath = WebSocketManager.shared.messageManager.encrypt.decryptMessage(videoPath)
+                    videoPath = socketForUsername(self.username).messageManager.encrypt.decryptMessage(videoPath)
                     print(videoPath)
                     message.imageURL = imagePath
                     message.videoURL = videoPath

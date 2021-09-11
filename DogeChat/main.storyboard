@@ -52,12 +52,13 @@
                     </tabBar>
                     <connections>
                         <segue destination="73m-2C-Avi" kind="relationship" relationship="viewControllers" id="dF3-Gi-WRe"/>
-                        <segue destination="QJ7-1B-WKH" kind="relationship" relationship="viewControllers" id="q5s-3U-fgW"/>
+                        <segue destination="WrQ-ga-1RZ" kind="relationship" relationship="viewControllers" id="tA1-lx-2nr"/>
+                        <segue destination="QJ7-1B-WKH" kind="relationship" relationship="viewControllers" id="6E8-qg-KsY"/>
                     </connections>
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="QFR-kt-v9I" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-664" y="-165"/>
+            <point key="canvasLocation" x="-707" y="-161"/>
         </scene>
         <!--Doge Chat Navigation Controller-->
         <scene sceneID="yeq-q3-aB6">

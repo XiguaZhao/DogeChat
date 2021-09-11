@@ -12,29 +12,27 @@ class DogeChatNavigationController: UINavigationController {
 
     var blurView: UIImageView!
     
+    var username = ""
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-//        makeBlurViewForViewController(self, blurView: &blurView)
-//        NotificationCenter.default.addObserver(self, selector: #selector(forceDarkMode(noti:)), name: .immersive, object: nil)
+        makeBlurViewForViewController(self, blurView: &blurView)
+        NotificationCenter.default.addObserver(self, selector: #selector(forceDarkMode(noti:)), name: .immersive, object: nil)
     }
     
     override func pushViewController(_ viewController: UIViewController, animated: Bool) {
-        miniPlayerView.isHidden = true
         super.pushViewController(viewController, animated: true)
     }
     
     override func popViewController(animated: Bool) -> UIViewController? {
         let popped = super.popViewController(animated: animated)
-//        if self.visibleViewController == self.viewControllers.first {
-//            miniPlayerView.isHidden = false
-//        }
         return popped
     }
     
     @objc func forceDarkMode(noti: Notification) {
         let force = noti.object as! Bool
         if force {
-            makeBlurViewForViewController(self, blurView: &blurView)
+            makeBlurViewForViewController(self, blurView: &blurView, username: username)
         } else {
             recoverVC(self, blurView: &blurView)
         }

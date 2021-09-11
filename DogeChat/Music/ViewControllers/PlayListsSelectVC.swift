@@ -20,6 +20,7 @@ class PlayListsSelectVC: DogeChatViewController {
     var playLists = [String]()
     var type: PlayListSelectType = .normal
     var tracks = [Track]()
+    var username = ""
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -111,7 +112,7 @@ extension PlayListsSelectVC: UITableViewDataSource, UITableViewDelegate {
                     allTracks += tracks
                     NotificationCenter.default.post(name: .tracksInfoChanged, object: nil)
                 }
-                saveTracksInfoToDisk()
+                saveTracksInfoToDisk(username: username)
                 playListVC.reloadData()
                 if playListVC.tableView.isEditing {
                     playListVC.editAction(playListVC.editButton)

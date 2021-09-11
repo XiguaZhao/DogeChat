@@ -43,14 +43,14 @@ class MessageInputView: DogeChatStaticBlurView {
     let drawButton = UIButton()
     var lastInset: UIEdgeInsets = .zero
     var isActive: Bool {
-        return self.frame.minY < AppDelegate.shared.splitViewController.view.bounds.height * 0.8
+        return textView.isFirstResponder || self.frame.maxY < (self.superview?.bounds.height)!
     }
 
     override init(frame: CGRect) {
         super.init(frame: frame)
                 
         let offset: CGFloat = 12
-        let width: CGFloat = 30
+        var width: CGFloat = 30
 
         textView.translatesAutoresizingMaskIntoConstraints = false
         textView.layer.cornerRadius = 8
@@ -75,14 +75,15 @@ class MessageInputView: DogeChatStaticBlurView {
             videoButton.setImage(UIImage(systemName: "video.circle.fill", withConfiguration: largeConfig), for: .normal)
             drawButton.setImage(UIImage(systemName: "pencil.circle.fill", withConfiguration: largeConfig), for: .normal)
         } else {
-            addButton.titleLabel?.text = "+"
-            addButton.titleLabel?.textAlignment = .center
-            emojiButton.titleLabel?.text = "表情"
-            emojiButton.titleLabel?.textAlignment = .center
-            upArrowButton.titleLabel?.text = "发送"
-            upArrowButton.titleLabel?.textAlignment = .center
-            voiceButton.titleLabel?.text = "语音"
-            voiceButton.titleLabel?.textAlignment = .center
+            addButton.setImage(UIImage(named: "add"), for: .normal)
+            emojiButton.setImage(UIImage(named: "emoji"), for: .normal)
+            upArrowButton.setImage(UIImage(named: "arrowUp"), for: .normal)
+            voiceButton.setImage(UIImage(named: "voice"), for: .normal)
+            cameraButton.setImage(UIImage(named: "camera"), for: .normal)
+            photoButton.setImage(UIImage(named: "album"), for: .normal)
+            livePhotoButton.setImage(UIImage(named: "live"), for: .normal)
+            videoButton.setImage(UIImage(named: "video"), for: .normal)
+            drawButton.setImage(UIImage(named: "pencil"), for: .normal)
         }
                 
         addButton.addTarget(self, action: #selector(addButtonTapped), for: .touchUpInside)
@@ -109,6 +110,10 @@ class MessageInputView: DogeChatStaticBlurView {
             livePhotoButton.isHidden = true
             videoButton.isHidden = true
             drawButton.isHidden = true
+        }
+        
+        if #available(iOS 13, *) {} else {
+            width = 25
         }
                 
         voiceButton.mas_makeConstraints { make in
@@ -188,7 +193,7 @@ class MessageInputView: DogeChatStaticBlurView {
         if self.frame.maxY == self.superview!.bounds.maxY {
             return
         }
-        let screenSize = AppDelegate.shared.window?.bounds.size ?? UIScreen.main.bounds.size
+        let screenSize = UIApplication.shared.windows.first(where: { $0.isKeyWindow })?.bounds.size ?? UIScreen.main.bounds.size
         let userInfo = [UIResponder.keyboardFrameEndUserInfoKey: NSValue(cgRect: CGRect(x: 0, y: screenSize.height, width: screenSize.width, height: screenSize.height))]
         NotificationCenter.default.post(name: UIResponder.keyboardWillChangeFrameNotification, object: self, userInfo: userInfo)
     }

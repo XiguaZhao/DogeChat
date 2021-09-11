@@ -9,9 +9,10 @@ extension ChatRoomViewController {
             return
         }
         if let userInfo = notification.userInfo {
-            var endFrame = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)!.cgRectValue
-            if endFrame.height < 50 {
-                endFrame = CGRect(x: 0, y: AppDelegate.shared.window!.bounds.height, width: UIScreen.main.bounds.width, height: 0)
+            let endFrame = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)!.cgRectValue
+            if endFrame == .zero {
+                layoutViews(size: view.bounds.size)
+                return
             }
             let additionalOffset: CGFloat = safeArea.bottom / 2
             let messageBarHeight = self.messageInputBar.bounds.height
@@ -167,7 +168,7 @@ extension ChatRoomViewController {
     func makeNavBarUI() {
         var total: CGFloat = 0
         for message in messages.reversed() {
-            total += MessageCollectionViewBaseCell.height(for: message)
+            total += MessageCollectionViewBaseCell.height(for: message, username: username)
             if total > tableView.bounds.height - tableView.contentInset.top {
                 if let bar = self.navigationController?.navigationBar,
                    let blurView = bar.subviews.first?.subviews.first as? UIVisualEffectView {

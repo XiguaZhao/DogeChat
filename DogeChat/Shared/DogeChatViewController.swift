@@ -7,11 +7,13 @@
 //
 
 import UIKit
+import DogeChatUniversal
+import DogeChatNetwork
 
 class DogeChatViewController: UIViewController, UIPopoverPresentationControllerDelegate {
     
     var blurView: UIImageView!
-    
+        
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
     }
@@ -51,31 +53,40 @@ class DogeChatViewController: UIViewController, UIPopoverPresentationControllerD
     func toggleBlurView(force: Bool, needAnimation: Bool) {
         if force {
             var tableView: UITableView?
+            var username: String?
             if let playListVC = self as? PlayListViewController  {
                 tableView = playListVC.tableView
+                username = playListVC.username
             } else if let selectPlayListVC = self as? PlayListsSelectVC {
                 tableView = selectPlayListVC.tableView
+                username = selectPlayListVC.username
             } else if let settingVC = self as? SettingViewController {
                 tableView = settingVC.tableView
+                username = settingVC.username
             } else if let searchVC = self as? SearchMusicViewController {
                 tableView = searchVC.tableView
+                username = searchVC.username
             } else if let chatVC = self as? ChatRoomViewController {
                 tableView = chatVC.tableView
+                username = chatVC.username
             } else if let contactVC = self as? ContactsTableViewController {
                 tableView = contactVC.tableView
+                username = contactVC.username
             } else if let selectContact = self as? SelectContactsViewController {
                 tableView = selectContact.tableView
+                username = selectContact.username
             } else {
                 if #available(iOS 13.0, *) {
                     if let historyVC = self as? HistoryVC {
                         tableView = historyVC.tableView
+                        username = historyVC.username
                     }
                 } 
             }
             if let tableView = tableView {
-                makeBlurViewForViewController(self, blurView: &blurView, needAnimation: needAnimation, addToThisView: tableView)
+                makeBlurViewForViewController(self, blurView: &blurView, needAnimation: needAnimation, addToThisView: tableView, username: username)
             } else {
-                makeBlurViewForViewController(self, blurView: &blurView, needAnimation: needAnimation)
+                makeBlurViewForViewController(self, blurView: &blurView, needAnimation: needAnimation, username: username)
             }
         } else {
             recoverVC(self, blurView: &blurView)
@@ -106,10 +117,12 @@ class DogeChatViewController: UIViewController, UIPopoverPresentationControllerD
 
 }
 
-func makeBlurViewForViewController(_ vc: UIViewController, blurView: inout UIImageView!, needAnimation: Bool = true, addToThisView: UIView? = nil) {
+func makeBlurViewForViewController(_ vc: UIViewController, blurView: inout UIImageView!, needAnimation: Bool = true, addToThisView: UIView? = nil, username: String? = nil) {
     var targetImage: UIImage?
     if UserDefaults.standard.bool(forKey: "immersive") && PlayerManager.shared.nowAlbumImage != nil && PlayerManager.shared.isPlaying {
         targetImage = PlayerManager.shared.nowAlbumImage
+    } else if let username = username, let userID = userIDFor(username: username), let url = fileURLAt(dirName: "customBlur", fileName: userID) {
+        targetImage = UIImage(data: try! Data(contentsOf: url))
     } else if fileURLAt(dirName: "customBlur", fileName: userID) != nil && PlayerManager.shared.customImage != nil {
         targetImage = PlayerManager.shared.customImage
     }

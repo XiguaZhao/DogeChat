@@ -11,26 +11,6 @@ import DogeChatNetwork
 import SwiftyJSON
 import DogeChatUniversal
 
-var safeArea: UIEdgeInsets {
-    UIApplication.shared.keyWindow!.safeAreaInsets
-}
-
-func isLandscape() -> Bool {
-    return UIDevice.current.orientation == .landscapeLeft || UIDevice.current.orientation == .landscapeRight
-}
-
-func isPad() -> Bool {
-    return UIDevice.current.userInterfaceIdiom == .pad
-}
-
-func isPhone() -> Bool {
-    return UIDevice.current.userInterfaceIdiom == .phone
-}
-
-func isMac() -> Bool {
-    return !AppDelegate.shared.isIOS
-}
-
 class WebSocketManagerAdapter: NSObject {
     
     var username = ""
@@ -46,6 +26,14 @@ class WebSocketManagerAdapter: NSObject {
                 AppDelegate.shared.navigationController.present(VideoChatViewController(), animated: true, completion: nil)
                 #endif
             }
+        }
+    }
+    
+    var navigationController: UINavigationController? {
+        if #available(iOS 13, *) {
+            return (sceneDelegate as? SceneDelegate)?.navigationController
+        } else {
+            return AppDelegate.shared.navigationController
         }
     }
     
@@ -66,20 +54,19 @@ class WebSocketManagerAdapter: NSObject {
     }
     
     func registerNotification() {
-        NotificationCenter.default.addObserver(self, selector: #selector(emojiPathsFetched(noti:)), name: .emojiPathsFetched, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(sendToken(noti:)), name: .sendToken, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(startCall(noti:)), name: .startCall, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(preloadEmojiPaths(noti:)), name: .preloadEmojiPaths, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(receiveUnreadMessage(_:)), name: .receiveUnreadMessage, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(playSound(_:)), name: .playSound, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(voiceChatAccept(noti:)), name: .voiceChatAccept, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(endVoiceChat(_:)), name: .endVoiceChat, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(receiveRealTimeDrawData(noti:)), name: .receiveRealTimeDrawData, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(receiveDrawMessageUpdate(_:)), name: .drawMessageUpdate, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(emojiPathsFetched(noti:)), name: .emojiPathsFetched, object: username)
+        NotificationCenter.default.addObserver(self, selector: #selector(sendToken(noti:)), name: .sendToken, object: username)
+        NotificationCenter.default.addObserver(self, selector: #selector(startCall(noti:)), name: .startCall, object: username)
+        NotificationCenter.default.addObserver(self, selector: #selector(preloadEmojiPaths(noti:)), name: .preloadEmojiPaths, object: username)
+        NotificationCenter.default.addObserver(self, selector: #selector(receiveUnreadMessage(_:)), name: .receiveUnreadMessage, object: username)
+        NotificationCenter.default.addObserver(self, selector: #selector(playSound(_:)), name: .playSound, object: username)
+        NotificationCenter.default.addObserver(self, selector: #selector(voiceChatAccept(noti:)), name: .voiceChatAccept, object: username)
+        NotificationCenter.default.addObserver(self, selector: #selector(endVoiceChat(_:)), name: .endVoiceChat, object: username)
+        NotificationCenter.default.addObserver(self, selector: #selector(receiveRealTimeDrawData(noti:)), name: .receiveRealTimeDrawData, object: username)
+        NotificationCenter.default.addObserver(self, selector: #selector(receiveDrawMessageUpdate(_:)), name: .drawMessageUpdate, object: username)
     }
     
     @objc public func playSound(_ noti: Notification) {
-        guard (noti.object as? String) == username else { return }
         var needSound = true
         if let mute = noti.userInfo?["mute"] as? Bool, mute == true {
             needSound = false
@@ -96,7 +83,6 @@ class WebSocketManagerAdapter: NSObject {
     }
     
     @objc func emojiPathsFetched(noti: Notification) {
-        guard (noti.object as? String) == username else { return }
         let userInfo = noti.userInfo!
         let id = userInfo["id"] as! String
         let path = userInfo["path"] as! String
@@ -104,13 +90,11 @@ class WebSocketManagerAdapter: NSObject {
     }
     
     @objc func sendToken(noti: Notification) {
-        guard (noti.object as? String) == username else { return }
         manager.sendToken((UIApplication.shared.delegate as! AppDelegate).deviceToken)
         manager.sendVoipToken(AppDelegate.shared.pushKitToken)
     }
     
     @objc func startCall(noti: Notification) {
-        guard (noti.object as? String) == username else { return }
         let userInfo = noti.userInfo!
         let name = userInfo["name"] as! String
         let uuid = userInfo["uuid"] as! String
@@ -118,7 +102,6 @@ class WebSocketManagerAdapter: NSObject {
     }
     
     @objc func preloadEmojiPaths(noti: Notification) {
-        guard (noti.object as? String) == username else { return }
         if !AppDelegate.shared.launchedByPushAction {
             manager.getEmojis { [weak self] (paths) in
                 self?.manager.messageManager.emojiPaths = paths
@@ -133,21 +116,12 @@ class WebSocketManagerAdapter: NSObject {
         }
         Recorder.sharedInstance().receivedData?.append(data)
     }
-    
-    func navigationController() -> UINavigationController? {
-        if #available(iOS 13.0, *) {
-            return (self.sceneDelegate as? SceneDelegate)?.navigationController
-        } else {
-            return AppDelegate.shared.navigationController
-        }
-    }
-    
+        
     @objc func receiveUnreadMessage(_ noti: Notification) {
-        guard (noti.object as? String) == username else { return }
         let userInfo = noti.userInfo!
         let newMessages = userInfo["messages"] as! [Message]
         let isPublic = userInfo["isPublic"] as! Bool
-        if let chatVC = navigationController()?.topViewController as? ChatRoomViewController { // 当前在聊天页面
+        if let chatVC = navigationController?.topViewController as? ChatRoomViewController { // 当前在聊天页面
             let vcTitle = chatVC.navigationItem.title
             if isPublic && vcTitle == "群聊" { // 是群聊直接插入
                 chatVC.insertNewMessageCell(newMessages)
@@ -172,13 +146,11 @@ class WebSocketManagerAdapter: NSObject {
     }
     
     @objc func voiceChatAccept(noti: Notification) {
-        guard (noti.object as? String) == username else { return }
         Recorder.sharedInstance().delegate = self
         Recorder.sharedInstance().startRecordAndPlay()
     }
     
     @objc func endVoiceChat(_ noti: Notification) {
-        guard (noti.object as? String) == username else { return }
         let userinfo = noti.userInfo!
         let uuid = userinfo["uuid"] as! String
         Recorder.sharedInstance().stopRecordAndPlay()
@@ -193,10 +165,9 @@ class WebSocketManagerAdapter: NSObject {
     }
     
     @objc func receiveDrawMessageUpdate(_ noti: Notification) {
-        guard (noti.object as? String) == username else { return }
         guard let message = noti.userInfo?["message"] as? Message else { return }
         message.cellHeight = 0
-        if let chatRoomVC = AppDelegate.shared.navigationController.topViewController as? ChatRoomViewController {
+        if let chatRoomVC = navigationController?.topViewController as? ChatRoomViewController {
             if let index = chatRoomVC.messages.firstIndex(of: message) {
                 DispatchQueue.main.async {
                     chatRoomVC.tableView.reloadRows(at: [IndexPath(item: index, section: 0)], with: .none)
@@ -216,12 +187,11 @@ class WebSocketManagerAdapter: NSObject {
     }
     
     @objc func receiveRealTimeDrawData(noti: Notification) {
-        guard (noti.object as? String) == username else { return }
-        guard let json = noti.userInfo?["josn"] as? JSON else { return }
+        guard let json = noti.userInfo?["json"] as? JSON else { return }
         let uuid = json["uuid"].stringValue
         let _ = json["sender"].stringValue
         if #available(iOS 14.0, *) {
-            guard let targetMessage = WebSocketManager.shared.messageManager.drawMessages.first(where: { $0.uuid == uuid} ) else { return }
+            guard let targetMessage = manager.messageManager.drawMessages.first(where: { $0.uuid == uuid} ) else { return }
             if let base64Str = json["base64Str"].string {
                 guard let strokeData = Data(base64Encoded: base64Str) else { return }
                 if let newStroke = (try? PKDrawing(data: strokeData))?.transformed(using: CGAffineTransform(scaleX: targetMessage.drawScale, y: targetMessage.drawScale)) {

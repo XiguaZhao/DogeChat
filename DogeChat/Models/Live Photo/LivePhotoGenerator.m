@@ -20,11 +20,11 @@
 
 @implementation LivePhotoGenerator
 
-- (void)generateForLivePhoto:(PHLivePhoto *)livePhoto completion:(nonnull void (^)(PHLivePhoto * _Nonnull))completion {
+- (void)generateForLivePhoto:(PHLivePhoto *)livePhoto windowWidth:(CGFloat)windowWidth completion:(nonnull void (^)(PHLivePhoto * _Nonnull))completion {
     NSString *uuid = [[NSUUID new] UUIDString];
     NSURL *imageURL = [livePhoto performSelector:@selector(imageURL)];
     NSURL *videoURL = [livePhoto performSelector:@selector(videoURL)];
-    NSData *imageData = [self generateStillImageURL:imageURL uuid:uuid];
+    NSData *imageData = [self generateStillImageURL:imageURL uuid:uuid windowWidth:windowWidth];
     NSString *tempUUID = [[NSUUID new] UUIDString];
     NSString *tempVideoFilePath = PATH_TEMP_FILE([tempUUID stringByAppendingString:@".mov"]);
     NSString *imagePath = PATH_IMAGE_FILE([uuid stringByAppendingString:@".jpeg"]);
@@ -43,9 +43,9 @@
     }];
 }
 
-- (NSData *)generateStillImageURL:(NSURL *)imageURL uuid:(NSString *)uuid {
+- (NSData *)generateStillImageURL:(NSURL *)imageURL uuid:(NSString *)uuid windowWidth:(CGFloat)windowWidth {
     UIImage *image = [[UIImage alloc] initWithData:[NSData dataWithContentsOfURL:imageURL]];
-    CGFloat screenWidth = [[AppDelegate shared] widthForSide:SplitVCSideRight] * 0.5;
+    CGFloat screenWidth = windowWidth * 0.5;
     if (image.size.width / UIScreen.mainScreen.scale < screenWidth) {
         screenWidth = image.size.width / UIScreen.mainScreen.scale;
     }

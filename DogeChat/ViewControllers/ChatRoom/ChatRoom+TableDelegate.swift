@@ -72,7 +72,7 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return MessageCollectionViewBaseCell.height(for: messages[indexPath.item])
+        return MessageCollectionViewBaseCell.height(for: messages[indexPath.item], username: username)
     }
 
                 
@@ -92,6 +92,7 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
             handler(true)
             self.activeSwipeIndexPath = indexPath
             let contactVC = SelectContactsViewController()
+            contactVC.username = self.username
             contactVC.dataSourcea = self.contactVC
             contactVC.modalPresentationStyle = .formSheet
             contactVC.delegate = self
@@ -215,6 +216,7 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
         
     @objc func didFinishMultiSelection(_ button: UIBarButtonItem) {
         let selectContactsVC = SelectContactsViewController()
+        selectContactsVC.username = username
         selectContactsVC.delegate = self
         selectContactsVC.dataSourcea = self.contactVC
         selectContactsVC.modalPresentationStyle = .popover

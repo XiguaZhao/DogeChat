@@ -18,6 +18,7 @@ class SelectContactsViewController: DogeChatViewController, UITableViewDataSourc
     var contacts: [String] {
         dataSourcea?.usernames ?? []
     }
+    var username = ""
     weak var dataSourcea: ContactDataSource?
     let tableView = DogeChatTableView()
     let toolBar = UIToolbar()

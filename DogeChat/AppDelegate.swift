@@ -31,6 +31,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var launchedByPushAction = false
     let notificationManager = NotificationManager.shared
     let socketManager = WebSocketManager.shared
+    var username = ""
     var navigationController: UINavigationController!
     var tabBarController: UITabBarController!
     var splitViewController: UISplitViewController!
@@ -64,18 +65,23 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         if UserDefaults.standard.value(forKey: "forceDarkMode") == nil {
             UserDefaults.standard.setValue(true, forKey: "forceDarkMode")
         }
-        splitViewController = UIStoryboard(name: "main", bundle: .main).instantiateInitialViewController() as? UISplitViewController
-        splitViewController.delegate = splitVCDelegate
-        splitViewController.preferredDisplayMode = .allVisible
-        tabBarController = splitViewController.viewControllers[0] as? UITabBarController
-        tabBarController.viewControllers?.remove(at: 1)
-        window?.rootViewController = splitViewController
-        splitViewController.preferredPrimaryColumnWidthFraction = 0.35
-        splitViewController.view.backgroundColor = .clear
-        window?.makeKeyAndVisible()
-        pushWindow = FloatWindow(type: .push, alwayDisplayType: .shouldDismiss, delegate: self)
-        callWindow = FloatWindow(type: .alwaysDisplay, alwayDisplayType: .shouldDismiss, delegate: self)
-        switcherWindow = FloatWindow(type: .alwaysDisplay, alwayDisplayType: .shouldNotDimiss, delegate: self)
+        if #available(iOS 13, *) {} else {
+            window?.rootViewController = UIStoryboard(name: "main", bundle: .main).instantiateInitialViewController() as? UISplitViewController
+            splitViewController = window?.rootViewController as? UISplitViewController
+            splitViewController.delegate = splitVCDelegate
+            splitViewController.preferredDisplayMode = .allVisible
+            tabBarController = splitViewController.viewControllers[0] as? UITabBarController
+            window?.rootViewController = splitViewController
+            splitViewController.preferredPrimaryColumnWidthFraction = 0.35
+            splitViewController.view.backgroundColor = .clear
+            window?.makeKeyAndVisible()
+            pushWindow = FloatWindow(type: .push, alwayDisplayType: .shouldDismiss, delegate: self)
+            callWindow = FloatWindow(type: .alwaysDisplay, alwayDisplayType: .shouldDismiss, delegate: self)
+            switcherWindow = FloatWindow(type: .alwaysDisplay, alwayDisplayType: .shouldNotDimiss, delegate: self)
+        }
+        if #available(iOS 14, *) {} else {
+            tabBarController.viewControllers![1].tabBarItem.image = UIImage(named: "music")
+        }
         
         providerDelegate = ProviderDelegate(callManager: callManager)
         socketManager.messageManager.encrypt = EncryptMessage()
@@ -108,24 +114,29 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         if UserDefaults.standard.value(forKey: "immersive") == nil {
             UserDefaults.standard.setValue(true, forKey: "immersive")
         }
-        setupReachability()
+        if #available(iOS 13, *) {} else {
+            setupReachability()
+        }
         return true
     }
     
     func setupReachability() {
-//        reachability.whenReachable = { reach in
-//            if !isLogin {
-//                WebSocketManager.shared.messageManager.login(username: myName, password: myPassWord) { res in
-//                    if res == "登录成功", let contactVC = self.getContactVC() {
-//                        contactVC.refreshContacts {
-//                            WebSocketManager.shared.connect()
-//                        }
-//                    }
-//                }
-//            } else {
-//                WebSocketManager.shared.connect()
-//            }
-//        }
+        reachability.whenReachable = { reach in
+            if !WebSocketManager.shared.messageManager.isLogin {
+                if let username = UserDefaults.standard.value(forKey: "lastUsername") as? String,
+                   let password = UserDefaults.standard.value(forKey: "lastPassword") as? String {
+                    WebSocketManager.shared.messageManager.login(username: username, password: password) { res in
+                        if res == "登录成功", let contactVC = self.getContactVC() {
+                            contactVC.refreshContacts {
+                                WebSocketManager.shared.connect()
+                            }
+                        }
+                    }
+                }
+            } else {
+                WebSocketManager.shared.connect()
+            }
+        }
     }
     
     @available(iOS 13.0, *)
@@ -159,10 +170,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
     }
     
-    private func sizeFor(side: SplitVCSide) -> CGSize {
+    private func sizeFor(side: SplitVCSide, username: String?) -> CGSize {
         let splitViewController: UISplitViewController
         if #available(iOS 13.0, *) {
-            splitViewController = ((UIApplication.shared.windows.filter({ $0.isKeyWindow }).first?.windowScene?.delegate as? SceneDelegate)?.splitVC)!
+            splitViewController = (SceneDelegate.usernameToDelegate[username!]?.splitVC)!
         } else {
             splitViewController = self.splitViewController
         }
@@ -180,12 +191,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
     }
     
-    @objc func widthFor(side: SplitVCSide) -> CGFloat {
-        return sizeFor(side: side).width
+    @objc func widthFor(side: SplitVCSide, username: String?) -> CGFloat {
+        return sizeFor(side: side, username: username).width
     }
     
-    @objc func heightFor(side: SplitVCSide) -> CGFloat {
-        return sizeFor(side: side).height
+    @objc func heightFor(side: SplitVCSide, username: String?) -> CGFloat {
+        return sizeFor(side: side, username: username).height
     }
     
     func login() {
@@ -207,6 +218,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 guard loginResult == "登录成功" else {
                     return
                 }
+                self.username = username
                 contactVC.loginSuccess = true
                 WebSocketManagerAdapter.shared.username = username
                 WebSocketManagerAdapter.shared.manager = WebSocketManager.shared

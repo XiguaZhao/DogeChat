@@ -8,6 +8,7 @@
 
 import UIKit
 import DogeChatNetwork
+import DogeChatUniversal
 
 enum SettingType {
     case shortcut
@@ -29,6 +30,7 @@ class SettingViewController: DogeChatViewController, DatePickerChangeDelegate, U
     let settingTypes: [SettingType] = [.shortcut, .forceDarkMode, .switchImmersive, .customBlur, .doNotDisturb, .selectHost, .wsAddress, .resetHostAndWs, .logout]
     let tableView = DogeChatTableView()
     var customBlurSwitcher: UISwitch!
+    var username = ""
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -54,12 +56,20 @@ class SettingViewController: DogeChatViewController, DatePickerChangeDelegate, U
     }
 
     @objc func logout() {
-        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
-        WebSocketManager.shared.disconnect()
-        self.tabBarController?.selectedIndex = 0
-        if let contactVCNav = appDelegate.contactVC?.navigationController {
-            contactVCNav.setViewControllers([JoinChatViewController()], animated: true)
+        if #available(iOS 13, *) {
+            if let sceneDelegate = self.view.window?.windowScene?.delegate as? SceneDelegate {
+                if let contactVCNav = sceneDelegate.contactVC?.navigationController {
+                    contactVCNav.setViewControllers([JoinChatViewController()], animated: true)
+                }
+            }
+        } else {
+            guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
+            WebSocketManager.shared.disconnect()
+            if let contactVCNav = appDelegate.contactVC?.navigationController {
+                contactVCNav.setViewControllers([JoinChatViewController()], animated: true)
+            }
         }
+        self.tabBarController?.selectedIndex = 0
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -172,12 +182,14 @@ class SettingViewController: DogeChatViewController, DatePickerChangeDelegate, U
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         guard let image = info[.originalImage] as? UIImage else { return }
         let compress = WebSocketManager.shared.messageManager.compressEmojis(image, needBig: false, askedSize: CGSize(width: 400, height: 400))
-        saveFileToDisk(dirName: "customBlur", fileName: userID, data: compress)
+        if let userID = userIDFor(username: username) {
+            saveFileToDisk(dirName: "customBlur", fileName: userID, data: compress)
+            customBlurSwitcher.isOn = fileURLAt(dirName: "customBlur", fileName: userID) != nil
+        }
         PlayerManager.shared.blurSource = .customBlur
         PlayerManager.shared.customImage = image
         picker.modalPresentationStyle = .fullScreen
         picker.dismiss(animated: true, completion: nil)
-        customBlurSwitcher.isOn = fileURLAt(dirName: "customBlur", fileName: userID) != nil
     }
     
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {

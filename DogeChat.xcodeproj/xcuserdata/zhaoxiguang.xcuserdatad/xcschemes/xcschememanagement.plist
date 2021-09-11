@@ -46,11 +46,15 @@
 		</dict>
 		<key>DogeChatWatch 1.xcscheme_^#shared#^_</key>
 		<dict>
+			<key>isShown</key>
+			<false/>
 			<key>orderHint</key>
 			<integer>8</integer>
 		</dict>
 		<key>DogeChatWatch Extension.xcscheme_^#shared#^_</key>
 		<dict>
+			<key>isShown</key>
+			<false/>
 			<key>orderHint</key>
 			<integer>7</integer>
 		</dict>

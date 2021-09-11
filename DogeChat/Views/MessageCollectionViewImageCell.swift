@@ -218,8 +218,9 @@ class MessageCollectionViewImageCell: MessageCollectionViewBaseCell, PHLivePhoto
             }
         }
         let size = MessageCollectionViewBaseCell.sizeForImageOrVideo(message)
-        let livePhotoLoadBlock: (URL, URL, Bool) -> Void = { localImageURL, localVideoURL, playNow in
-            let width = AppDelegate.shared.widthFor(side: .right) * 0.5
+        let livePhotoLoadBlock: (URL, URL, Bool) -> Void = { [weak self] localImageURL, localVideoURL, playNow in
+            guard let self = self else { return }
+            let width = AppDelegate.shared.widthFor(side: .right, username: self.username) * 0.5
             DispatchQueue.global().async {
                 PHLivePhoto.request(withResourceFileURLs: [
                                         localImageURL, localVideoURL]
@@ -262,7 +263,7 @@ class MessageCollectionViewImageCell: MessageCollectionViewBaseCell, PHLivePhoto
                     guard let data = data as? Data else { return }
                     print("liveImageDone")
                     saveFileToDisk(dirName: livePhotoDir, fileName: imageName, data: data)
-                    session.get(videoURL.absoluteString, parameters: nil, headers: ["Cookie": "SESSION="+self.cookie], progress: { [weak self] progress in
+                    self.session.get(videoURL.absoluteString, parameters: nil, headers: ["Cookie": "SESSION="+self.cookie], progress: { [weak self] progress in
                         self?.delegate?.downloadProgressUpdate(progress: progress, message: capturedMessage!)
                     }, success: { task, videoData in
                         completion(task, videoData)
@@ -318,7 +319,7 @@ class MessageCollectionViewImageCell: MessageCollectionViewBaseCell, PHLivePhoto
             animatedImageView.frame = CGRect(x: 0, y: 0, width: 120, height: 120)
             return
         }
-        let maxSize = CGSize(width: 2*(AppDelegate.shared.widthFor(side: .right)/3), height: CGFloat.greatestFiniteMagnitude)
+        let maxSize = CGSize(width: 2*(AppDelegate.shared.widthFor(side: .right, username: username)/3), height: CGFloat.greatestFiniteMagnitude)
         let nameHeight = message.messageSender == .ourself ? 0 : (MessageCollectionViewBaseCell.height(forText: message.senderUsername, fontSize: 10, maxSize: maxSize) + 4 )
         let height = contentView.bounds.height - 30 - nameHeight
         let width = message.imageSize.width * height / message.imageSize.height
@@ -335,7 +336,7 @@ class MessageCollectionViewImageCell: MessageCollectionViewBaseCell, PHLivePhoto
         }
         if imageUrl.hasPrefix("file://") {
             DispatchQueue.global().async {
-                if let imageUrl = WebSocketManager.shared.messageManager.imageDict[self.message.uuid] as? URL{
+                if let imageUrl = socketForUsername(self.username).messageManager.imageDict[self.message.uuid] as? URL{
                     guard let data = try? Data(contentsOf: imageUrl) else { return }
                     self.cache.setObject(data as NSData, forKey: self.message.imageURL! as NSString)
                     DispatchQueue.main.async {

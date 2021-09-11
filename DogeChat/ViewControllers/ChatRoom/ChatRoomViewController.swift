@@ -5,12 +5,6 @@ import DogeChatNetwork
 import DogeChatUniversal
 import PhotosUI
 
-func playHaptic(_ intensity: CGFloat = 1) {
-    if #available(iOS 13.0, *) {
-        HapticManager.shared.playHapticTransient(time: 0, intensity: Float(intensity), sharpness: 1)
-    }
-}
-
 class ChatRoomViewController: DogeChatViewController {
     
     static let numberOfHistory = 10
@@ -247,7 +241,7 @@ extension ChatRoomViewController: PKViewChangedDelegate {
         guard message.needRealTimeDraw else { return }
         let data = PKDrawing(strokes: [newStroke]).dataRepresentation()
         let base64String = data.base64EncodedString()
-        WebSocketManager.shared.sendRealTimeDrawData(base64String, sender: username, receiver: friendName, uuid: message.uuid)
+        manager.sendRealTimeDrawData(base64String, sender: username, receiver: friendName, uuid: message.uuid)
     }
     
     func pkView(_ pkView: PKCanvasView, message: Any?, deleteStrokesIndex: [NSNumber]) {
@@ -255,7 +249,7 @@ extension ChatRoomViewController: PKViewChangedDelegate {
         guard let message = message as? Message else { return }
         if message.needRealTimeDraw {
             let indexes = deleteStrokesIndex.map { $0.intValue }
-            WebSocketManager.shared.sendRealTimeDrawData(indexes, sender: username, receiver: friendName, uuid: message.uuid)
+            manager.sendRealTimeDrawData(indexes, sender: username, receiver: friendName, uuid: message.uuid)
         }
     }
     
@@ -282,17 +276,17 @@ extension ChatRoomViewController: PKViewChangedDelegate {
             let width = Int(bounds.size.width)
             let height = Int(bounds.size.height)
             message.drawBounds = bounds
-            WebSocketManager.shared.uploadData(drawData, path: "message/uploadImg", name: "upload", fileName: "+\(x)+\(y)+\(width)+\(height)", needCookie: false, contentType: "application/octet-stream", params: nil) { [weak self] task, data in
-                guard let _ = self, let data = data else { return }
+            manager.uploadData(drawData, path: "message/uploadImg", name: "upload", fileName: "+\(x)+\(y)+\(width)+\(height)", needCookie: true, contentType: "application/octet-stream", params: nil) { [weak self] task, data in
+                guard let self = self, let data = data else { return }
                 let json = JSON(data)
                 guard json["status"].stringValue == "success" else {
                     print("上传失败")
                     return
                 }
-                let filePath = WebSocketManager.shared.messageManager.encrypt.decryptMessage(json["filePath"].stringValue)
+                let filePath = self.manager.messageManager.encrypt.decryptMessage(json["filePath"].stringValue)
                 message.pkDataURL = filePath
                 message.message = message.pkDataURL ?? ""
-                WebSocketManager.shared.sendDrawMessage(message)
+                self.manager.sendDrawMessage(message)
                 DispatchQueue.global().async {
                     let newURL = dir.appendingPathComponent(filePath.components(separatedBy: "/").last!)
                     try? FileManager.default.moveItem(at: originalURL, to: newURL)

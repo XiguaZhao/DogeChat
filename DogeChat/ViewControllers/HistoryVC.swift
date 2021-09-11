@@ -133,6 +133,7 @@ class HistoryVC: DogeChatViewController {
             cell.cache = self?.cache
             cell.isHistory = true
             cell.delegate = self
+            cell.username = self!.username
             cell.apply(message: message)
             return cell
         }
@@ -181,7 +182,7 @@ class HistoryVC: DogeChatViewController {
     
     
     func requestPage(_ page: Int) {
-        WebSocketManager.shared.historyMessages(for: option == .toAll ? "chatRoom" : name, pageNum: page)
+        socketForUsername(username).historyMessages(for: option == .toAll ? "chatRoom" : name, pageNum: page)
     }
     
     @objc func refreshFooterAction() {
@@ -253,7 +254,7 @@ extension HistoryVC: UITableViewDelegate, MessageTableViewCellDelegate {
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         guard indexPath.row < messages.count else { return 0 }
-        return MessageCollectionViewBaseCell.height(for: messages[indexPath.row])
+        return MessageCollectionViewBaseCell.height(for: messages[indexPath.row], username: username)
     }
     
     func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {

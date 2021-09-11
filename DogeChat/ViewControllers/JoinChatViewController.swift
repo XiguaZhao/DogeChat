@@ -123,27 +123,39 @@ extension JoinChatViewController: UITextFieldDelegate {
             return
         }
         let manager: WebSocketManager
+        let adapter: WebSocketManagerAdapter
         if #available(iOS 13.0, *) {
             let socketManager = WebSocketManager()
-            let adapter = WebSocketManagerAdapter(manager: socketManager, username: username)
-            WebSocketManager.shared.usersToSocketManager[username] = socketManager
-            WebSocketManagerAdapter.shared.usernameToAdapter[username] = adapter
+            adapter = WebSocketManagerAdapter(manager: socketManager, username: username)
             manager = socketManager
             socketManager.messageManager.encrypt = EncryptMessage()
         } else {
             WebSocketManagerAdapter.shared.username = username
             WebSocketManagerAdapter.shared.manager = WebSocketManager.shared
             manager = WebSocketManager.shared
+            adapter = WebSocketManagerAdapter.shared
         }
         manager.messageManager.myName = username
-        manager.messageManager.login(username: username, password: password) { loginResult in
+        manager.messageManager.login(username: username, password: password) { [weak self] loginResult in
             if loginResult == "登录成功" {
                 let contactsTVC = ContactsTableViewController()
+                if #available(iOS 13, *) {
+                    SceneDelegate.usernameToDelegate[username] = (self?.view.window?.windowScene?.delegate as? SceneDelegate)
+                    WebSocketManager.shared.usersToSocketManager[username] = manager
+                    WebSocketManagerAdapter.shared.usernameToAdapter[username] = adapter
+                    ((((self?.view.window?.windowScene?.delegate as? SceneDelegate)?.tabbarController.viewControllers?[1] as? UINavigationController))?.viewControllers.first as? PlayListViewController)?.username = username
+                    ((((self?.view.window?.windowScene?.delegate as? SceneDelegate)?.tabbarController.viewControllers?[2] as? UINavigationController))?.viewControllers.first as? SettingViewController)?.username = username
+                    (self?.view.window?.windowScene?.delegate as? SceneDelegate)?.socketManager = manager
+                    (self?.view.window?.windowScene?.delegate as? SceneDelegate)?.socketAdapter = adapter
+                    (self?.view.window?.windowScene?.delegate as? SceneDelegate)?.setUsernameAndPassword(username, password)
+                    (self?.view.window?.windowScene?.delegate as? SceneDelegate)?.contactVC = contactsTVC
+                }
+                AppDelegate.shared.username = username
                 AppDelegate.shared.contactVC = contactsTVC
                 contactsTVC.username = username
                 contactsTVC.password = password
                 contactsTVC.navigationItem.title = username
-                self.navigationController?.setViewControllers([contactsTVC], animated: true)
+                self?.navigationController?.setViewControllers([contactsTVC], animated: true)
                 contactsTVC.refreshContacts {
                     socketForUsername(username).connect()
                 }
@@ -155,7 +167,7 @@ extension JoinChatViewController: UITextFieldDelegate {
             } else {
                 let alert = UIAlertController(title: loginResult, message: "请重新检查输入", preferredStyle: .alert)
                 alert.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
-                self.present(alert, animated: true)
+                self?.present(alert, animated: true)
             }
         }
     }

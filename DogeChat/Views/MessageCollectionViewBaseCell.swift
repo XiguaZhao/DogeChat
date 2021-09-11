@@ -31,6 +31,12 @@ class MessageCollectionViewBaseCell: DogeChatTableViewCell {
     var cookie: String {
         socketForUsername(username).cookie
     }
+    var manager: WebSocketManager {
+        return socketForUsername(username)
+    }
+    var session: AFHTTPSessionManager {
+        return manager.messageManager.session
+    }
     weak var delegate: MessageTableViewCellDelegate?
     var message: Message!
     var indexPath: IndexPath!
@@ -206,7 +212,7 @@ class MessageCollectionViewBaseCell: DogeChatTableViewCell {
             }
         }
         if message.messageSender == .ourself {
-            let url = socketForUsername(username).messageManager.myAvatarUrl
+            let url = manager.messageManager.myAvatarUrl
             block(url)
         } else if message.option == .toOne {
             if let index = contactDataSource?.userInfos.firstIndex(where: { $0.name == message.senderUsername }),
@@ -260,13 +266,13 @@ class MessageCollectionViewBaseCell: DogeChatTableViewCell {
     
     
     // 计算高度
-    class func height(for message: Message) -> CGFloat {
-        let maxSize = CGSize(width: 2*(AppDelegate.shared.widthFor(side: .right)/3), height: CGFloat.greatestFiniteMagnitude)
+    class func height(for message: Message, username: String) -> CGFloat {
+        let maxSize = CGSize(width: 2*(AppDelegate.shared.widthFor(side: .right, username: username)/3), height: CGFloat.greatestFiniteMagnitude)
         let nameHeight = message.messageSender == .ourself ? 0 : (height(forText: message.senderUsername, fontSize: 10, maxSize: maxSize) + 4 )
         let messageHeight = height(forText: message.message, fontSize: message.fontSize, maxSize: maxSize)
         var height: CGFloat
-        let screenWidth = AppDelegate.shared.widthFor(side: .right)
-        let screenHeight = AppDelegate.shared.heightFor(side: .right)
+        let screenWidth = AppDelegate.shared.widthFor(side: .right, username: username)
+        let screenHeight = AppDelegate.shared.heightFor(side: .right, username: username)
         switch message.messageType {
         case .join, .text, .voice:
             height = nameHeight + messageHeight + 32 + 16
@@ -517,7 +523,7 @@ extension MessageCollectionViewBaseCell {
             if let (_emojiInfo, _, _) = getIndex(for: ges),
                let emojiInfo = _emojiInfo {
                 guard let copy = emojiInfo.copy() as? EmojiInfo else { return }
-                emojiInfo.x = point.x / AppDelegate.shared.widthFor(side: .right)
+                emojiInfo.x = point.x / AppDelegate.shared.widthFor(side: .right, username: username)
                 emojiInfo.y = point.y / contentSize.height
                 delegate?.emojiInfoDidChange(from: copy, to: emojiInfo, cell: self)
             }

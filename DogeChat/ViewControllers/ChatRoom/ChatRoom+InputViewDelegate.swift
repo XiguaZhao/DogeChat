@@ -59,6 +59,7 @@ extension ChatRoomViewController: MessageInputDelegate, VoiceRecordDelegate {
         case .draw:
             if #available(iOS 14, *) {
                 let drawVC = DrawViewController()
+                drawVC.username = username
                 drawVC.pkViewDelegate.dataChangedDelegate = self
                 let newMessage = Message(message: "", messageSender: .ourself, receiver: self.friendName, uuid: UUID().uuidString, sender: self.username, messageType: .draw, option: self.messageOption)
                 drawVC.message = newMessage
@@ -165,7 +166,7 @@ extension ChatRoomViewController: MessageInputDelegate, VoiceRecordDelegate {
                     result.itemProvider.loadObject(ofClass: PHLivePhoto.self) {[self] livePhoto, error in
                         if let live = livePhoto as? PHLivePhoto {
                             alert.title = "正在压缩" + "0/\(results.count)"
-                            LivePhotoGenerator().generate(for: live) { livePhoto in
+                            LivePhotoGenerator().generate(for: live, windowWidth: AppDelegate.shared.widthFor(side: .right, username: self.username)) { livePhoto in
                                 let sel = Selector(("imageURL"))
                                 let imageURL = livePhoto.perform(sel).takeUnretainedValue() as! URL
                                 let videoURL = livePhoto.perform(Selector(("videoURL"))).takeUnretainedValue() as! URL

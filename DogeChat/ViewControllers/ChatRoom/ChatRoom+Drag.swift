@@ -13,7 +13,7 @@ extension ChatRoomViewController: UITableViewDragDelegate {
     
     func tableView(_ tableView: UITableView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
         let message = messages[indexPath.row]
-        guard message.messageType == .image || message.messageType == .text else { return [] }
+        guard message.messageType == .image || message.messageType == .text || message.messageType == .draw else { return [] }
         var items = [UIDragItem]()
         if message.messageType == .text {
             let str = message.message as NSString
@@ -30,6 +30,16 @@ extension ChatRoomViewController: UITableViewDragDelegate {
                let image = SDImageCache.shared.imageFromCache(forKey: key) {
                 let item = UIDragItem(itemProvider: NSItemProvider(object: image))
                 items.append(item)
+            }
+        } else if message.messageType == .draw {
+            if #available(iOS 13, *) {
+                if let url = fileURLAt(dirName: drawDir, fileName: (message.pkDataURL ?? "").components(separatedBy: "/").last ?? ""), let data = try? Data(contentsOf: url), let draw = try? PKDrawing(data: data) {
+                    #if !targetEnvironment(macCatalyst)
+                    let image = draw.image(from: draw.bounds, scale: 1)
+                    let item = UIDragItem(itemProvider: NSItemProvider(object: image))
+                    items.append(item)
+                    #endif
+                }
             }
         }
         items.forEach( { $0.localObject = "local" })

@@ -11,18 +11,6 @@ import SwiftyJSON
 import DogeChatNetwork
 import DogeChatUniversal
 
-var url_pre: String {
-    WebSocketManager.shared.url_pre
-}
-
-var session: AFHTTPSessionManager {
-    WebSocketManager.shared.messageManager.session
-}
-
-var isLogin: Bool {
-    WebSocketManager.shared.messageManager.isLogin
-}
-
 class ContactsTableViewController: DogeChatViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewDelegate, UITableViewDataSource {
     
     var unreadMessage = [String: Int]()
@@ -95,11 +83,12 @@ class ContactsTableViewController: DogeChatViewController, UIImagePickerControll
         }
         setupMyAvatar()
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            if let url = fileURLAt(dirName: "customBlur", fileName: userID),
-               let data = try? Data(contentsOf: url) {
-                PlayerManager.shared.blurSource = .customBlur
-                PlayerManager.shared.customImage = UIImage(data: data)
-            }
+//            if let url = fileURLAt(dirName: "customBlur", fileName: userID),
+//               let data = try? Data(contentsOf: url) {
+//                PlayerManager.shared.blurSource = .customBlur
+//                PlayerManager.shared.customImage = UIImage(data: data)
+//            }
+            NotificationCenter.default.post(name: .immersive, object: AppDelegate.shared.immersive)
         }
     }
     
@@ -112,7 +101,7 @@ class ContactsTableViewController: DogeChatViewController, UIImagePickerControll
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         manager.messageManager.messageDelegate = self
-        loadAllTracks()
+        loadAllTracks(username: username)
         miniPlayerView.processHidden(for: self)
         if #available(iOS 13.0, *) {
             let userActivity = NSUserActivity(activityType: "com.zhaoxiguang.dogechat")
@@ -196,6 +185,7 @@ class ContactsTableViewController: DogeChatViewController, UIImagePickerControll
         manager.messageManager.groupUUIDs.removeAll()
         manager.messageManager.singleUUIDs.removeAll()
         manager.disconnect()
+        removeSocketForUsername(username)
     }
     
     @objc func receiveNewMessage(notification: Notification) {
@@ -244,7 +234,7 @@ class ContactsTableViewController: DogeChatViewController, UIImagePickerControll
             content += "[语音]"
         }
         if !(navigationController?.visibleViewController is ContactsTableViewController) && isPhone() {
-            AppDelegate.shared.pushWindow.assignValueForPush(sender: name, content: content)
+//            AppDelegate.shared.pushWindow.assignValueForPush(sender: name, content: content)
         }
         if tableView.numberOfRows(inSection: 0) != 0 {
             tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
@@ -347,11 +337,19 @@ class ContactsTableViewController: DogeChatViewController, UIImagePickerControll
         if let splitVC = self.splitViewController, !splitVC.isCollapsed {
             let nav = DogeChatNavigationController(rootViewController: chatRoomVC)
             nav.modalPresentationStyle = .fullScreen
-            appDelegate.navigationController = nav
+            if #available(iOS 13, *) {
+                (view.window?.windowScene?.delegate as? SceneDelegate)?.navigationController = nav
+            } else {
+                appDelegate.navigationController = nav
+            }
             self.showDetailViewController(nav, sender: self)
         } else {
             self.navigationController?.setViewControllers([self, chatRoomVC], animated: true)
-            AppDelegate.shared.navigationController = self.navigationController
+            if #available(iOS 13, *) {
+                (view.window?.windowScene?.delegate as? SceneDelegate)?.navigationController = self.navigationController
+            } else {
+                AppDelegate.shared.navigationController = self.navigationController
+            }
         }
         unreadMessage[self.usernames[indexPath.row]] = 0
         let total = unreadMessage.values.reduce(0, +)

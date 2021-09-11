@@ -112,9 +112,6 @@ class PlayerManager: NSObject {
     
     func playTrack(_ track: Track, newestURL: URL? = nil) {
         track.playTime += 1
-        DispatchQueue.global().async {
-            saveTracksInfoToDisk()
-        }
         nowPlayingTrack = track
         var url: URL?
         if track.isDownloaded {

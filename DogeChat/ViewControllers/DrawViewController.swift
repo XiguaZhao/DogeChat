@@ -13,6 +13,7 @@ import DogeChatUniversal
 @available(iOS 14.0, *)
 class DrawViewController: UIViewController, PKViewAutoOffsetDelegate {
     
+    var username = ""
     var pkView = PKCanvasView()
     let pkViewDelegate = PKViewDelegate()
     var message: Message!
@@ -92,7 +93,7 @@ class DrawViewController: UIViewController, PKViewAutoOffsetDelegate {
         message.needRealTimeDraw = switcher.isOn
         if switcher.isOn && !didSendNeedRealTime {
             if let message = self.message {
-                WebSocketManager.shared.sendDrawMessage(message)
+                socketForUsername(username).sendDrawMessage(message)
             }
             didSendNeedRealTime = true
         }

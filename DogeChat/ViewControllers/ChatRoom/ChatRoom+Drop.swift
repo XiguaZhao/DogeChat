@@ -7,6 +7,7 @@
 //
 import DogeChatNetwork
 import DogeChatUniversal
+import PencilKit
 
 extension ChatRoomViewController: UITableViewDropDelegate {
     func tableView(_ tableView: UITableView, performDropWith coordinator: UITableViewDropCoordinator) {
@@ -49,7 +50,7 @@ extension ChatRoomViewController: UITableViewDropDelegate {
                         if textMessages.count == strCount {
                             self.insertNewMessageCell(textMessages)
                             for newMessage in textMessages {
-                                WebSocketManager.shared.sendWrappedMessage(newMessage)
+                                socketForUsername(self.username).sendWrappedMessage(newMessage)
                             }
                         }
                     }

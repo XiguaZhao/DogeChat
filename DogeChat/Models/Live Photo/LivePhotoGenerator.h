@@ -26,7 +26,7 @@ typedef NS_ENUM(NSUInteger, VideoCompressType) {
 
 @interface LivePhotoGenerator : NSObject
 
-- (void)generateForLivePhoto:(PHLivePhoto *)livePhoto completion:(void (^)(PHLivePhoto *livePhoto))completion;
+- (void)generateForLivePhoto:(PHLivePhoto *)livePhoto windowWidth:(CGFloat)windowWidth completion:(void (^)(PHLivePhoto *livePhoto))completion;
 
 - (void)compressVideoWithInputURL:(NSURL *)inputURL outputURL:(NSURL *)outputURL quality:(VideoQuality)quality compressType:(VideoCompressType)compressType completion:(void (^)(void))completion;
 

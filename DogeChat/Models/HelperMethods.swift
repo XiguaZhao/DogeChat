@@ -8,6 +8,55 @@
 
 import Foundation
 import DogeChatNetwork
+import DogeChatUniversal
+
+func playHaptic(_ intensity: CGFloat = 1) {
+    if #available(iOS 13.0, *) {
+        HapticManager.shared.playHapticTransient(time: 0, intensity: Float(intensity), sharpness: 1)
+    }
+}
+
+var url_pre: String {
+    WebSocketManager.shared.url_pre
+}
+
+func socketForUsername(_ username: String) -> WebSocketManager {
+    if #available(iOS 13, *) {
+        return WebSocketManager.shared.usersToSocketManager[username]!
+    } else {
+        return WebSocketManager.shared
+    }
+}
+
+func removeSocketForUsername(_ username: String) {
+    if let index = WebSocketManager.shared.usersToSocketManager.firstIndex(where: { $0.key == username }) {
+        WebSocketManager.shared.usersToSocketManager.remove(at: index)
+    }
+    if let index = WebSocketManagerAdapter.shared.usernameToAdapter.firstIndex(where: { $0.key == username }) {
+        WebSocketManagerAdapter.shared.usernameToAdapter.remove(at: index)
+    }
+
+}
+
+var safeArea: UIEdgeInsets {
+    UIApplication.shared.keyWindow!.safeAreaInsets
+}
+
+func isLandscape() -> Bool {
+    return UIDevice.current.orientation == .landscapeLeft || UIDevice.current.orientation == .landscapeRight
+}
+
+func isPad() -> Bool {
+    return UIDevice.current.userInterfaceIdiom == .pad
+}
+
+func isPhone() -> Bool {
+    return UIDevice.current.userInterfaceIdiom == .phone
+}
+
+func isMac() -> Bool {
+    return !AppDelegate.shared.isIOS
+}
 
 public extension UIViewController {
     func makeAutoAlert(message: String, detail: String?, showTime: TimeInterval, completion: (() -> Void)?) {
@@ -28,22 +77,14 @@ public extension UIViewController {
 }
 
 public extension String {
-    func image() -> UIImage {
-        let size = CGSize(width: 15, height: 15)
+    func image(size: CGSize = CGSize(width: 15, height: 15)) -> UIImage {
         UIGraphicsBeginImageContextWithOptions(size, false, 0)
         (self as NSString).draw(in: CGRect(origin: .zero, size: size), withAttributes: nil)
         let image = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
         return image!
     }
-}
-
-func socketForUsername(_ username: String) -> WebSocketManager {
-    return WebSocketManager.shared.usersToSocketManager[username]!
-}
-
-func adapterForUsername(_ username: String) -> WebSocketManagerAdapter {
-    return WebSocketManagerAdapter.shared.usernameToAdapter[username]!
+    
 }
 
 func windowForView(_ view: UIView) -> UIWindow? {
@@ -53,3 +94,16 @@ func windowForView(_ view: UIView) -> UIWindow? {
         return AppDelegate.shared.window
     }
 }
+
+func sceneDelegate() -> Any? {
+    if #available(iOS 13.0, *) {
+        return UIApplication.shared.windows.first(where: { $0.isKeyWindow })?.windowScene?.delegate
+    } else {
+        return nil
+    }
+}
+
+func userIDFor(username: String) -> String? {
+    return (UserDefaults.standard.value(forKey: usernameToIdKey) as? [String : String])?[username]
+}
+
