@@ -24,6 +24,7 @@ class MessageCollectionViewImageCell: MessageCollectionViewBaseCell, PHLivePhoto
     var videoView = VideoView()
     var videoEnd = false
     var isPlaying = false
+    var playNow = false
     var isGif: Bool {
         guard let url = message.imageURL else {
             return false
@@ -92,6 +93,7 @@ class MessageCollectionViewImageCell: MessageCollectionViewBaseCell, PHLivePhoto
         player.replaceCurrentItem(with: nil)
         videoEnd = false
         isPlaying = false
+        playNow = false
     }
     
     override func layoutSubviews() {
@@ -126,12 +128,16 @@ class MessageCollectionViewImageCell: MessageCollectionViewBaseCell, PHLivePhoto
     }
     
     func deactiveSession() {
-        try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+        if !PlayerManager.shared.isPlaying {
+            try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+        }
     }
     
     func activeSession() {
-        try? AVAudioSession.sharedInstance().setCategory(.playback, options: PlayerManager.shared.isMute ? .mixWithOthers : .duckOthers)
-        try? AVAudioSession.sharedInstance().setActive(true, options: .notifyOthersOnDeactivation)
+        if !PlayerManager.shared.isPlaying {
+            try? AVAudioSession.sharedInstance().setCategory(.playback, options: PlayerManager.shared.isMute ? .mixWithOthers : .duckOthers)
+            try? AVAudioSession.sharedInstance().setActive(true, options: .notifyOthersOnDeactivation)
+        }
     }
     
     func playVideo() {
@@ -175,23 +181,19 @@ class MessageCollectionViewImageCell: MessageCollectionViewBaseCell, PHLivePhoto
             block(true)
         } else if let _url = fileURLAt(dirName: videoDir, fileName: self.message.videoURL!.components(separatedBy: "/").last!) {
             url = _url
-            block(false)
+            block(playNow)
         } else {
             let fileName = self.message.videoURL!.components(separatedBy: "/").last!
-            let completion: (URLSessionTask, Any?) -> Void = { task ,data in
-                guard let data = data as? Data else { return }
-                saveFileToDisk(dirName: videoDir, fileName: fileName, data: data)
-                url = fileURLAt(dirName: videoDir, fileName: fileName)
-                block(true)
-                captured?.isDownloading = true
-            }
             if !message.isDownloading {
                 message.isDownloading = true
                 session.get(url_pre + message.videoURL!, parameters: nil, headers: ["Cookie": "SESSION="+cookie], progress: { [weak self] progress in
                     self?.delegate?.downloadProgressUpdate(progress: progress, message: captured!)
-                }, success: { task, data in
-                    completion(task, data)
+                }, success: { [weak self] task, data in
+                    captured?.isDownloading = false
+                    guard let data = data as? Data else { return }
+                    saveFileToDisk(dirName: videoDir, fileName: fileName, data: data)
                     print("videoDone")
+                    self?.delegate?.downloadSuccess(message: captured!)
                 }) { task, error in
                     print(error)
                 }
@@ -246,17 +248,6 @@ class MessageCollectionViewImageCell: MessageCollectionViewBaseCell, PHLivePhoto
         } else {
             let imageURL = URL(string: url_pre + message.imageURL!)!
             let videoURL = URL(string: url_pre + message.videoURL!)!
-            let completion: (URLSessionTask, Any?) -> Void = { task ,videoData in
-                guard let videoData = videoData as? Data else {
-                    return
-                }
-                saveFileToDisk(dirName: livePhotoDir, fileName: videoName, data: videoData)
-                if let localImageURL = fileURLAt(dirName: livePhotoDir, fileName: imageName),
-                   let localVideoURL = fileURLAt(dirName: livePhotoDir, fileName: videoName) {
-                    livePhotoLoadBlock(localImageURL, localVideoURL, true)
-                }
-                capturedMessage?.isDownloading = false
-            }
             if !message.isDownloading {
                 message.isDownloading = true
                 session.get(imageURL.absoluteString, parameters: nil, headers: ["Cookie": "SESSION="+cookie], progress: nil, success: { task, data in
@@ -265,9 +256,13 @@ class MessageCollectionViewImageCell: MessageCollectionViewBaseCell, PHLivePhoto
                     saveFileToDisk(dirName: livePhotoDir, fileName: imageName, data: data)
                     self.session.get(videoURL.absoluteString, parameters: nil, headers: ["Cookie": "SESSION="+self.cookie], progress: { [weak self] progress in
                         self?.delegate?.downloadProgressUpdate(progress: progress, message: capturedMessage!)
-                    }, success: { task, videoData in
-                        completion(task, videoData)
-                        print("liveVideoDone")
+                    }, success: { [weak self] task, videoData in
+                        capturedMessage?.isDownloading = false
+                        if let videoData = videoData as? Data {
+                            saveFileToDisk(dirName: livePhotoDir, fileName: videoName, data: videoData)
+                            self?.delegate?.downloadSuccess(message: capturedMessage!)
+                            print("liveVideoDone")
+                        }
                     }, failure: nil)
                 }, failure: nil)
             }

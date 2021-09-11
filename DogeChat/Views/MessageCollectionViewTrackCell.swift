@@ -135,16 +135,12 @@ class MessageCollectionViewTrackCell: MessageCollectionViewBaseCell {
             if !message.isDownloading {
                 message.isDownloading = true
                 if let url = URL(string: url_pre + message.message) {
-                    session.get(url.absoluteString, parameters: nil, headers: ["Cookie": "SESSION="+cookie], progress: nil, success: { task, data in
+                    session.get(url.absoluteString, parameters: nil, headers: nil, progress: nil, success: { [weak self] task, data in
                         guard let tracksData = data as? Data,
                               let tracks = try? JSONDecoder().decode([Track].self, from: tracksData) else { return }
                         captured.tracks = tracks
                         captured.isDownloading = false
-                        DispatchQueue.main.async {
-                            if captured == self.message {
-                                self.apply(message: message)
-                            }
-                        }
+                        self?.delegate?.downloadSuccess(message: captured)
                     }, failure: nil)
                 }
             }

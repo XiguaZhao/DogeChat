@@ -16,17 +16,6 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
     }
             
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if scrollBottom {
-            DispatchQueue.main.async {
-                if !self.messages.isEmpty {
-                    self.scrollBottom = false
-                    self.tableView.scrollToRow(at: IndexPath(row: self.messages.count - 1, section: 0), at: .bottom, animated: false)
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                        self.scrollViewDidEndDecelerating(self.tableView)
-                    }
-                }
-            }
-        }
         return messages.count
     }
     
@@ -72,7 +61,13 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return MessageCollectionViewBaseCell.height(for: messages[indexPath.item], username: username)
+        let height = MessageCollectionViewBaseCell.height(for: messages[indexPath.item], username: username)
+        heightCache[indexPath.row] = height
+        return height
+    }
+    
+    func scrollViewShouldScrollToTop(_ scrollView: UIScrollView) -> Bool {
+        return true
     }
 
                 

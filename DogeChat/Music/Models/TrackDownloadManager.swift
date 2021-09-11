@@ -31,7 +31,7 @@ class TrackDownloadManager: NSObject {
     func startDownload(track: Track, username: String, newesetURL: URL? = nil) {
         guard !track.isDownloaded else { return }
         if newesetURL == nil {
-            MusicHttpManager.shared.getTrackWithID(track.id, source: .qq) { tracks in
+            MusicHttpManager.shared.getTrackWithID(track.id, source: .appleMusic) { tracks in
                 if let track = tracks.first {
                     self.startDownload(track: track, username: username, newesetURL: URL(string: track.musicLinkUrl))
                 }

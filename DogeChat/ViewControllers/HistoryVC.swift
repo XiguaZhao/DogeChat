@@ -251,6 +251,19 @@ extension HistoryVC: UITableViewDelegate, MessageTableViewCellDelegate {
         
     }
     
+    func downloadSuccess(message: Message) {
+        syncOnMainThread {
+            if let index = self.messages.firstIndex(where: { $0.uuid == message.uuid }) {
+                let indexPath = IndexPath(row: index, section: 0)
+                if let cell = self.tableView.cellForRow(at: indexPath) as? MessageCollectionViewBaseCell {
+                    cell.apply(message: message)
+                    cell.layoutIfNeeded()
+                    cell.setNeedsLayout()
+                }
+            }
+        }
+    }
+    
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         guard indexPath.row < messages.count else { return 0 }

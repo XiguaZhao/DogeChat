@@ -90,9 +90,6 @@ class DogeChatViewController: UIViewController, UIPopoverPresentationControllerD
             }
         } else {
             recoverVC(self, blurView: &blurView)
-            if let searchVC = self as? SearchMusicViewController {
-                searchVC.updateBgColor()
-            }
         }
     }
     

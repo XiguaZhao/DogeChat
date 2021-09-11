@@ -128,19 +128,18 @@ class MessageCollectionViewDrawCell: MessageCollectionViewBaseCell {
         } else if let name = message.pkDataURL?.components(separatedBy: "/").last, fileURLAt(dirName: drawDir, fileName: name) != nil {
             displayBlock()
         } else if let path = message.pkDataURL {
-            let completionBlock: (URLSessionTask, Any?) -> Void = { _ , data in
-                if let data = data as? Data {
-                    let fileName = path.components(separatedBy: "/").last!
-                    saveFileToDisk(dirName: drawDir, fileName: fileName, data: data)
-                    capturedMessage.pkLocalURL = fileURLAt(dirName: drawDir, fileName: fileName)
-                }
-                displayBlock()
-                capturedMessage.isDownloading = false
-            }
             if !message.isDownloading {
                 message.isDownloading = true
-                let _ = session.get(url_pre + path, parameters: nil, headers: ["Cookie": "SESSION="+cookie], progress: nil) { task, data in
-                    completionBlock(task, data)
+                let _ = session.get(url_pre + path, parameters: nil, headers: nil, progress: { progress in
+                    self.delegate?.downloadProgressUpdate(progress: progress, message: capturedMessage)
+                }) { [weak self] task, data in
+                    if let data = data as? Data {
+                        let fileName = path.components(separatedBy: "/").last!
+                        saveFileToDisk(dirName: drawDir, fileName: fileName, data: data)
+                        capturedMessage.pkLocalURL = fileURLAt(dirName: drawDir, fileName: fileName)
+                        self?.delegate?.downloadSuccess(message: capturedMessage)
+                    }
+                    capturedMessage.isDownloading = false
                 } failure: { task, error in
                     print(error)
                 }

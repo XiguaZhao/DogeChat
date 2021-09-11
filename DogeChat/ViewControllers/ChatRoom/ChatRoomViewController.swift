@@ -20,9 +20,9 @@ class ChatRoomViewController: DogeChatViewController {
     let messageInputBar = MessageInputView()
     var messageOption: MessageOption = .toAll
     var friendName = ""
+    var heightCache = [Int : CGFloat]()
     var pagesAndCurNum = (pages: 1, curNum: 1)
     var originOfInputBar = CGPoint()
-    var scrollBottom = true
     var activeSwipeIndexPath: IndexPath?
     var latestPickedImageInfos: [(image: UIImage?, fileUrl: URL, size: CGSize)] = []
     var pickedLivePhotos: [(imageURL: URL, videoURL: URL, size: CGSize, live: PHLivePhoto)] = []
@@ -47,7 +47,6 @@ class ChatRoomViewController: DogeChatViewController {
             }
         }
     }
-    var shouldIgnoreScroll = false
     
     var lastIndexPath: IndexPath {
         return IndexPath(row: messages.count-1, section: 0)
@@ -81,7 +80,6 @@ class ChatRoomViewController: DogeChatViewController {
         navigationItem.largeTitleDisplayMode = .never
         addRefreshController()
         loadViews()
-        layoutViews(size: view.bounds.size)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -98,13 +96,19 @@ class ChatRoomViewController: DogeChatViewController {
         messageInputBar.textView.resignFirstResponder()
     }
     
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        if !PlayerManager.shared.isPlaying {
+            try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+        }
+    }
+    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         AppDelegate.shared.navigationController = self.navigationController
         if #available(iOS 13.0, *) {
             (self.view.window?.windowScene?.delegate as? SceneDelegate)?.navigationController = self.navigationController
         }
-        scrollBottom = false
         DispatchQueue.main.async {
             self.displayHistoryIfNeeded()
         }
@@ -124,7 +128,10 @@ class ChatRoomViewController: DogeChatViewController {
     deinit {
         print("chat room VC deinit")
         MessageCollectionViewTextCell.voicePlayer.replaceCurrentItem(with: nil)
-//        try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+    }
+    
+    func contentHeight() -> CGFloat {
+        return heightCache.values.reduce(0, +)
     }
     
     func scrollBotton() {
@@ -345,7 +352,15 @@ extension ChatRoomViewController {
     
     @objc func receiveHistoryMessages(_ noti: Notification) {
         guard navigationController?.visibleViewController == self else { return }
-        let empty = self.messages.count < ChatRoomViewController.numberOfHistory
+        var empty = true
+        var tempHeight: CGFloat = 0
+        for message in self.messages.reversed() {
+            tempHeight += MessageCollectionViewBaseCell.height(for: message, username: username)
+            if tempHeight >= tableView.bounds.height {
+                empty = false
+                break
+            }
+        }
         navigationItem.title = friendName
         guard let messages = noti.userInfo?["messages"] as? [Message], !messages.isEmpty, let pages = noti.userInfo?["pages"] as? Int else { return }
         if messages[0].option != messageOption {

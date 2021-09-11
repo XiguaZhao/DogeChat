@@ -20,6 +20,7 @@ protocol MessageTableViewCellDelegate: AnyObject {
     func avatarDoubleTap(_ cell: MessageCollectionViewBaseCell)
     func sharedTracksTap(_ cell: MessageCollectionViewBaseCell, tracks: [Track])
     func downloadProgressUpdate(progress: Progress, message: Message)
+    func downloadSuccess(message: Message)
 }
 
 protocol ContactDataSource: AnyObject {
@@ -41,7 +42,7 @@ class MessageCollectionViewBaseCell: DogeChatTableViewCell {
     var message: Message!
     var indexPath: IndexPath!
     let nameLabel = UILabel()
-    var isHistory = false
+    var isHistory = true
     var tapContentView: UITapGestureRecognizer!
     let indicator = UIActivityIndicatorView()
     var emojis = [EmojiInfo: FLAnimatedImageView]()

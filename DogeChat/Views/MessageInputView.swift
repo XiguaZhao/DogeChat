@@ -276,9 +276,9 @@ class MessageInputView: DogeChatStaticBlurView {
     
     @objc func sendTapped() {
         if let delegate = delegate, let message = textView.text {
+            delegate.sendWasTapped(content:  message)
             textView.text = ""
             textView.delegate?.textViewDidChange?(textView)
-            delegate.sendWasTapped(content:  message)
         }
     }
     

@@ -13,7 +13,6 @@ import DogeChatNetwork
 class SearchMusicViewController: DogeChatViewController {
     let searchBar = UISearchBar()
     let tableView = DogeChatTableView()
-    var segment: UISegmentedControl!
     var page = 1
     var username = ""
     
@@ -27,37 +26,17 @@ class SearchMusicViewController: DogeChatViewController {
         super.viewDidLoad()
         navigationItem.title = "搜索"
         navigationItem.largeTitleDisplayMode = .never
-        segment = UISegmentedControl(items: ["Music (Preview)"])
         searchBar.delegate = self
-        updateBgColor()
-        segment.selectedSegmentIndex = 0
-        segment.backgroundColor = .clear
-        segment.addTarget(self, action: #selector(segmentAction(_:)), for: .valueChanged)
         
         view.addSubview(tableView)
         tableView.delegate = self
         tableView.dataSource = self
         tableView.separatorStyle = .none
         tableView.register(TrackSearchResultCell.self, forCellReuseIdentifier: TrackSearchResultCell.cellID)
-        
-        view.addSubview(segment)
-        view.addSubview(searchBar)
-                
-        searchBar.mas_makeConstraints { [weak self] make in
-            make?.left.right().equalTo()(self?.view)
-            make?.top.equalTo()(self?.view.mas_safeAreaLayoutGuideTop)
-        }
-        segment.mas_makeConstraints { [weak self] make in
-            make?.left.right().equalTo()(self?.searchBar)
-            make?.top.equalTo()(self?.searchBar.mas_bottom)
-        }
-        tableView.mas_makeConstraints { [weak self] make in
-            make?.left.right().bottom().equalTo()(self?.view)
-            make?.top.equalTo()(self?.segment.mas_bottom)
-        }
-        
-        let loadMore = UIBarButtonItem(title: "切换中/美", style: .plain, target: self, action: #selector(switchCountry(_:)))
+                                
+        let loadMore = UIBarButtonItem(title: "中/美", style: .plain, target: self, action: #selector(switchCountry(_:)))
         navigationItem.setRightBarButton(loadMore, animated: true)
+        navigationItem.titleView = searchBar
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -65,31 +44,18 @@ class SearchMusicViewController: DogeChatViewController {
         searchBar.becomeFirstResponder()
     }
     
-    func updateBgColor() {
-        if AppDelegate.shared.immersive {
-            searchBar.backgroundColor = .clear
-            segment?.backgroundColor = .clear
-            for view in searchBar.subviews[0].subviews {
-                if let imageView = view as? UIImageView {
-                    imageView.alpha = 0
-                }
-            }
-        } else {
-            if #available(iOS 13.0, *) {
-                searchBar.backgroundColor = .systemBackground
-                segment?.backgroundColor = .systemBackground
-            }
-        }
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        tableView.frame = view.bounds
+
     }
+    
     
     @objc func switchCountry(_ sender: UIBarButtonItem) {
         guard let text = searchBar.text, !text.isEmpty else { return }
         page += 1
         navigationItem.title = "切换中..."
         self.country = country == .CN ? .US : .CN
-//        MusicHttpManager.shared.getTracks(from: sources[segment.selectedSegmentIndex], input: text, page: page, country: self.country) { tracks in
-//            self.reloadDataWithMoreTracks(tracks)
-//        }
         searchTapped()
     }
     
@@ -103,12 +69,7 @@ class SearchMusicViewController: DogeChatViewController {
             self.searchBar.resignFirstResponder()
         }
     }
-    
-    @objc func segmentAction(_ sender: UISegmentedControl) {
-        page = 1
-        searchTapped()
-    }
-    
+        
 }
 
 extension SearchMusicViewController: UISearchBarDelegate, UITableViewDelegate, UITableViewDataSource, TrackSearchResultCellDelegate {
@@ -147,7 +108,7 @@ extension SearchMusicViewController: UISearchBarDelegate, UITableViewDelegate, U
     func searchTapped() {
         guard let text = searchBar.text, !text.isEmpty else { return }
         self.navigationItem.title = "正在搜索..."
-        MusicHttpManager.shared.getTracks(from: sources[segment.selectedSegmentIndex], input: text, page: page, country: country) { tracks in
+        MusicHttpManager.shared.getTracks(from: .appleMusic, input: text, page: page, country: country) { tracks in
             self.results.removeAll()
             self.reloadDataWithMoreTracks(tracks)
         }
@@ -161,7 +122,7 @@ extension SearchMusicViewController: UISearchBarDelegate, UITableViewDelegate, U
         if !MusicHttpManager.shared.favorites.contains(cell.track) {
             MusicHttpManager.shared.favorites.append(cell.track)
         }
-        TrackDownloadManager.shared.startDownload(track: cell.track, username: username)
+        TrackDownloadManager.shared.startDownload(track: cell.track, username: username, newesetURL: URL(string: (cell.track.musicLinkUrl)))
     }
     
     func favoriteTap(cell: TrackSearchResultCell, sender: UIButton) {
