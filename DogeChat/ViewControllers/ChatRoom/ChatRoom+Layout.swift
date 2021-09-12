@@ -75,7 +75,8 @@ extension ChatRoomViewController {
         tableView.layer.masksToBounds = true
         
         emojiSelectView.delegate = self
-
+        emojiSelectView.username = username
+        
         view.addSubview(tableView)
         view.addSubview(messageInputBar)
         view.addSubview(emojiSelectView)

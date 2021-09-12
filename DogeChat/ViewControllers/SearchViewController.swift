@@ -26,7 +26,9 @@ class SearchViewController: UIViewController {
     var userInfos: [String] = []
     var username = ""
     var usernames = [String]()
-    let manager = WebSocketManager.shared
+    var manager: WebSocketManager {
+        return socketForUsername(username)
+    }
     var status: Status = .accept
     var requestID = [String]()
     weak var delegate: AddContactDelegate?

@@ -147,7 +147,7 @@ class PlayerManager: NSObject {
                 if image.size.width <= 400 {
                     self.nowAlbumImage = image
                 } else {
-                    let compressed = WebSocketManager.shared.messageManager.compressEmojis(image, needBig: false, askedSize: CGSize(width: 400, height: 400))
+                    let compressed = compressEmojis(image, needBig: false, askedSize: CGSize(width: 400, height: 400))
                     self.blurSource = .albumImage
                     self.nowAlbumImage = UIImage(data: compressed)
                 }
@@ -253,7 +253,7 @@ class PlayerManager: NSObject {
             MPMediaItemPropertyTitle: nowPlayingTrack.name,
             MPMediaItemPropertyArtist: nowPlayingTrack.artist,
             MPMediaItemPropertyArtwork: MPMediaItemArtwork(boundsSize: nowAlbumImage.size, requestHandler: { [self] (size) -> UIImage in
-                let imageData = WebSocketManager.shared.messageManager.compressEmojis(nowAlbumImage, needBig: false, askedSize: size)
+                let imageData = compressEmojis(nowAlbumImage, needBig: false, askedSize: size)
                 return UIImage(data: imageData)!
             }),
             MPMediaItemPropertyPlaybackDuration: CMTimeGetSeconds(player.currentItem?.duration ?? CMTime(seconds: 99, preferredTimescale: 1)),

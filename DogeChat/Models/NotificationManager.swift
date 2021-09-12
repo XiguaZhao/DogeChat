@@ -12,7 +12,10 @@ import DogeChatUniversal
 
 class NotificationManager: NSObject {
     
-    let manager = WebSocketManager.shared
+    var username = ""
+    var manager: WebSocketManager! {
+        return WebSocketManager.usersToSocketManager[username]
+    }
     static let shared = NotificationManager()
     var nowPushInfo: (sender: String, content: String) = ("", "")
     var actionCompletionHandler: (() -> Void)?
@@ -36,14 +39,31 @@ class NotificationManager: NSObject {
         }
     }
     
+    convenience init(username: String) {
+        self.init()
+        self.username = username
+    }
+    
     private override init() {
         super.init()
+        registerNoti()
+    }
+    
+    func registerNoti() {
         NotificationCenter.default.addObserver(self, selector: #selector(quickReplyDone(_:)), name: .quickReplyDone, object: nil)
     }
     
+    func nav() -> UINavigationController? {
+        if #available(iOS 13, *) {
+            return SceneDelegate.usernameToDelegate[username]?.navigationController
+        } else {
+            return AppDelegate.shared.navigationController
+        }
+    }
+    
     @objc func quickReplyDone(_ noti: Notification) {
-        WebSocketManager.shared.disconnect()
-        if let vc = AppDelegate.shared.navigationController.visibleViewController as? ChatRoomViewController {
+        manager.disconnect()
+        if let vc = nav()?.visibleViewController as? ChatRoomViewController {
             if let message = quickReplyMessage {
                 vc.insertNewMessageCell([message])
             }
@@ -65,8 +85,8 @@ class NotificationManager: NSObject {
     }
     
     private func login(success: @escaping (()->Void), fail: @escaping (()->Void)) {
-        guard let username = UserDefaults.standard.value(forKey: "lastUsername") as? String,
-              let password = UserDefaults.standard.value(forKey: "lastPassword") as? String else { return }
+        guard let info = UserDefaults.standard.value(forKey: usernameToPswKey) as? [String : String],
+              let password = info[username] else { return }
         manager.messageManager.login(username: username, password: password) { (result) in
             guard result == "登录成功" else {
                 fail()
@@ -78,7 +98,7 @@ class NotificationManager: NSObject {
     
     func prepareVoiceChat(caller: String, uuid: UUID) {
         login {
-            WebSocketManager.shared.connect()
+            self.manager.connect()
         } fail: {
             if let call = AppDelegate.shared.callManager.callWithUUID(uuid) {
                 AppDelegate.shared.callManager.end(call: call)
@@ -91,13 +111,13 @@ class NotificationManager: NSObject {
         login { [weak self] in
             guard let self = self, self.nowPushInfo.sender.count != 0 else { return }
             let option: MessageOption = self.nowPushInfo.sender == "群聊" ? .toAll : .toOne
-            let message = Message(message: replyContent, imageURL: nil, videoURL: nil, messageSender: .ourself, receiver: self.nowPushInfo.sender, uuid: UUID().uuidString, sender: WebSocketManager.shared.messageManager.myName, messageType: .text, option: option, id: .max, sendStatus: .fail, emojisInfo: [])
+            let message = Message(message: replyContent, imageURL: nil, videoURL: nil, messageSender: .ourself, receiver: self.nowPushInfo.sender, uuid: UUID().uuidString, sender: self.manager.messageManager.myName, messageType: .text, option: option, id: .max, sendStatus: .fail, emojisInfo: [])
             self.quickReplyMessage = message
-            WebSocketManager.shared.quickReplyUUID = message.uuid
-            WebSocketManager.shared.connect()
-            WebSocketManager.shared.messageManager.notSendContent.append(message)
+            self.manager.quickReplyUUID = message.uuid
+            self.manager.connect()
+            self.manager.messageManager.notSendContent.append(message)
             DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
-                if !WebSocketManager.shared.quickReplyUUID.isEmpty {
+                if !self.manager.quickReplyUUID.isEmpty {
                     self.actionCompletionHandler?()
                     self.actionCompletionHandler = nil
                 }

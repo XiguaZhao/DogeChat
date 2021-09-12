@@ -15,15 +15,16 @@ class WebSocketManagerAdapter: NSObject {
     
     var username = ""
     var sceneDelegate: Any!
-    var usernameToAdapter = [String : WebSocketManagerAdapter]()
-    @objc static let shared = WebSocketManagerAdapter()
-    var manager: WebSocketManager!
+    @objc static var usernameToAdapter = [String : WebSocketManagerAdapter]()
+    weak var manager: WebSocketManager!
     @objc var readyToSendVideoData = false {
         didSet {
             guard readyToSendVideoData == true else { return }
             DispatchQueue.main.async {
                 #if !targetEnvironment(macCatalyst)
-                AppDelegate.shared.navigationController.present(VideoChatViewController(), animated: true, completion: nil)
+                let vc = VideoChatViewController()
+                vc.username = self.username
+                AppDelegate.shared.navigationController.present(vc, animated: true, completion: nil)
                 #endif
             }
         }
@@ -46,11 +47,6 @@ class WebSocketManagerAdapter: NSObject {
     
     override init() {
         super.init()
-        if #available(iOS 13.0, *) {
-            
-        } else {
-            registerNotification()
-        }
     }
     
     func registerNotification() {
@@ -65,7 +61,7 @@ class WebSocketManagerAdapter: NSObject {
         NotificationCenter.default.addObserver(self, selector: #selector(receiveRealTimeDrawData(noti:)), name: .receiveRealTimeDrawData, object: username)
         NotificationCenter.default.addObserver(self, selector: #selector(receiveDrawMessageUpdate(_:)), name: .drawMessageUpdate, object: username)
     }
-    
+        
     @objc public func playSound(_ noti: Notification) {
         var needSound = true
         if let mute = noti.userInfo?["mute"] as? Bool, mute == true {
@@ -250,26 +246,27 @@ extension WebSocketManagerAdapter: VoiceDelegate, WebSocketDataDelegate {
         manager.sendVoiceData(data)
     }
     
-    func compressImage(_ image: UIImage, needSave: Bool = true) -> (image: UIImage, fileUrl: URL, size: CGSize) {
-        var size = image.size
-        let ratio = size.width / size.height
-        let width: CGFloat = min(image.size.width / UIScreen.main.scale, UIScreen.main.bounds.width)
-        let height = floor(width / ratio)
-        size = CGSize(width: width, height: height)
-        var result: UIImage!
-        DispatchQueue.global().sync {
-            UIGraphicsBeginImageContextWithOptions(size, false, UIScreen.main.scale)
-            image.draw(in: CGRect(x: 0, y: 0, width: width, height: height))
-            result = UIGraphicsGetImageFromCurrentImageContext() ?? UIImage()
-            UIGraphicsEndImageContext()
-        }
-        let fileUrl = URL(string: "file://" + NSTemporaryDirectory() + UUID().uuidString + ".jpg")!
-        if needSave {
-            try? result.jpegData(compressionQuality: 0.3)?.write(to: fileUrl)
-        }
-        return (result, fileUrl, result.size)
-    }
     
+}
+
+func compressImage(_ image: UIImage, needSave: Bool = true) -> (image: UIImage, fileUrl: URL, size: CGSize) {
+    var size = image.size
+    let ratio = size.width / size.height
+    let width: CGFloat = min(image.size.width / UIScreen.main.scale, UIScreen.main.bounds.width)
+    let height = floor(width / ratio)
+    size = CGSize(width: width, height: height)
+    var result: UIImage!
+    DispatchQueue.global().sync {
+        UIGraphicsBeginImageContextWithOptions(size, false, UIScreen.main.scale)
+        image.draw(in: CGRect(x: 0, y: 0, width: width, height: height))
+        result = UIGraphicsGetImageFromCurrentImageContext() ?? UIImage()
+        UIGraphicsEndImageContext()
+    }
+    let fileUrl = URL(string: "file://" + NSTemporaryDirectory() + UUID().uuidString + ".jpg")!
+    if needSave {
+        try? result.jpegData(compressionQuality: 0.3)?.write(to: fileUrl)
+    }
+    return (result, fileUrl, result.size)
 }
 
 public func getCacheImage(from cache: NSCache<NSString, NSData>?, path: String, completion: @escaping ((_ image: UIImage?, _ data: Data?) -> Void)) {

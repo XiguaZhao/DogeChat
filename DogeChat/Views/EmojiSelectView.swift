@@ -19,17 +19,22 @@ class EmojiSelectView: DogeChatStaticBlurView {
 
     weak var delegate: EmojiViewDelegate?
     let collectionView: DogeChatBaseCollectionView!
-    var emojis: [String] = WebSocketManager.shared.messageManager.emojiPaths {
-        didSet {
+    var emojis: [String] {
+        get {
+            manager.messageManager.emojiPaths
+        }
+        set {
             self.isHidden = false
-            if emojis != oldValue {
-                collectionView.reloadData()
-                WebSocketManager.shared.messageManager.emojiPaths = emojis
-            }
+            collectionView.reloadData()
+            manager.messageManager.emojiPaths = emojis
         }
     }
     static var emojiPathToId: [String: String] = [:]
     let cache = NSCache<NSString, NSData>()
+    var username = ""
+    var manager: WebSocketManager {
+        socketForUsername(username)
+    }
     
     override init(frame: CGRect) {
         collectionView = DogeChatBaseCollectionView(frame: frame, collectionViewLayout: UICollectionViewFlowLayout())
@@ -82,7 +87,7 @@ extension EmojiSelectView: UICollectionViewDataSource, UICollectionViewDelegateF
     
     func deleteEmoji(cell: EmojiCollectionViewCell) {
         if let indexPath = cell.indexPath, let id = EmojiSelectView.emojiPathToId[emojis[indexPath.item]] {
-            WebSocketManager.shared.deleteEmoji(emojis[indexPath.item], id: id) { [self] in
+            manager.deleteEmoji(emojis[indexPath.item], id: id) { [self] in
                 collectionView.deleteItems(at: [indexPath])
                 emojis.remove(at: indexPath.item)
             }
@@ -91,11 +96,11 @@ extension EmojiSelectView: UICollectionViewDataSource, UICollectionViewDelegateF
     
     func useAsSelfAvatar(cell: EmojiCollectionViewCell) {
         if let index = cell.indexPath?.item {
-            let path = (emojis[index] as NSString).replacingOccurrences(of: WebSocketManager.shared.url_pre, with: "")
-            WebSocketManager.shared.changeAvatarWithPath(path) { task, data in
+            let path = (emojis[index] as NSString).replacingOccurrences(of: url_pre, with: "")
+            manager.changeAvatarWithPath(path) { task, data in
                 guard let data = data else { return }
                 if JSON(data)["status"].stringValue == "success" {
-                    WebSocketManager.shared.messageManager.myAvatarUrl = WebSocketManager.shared.url_pre + JSON(data)["avatarUrl"].stringValue
+                    self.manager.messageManager.myAvatarUrl = url_pre + JSON(data)["avatarUrl"].stringValue
                 }
             }
         }
@@ -111,7 +116,7 @@ extension EmojiSelectView: UICollectionViewDataSource, UICollectionViewDelegateF
                     DispatchQueue.global().async {
                         if let data = data,
                               let image = UIImage(data: data) {
-                            let compressed = WebSocketManager.shared.messageManager.compressEmojis(image)
+                            let compressed = compressEmojis(image)
                             cache.setObject(compressed as NSData, forKey: (imageLink as NSString))
                         } else if let image = image,
                                   let compressed = image.pngData() {

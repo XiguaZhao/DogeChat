@@ -17,23 +17,19 @@ func playHaptic(_ intensity: CGFloat = 1) {
 }
 
 var url_pre: String {
-    WebSocketManager.shared.url_pre
+    WebSocketManager.url_pre
 }
 
 func socketForUsername(_ username: String) -> WebSocketManager {
-    if #available(iOS 13, *) {
-        return WebSocketManager.shared.usersToSocketManager[username]!
-    } else {
-        return WebSocketManager.shared
-    }
+    return WebSocketManager.usersToSocketManager[username]!
 }
 
 func removeSocketForUsername(_ username: String) {
-    if let index = WebSocketManager.shared.usersToSocketManager.firstIndex(where: { $0.key == username }) {
-        WebSocketManager.shared.usersToSocketManager.remove(at: index)
+    if let index = WebSocketManager.usersToSocketManager.firstIndex(where: { $0.key == username }) {
+        WebSocketManager.usersToSocketManager.remove(at: index)
     }
-    if let index = WebSocketManagerAdapter.shared.usernameToAdapter.firstIndex(where: { $0.key == username }) {
-        WebSocketManagerAdapter.shared.usernameToAdapter.remove(at: index)
+    if let index = WebSocketManagerAdapter.usernameToAdapter.firstIndex(where: { $0.key == username }) {
+        WebSocketManagerAdapter.usernameToAdapter.remove(at: index)
     }
 
 }
@@ -107,3 +103,6 @@ func userIDFor(username: String) -> String? {
     return (UserDefaults.standard.value(forKey: usernameToIdKey) as? [String : String])?[username]
 }
 
+func adapterFor(username: String) -> WebSocketManagerAdapter {
+    return WebSocketManagerAdapter.usernameToAdapter[username]!
+}

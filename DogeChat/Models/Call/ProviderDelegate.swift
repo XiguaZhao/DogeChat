@@ -14,8 +14,13 @@ class ProviderDelegate: NSObject {
     
     private let callManager: CallManager
     private let provider: CXProvider
+    private let username: String
+    private var manager: WebSocketManager? {
+        return WebSocketManager.usersToSocketManager[username]
+    }
     
-    init(callManager: CallManager) {
+    init(callManager: CallManager, username: String) {
+        self.username = username
         self.callManager = callManager
         self.provider = CXProvider(configuration: ProviderDelegate.providerConfiguration)
         super.init()
@@ -36,9 +41,10 @@ class ProviderDelegate: NSObject {
         update.remoteHandle = CXHandle(type: .generic, value: handle)
         update.hasVideo = false
         print("report")
-        provider.reportNewIncomingCall(with: uuid, update: update) { (error) in
+        provider.reportNewIncomingCall(with: uuid, update: update) { [weak self] (error) in
+            guard let self = self else { return }
             if error == nil {
-                let call = Call(uuid: uuid, handle: handle)
+                let call = Call(uuid: uuid, handle: handle, username: self.username)
                 self.callManager.add(call: call)
             }
             completion?(error)
@@ -60,7 +66,7 @@ extension ProviderDelegate: CXProviderDelegate {
     }
     
     func provider(_ provider: CXProvider, perform action: CXStartCallAction) {
-        let call = Call(uuid: action.callUUID, outgoing: true, handle: action.handle.value)
+        let call = Call(uuid: action.callUUID, outgoing: true, handle: action.handle.value, username: username)
         configureAudioSession()
         
         call.connectedStateChanged = { [weak self, weak call] in
@@ -89,7 +95,7 @@ extension ProviderDelegate: CXProviderDelegate {
     
     func provider(_ provider: CXProvider, perform action: CXAnswerCallAction) {
         DispatchQueue.main.async {
-            Recorder.sharedInstance().delegate = WebSocketManagerAdapter.shared
+            Recorder.sharedInstance().delegate = adapterFor(username: self.username)
             Recorder.sharedInstance().startRecordAndPlay()
         }
         guard let call = callManager.callWithUUID(action.callUUID) else {
@@ -107,12 +113,12 @@ extension ProviderDelegate: CXProviderDelegate {
             action.fail()
             return
         }
-        WebSocketManagerAdapter.shared.readyToSendVideoData = false
+        adapterFor(username: username).readyToSendVideoData = false
         Recorder.sharedInstance().needSendVideo = false
         stopAudio()
         call.end()
         action.fulfill()
-        WebSocketManager.shared.nowCallUUID = nil
+        manager?.nowCallUUID = nil
         if call.rejectBySelf {
             call.cancelBySelf()
         }

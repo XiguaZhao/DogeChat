@@ -22,11 +22,7 @@ class ContactsTableViewController: DogeChatViewController, UIImagePickerControll
     var password = ""
     let avatarImageView = FLAnimatedImageView()
     var manager: WebSocketManager {
-        if #available(iOS 13.0, *) {
-            return socketForUsername(username)
-        } else {
-            return WebSocketManager.shared
-        }
+        return socketForUsername(username)
     }
     var nav: UINavigationController? {
         if #available(iOS 13.0, *) {
@@ -281,7 +277,7 @@ class ContactsTableViewController: DogeChatViewController, UIImagePickerControll
         }
         var remoteFilePath = JSON(data)["filePath"].stringValue
         remoteFilePath = manager.messageManager.encrypt.decryptMessage(remoteFilePath)
-        remoteFilePath = manager.url_pre + remoteFilePath
+        remoteFilePath = WebSocketManager.url_pre + remoteFilePath
         message.message = remoteFilePath
         manager.sendWrappedMessage(message)
     }
@@ -395,7 +391,7 @@ class ContactsTableViewController: DogeChatViewController, UIImagePickerControll
             chatRoomVC.friendName = friendName
             chatRoomVC.messages = manager.messageManager.messagesSingle[friendName] ?? []
             chatRoomVC.messagesUUIDs = manager.messageManager.singleUUIDs[friendName] ?? Set()
-            chatRoomVC.friendAvatarUrl = manager.url_pre + self.usersInfos[indexPath.row].avatarUrl
+            chatRoomVC.friendAvatarUrl = url_pre + self.usersInfos[indexPath.row].avatarUrl
         }
         return chatRoomVC
     }
@@ -471,7 +467,7 @@ extension ContactsTableViewController: MessageDelegate, AddContactDelegate {
     }
     
     func newFriendRequest() {
-        WebSocketManagerAdapter.shared.playSound()
+        adapterFor(username: username).playSound()
         if #available(iOS 13.0, *) {
             navigationItem.rightBarButtonItem = itemRequest
         }

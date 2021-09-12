@@ -72,10 +72,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func login(username: String, password: String) {
         SceneDelegate.usernameToDelegate[username] = self
         setUsernameAndPassword(username, password)
+        AppDelegate.shared.username = username
         let socket = WebSocketManager()
         let adapter = WebSocketManagerAdapter(manager: socket, username: username)
-        WebSocketManager.shared.usersToSocketManager[username] = socket
-        WebSocketManagerAdapter.shared.usernameToAdapter[username] = adapter
+        NotificationManager.shared.username = username
+        WebSocketManager.usersToSocketManager[username] = socket
+        WebSocketManagerAdapter.usernameToAdapter[username] = adapter
         adapter.registerNotification()
         socket.messageManager.myName = username
         self.socketManager = socket
@@ -146,33 +148,20 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             socketManager.sortMessages()
         }
         let shouldReLogin = self.needRelogin()
-        var reloginCount = 0
         if !callManager.hasCall() {
             if socketManager.connected {
                 socketManager.disconnect()
             }
-            WebSocketManager.shared.connected = false
-        }
-        func reloginFunc() {
-            reloginCount += 1
-            if reloginCount < 5, !self.password.isEmpty {
-                socketManager.messageManager.login(username: socketManager.messageManager.myName, password: password) { (result) in
-                    if result == "登录成功" {
-                        socketManager.connect()
-                    } else {
-                        reloginFunc()
-                    }
-                }
-            }
+            socketManager.connected = false
         }
         if shouldReLogin {
-            reloginFunc()
+            self.contactVC?.downRefreshAction()
         }
         if (self.navigationController).topViewController?.title == "JoinChatVC" { return }
         guard !socketManager.cookie.isEmpty else {
             return
         }
-        if !shouldReLogin {
+        if !shouldReLogin && !socketManager.cookie.isEmpty {
             socketManager.connect()
         }
     }

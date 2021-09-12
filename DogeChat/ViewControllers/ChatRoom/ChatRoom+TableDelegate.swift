@@ -251,7 +251,7 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
                 message.receiver = contact
                 message.id = maxID + 1
                 message.option = contact == "群聊" ? .toAll : .toOne
-                WebSocketManager.shared.sendWrappedMessage(message)
+                manager.sendWrappedMessage(message)
             }
         }
     }

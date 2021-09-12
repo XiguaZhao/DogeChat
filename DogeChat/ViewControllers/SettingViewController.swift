@@ -31,6 +31,9 @@ class SettingViewController: DogeChatViewController, DatePickerChangeDelegate, U
     let tableView = DogeChatTableView()
     var customBlurSwitcher: UISwitch!
     var username = ""
+    var manager: WebSocketManager {
+        socketForUsername(username)
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -64,7 +67,7 @@ class SettingViewController: DogeChatViewController, DatePickerChangeDelegate, U
             }
         } else {
             guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
-            WebSocketManager.shared.disconnect()
+            manager.disconnect()
             if let contactVCNav = appDelegate.contactVC?.navigationController {
                 contactVCNav.setViewControllers([JoinChatViewController()], animated: true)
             }
@@ -83,10 +86,10 @@ class SettingViewController: DogeChatViewController, DatePickerChangeDelegate, U
             var key = ""
             switch type {
             case .selectHost:
-                text = WebSocketManager.shared.messageManager.url_pre
+                text = url_pre
                 key = "host"
             case .wsAddress:
-                text = WebSocketManager.shared.socketUrl
+                text = WebSocketManager.socketUrl
                 key = "socketUrl"
             default:
                 break
@@ -181,7 +184,7 @@ class SettingViewController: DogeChatViewController, DatePickerChangeDelegate, U
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         guard let image = info[.originalImage] as? UIImage else { return }
-        let compress = WebSocketManager.shared.messageManager.compressEmojis(image, needBig: false, askedSize: CGSize(width: 400, height: 400))
+        let compress = compressEmojis(image, needBig: false, askedSize: CGSize(width: 400, height: 400))
         if let userID = userIDFor(username: username) {
             saveFileToDisk(dirName: "customBlur", fileName: userID, data: compress)
             customBlurSwitcher.isOn = fileURLAt(dirName: "customBlur", fileName: userID) != nil
@@ -204,7 +207,7 @@ class SettingViewController: DogeChatViewController, DatePickerChangeDelegate, U
     
     @objc func doNotDisturbSwitched(_ switcher: UISwitch) {
         if !switcher.isOn {
-            WebSocketManager.shared.doNotDisturb(for: "", hour: 0) {
+            manager.doNotDisturb(for: "", hour: 0) {
             }
         } else {
             let pickerVC = DatePickerViewController()
@@ -215,7 +218,7 @@ class SettingViewController: DogeChatViewController, DatePickerChangeDelegate, U
 
     func datePickerConfirmed(_ picker: UIDatePicker) {
         let hour = Int(picker.countDownDuration / 60 / 60)
-        WebSocketManager.shared.doNotDisturb(for: "", hour: hour) {
+        manager.doNotDisturb(for: "", hour: hour) {
         }
     }
     

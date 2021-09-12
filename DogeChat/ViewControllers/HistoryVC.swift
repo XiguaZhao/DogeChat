@@ -43,11 +43,14 @@ class HistoryVC: DogeChatViewController {
     }
     var upNowPage = 1
     var downNowPage = 1
+    var manager: WebSocketManager! {
+        return WebSocketManager.usersToSocketManager[username]
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        WebSocketManager.shared.needInsertWhenWrap = false
+        manager.needInsertWhenWrap = false
         
         view.addSubview(tableView)
         navigationItem.title = name + "的历史记录"
@@ -96,18 +99,15 @@ class HistoryVC: DogeChatViewController {
     }
     
     deinit {
-        WebSocketManager.shared.needInsertWhenWrap = true
+        manager.needInsertWhenWrap = true
     }
     
     private func configRefresh() {
         let footer = MJRefreshAutoStateFooter(refreshingTarget: self, refreshingAction: #selector(refreshFooterAction))
-//        let header = MJRefreshNormalHeader(refreshingTarget: self, refreshingAction: #selector(refreshHeaderAction))
         let header = UIRefreshControl()
         header.addTarget(self, action: #selector(refreshHeaderAction), for: .valueChanged)
         tableView.mj_footer = footer
         tableView.refreshControl = header
-//        tableView.mj_header = header
-        
     }
     
     private func configDataSource() {

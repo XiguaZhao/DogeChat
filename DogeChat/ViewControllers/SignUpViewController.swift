@@ -26,6 +26,7 @@ class SignUpViewController: UIViewController {
     @IBOutlet weak var confirmPassword: UITextField!
     @IBOutlet weak var email: UITextField!
     @IBOutlet weak var validationCode: UITextField!
+    let manager = WebSocketManager()
     var textFields: [UITextField] {
         return [username, password, confirmPassword, email, validationCode]
     }
@@ -38,7 +39,7 @@ class SignUpViewController: UIViewController {
     @IBAction func sendCode(_ sender: UIButton) {
         guard let email = email.text else { return }
         print(email)
-        WebSocketManager.shared.sendValitionCode(to: email, for: type.rawValue) { status in
+        manager.sendValitionCode(to: email, for: type.rawValue) { status in
             print(status)
             if status == "success" {
                 sender.setTitle("已发送", for: .disabled)
@@ -64,7 +65,7 @@ class SignUpViewController: UIViewController {
             makeAutoAlert(message: "密码不一致", detail: nil, showTime: 1, completion: nil)
             return
         }
-        WebSocketManager.shared.signUpOrModify(type:type.rawValue, username: username, password: password, repeatPassword: confirm, email: email, validationCode: code) { (status) in
+        manager.signUpOrModify(type:type.rawValue, username: username, password: password, repeatPassword: confirm, email: email, validationCode: code) { (status) in
             print(status)
             if status == "success" {
                 self.makeAutoAlert(message: "注册成功", detail: "请记住用户名和密码", showTime: 2) {

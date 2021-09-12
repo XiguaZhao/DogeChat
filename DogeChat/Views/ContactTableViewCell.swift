@@ -107,7 +107,7 @@ class ContactTableViewCell: UITableViewCell {
             latestMessageLabel.removeFromSuperview()
         }
         if !info.avatarUrl.isEmpty {
-            let avatarUrl = WebSocketManager.shared.url_pre + info.avatarUrl
+            let avatarUrl = WebSocketManager.url_pre + info.avatarUrl
             let isGif = avatarUrl.hasSuffix(".gif")
             if let data = ContactTableViewCell.avatarCache[avatarUrl] {
                 if isGif {
@@ -123,7 +123,7 @@ class ContactTableViewCell: UITableViewCell {
                     return
                 }
                 if !isGif, let image = image { // is photo
-                    let compressed = WebSocketManager.shared.messageManager.compressEmojis(image)
+                    let compressed = compressEmojis(image)
                     avatarImageView.image = UIImage(data: compressed)
                     ContactTableViewCell.avatarCache[avatarUrl] = compressed
                 } else { // gif图处理

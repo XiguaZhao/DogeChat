@@ -29,8 +29,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var deviceToken: String?
     var pushKitToken: String?
     var launchedByPushAction = false
-    let notificationManager = NotificationManager.shared
-    let socketManager = WebSocketManager.shared
+    var notificationManager = NotificationManager.shared
+    var socketManager: WebSocketManager! {
+        return WebSocketManager.usersToSocketManager[username]
+    }
     var username = ""
     var navigationController: UINavigationController!
     var tabBarController: UITabBarController!
@@ -82,9 +84,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         if #available(iOS 14, *) {} else {
             tabBarController.viewControllers![1].tabBarItem.image = UIImage(named: "music")
         }
-        
-        providerDelegate = ProviderDelegate(callManager: callManager)
-        socketManager.messageManager.encrypt = EncryptMessage()
         let notificationOptions = launchOptions?[.remoteNotification]
         if let notification = notificationOptions as? [String: AnyObject],
            let aps = notification["aps"] as? [String: AnyObject] {
@@ -122,19 +121,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func setupReachability() {
         reachability.whenReachable = { reach in
-            if !WebSocketManager.shared.messageManager.isLogin {
+            if !self.socketManager.messageManager.isLogin {
                 if let username = UserDefaults.standard.value(forKey: "lastUsername") as? String,
                    let password = UserDefaults.standard.value(forKey: "lastPassword") as? String {
-                    WebSocketManager.shared.messageManager.login(username: username, password: password) { res in
+                    self.socketManager.messageManager.login(username: username, password: password) { res in
                         if res == "登录成功", let contactVC = self.getContactVC() {
                             contactVC.refreshContacts {
-                                WebSocketManager.shared.connect()
+                                self.socketManager.connect()
                             }
                         }
                     }
                 }
             } else {
-                WebSocketManager.shared.connect()
+                self.socketManager.connect()
             }
         }
     }
@@ -211,17 +210,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             self.contactVC = contactVC
             self.navigationController.viewControllers = [contactVC]
             isLoginInProgress = true
-            socketManager.messageManager.login(username: username, password: password) {
+            socketManager.messageManager.login(username: username, password: password) { [self]
                 (loginResult) in
                 try? self.reachability.startNotifier()
                 self.isLoginInProgress = false
                 guard loginResult == "登录成功" else {
                     return
                 }
+                let manager = WebSocketManager()
+                let adapter = WebSocketManagerAdapter(manager: manager, username: username)
+                WebSocketManager.usersToSocketManager[username] = manager
+                WebSocketManagerAdapter.usernameToAdapter[username] = adapter
                 self.username = username
+                providerDelegate = ProviderDelegate(callManager: callManager, username: username)
+                socketManager.messageManager.encrypt = EncryptMessage()
                 contactVC.loginSuccess = true
-                WebSocketManagerAdapter.shared.username = username
-                WebSocketManagerAdapter.shared.manager = WebSocketManager.shared
             }
         } else {
             self.navigationController.viewControllers = [JoinChatViewController()]
@@ -249,7 +252,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         print("become active")
         application.applicationIconBadgeNumber = 0
         DispatchQueue.global().async {
-            WebSocketManager.shared.sortMessages()
+            self.socketManager.sortMessages()
         }
         let shouldReLogin = self.needRelogin()
         var reloginCount = 0
@@ -257,7 +260,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             if socketManager.connected {
                 socketManager.disconnect()
             }
-            WebSocketManager.shared.connected = false
+            socketManager.connected = false
         }
         func reloginFunc() {
             reloginCount += 1
@@ -275,11 +278,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             reloginFunc()
         }
         if (self.navigationController).topViewController?.title == "JoinChatVC" { return }
-        guard !WebSocketManager.shared.messageManager.cookie.isEmpty else {
+        guard !socketManager.messageManager.cookie.isEmpty else {
             return
         }
         if !shouldReLogin {
-            WebSocketManager.shared.connect()
+            socketManager.connect()
         }
     }
     
@@ -289,7 +292,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         lastAppEnterBackgroundTime = NSDate().timeIntervalSince1970
         guard !callManager.hasCall() else { return }
         socketManager.disconnect()
-        WebSocketManager.shared.invalidatePingTimer()
+        socketManager.invalidatePingTimer()
     }
     
     func application(_ application: UIApplication, performActionFor shortcutItem: UIApplicationShortcutItem, completionHandler: @escaping (Bool) -> Void) {
@@ -320,8 +323,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     ) {
         print(userInfo)
         // socket如果断开却没回调通知我的话，就算收到推送也会安静
-        if !WebSocketManager.shared.connected {
-            WebSocketManager.shared.connect()
+        if !socketManager.connected {
+            socketManager.connect()
         }
     }
     
@@ -353,6 +356,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         guard let userInfo = response.notification.request.content.userInfo as? [String: AnyObject],
               let aps = userInfo["aps"] as? [String: AnyObject] else { return }
+        notificationManager.username = username
         notificationManager.processRemoteNotification(aps)
         
         switch response.actionIdentifier {
@@ -365,9 +369,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         case "DO_NOT_DISTURT_ACTION":
             if let username = UserDefaults.standard.value(forKey: "lastUsername") as? String,
                let password = UserDefaults.standard.value(forKey: "lastPassword") as? String {
-                WebSocketManager.shared.messageManager.login(username: username, password: password) { res in
+                socketManager.messageManager.login(username: username, password: password) { res in
                     if res == "登录成功" {
-                        WebSocketManager.shared.doNotDisturb(for: "", hour: 4) {
+                        self.socketManager.doNotDisturb(for: "", hour: 4) {
                             completionHandler()
                             print("已经调用completionHandler")
                         }
@@ -445,7 +449,7 @@ extension AppDelegate: FloatWindowTouchDelegate {
     
     func tapAlwaysDisplay(_ window: FloatWindow!, name: String) {
         if window.alwayDisplayType == .shouldDismiss {
-            WebSocketManagerAdapter.shared.readyToSendVideoData = false
+            adapterFor(username: username).readyToSendVideoData = false
             Recorder.sharedInstance().needSendVideo = false
             guard let call = callManager.callWithUUID(socketManager.nowCallUUID) else { return }
             call.end()
@@ -455,7 +459,7 @@ extension AppDelegate: FloatWindowTouchDelegate {
                 videoVC.dismiss()
             }
             #endif
-            WebSocketManager.shared.nowCallUUID = nil
+            socketManager.nowCallUUID = nil
             switcherWindow.isHidden = true
         } else {
             if Recorder.sharedInstance().nowRoute == .headphone {

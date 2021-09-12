@@ -11,6 +11,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface VideoChatViewController : UIViewController
+@property (nonatomic, strong) NSString *username;
 - (void)didReceiveVideoData:(NSData *)videoData;
 - (void)dismiss;
 @end

@@ -92,7 +92,7 @@ static CGFloat overlayWidth = 0;
 
 - (void)captureOutput:(AVCaptureOutput *)output didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection {
     if (output != self.overlayVideoView.videoOutput) return;
-    if (WebSocketManagerAdapter.shared.readyToSendVideoData) {
+    if (WebSocketManagerAdapter.usernameToAdapter[self.username].readyToSendVideoData) {
         __weak VideoChatViewController *wself = self;
         [self.encoder startH264EncodeWithSampleBuffer:sampleBuffer andReturnData:^(NSData *data) {
             __strong VideoChatViewController *strongSelf = wself;
@@ -112,10 +112,14 @@ static CGFloat overlayWidth = 0;
                 [mData appendData:recordedAudioData];
                 [recordedAudioData replaceBytesInRange:NSMakeRange(0, recordedAudioData.length) withBytes:NULL length:0];
             }
-            [WebSocketManager.shared sendVideoData:[mData copy]];
+            [[self manager] sendVideoData:[mData copy]];
         }];
 
     }
+}
+
+- (WebSocketManager *)manager {
+    return WebSocketManager.usersToSocketManager[self.username];
 }
 
 - (void)didReceiveVideoData:(NSData *)videoData {

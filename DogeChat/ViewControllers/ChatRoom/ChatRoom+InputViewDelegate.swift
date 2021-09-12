@@ -205,10 +205,10 @@ extension ChatRoomViewController: MessageInputDelegate, VoiceRecordDelegate {
                                 if let success = try? gifUrl.checkResourceIsReachable(), success {
                                     self?.latestPickedImageInfos.append((image, gifUrl, image.size))
                                 } else {
-                                    self?.latestPickedImageInfos.append(WebSocketManagerAdapter.shared.compressImage(image))
+                                    self?.latestPickedImageInfos.append(compressImage(image))
                                 }
                             } else {
-                                self?.latestPickedImageInfos.append(WebSocketManagerAdapter.shared.compressImage(image))
+                                self?.latestPickedImageInfos.append(compressImage(image))
                             }
                             if self?.latestPickedImageInfos.count == items.count {
                                 self?.confirmSendPhoto()
@@ -245,7 +245,7 @@ extension ChatRoomViewController: MessageInputDelegate, VoiceRecordDelegate {
             isGif = originalUrl_.absoluteString.hasSuffix(".gif")
             originalUrl = originalUrl_
         }
-        self.latestPickedImageInfos = [(isGif ? (nil, originalUrl!, image.size) : WebSocketManagerAdapter.shared.compressImage(image))]
+        self.latestPickedImageInfos = [(isGif ? (nil, originalUrl!, image.size) : compressImage(image))]
         picker.dismiss(animated: true) {
             guard !isGif else {
                 self.confirmSendPhoto()

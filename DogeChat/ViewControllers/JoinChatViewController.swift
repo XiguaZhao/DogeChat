@@ -118,31 +118,24 @@ extension JoinChatViewController: UITextFieldDelegate {
             makeAutoAlert(message: "信息不完整", detail: nil, showTime: 1, completion: nil)
             return
         }
-        guard !WebSocketManager.shared.usersToSocketManager.keys.contains(username) else {
+        guard !WebSocketManager.usersToSocketManager.keys.contains(username) else {
             makeAutoAlert(message: "该账号已登录", detail: nil, showTime: 1, completion: nil)
             return
         }
         let manager: WebSocketManager
         let adapter: WebSocketManagerAdapter
-        if #available(iOS 13.0, *) {
-            let socketManager = WebSocketManager()
-            adapter = WebSocketManagerAdapter(manager: socketManager, username: username)
-            manager = socketManager
-            socketManager.messageManager.encrypt = EncryptMessage()
-        } else {
-            WebSocketManagerAdapter.shared.username = username
-            WebSocketManagerAdapter.shared.manager = WebSocketManager.shared
-            manager = WebSocketManager.shared
-            adapter = WebSocketManagerAdapter.shared
-        }
+        let socketManager = WebSocketManager()
+        adapter = WebSocketManagerAdapter(manager: socketManager, username: username)
+        manager = socketManager
+        socketManager.messageManager.encrypt = EncryptMessage()
         manager.messageManager.myName = username
         manager.messageManager.login(username: username, password: password) { [weak self] loginResult in
             if loginResult == "登录成功" {
                 let contactsTVC = ContactsTableViewController()
                 if #available(iOS 13, *) {
                     SceneDelegate.usernameToDelegate[username] = (self?.view.window?.windowScene?.delegate as? SceneDelegate)
-                    WebSocketManager.shared.usersToSocketManager[username] = manager
-                    WebSocketManagerAdapter.shared.usernameToAdapter[username] = adapter
+                    WebSocketManager.usersToSocketManager[username] = manager
+                    WebSocketManagerAdapter.usernameToAdapter[username] = adapter
                     ((((self?.view.window?.windowScene?.delegate as? SceneDelegate)?.tabbarController.viewControllers?[1] as? UINavigationController))?.viewControllers.first as? PlayListViewController)?.username = username
                     ((((self?.view.window?.windowScene?.delegate as? SceneDelegate)?.tabbarController.viewControllers?[2] as? UINavigationController))?.viewControllers.first as? SettingViewController)?.username = username
                     (self?.view.window?.windowScene?.delegate as? SceneDelegate)?.socketManager = manager
@@ -150,6 +143,7 @@ extension JoinChatViewController: UITextFieldDelegate {
                     (self?.view.window?.windowScene?.delegate as? SceneDelegate)?.setUsernameAndPassword(username, password)
                     (self?.view.window?.windowScene?.delegate as? SceneDelegate)?.contactVC = contactsTVC
                 }
+                NotificationManager.shared.username = username
                 AppDelegate.shared.username = username
                 AppDelegate.shared.contactVC = contactsTVC
                 contactsTVC.username = username

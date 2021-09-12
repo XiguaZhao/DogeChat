@@ -10,11 +10,7 @@ class ChatRoomViewController: DogeChatViewController {
     static let numberOfHistory = 10
     static var needRotate = false
     var manager: WebSocketManager {
-        if #available(iOS 13.0, *) {
-            return socketForUsername(username)
-        } else {
-            return WebSocketManager.shared
-        }
+        return socketForUsername(username)
     }
     let tableView = DogeChatTableView()
     let messageInputBar = MessageInputView()
@@ -327,7 +323,7 @@ extension ChatRoomViewController: MessageDelegate {
     func newFriendRequest() {
         guard let contactVC = navigationController?.viewControllers.filter({ $0 is ContactsTableViewController }).first as? ContactsTableViewController else { return }
         navigationItem.rightBarButtonItem = contactVC.itemRequest
-        WebSocketManagerAdapter.shared.playSound()
+        adapterFor(username: username).playSound()
     }
 }
 

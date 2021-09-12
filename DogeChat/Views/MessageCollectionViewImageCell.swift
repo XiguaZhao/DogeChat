@@ -375,7 +375,7 @@ class MessageCollectionViewImageCell: MessageCollectionViewBaseCell, PHLivePhoto
                 return
             }
             if !isGif, let image = image { // is photo
-                let compressed = WebSocketManager.shared.messageManager.compressEmojis(image)
+                let compressed = compressEmojis(image)
                 animatedImageView.image = UIImage(data: compressed)
                 cache.setObject(compressed as NSData, forKey: imageUrl as NSString)
             } else { // gif图处理

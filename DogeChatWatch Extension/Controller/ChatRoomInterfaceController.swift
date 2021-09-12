@@ -146,7 +146,7 @@ class ChatRoomInterfaceController: WKInterfaceController {
                             let task = SocketManager.shared.session.dataTask(with: imageUrl) { data, response, error in
                                 guard let imageData = data,
                                       let image = UIImage(data: imageData) else { return }
-                                let compressedData = self.manager.messageManager.compressEmojis(image)
+                                let compressedData = compressEmojis(image)
                                 DispatchQueue.main.async {
                                     messageRow.image.setWidth(width)
                                     messageRow.image.setHeight(width/image.size.width * image.size.height)

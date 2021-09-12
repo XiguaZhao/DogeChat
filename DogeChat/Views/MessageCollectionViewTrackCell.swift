@@ -13,7 +13,7 @@ import DogeChatNetwork
 let sharedTracksImageCache = NSCache<NSString, NSData>()
 
 func compressImage(image: UIImage, needBig: Bool, askedSize: CGSize?) -> Data {
-    return WebSocketManager.shared.messageManager.compressEmojis(image, needBig: needBig, askedSize: askedSize)
+    return compressEmojis(image, needBig: needBig, askedSize: askedSize)
 }
 
 class MessageCollectionViewTrackCell: MessageCollectionViewBaseCell {

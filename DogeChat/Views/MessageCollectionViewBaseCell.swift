@@ -183,13 +183,13 @@ class MessageCollectionViewBaseCell: DogeChatTableViewCell {
         let username = message.senderUsername
         var url: String?
         if message.messageSender == .ourself {
-            url = WebSocketManager.shared.messageManager.myAvatarUrl
+            url = manager.messageManager.myAvatarUrl
         } else {
             switch message.option {
             case .toOne:
                 if let index = contactDataSource?.usernames.firstIndex(of: username),
                    let path = contactDataSource?.userInfos[index].avatarUrl {
-                    url = WebSocketManager.shared.url_pre + path
+                    url = WebSocketManager.url_pre + path
                 }
             case .toAll:
                 url = message.avatarUrl
@@ -218,7 +218,7 @@ class MessageCollectionViewBaseCell: DogeChatTableViewCell {
         } else if message.option == .toOne {
             if let index = contactDataSource?.userInfos.firstIndex(where: { $0.name == message.senderUsername }),
                let path = contactDataSource?.userInfos[index].avatarUrl {
-                let url = WebSocketManager.shared.url_pre + path
+                let url = WebSocketManager.url_pre + path
                 block(url)
             }
         } else { // 群聊 someoneElse
@@ -236,7 +236,7 @@ class MessageCollectionViewBaseCell: DogeChatTableViewCell {
                 SDWebImageManager.shared.loadImage(with: URL(string: url), options: [.avoidDecodeImage, .allowInvalidSSLCertificates], progress: nil) { [weak self] image, data, _, _, _, _ in
                     guard let self = self, capturedMessage?.uuid == self.message.uuid else { return }
                     if !isGif, let image = image { // is photo
-                        let compressed = WebSocketManager.shared.messageManager.compressEmojis(image)
+                        let compressed = compressEmojis(image)
                         self.avatarImageView.image = UIImage(data: compressed)
                         ContactTableViewCell.avatarCache[url] = compressed
                     } else { // gif图处理
@@ -389,7 +389,7 @@ class MessageCollectionViewBaseCell: DogeChatTableViewCell {
 extension MessageCollectionViewBaseCell {
     func didDrop(imageLink: String, image: UIImage, point: CGPoint, cache: NSCache<NSString, NSData>) {
         playHaptic()
-        let emojiInfo = EmojiInfo(x: max(0, point.x/self.contentSize.width), y: max(0, point.y/self.contentSize.height), rotation: 0, scale: 1, imageLink: imageLink, lastModifiedBy: WebSocketManager.shared.messageManager.myName)
+        let emojiInfo = EmojiInfo(x: max(0, point.x/self.contentSize.width), y: max(0, point.y/self.contentSize.height), rotation: 0, scale: 1, imageLink: imageLink, lastModifiedBy: manager.messageManager.myName)
         message.emojisInfo.append(emojiInfo)
         delegate?.emojiInfoDidChange(from: nil, to: emojiInfo, cell: self)
     }

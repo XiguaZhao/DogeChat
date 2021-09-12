@@ -27,6 +27,7 @@ class Call: NSObject {
     let outgoing: Bool
     let handle: String
     var rejectBySelf = true
+    let username: String
     
     var state: CallState = .ended {
         didSet {
@@ -43,10 +44,15 @@ class Call: NSObject {
     var stateChanged: (() -> Void)?
     var connectedStateChanged: (() -> Void)?
     
-    init(uuid: UUID, outgoing: Bool = false, handle: String) {
+    private var manager: WebSocketManager! {
+        WebSocketManager.usersToSocketManager[username]
+    }
+    
+    init(uuid: UUID, outgoing: Bool = false, handle: String, username: String) {
         self.uuid = uuid
         self.outgoing = outgoing
         self.handle = handle
+        self.username = username
     }
     
     func start(complection: (( _ success: Bool) -> Void)?) {
@@ -54,8 +60,8 @@ class Call: NSObject {
     }
     
     func answer() {
-        WebSocketManager.shared.responseVoiceChat(to: handle, uuid: uuid.uuidString, response: "accept")
-        WebSocketManager.shared.nowCallUUID = uuid
+        manager.responseVoiceChat(to: handle, uuid: uuid.uuidString, response: "accept")
+        manager.nowCallUUID = uuid
         AppDelegate.shared.callWindow.assignValueForAlwaysDisplay(name: handle)
         AppDelegate.shared.switcherWindow.assignValueForAlwaysDisplay(name: "内/外放")
         state = .active
@@ -63,14 +69,14 @@ class Call: NSObject {
     }
     
     func cancelBySelf() {
-        WebSocketManager.shared.endCall(uuid: uuid.uuidString, with: handle)
+        manager.endCall(uuid: uuid.uuidString, with: handle)
         state = .ended
         rejectBySelf = true
     }
     
     func end() {
         Recorder.sharedInstance().stopRecordAndPlay()
-        WebSocketManager.shared.endCall(uuid: uuid.uuidString, with: handle)
+        manager.endCall(uuid: uuid.uuidString, with: handle)
         AppDelegate.shared.callWindow.nestedVC.tapped(nil)
         AppDelegate.shared.switcherWindow.isHidden = true
         state = .ended

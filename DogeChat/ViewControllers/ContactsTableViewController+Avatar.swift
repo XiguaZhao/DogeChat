@@ -14,7 +14,7 @@ extension ContactsTableViewController: ContactTableViewCellDelegate, UIContextMe
     func avatarTapped(_ cell: ContactTableViewCell?, path: String) {
         let browser = ImageBrowserViewController()
         browser.modalPresentationStyle = .fullScreen
-        browser.imagePaths = [WebSocketManager.shared.url_pre + path]
+        browser.imagePaths = [WebSocketManager.url_pre + path]
         appDelegate.navigationController.present(browser, animated: true, completion: nil)
     }
     
@@ -30,6 +30,11 @@ extension ContactsTableViewController: ContactTableViewCellDelegate, UIContextMe
         label.text = self.username
         avatarImageView.contentMode = .scaleAspectFill
         avatarImageView.layer.masksToBounds = true
+        if let navBar = self.navigationController?.navigationBar {
+            avatarImageView.layer.cornerRadius = navBar.bounds.height / 2
+        } else {
+            avatarImageView.layer.cornerRadius = 44 / 2
+        }
         let stackView = UIStackView(arrangedSubviews: [avatarImageView, label])
         stackView.spacing = 15
         if #available(iOS 13.0, *) {
@@ -41,11 +46,6 @@ extension ContactsTableViewController: ContactTableViewCellDelegate, UIContextMe
             make?.width.mas_equalTo()(self?.avatarImageView.mas_height)
             
         }
-        if let navBar = self.navigationController?.navigationBar {
-            avatarImageView.layer.cornerRadius = navBar.bounds.height / 2
-        } else {
-            avatarImageView.layer.cornerRadius = 44 / 2
-        }
         stackView.isUserInteractionEnabled = true
         let tapAvatar = UITapGestureRecognizer(target: self, action: #selector(changeAvatarAction(_:)))
         stackView.addGestureRecognizer(tapAvatar)
@@ -53,9 +53,10 @@ extension ContactsTableViewController: ContactTableViewCellDelegate, UIContextMe
     
     @available(iOS 13.0, *)
     func contextMenuInteraction(_ interaction: UIContextMenuInteraction, configurationForMenuAtLocation location: CGPoint) -> UIContextMenuConfiguration? {
-        return .init(identifier: nil) {
+        return .init(identifier: nil) { [weak self] in
+            guard let self = self else { return nil }
             let browser = ImageBrowserViewController()
-            browser.imagePaths = [WebSocketManager.shared.messageManager.myAvatarUrl]
+            browser.imagePaths = [self.manager.messageManager.myAvatarUrl]
             return browser
         } actionProvider: { _ in
             return nil
@@ -72,7 +73,7 @@ extension ContactsTableViewController: ContactTableViewCellDelegate, UIContextMe
                 }
             } else {
                 if let image = image {
-                    let data = self.manager.messageManager.compressEmojis(image)
+                    let data = compressEmojis(image)
                     avatarImageView.image = UIImage(data: data)
                     ContactTableViewCell.avatarCache[url] = data
                 }
@@ -97,7 +98,7 @@ extension ContactsTableViewController: ContactTableViewCellDelegate, UIContextMe
                     let allMessage = chatVC.messages
                     let messagesWhoChangeAvatar = allMessage.filter { $0.senderUsername == username }
                     for message in messagesWhoChangeAvatar {
-                        message.avatarUrl = manager.url_pre + newAvatarUrl
+                        message.avatarUrl = WebSocketManager.url_pre + newAvatarUrl
                     }
                     chatVC.tableView.reloadData()
                 }
@@ -115,12 +116,12 @@ extension ContactsTableViewController: ContactTableViewCellDelegate, UIContextMe
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         picker.dismiss(animated: true, completion: nil)
         guard let image = info[.editedImage] as? UIImage else { return }
-        if let compressedImageData = WebSocketManagerAdapter.shared.compressImage(image, needSave: false).image.jpegData(compressionQuality: 0.3) {
-            manager.uploadData(compressedImageData, path: "user/changeAvatar", name: "avatar", fileName: UUID().uuidString + ".jpeg", needCookie: true, contentType: "multipart/form-data", params: nil) { task, data in
-                guard let data = data else { return }
+        if let compressedImageData = compressImage(image, needSave: false).image.jpegData(compressionQuality: 0.3) {
+            manager.uploadData(compressedImageData, path: "user/changeAvatar", name: "avatar", fileName: UUID().uuidString + ".jpeg", needCookie: true, contentType: "multipart/form-data", params: nil) { [weak self] task, data in
+                guard let self = self, let data = data else { return }
                 let json = JSON(data)
                 if json["status"].stringValue == "success" {
-                    WebSocketManager.shared.messageManager.myAvatarUrl = WebSocketManager.shared.url_pre + json["avatarUrl"].stringValue
+                    self.manager.messageManager.myAvatarUrl = WebSocketManager.url_pre + json["avatarUrl"].stringValue
                 }
             }
         }
