@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder.WatchKit.Storyboard" version="3.0" toolsVersion="18122" targetRuntime="watchKit" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="AgC-eL-Hgc">
-    <device id="watch38"/>
+<document type="com.apple.InterfaceBuilder.WatchKit.Storyboard" version="3.0" toolsVersion="19162" targetRuntime="watchKit" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="AgC-eL-Hgc">
+    <device id="watch45"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="18093"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBWatchKitPlugin" version="18022"/>
+        <deployment identifier="watchOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19144"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBWatchKitPlugin" version="19044"/>
     </dependencies>
     <scenes>
         <!--chatroom-->
@@ -13,7 +14,7 @@
                     <items>
                         <table alignment="left" id="XGJ-b1-WxA">
                             <items>
-                                <tableRow identifier="message" id="DH4-qc-ToP" customClass="MessageRow" customModule="DogeChatWatch_Extension">
+                                <tableRow identifier="message" selectable="NO" id="DH4-qc-ToP" customClass="MessageRow" customModule="DogeChatWatch_Extension">
                                     <group key="rootItem" width="1" height="0.0" alignment="left" layout="vertical" id="GI3-YI-UHG">
                                         <items>
                                             <label alignment="left" id="e8q-FK-5Oa">
@@ -35,12 +36,21 @@
                         </table>
                         <group width="1" alignment="left" layout="vertical" id="H3y-nq-q2o">
                             <items>
-                                <textField width="1" alignment="left" placeholder="请输入发送内容" id="J8l-W1-Lps">
-                                    <connections>
-                                        <action selector="inputAction:" destination="xmZ-JB-zGm" id="jcb-oI-PeX"/>
-                                    </connections>
-                                </textField>
-                                <button width="1" alignment="left" title="发送" id="1D8-RL-WyV">
+                                <group width="1" height="40" alignment="left" id="snl-e8-sF1">
+                                    <items>
+                                        <textField width="1" widthAdjustment="-30" height="1" alignment="left" placeholder="请输入发送内容" id="J8l-W1-Lps">
+                                            <connections>
+                                                <action selector="inputAction:" destination="xmZ-JB-zGm" id="jcb-oI-PeX"/>
+                                            </connections>
+                                        </textField>
+                                        <button width="30" height="30" alignment="left" verticalAlignment="center" backgroundImage="emoji" id="5ps-6B-Tvg">
+                                            <connections>
+                                                <action selector="emojiAction" destination="xmZ-JB-zGm" id="ykb-CX-pwu"/>
+                                            </connections>
+                                        </button>
+                                    </items>
+                                </group>
+                                <button width="1" alignment="left" hidden="YES" title="发送" id="1D8-RL-WyV">
                                     <connections>
                                         <action selector="sendAction" destination="xmZ-JB-zGm" id="7Wh-yf-ux9"/>
                                     </connections>
@@ -54,7 +64,43 @@
                     </connections>
                 </controller>
             </objects>
-            <point key="canvasLocation" x="382" y="33"/>
+            <point key="canvasLocation" x="381.8989898989899" y="32.314049586776861"/>
+        </scene>
+        <!--emoji-->
+        <scene sceneID="gaR-bx-pUh">
+            <objects>
+                <controller identifier="emoji" id="dnQ-Uu-aC9" customClass="EmojiInterfaceController" customModule="DogeChatWatch_Extension">
+                    <items>
+                        <table alignment="left" id="GvT-C0-d9u">
+                            <items>
+                                <tableRow identifier="emojiRow" selectable="NO" id="69j-Wh-hpx" customClass="EmojiRowController" customModule="DogeChatWatch_Extension">
+                                    <group key="rootItem" width="1" height="86" alignment="left" id="NL1-9V-xgW">
+                                        <items>
+                                            <imageView width="0.5" height="1" alignment="left" contentMode="scaleAspectFill" id="YhO-Ul-3j8" userLabel="left"/>
+                                            <imageView width="0.5" height="1" alignment="left" contentMode="scaleAspectFill" id="Uid-1Q-Csn" userLabel="right"/>
+                                        </items>
+                                    </group>
+                                    <connections>
+                                        <outlet property="leftImageView" destination="YhO-Ul-3j8" id="wkg-XO-HzP"/>
+                                        <outlet property="rightImageView" destination="Uid-1Q-Csn" id="qYm-cP-LA8"/>
+                                    </connections>
+                                </tableRow>
+                            </items>
+                            <gestureRecognizers>
+                                <tapGestureRecognizer id="iYi-i1-7vN">
+                                    <connections>
+                                        <action selector="tapAction:" destination="dnQ-Uu-aC9" id="10e-4T-iJJ"/>
+                                    </connections>
+                                </tapGestureRecognizer>
+                            </gestureRecognizers>
+                        </table>
+                    </items>
+                    <connections>
+                        <outlet property="table" destination="GvT-C0-d9u" id="ICA-zq-zZx"/>
+                    </connections>
+                </controller>
+            </objects>
+            <point key="canvasLocation" x="628.4848484848485" y="17.561983471074381"/>
         </scene>
         <!--login-->
         <scene sceneID="teY-da-jyP">
@@ -100,15 +146,25 @@
                         <table alignment="left" id="VYF-2o-3wG">
                             <items>
                                 <tableRow identifier="contact" id="myT-xP-nPz" customClass="ContactsRowController" customModule="DogeChatWatch_Extension">
-                                    <group key="rootItem" width="1" alignment="left" layout="vertical" id="ZPf-cC-c6y">
+                                    <group key="rootItem" width="1" alignment="left" spacing="10" id="ZPf-cC-c6y">
                                         <items>
-                                            <label alignment="left" text="Label" id="IGD-HR-JnH"/>
-                                            <label alignment="left" text="Label" id="agY-sn-zNK">
-                                                <fontDescription key="font" style="UICTFontTextStyleFootnote"/>
-                                            </label>
+                                            <group width="35" height="35" alignment="left" verticalAlignment="center" radius="17.5" id="hyP-Oo-9ss">
+                                                <items>
+                                                    <imageView width="35" height="35" alignment="left" verticalAlignment="center" contentMode="scaleAspectFill" id="Owp-sx-DAU"/>
+                                                </items>
+                                            </group>
+                                            <group width="1" widthAdjustment="-35" alignment="left" verticalAlignment="center" layout="vertical" spacing="5" id="xXh-qD-s1z">
+                                                <items>
+                                                    <label alignment="left" text="  " id="IGD-HR-JnH"/>
+                                                    <label alignment="left" text=" " id="agY-sn-zNK">
+                                                        <fontDescription key="font" style="UICTFontTextStyleFootnote"/>
+                                                    </label>
+                                                </items>
+                                            </group>
                                         </items>
                                     </group>
                                     <connections>
+                                        <outlet property="avatarImageView" destination="Owp-sx-DAU" id="ZdE-hR-MJP"/>
                                         <outlet property="latestMessageLabel" destination="agY-sn-zNK" id="yho-Ef-Lfb"/>
                                         <outlet property="usernameLabel" destination="IGD-HR-JnH" id="bGa-dn-TXR"/>
                                     </connections>
@@ -116,6 +172,15 @@
                             </items>
                         </table>
                     </items>
+                    <menu key="menu" id="PYr-sr-jwZ">
+                        <items>
+                            <menuItem title="刷新" icon="play" id="AIr-bn-vgb">
+                                <connections>
+                                    <action selector="refreshAction" destination="AgC-eL-Hgc" id="RVJ-Em-ccn"/>
+                                </connections>
+                            </menuItem>
+                        </items>
+                    </menu>
                     <connections>
                         <outlet property="table" destination="VYF-2o-3wG" id="RPt-cQ-YQm"/>
                     </connections>
@@ -155,4 +220,7 @@
             <point key="canvasLocation" x="468" y="345"/>
         </scene>
     </scenes>
+    <resources>
+        <image name="emoji" width="200" height="200"/>
+    </resources>
 </document>

@@ -40,6 +40,7 @@ class MessageCollectionViewImageCell: MessageCollectionViewBaseCell, PHLivePhoto
         contentView.addSubview(animatedImageView)
         contentView.addSubview(livePhotoView)
         contentView.addSubview(videoView)
+        indicationNeighborView = animatedImageView
         videoView.layer.masksToBounds = true
         livePhotoView.layer.masksToBounds = true
         livePhotoView.addSubview(livePhotoBadgeView)
@@ -100,7 +101,6 @@ class MessageCollectionViewImageCell: MessageCollectionViewBaseCell, PHLivePhoto
         super.layoutSubviews()
         guard message != nil else { return }
         layoutImageView()
-        indicationNeighborView = animatedImageView
         layoutIndicatorViewAndMainView()
     }
     
@@ -219,22 +219,20 @@ class MessageCollectionViewImageCell: MessageCollectionViewBaseCell, PHLivePhoto
                 }
             }
         }
-        let size = MessageCollectionViewBaseCell.sizeForImageOrVideo(message)
+        let size = sizeForImageOrVideo(message)
         let livePhotoLoadBlock: (URL, URL, Bool) -> Void = { [weak self] localImageURL, localVideoURL, playNow in
             guard let self = self else { return }
             let width = AppDelegate.shared.widthFor(side: .right, username: self.username) * 0.5
-            DispatchQueue.global().async {
-                PHLivePhoto.request(withResourceFileURLs: [
-                                        localImageURL, localVideoURL]
-                                    , placeholderImage: nil, targetSize: size == nil ? .zero : CGSize(width: width, height: width / size!.width * size!.height), contentMode: .aspectFit) { live, info in
-                    if let livePhoto = live, info[PHLivePhotoInfoErrorKey] == nil {
-                        if let degrade = info[PHLivePhotoInfoIsDegradedKey] as? Int, degrade == 1 {
-                            return
-                        } else if let cancel = info[PHLivePhotoInfoCancelledKey] as? Int, cancel == 1 {
-                            return
-                        } else {
-                            block(livePhoto, playNow)
-                        }
+            PHLivePhoto.request(withResourceFileURLs: [
+                localImageURL, localVideoURL]
+                                , placeholderImage: nil, targetSize: size == nil ? .zero : CGSize(width: width, height: width / size!.width * size!.height), contentMode: .aspectFit) { live, info in
+                if let livePhoto = live, info[PHLivePhotoInfoErrorKey] == nil {
+                    if let degrade = info[PHLivePhotoInfoIsDegradedKey] as? Int, degrade == 1 {
+                        return
+                    } else if let cancel = info[PHLivePhotoInfoCancelledKey] as? Int, cancel == 1 {
+                        return
+                    } else {
+                        block(livePhoto, playNow)
                     }
                 }
             }
@@ -363,14 +361,7 @@ class MessageCollectionViewImageCell: MessageCollectionViewBaseCell, PHLivePhoto
             }
         }
         
-        imageDownloader.loadImage(with: URL(string: imageUrl), options: [.avoidDecodeImage, .allowInvalidSSLCertificates]) { [weak self] (received, total, url) in
-            guard let self = self, capturedMessage == self.message else { return }
-            let progress = Progress()
-            progress.totalUnitCount = Int64(total)
-            progress.completedUnitCount = Int64(received)
-            self.delegate?.downloadProgressUpdate(progress: progress, message: capturedMessage!)
-            
-        } completed: { [self] (image, data, error, cacheType, finished, url) in
+        ImageLoader.shared.requestImage(urlStr: imageUrl, syncIfCan: message.syncGetMedia) { [self] image, data in
             guard let capturedMessage = capturedMessage, capturedMessage.imageURL == message.imageURL else {
                 return
             }
@@ -380,13 +371,18 @@ class MessageCollectionViewImageCell: MessageCollectionViewBaseCell, PHLivePhoto
                 cache.setObject(compressed as NSData, forKey: imageUrl as NSString)
             } else { // gif图处理
                 animatedImageView.animatedImage = FLAnimatedImage(gifData: data)
-                if let data = data {
-                    cache.setObject(data as NSData, forKey: imageUrl as NSString)
-                }
+                cache.setObject(data as NSData, forKey: imageUrl as NSString)
             }
             layoutIfNeeded()
             capturedMessage.sendStatus = .success
+        } progress: { _progress in
+            let progress = Progress()
+            progress.totalUnitCount = Int64(1000)
+            progress.completedUnitCount = Int64(_progress * 1000)
+            self.delegate?.downloadProgressUpdate(progress: progress, message: capturedMessage!)
         }
+        message.syncGetMedia = false
+        
     }
 
 

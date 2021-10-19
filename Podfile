@@ -9,7 +9,7 @@ pod 'MJRefresh'
 pod 'AFNetworking'
 pod 'SwiftyJSON', :git => 'https://github.com/SwiftyJSON/SwiftyJSON.git', :commit => '2b6054efa051565954e1d2b9da831680026cd768'
 pod 'SwiftyRSA', :path => '/Users/zhaoxiguang/Workspace/SwiftyRSA'
-pod 'FLAnimatedImage'
+pod 'FLAnimatedImage', :path => '/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/FLAnimatedImage'
 pod 'SDWebImage'
 pod 'Masonry'
 pod 'DogeChatNetwork', :path => '/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/DogeChatNetwork'
@@ -28,3 +28,6 @@ target 'DogeChatWatch Extension' do
   pod 'RSAiOSWatchOS', :path => '/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/RSAiOSWatchOS'
 end
 
+target 'mynotification' do
+  pod 'DogeChatUniversal', :path => '/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/DogeChatUniversal'
+end

@@ -195,12 +195,17 @@ extension ChatRoomViewController: MessageInputDelegate, VoiceRecordDelegate {
                     if #available(iOS 14.0, *) {
                         item.loadItem(forTypeIdentifier: UTType.gif.identifier, options: nil) { gif, error in
                             if var gifUrl = gif as? URL {
-                                if !gifUrl.absoluteString.hasSuffix(".gif") { //从剪贴板过来的
-                                    let newURL = createDir(name: pasteDir).appendingPathComponent(UUID().uuidString).appendingPathExtension("gif")
-                                    let _ = gifUrl.startAccessingSecurityScopedResource()
-                                    try? FileManager.default.copyItem(at: gifUrl, to: newURL)
-                                    gifUrl.stopAccessingSecurityScopedResource()
-                                    gifUrl = newURL
+                                if gifUrl.absoluteString.contains("Pasteboard") || gifUrl.absoluteString.contains("NSItemProvider") || gifUrl.absoluteString.contains("DragUI") { //从剪贴板过来的
+                                    
+                                    if gifUrl.startAccessingSecurityScopedResource(),
+                                       let data = try? Data(contentsOf: gifUrl)
+                                        {
+                                        let id = UUID().uuidString
+                                        let newURL = createDir(name: pasteDir).appendingPathComponent(id).appendingPathExtension("gif")
+                                        saveFileToDisk(dirName: pasteDir, fileName: newURL.lastPathComponent, data: data)
+                                        gifUrl.stopAccessingSecurityScopedResource()
+                                        gifUrl = newURL
+                                    }
                                 }
                                 if let success = try? gifUrl.checkResourceIsReachable(), success {
                                     self?.latestPickedImageInfos.append((image, gifUrl, image.size))

@@ -11,6 +11,8 @@ import DogeChatNetwork
 import DogeChatUniversal
 import RSAiOSWatchOS
 import Reachability
+import UserNotifications
+import Intents
 
 @available(iOS 13.0, *)
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
@@ -18,7 +20,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     static var usernameToDelegate = [String : SceneDelegate]()
     
     var window: UIWindow?
-    
+    var pushWindow: FloatWindow!
+    var callWindow: FloatWindow!
+    var switcherWindow: FloatWindow!
+
     var navigationController: UINavigationController!
     
     var splitVC: UISplitViewController! {
@@ -40,18 +45,31 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             socketAdapter.sceneDelegate = self
         }
     }
-    let callManager = CallManager()
     var launchedByPushAction = false
     var lastAppEnterBackgroundTime = NSDate().timeIntervalSince1970
-    let reachability = try! Reachability()
+    static let reachability = try! Reachability()
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
+        print("willConnect")
+        setupWindows()
         loginWithSession(session, options: connectionOptions)
         setupReachability()
     }
     
     func stateRestorationActivity(for scene: UIScene) -> NSUserActivity? {
         return scene.userActivity
+    }
+    
+    func setupWindows() {
+        pushWindow = FloatWindow(type: .push, alwayDisplayType: .shouldDismiss, delegate: self)
+        callWindow = FloatWindow(type: .alwaysDisplay, alwayDisplayType: .shouldDismiss, delegate: self)
+        switcherWindow = FloatWindow(type: .alwaysDisplay, alwayDisplayType: .shouldNotDimiss, delegate: self)
+        pushWindow.windowScene = window?.windowScene
+        callWindow.windowScene = window?.windowScene
+        switcherWindow.windowScene = window?.windowScene
+        AppDelegate.shared.callWindow = callWindow
+        AppDelegate.shared.pushWindow = pushWindow
+        AppDelegate.shared.switcherWindow = switcherWindow
     }
     
     func loginWithSession(_ session: UISceneSession, options: UIScene.ConnectionOptions) {
@@ -78,14 +96,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         NotificationManager.shared.username = username
         WebSocketManager.usersToSocketManager[username] = socket
         WebSocketManagerAdapter.usernameToAdapter[username] = adapter
-        adapter.registerNotification()
         socket.messageManager.myName = username
         self.socketManager = socket
         self.socketAdapter = adapter
         socket.messageManager.encrypt = EncryptMessage()
         let contactVC = self.makeContactVC(for: username)
         contactVC.password = password
-        contactVC.downRefreshAction()
         if let playListVC = (tabbarController.viewControllers![1] as? UINavigationController)?.viewControllers.first as? PlayListViewController {
             playListVC.username = username
         }
@@ -128,17 +144,28 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func sceneDidEnterBackground(_ scene: UIScene) {
         launchedByPushAction = false
         print("enter background")
+        UserDefaults(suiteName: "group.demo.zhaoxiguang")?.set(false, forKey: "hostActive")
         lastAppEnterBackgroundTime = NSDate().timeIntervalSince1970
-        guard !callManager.hasCall() else { return }
+        guard !AppDelegate.shared.callManager.hasCall() else { return }
         if let socket = self.socketManager {
             socket.disconnect()
             socket.invalidatePingTimer()
         }
     }
     
+    func scene(_ scene: UIScene, continue userActivity: NSUserActivity) {
+        if AppDelegate.shared.callManager.hasCall() { return }
+        guard let intent = userActivity.interaction?.intent as? INStartAudioCallIntent,
+              let name = intent.contacts?.first?.personHandle?.value else { return }
+        let uuid = UUID().uuidString
+        socketManager.tapFromSystemPhoneInfo = (name, uuid)
+    }
+    
     func sceneWillEnterForeground(_ scene: UIScene) {
         print("enter foreground")
+        UserDefaults(suiteName: "group.demo.zhaoxiguang")?.set(true, forKey: "hostActive")
         UIApplication.shared.applicationIconBadgeNumber = 0
+        UNUserNotificationCenter.current().removeAllDeliveredNotifications()
         processReloginOrReConnect()
     }
     
@@ -147,32 +174,23 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         DispatchQueue.global().async {
             socketManager.sortMessages()
         }
-        let shouldReLogin = self.needRelogin()
-        if !callManager.hasCall() {
-            if socketManager.connected {
-                socketManager.disconnect()
-            }
-            socketManager.connected = false
-        }
-        if shouldReLogin {
-            self.contactVC?.downRefreshAction()
-        }
-        if (self.navigationController).topViewController?.title == "JoinChatVC" { return }
-        guard !socketManager.cookie.isEmpty else {
+        if AppDelegate.shared.callManager.hasCall() {
             return
         }
-        if !shouldReLogin && !socketManager.cookie.isEmpty {
-            socketManager.connect()
-        }
+        self.contactVC?.loginAndConnect()
     }
     
     func setupReachability() {
-        reachability.whenReachable = { [self] reachable in
+        Self.reachability.whenReachable = { [self] reachable in
             guard let socket = self.socketManager else { return }
-            if !socket.messageManager.isLogin {
-                contactVC?.downRefreshAction()
-            } else {
-                socket.connect()
+            socket.pingWithResult { success in
+                if !success {
+                    if !socket.messageManager.isLogin {
+                        contactVC?.loginAndConnect()
+                    } else {
+                        socket.connect()
+                    }
+                }
             }
         }
     }
@@ -189,3 +207,38 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
 }
 
+@available(iOS 13.0, *)
+extension SceneDelegate: FloatWindowTouchDelegate {
+    
+    func tapPush(_ window: FloatWindow!, sender: String, content: String) {
+        self.tabbarController.selectedViewController = navigationController
+        if let contactVC = navigationController.viewControllers.first as? ContactsTableViewController,
+           let index = contactVC.usernames.firstIndex(of: sender) {
+            contactVC.tableView(contactVC.tableView, didSelectRowAt: IndexPath(row: index, section: 0))
+        }
+    }
+    
+    func tapAlwaysDisplay(_ window: FloatWindow!, name: String) {
+        if window.alwayDisplayType == .shouldDismiss {
+            adapterFor(username: username).readyToSendVideoData = false
+            Recorder.sharedInstance().needSendVideo = false
+            guard let call = AppDelegate.shared.callManager.callWithUUID(socketManager.nowCallUUID) else { return }
+            call.end()
+            AppDelegate.shared.callManager.end(call: call)
+            #if !targetEnvironment(macCatalyst)
+            if let videoVC = self.navigationController.visibleViewController as? VideoChatViewController {
+                videoVC.dismiss()
+            }
+            #endif
+            socketManager.nowCallUUID = nil
+            switcherWindow.isHidden = true
+        } else {
+            if Recorder.sharedInstance().nowRoute == .headphone {
+                Recorder.sharedInstance().setRouteToOption(.speaker)
+            } else {
+                Recorder.sharedInstance().setRouteToOption(.headphone)
+            }
+        }
+    }
+
+}

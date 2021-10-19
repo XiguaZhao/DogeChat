@@ -14,7 +14,7 @@ class ProviderDelegate: NSObject {
     
     private let callManager: CallManager
     private let provider: CXProvider
-    private let username: String
+    var username: String
     private var manager: WebSocketManager? {
         return WebSocketManager.usersToSocketManager[username]
     }

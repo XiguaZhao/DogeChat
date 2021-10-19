@@ -77,9 +77,6 @@ extension ChatRoomViewController {
                 message.message = message.imageURL ?? ""
                 message.imageLocalPath = imageURL
                 NotificationCenter.default.post(name: .uploadSuccess, object: self.username, userInfo: ["message": message])
-                SDWebImageManager.shared.loadImage(with: URL(string: filePath), options: [.avoidDecodeImage, .allowInvalidSSLCertificates], progress: nil) { _, _, _, _, _, _ in
-                    
-                }
             }
         }
         insertNewMessageCell(newMessages, forceScrollBottom: true)

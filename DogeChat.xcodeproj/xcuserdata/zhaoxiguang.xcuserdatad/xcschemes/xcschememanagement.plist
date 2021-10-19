@@ -9,7 +9,7 @@
 			<key>isShown</key>
 			<false/>
 			<key>orderHint</key>
-			<integer>2</integer>
+			<integer>3</integer>
 		</dict>
 		<key>ChatWatch.xcscheme_^#shared#^_</key>
 		<dict>
@@ -28,54 +28,50 @@
 			<key>isShown</key>
 			<false/>
 			<key>orderHint</key>
-			<integer>34</integer>
+			<integer>10</integer>
 		</dict>
 		<key>DogeChatWatch (Complication).xcscheme_^#shared#^_</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
 			<key>orderHint</key>
-			<integer>6</integer>
+			<integer>7</integer>
 		</dict>
 		<key>DogeChatWatch (Notification).xcscheme_^#shared#^_</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
 			<key>orderHint</key>
-			<integer>5</integer>
-		</dict>
-		<key>DogeChatWatch 1.xcscheme_^#shared#^_</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-			<key>orderHint</key>
-			<integer>8</integer>
+			<integer>6</integer>
 		</dict>
 		<key>DogeChatWatch Extension.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
 			<key>orderHint</key>
-			<integer>7</integer>
+			<integer>8</integer>
 		</dict>
 		<key>DogeChatWatch.xcscheme_^#shared#^_</key>
 		<dict>
-			<key>isShown</key>
-			<false/>
 			<key>orderHint</key>
-			<integer>3</integer>
+			<integer>33</integer>
 		</dict>
 		<key>SiriMessage.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
 			<key>orderHint</key>
-			<integer>4</integer>
+			<integer>5</integer>
 		</dict>
 		<key>SiriMessageUI.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
 			<integer>12</integer>
+		</dict>
+		<key>mynotification.xcscheme_^#shared#^_</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>32</integer>
 		</dict>
 		<key>notification.xcscheme_^#shared#^_</key>
 		<dict>
@@ -126,6 +122,21 @@
 			<true/>
 		</dict>
 		<key>07C6AF7C247D1AF10007222F</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>07FE066E27008C4B0048B6A7</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>07FE069E270098510048B6A7</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>07FE06C227019DE90048B6A7</key>
 		<dict>
 			<key>primary</key>
 			<true/>

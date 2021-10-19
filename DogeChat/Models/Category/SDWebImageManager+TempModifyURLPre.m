@@ -7,6 +7,7 @@
 //
 
 #import "SDWebImageManager+TempModifyURLPre.h"
+#import <SDWebImage/SDImageCache.h>
 #import <objc/runtime.h>
 
 @implementation SDWebImageManager (TempModifyURLPre)

@@ -10,6 +10,7 @@ import WatchKit
 
 class ContactsRowController: NSObject {
     @IBOutlet weak var usernameLabel: WKInterfaceLabel!
+    @IBOutlet weak var avatarImageView: WKInterfaceImage!
     @IBOutlet weak var latestMessageLabel: WKInterfaceLabel!
     
 }

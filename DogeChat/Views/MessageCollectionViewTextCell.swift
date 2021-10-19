@@ -38,6 +38,7 @@ class MessageCollectionViewTextCell: MessageCollectionViewBaseCell {
         messageLabel.numberOfLines = 0
         messageLabel.isUserInteractionEnabled = true
         contentView.addSubview(messageLabel)
+        indicationNeighborView = messageLabel
         
         tapGes.addTarget(self, action: #selector(tapAction))
         messageLabel.addGestureRecognizer(tapGes)
@@ -60,7 +61,6 @@ class MessageCollectionViewTextCell: MessageCollectionViewBaseCell {
         guard message != nil else { return }
         if message.messageType == .text || message.messageType == .voice {
             layoutForTextMessage()
-            indicationNeighborView = messageLabel
             layoutIndicatorViewAndMainView()
         } else {
             layoutForRevokeMessage()

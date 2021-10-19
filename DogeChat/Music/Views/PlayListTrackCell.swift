@@ -61,6 +61,7 @@ class PlayListTrackCell: UITableViewCell {
         super.prepareForReuse()
         downloadProgress.isHidden = false
         self.accessoryView = nil
+        albumImageView.image = nil
     }
     
     func apply(track: Track) {
@@ -68,12 +69,12 @@ class PlayListTrackCell: UITableViewCell {
         trackNameLabel.text = track.name
         artistLabel.text = track.artist
         if let cachedData = trackThumbCache.object(forKey: track.albumImageUrl as NSString) {
-            DispatchQueue.main.async {
+            syncOnMainThread {
                 self.albumImageView.image = UIImage(data: cachedData as Data)
             }
         } else {
             SDWebImageManager.shared.loadImage(with: URL(string: track.albumImageUrl), options: .avoidDecodeImage, progress: nil) { image, data, _, _, _, _ in
-                guard let image = image else { return }
+                guard self.track == track, let image = image else { return }
                 let imageData = compressEmojis(image, askedSize: CGSize(width: 40, height: 40))
                 self.albumImageView.image = UIImage(data: imageData)
                 trackThumbCache.setObject(imageData as NSData, forKey: track.albumImageUrl as NSString)

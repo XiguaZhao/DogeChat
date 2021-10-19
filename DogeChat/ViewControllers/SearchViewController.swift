@@ -13,7 +13,7 @@ protocol AddContactDelegate: AnyObject {
     func addSuccess()
 }
 
-class SearchViewController: UIViewController {
+class SearchViewController: DogeChatViewController {
     
     enum Status {
         case search
@@ -21,7 +21,7 @@ class SearchViewController: UIViewController {
     }
     
     let searchBar = UISearchBar()
-    let tableView = UITableView()
+    let tableView = DogeChatTableView()
     
     var userInfos: [String] = []
     var username = ""
@@ -43,6 +43,8 @@ class SearchViewController: UIViewController {
         view.addSubview(searchBar)
         view.addSubview(tableView)
         
+        searchBar.becomeFirstResponder()
+        
         searchBar.translatesAutoresizingMaskIntoConstraints = false
         tableView.translatesAutoresizingMaskIntoConstraints = false
         
@@ -62,7 +64,7 @@ class SearchViewController: UIViewController {
         tableView.delegate = self
         tableView.dataSource = self
         
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "UserCell")
+        tableView.register(DogeChatTableViewCell.self, forCellReuseIdentifier: DogeChatTableViewCell.cellID())
         let swipeDown = UISwipeGestureRecognizer(target: self, action: #selector(swipeAction))
         swipeDown.direction = .down
         view.addGestureRecognizer(swipeDown)
@@ -117,7 +119,7 @@ extension SearchViewController: UITableViewDataSource, UITableViewDelegate, UISe
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "UserCell", for: indexPath)
+        let cell = tableView.dequeueReusableCell(withIdentifier: DogeChatTableViewCell.cellID(), for: indexPath)
         cell.textLabel?.text = userInfos[indexPath.row]
         return cell
     }

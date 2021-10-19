@@ -189,7 +189,7 @@ class FloatWindow: UIWindow {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
+        
     init(type: WindowType, alwayDisplayType: AlwayDisplayType, delegate: FloatWindowTouchDelegate?) {
         self.type = type
         self.nestedVC = NestedViewController()
@@ -270,6 +270,7 @@ class FloatWindow: UIWindow {
     }
     
     func assignValueForAlwaysDisplay(name: String) {
+        self.makeKeyAndVisible()
         self.isHidden = false
         self.alpha = 0
         nestedVC.nameLabelAlwaysDisplay.text = name

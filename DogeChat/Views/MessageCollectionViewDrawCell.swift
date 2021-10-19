@@ -36,6 +36,9 @@ class MessageCollectionViewDrawCell: MessageCollectionViewBaseCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         addPKView()
+        if #available(iOS 14.0, *) {
+            indicationNeighborView = getPKView()
+        }
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -55,7 +58,6 @@ class MessageCollectionViewDrawCell: MessageCollectionViewBaseCell {
         guard message != nil else { return }
         layoutForDrawMessage()
         if #available(iOS 14.0, *) {
-            indicationNeighborView = getPKView()
             self.getPKView()?.setContentOffset(.zero, animated: false)
         }
         layoutIndicatorViewAndMainView()
@@ -91,7 +93,7 @@ class MessageCollectionViewDrawCell: MessageCollectionViewBaseCell {
             let pkView = PKCanvasView()
             pkView.backgroundColor = .clear
             pkView.drawingPolicy = .anyInput
-            pkView.isUserInteractionEnabled = false
+            pkView.drawingGestureRecognizer.isEnabled = false
             self.contentView.addSubview(pkView)
             tapGes = UITapGestureRecognizer(target: self, action: #selector(pkViewTapAction(_:)))
             contentView.addGestureRecognizer(tapGes)

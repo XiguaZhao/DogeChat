@@ -32,6 +32,7 @@ class MessageCollectionViewTrackCell: MessageCollectionViewBaseCell {
             avatarImageView.isHidden = true
             return
         }
+        indicationNeighborView = bgImageView
         let blurView = UIVisualEffectView(effect: UIBlurEffect(style: .regular))
         bgImageView.addSubview(blurView)
         bgImageView.contentMode = .scaleAspectFill
@@ -76,7 +77,6 @@ class MessageCollectionViewTrackCell: MessageCollectionViewBaseCell {
         super.layoutSubviews()
         if dontShow { return }
         layoutSharedTracksView()
-        indicationNeighborView = bgImageView
         layoutIndicatorViewAndMainView()
     }
     

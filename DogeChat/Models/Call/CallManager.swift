@@ -49,8 +49,19 @@ class CallManager: NSObject {
         let handle = CXHandle(type: .generic, value: handle)
         let startCallAction = CXStartCallAction(call: uuid, handle: handle)
         startCallAction.isVideo = false
-        AppDelegate.shared.callWindow.assignValueForAlwaysDisplay(name: handle.value)
-        AppDelegate.shared.switcherWindow.assignValueForAlwaysDisplay(name: "内/外放")
+        var callWindow: FloatWindow?
+        var switcherWindow: FloatWindow?
+        if #available(iOS 13, *) {
+            if let username = UserDefaults.standard.value(forKey: "lastUsername") as? String {
+                callWindow = SceneDelegate.usernameToDelegate[username]?.callWindow
+                switcherWindow = SceneDelegate.usernameToDelegate[username]?.switcherWindow
+            }
+        } else {
+            callWindow = AppDelegate.shared.callWindow
+            switcherWindow = AppDelegate.shared.switcherWindow
+        }
+        callWindow?.assignValueForAlwaysDisplay(name: handle.value)
+        switcherWindow?.assignValueForAlwaysDisplay(name: "内/外放")
         let transaction = CXTransaction(action: startCallAction)
         requestTransition(transaction)
     }

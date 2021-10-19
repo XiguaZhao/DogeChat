@@ -7,12 +7,14 @@
 //
 
 import UIKit
+import DogeChatUniversal
 
 let livePhotoDir = "livephotos"
 let videoDir = "videos"
 let voiceDir = "voice"
 let drawDir = "draws"
 let pasteDir = "paste"
+let photoDir = "photos"
 
 var maxID: Int {
     (UserDefaults.standard.value(forKey: "maxID") as? Int) ?? 0
@@ -26,6 +28,13 @@ public func syncOnMainThread(block: () -> Void) {
             block()
         }
     }
+}
+
+func createDir(name: String) -> URL {
+    let url = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
+        .appendingPathComponent(name)
+    try? FileManager.default.createDirectory(at: url, withIntermediateDirectories: true, attributes: nil)
+    return url
 }
 
 public func fileURLAt(dirName: String, fileName: String) -> URL? {
@@ -134,10 +143,48 @@ func compressEmojis(_ image: UIImage, needBig: Bool = false, askedSize: CGSize? 
         size = CGSize(width: width, height: floor(image.size.height * (width / image.size.width)))
     }
     UIGraphicsBeginImageContextWithOptions(size!, false, 0.0)
-    DispatchQueue.global().sync {
-        image.draw(in: CGRect(x: 0, y: 0, width: size!.width, height: size!.height))
-    }
+    image.draw(in: CGRect(x: 0, y: 0, width: size!.width, height: size!.height))
     let image = UIGraphicsGetImageFromCurrentImageContext()
     UIGraphicsEndImageContext()
     return image!.pngData()!
+}
+
+func boundsForDraw(_ message: Message) -> CGRect? {
+    if let str = message.pkDataURL {
+        var components = str.components(separatedBy: "+")
+        if components.count >= 4 {
+            let height = Int(components.removeLast())!
+            let width = Int(components.removeLast())!
+            let y = Int(components.removeLast())!
+            let x = Int(components.removeLast())!
+            return CGRect(x: x, y: y, width: width, height: height)
+        }
+    }
+    return nil
+}
+
+func sizeForImageOrVideo(_ message: Message) -> CGSize? {
+    if message.imageSize != .zero {
+        return message.imageSize
+    }
+    var _str: String?
+    if message.imageURL != nil {
+        _str = message.imageURL
+    } else if message.videoURL != nil {
+        _str = message.videoURL
+    }
+    guard let str = _str else { return nil }
+    return sizeFromStr(str)
+}
+
+func sizeFromStr(_ str: String) -> CGSize? {
+    var str = str as NSString
+    str = str.replacingOccurrences(of: ".jpeg", with: "") as NSString
+    str = str.replacingOccurrences(of: ".gif", with: "") as NSString
+    str = str.replacingOccurrences(of: ".mov", with: "") as NSString
+    var components = str.components(separatedBy: "+")
+    if components.count >= 2, let height = Int(components.removeLast()), let width = Int(components.removeLast()) {
+        return CGSize(width: width, height: height)
+    }
+    return nil
 }

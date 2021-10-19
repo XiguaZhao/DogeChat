@@ -25,8 +25,10 @@ class DogeChatViewController: UIViewController, UIPopoverPresentationControllerD
     override func viewDidLoad() {
         super.viewDidLoad()
         
-
-        NotificationCenter.default.addObserver(self, selector: #selector(immersive(noti:)), name: .immersive, object: nil)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
+            guard let self = self else { return }
+            NotificationCenter.default.addObserver(self, selector: #selector(self.immersive(noti:)), name: .immersive, object: nil)
+        }
         toggleBlurView(force: AppDelegate.shared.immersive, needAnimation: false)
     }
     
@@ -75,6 +77,9 @@ class DogeChatViewController: UIViewController, UIPopoverPresentationControllerD
             } else if let selectContact = self as? SelectContactsViewController {
                 tableView = selectContact.tableView
                 username = selectContact.username
+            } else if let addContactVC = self as? SearchViewController {
+                tableView = addContactVC.tableView
+                username = addContactVC.username
             } else {
                 if #available(iOS 13.0, *) {
                     if let historyVC = self as? HistoryVC {
@@ -132,6 +137,7 @@ func makeBlurViewForViewController(_ vc: UIViewController, blurView: inout UIIma
             interfaceStyle = .unspecified
         }
         AppDelegate.shared.window?.overrideUserInterfaceStyle = interfaceStyle
+        vc.view.window?.overrideUserInterfaceStyle = interfaceStyle
         vc.navigationController?.overrideUserInterfaceStyle = interfaceStyle
         vc.splitViewController?.overrideUserInterfaceStyle = interfaceStyle
         vc.tabBarController?.overrideUserInterfaceStyle = interfaceStyle

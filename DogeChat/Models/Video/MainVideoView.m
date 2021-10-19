@@ -123,7 +123,8 @@
                 NSRange dataRange = NSMakeRange(16, length);
                 NSData *mData = [data subdataWithRange:dataRange];
                 [self.currentLock lock];
-                self.completeData = [[self.completeData subdataWithRange:NSMakeRange(completeDataLength, self.completeData.length - completeDataLength)] mutableCopy];
+//                self.completeData = [[self.completeData subdataWithRange:NSMakeRange(completeDataLength, self.completeData.length - completeDataLength)] mutableCopy];
+                [self.completeData replaceBytesInRange:NSMakeRange(0, completeDataLength) withBytes:NULL length:0];
                 [self.currentLock unlock];
                 if (type == 0) {
                 }else if (type == 1) {

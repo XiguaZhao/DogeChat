@@ -251,6 +251,10 @@ extension HistoryVC: UITableViewDelegate, MessageTableViewCellDelegate {
         
     }
     
+    func longPressCell(_ cell: MessageCollectionViewBaseCell, ges: UILongPressGestureRecognizer!) {
+        
+    }
+    
     func downloadSuccess(message: Message) {
         syncOnMainThread {
             if let index = self.messages.firstIndex(where: { $0.uuid == message.uuid }) {

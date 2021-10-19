@@ -8,6 +8,7 @@
 
 import Foundation
 import DogeChatUniversal
+import UIKit
 
 extension ChatRoomViewController: MessageTableViewCellDelegate {
     
@@ -123,5 +124,74 @@ extension ChatRoomViewController: MessageTableViewCellDelegate {
         vc.preferredContentSize = CGSize(width: 350, height: min(400, tracks.count * 60 + 100))
         present(vc, animated: true, completion: nil)
     }
-
+    
+    func longPressCell(_ cell: MessageCollectionViewBaseCell, ges: UILongPressGestureRecognizer!) {
+        let controller = UIMenuController.shared
+        guard let targetView = cell.indicationNeighborView else { return }
+        cell.becomeFirstResponder()
+        activeMenuCell = cell
+        let index = tableView.indexPath(for: cell)!.row
+        let message = messages[index]
+        let copy = UIMenuItem(title: "复制", action: #selector(copyMenuItemAction(sender:)))
+        var items = [copy]
+        let sendToOthers = UIMenuItem(title: "转发", action: #selector(sendToOthersMenuItemAction(sender:)))
+        items.append(sendToOthers)
+        if message.messageSender == .ourself {
+            let revoke = UIMenuItem(title: "撤回", action: #selector(revokeMenuItemAction(sender:)))
+            items.append(revoke)
+        }
+        if message.messageType == .image {
+            let saveEmoji = UIMenuItem(title: "收藏表情", action: #selector(saveEmojiMenuItemAction(sender:)))
+            items.append(saveEmoji)
+        }
+        let multiSele = UIMenuItem(title: "多选", action: #selector(multiSeleMenuItemAction(sender:)))
+        items.append(multiSele)
+        controller.menuItems = items
+        let rect = CGRect(x: targetView.bounds.width/2, y: 5, width: 0, height: 0)
+        if #available(iOS 13.0, *) {
+            controller.showMenu(from: targetView, rect: rect)
+        } else {
+            controller.setTargetRect(rect, in: targetView)
+            controller.setMenuVisible(true, animated: true)
+        }
+    }
+    
+    @objc func copyMenuItemAction(sender: UIMenuController) {
+        guard let cell = activeMenuCell,
+              let index = tableView.indexPath(for: cell)?.row else { return }
+        let text = messages[index].message
+        UIPasteboard.general.string = text
+    }
+    
+    @objc func revokeMenuItemAction(sender: UIMenuController) {
+        guard let cell = activeMenuCell,
+              let index = tableView.indexPath(for: cell)?.row else { return }
+        revoke(message: messages[index])
+    }
+    
+    @objc func sendToOthersMenuItemAction(sender: UIMenuController) {
+        guard let cell = activeMenuCell,
+              let indexPath = tableView.indexPath(for: cell) else { return }
+        self.activeSwipeIndexPath = indexPath
+        let contactVC = SelectContactsViewController()
+        contactVC.username = self.username
+        contactVC.dataSourcea = self.contactVC
+        contactVC.modalPresentationStyle = .formSheet
+        contactVC.delegate = self
+        self.present(contactVC, animated: true)
+    }
+    
+    @objc func saveEmojiMenuItemAction(sender: UIMenuController) {
+        guard let cell = activeMenuCell else { return }
+        if let imageUrl = cell.message.imageURL, cell.message.sendStatus == .success {
+            let isGif = imageUrl.hasSuffix(".gif")
+            self.manager.starAndUploadEmoji(filePath: imageUrl, isGif: isGif)
+        }
+    }
+    
+    @objc func multiSeleMenuItemAction(sender: UIMenuController) {
+        guard let cell = activeMenuCell,
+              let indexPath = tableView.indexPath(for: cell) else { return }
+        makeMultiSelection(indexPath)
+    }
 }

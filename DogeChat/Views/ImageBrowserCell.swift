@@ -61,16 +61,11 @@ class ImageBrowserCell: UICollectionViewCell {
             }
             return
         }
-        SDWebImageManager.shared.loadImage(with: URL(string: imagePath), options: [.avoidDecodeImage, .allowInvalidSSLCertificates], progress: nil) { [self] (image, data, error, cacheType, finished, url) in
+        ImageLoader.shared.requestImage(urlStr: imagePath) { image, data in
             guard self.imagePath == imagePath else { return }
-            if let data = data {
-                cache?.setObject(data as NSData, forKey: imagePath as NSString)
-                DispatchQueue.main.async {
-                    block(imagePath, data)
-                }
-            }
-        }
-        
+            self.cache?.setObject(data as NSData, forKey: imagePath as NSString)
+            block(imagePath, data)
+        }        
     }
 }
 

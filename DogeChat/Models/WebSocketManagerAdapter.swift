@@ -24,7 +24,7 @@ class WebSocketManagerAdapter: NSObject {
                 #if !targetEnvironment(macCatalyst)
                 let vc = VideoChatViewController()
                 vc.username = self.username
-                AppDelegate.shared.navigationController.present(vc, animated: true, completion: nil)
+                self.navigationController?.present(vc, animated: true, completion: nil)
                 #endif
             }
         }
@@ -42,6 +42,7 @@ class WebSocketManagerAdapter: NSObject {
         self.init()
         self.manager = manager
         self.username = username
+        manager.dataDelegate = self
         registerNotification()
     }
     
@@ -79,10 +80,8 @@ class WebSocketManagerAdapter: NSObject {
     }
     
     @objc func emojiPathsFetched(noti: Notification) {
-        let userInfo = noti.userInfo!
-        let id = userInfo["id"] as! String
-        let path = userInfo["path"] as! String
-        EmojiSelectView.emojiPathToId[path] = id
+        let pathToID = noti.userInfo as! [String : String]
+        EmojiSelectView.emojiPathToId = pathToID
     }
     
     @objc func sendToken(noti: Notification) {
@@ -151,7 +150,7 @@ class WebSocketManagerAdapter: NSObject {
         let uuid = userinfo["uuid"] as! String
         Recorder.sharedInstance().stopRecordAndPlay()
         #if !targetEnvironment(macCatalyst)
-        if let videoVC = AppDelegate.shared.navigationController.visibleViewController as? VideoChatViewController {
+        if let videoVC = navigationController?.visibleViewController as? VideoChatViewController {
             videoVC.dismiss()
         }
         #endif
@@ -219,7 +218,7 @@ extension WebSocketManagerAdapter: VoiceDelegate, WebSocketDataDelegate {
         let length = Recorder.int(with: lengthData)
         if type == 1 { // 视频
             #if !targetEnvironment(macCatalyst)
-            if let vc = AppDelegate.shared.navigationController.visibleViewController as? VideoChatViewController {
+            if let vc = navigationController?.visibleViewController as? VideoChatViewController {
                 vc.didReceiveVideoData(data)
             }
             #endif
@@ -233,7 +232,7 @@ extension WebSocketManagerAdapter: VoiceDelegate, WebSocketDataDelegate {
             let videoInfo = Recorder.int(with: videoInfoData)
             if videoInfo == 1 { // 说明想要视频
                 #if !targetEnvironment(macCatalyst)
-                if UIApplication.shared.applicationState == .active && !AppDelegate.shared.navigationController.visibleViewController!.isKind(of: VideoChatViewController.self) {
+                if UIApplication.shared.applicationState == .active && !navigationController!.visibleViewController!.isKind(of: VideoChatViewController.self) {
                     readyToSendVideoData = true
                     Recorder.sharedInstance().needSendVideo = true
                 }
@@ -273,12 +272,9 @@ public func getCacheImage(from cache: NSCache<NSString, NSData>?, path: String, 
     if let data = cache?.object(forKey: path as NSString) {
         completion(nil, data as Data)
     } else {
-        SDWebImageManager.shared.loadImage(with: URL(string: path), options: [.avoidDecodeImage, .allowInvalidSSLCertificates], progress: nil) { (image, data, error, _, _, _) in
-            guard error == nil else { return }
-            if let data = data {
-                cache?.setObject(data as NSData, forKey: path as NSString)
-                completion(image, data)
-            }
+        ImageLoader.shared.requestImage(urlStr: path) { image, data in
+            cache?.setObject(data as NSData, forKey: path as NSString)
+            completion(image, data)
         }
     }
 }

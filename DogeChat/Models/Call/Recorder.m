@@ -167,14 +167,9 @@ static OSStatus RecordCallback(void *inRefCon,
         [wholeData appendData:legnthData];
         [wholeData appendData:dataType];
         [wholeData appendData:pcmData];
-//
-//        if (WebSocketManagerAdapter.shared.readyToSendVideoData) {
-//            [sharedInstace.recordedData appendData:pcmData];
-//        } else {
-            if (pcmData && pcmData.length > 0) {
-                [sharedInstace.delegate timeToSendData:wholeData];
-            }
-//        }
+        if (pcmData && pcmData.length > 0) {
+            [sharedInstace.delegate timeToSendData:wholeData];
+        }
     }
     return noErr;
 }

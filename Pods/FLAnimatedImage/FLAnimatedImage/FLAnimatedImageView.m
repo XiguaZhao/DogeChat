@@ -40,7 +40,9 @@
 @end
 
 
-@implementation FLAnimatedImageView
+@implementation FLAnimatedImageView {
+    int count;
+}
 @synthesize runLoopMode = _runLoopMode;
 
 #pragma mark - Initializers
@@ -52,6 +54,7 @@
     self = [super initWithImage:image];
     if (self) {
         [self commonInit];
+        count = 0;
     }
     return self;
 }
@@ -296,8 +299,11 @@ static NSUInteger gcd(NSUInteger a, NSUInteger b)
         // Note: The display link's `.frameInterval` value of 1 (default) means getting callbacks at the refresh rate of the display (~60Hz).
         // Setting it to 2 divides the frame rate by 2 and hence calls back at every other display refresh.
         const NSTimeInterval kDisplayRefreshRate = 60.0; // 60Hz
-        self.displayLink.frameInterval = MAX([self frameDelayGreatestCommonDivisor] * kDisplayRefreshRate, 1);
-
+        if (@available(iOS 15, *)) {
+            self.displayLink.preferredFramesPerSecond = 1 / [self frameDelayGreatestCommonDivisor];
+        } else {
+            self.displayLink.frameInterval = MAX([self frameDelayGreatestCommonDivisor] * kDisplayRefreshRate, 1);
+        }
         self.displayLink.paused = NO;
     } else {
         [super startAnimating];
@@ -382,8 +388,11 @@ static NSUInteger gcd(NSUInteger a, NSUInteger b)
                 self.needsDisplayWhenImageBecomesAvailable = NO;
             }
             
-            self.accumulator += displayLink.duration * displayLink.frameInterval;
-            
+            if (@available(iOS 15, *)) {
+                self.accumulator += (displayLink.targetTimestamp - displayLink.timestamp);
+            } else {
+                self.accumulator += displayLink.duration * displayLink.frameInterval;
+            }
             // While-loop first inspired by & good Karma to: https://github.com/ondalabs/OLImageView/blob/master/OLImageView.m
             while (self.accumulator >= delayTime) {
                 self.accumulator -= delayTime;

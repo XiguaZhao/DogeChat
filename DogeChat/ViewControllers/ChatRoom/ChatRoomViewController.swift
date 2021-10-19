@@ -30,12 +30,13 @@ class ChatRoomViewController: DogeChatViewController {
     var activePKView: UIView!
     var drawingIndexPath: IndexPath!
     var username = ""
-    var collectionViewTapGesture: UITapGestureRecognizer!
     var friendAvatarUrl = ""
     var dontLayout = false
     weak var contactVC: ContactsTableViewController?
+    weak var activeMenuCell: MessageCollectionViewBaseCell?
     var hapticInputIndex = 0
     var pan: UIScreenEdgePanGestureRecognizer?
+    var isPeek = false
     var needScrollToBottom = false {
         didSet {
             if needScrollToBottom {
@@ -48,7 +49,7 @@ class ChatRoomViewController: DogeChatViewController {
         return IndexPath(row: messages.count-1, section: 0)
     }
     
-    let cache = NSCache<NSString, NSData>()
+    weak var cache: NSCache<NSString, NSData>!
     
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
@@ -61,7 +62,6 @@ class ChatRoomViewController: DogeChatViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        makeNavBarUI()
         manager.messageManager.messageDelegate = self
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillChange(notification:)), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(sendSuccess(notification:)), name: .sendSuccess, object: username)
@@ -94,7 +94,7 @@ class ChatRoomViewController: DogeChatViewController {
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        if !PlayerManager.shared.isPlaying {
+        if !PlayerManager.shared.isPlaying && !AppDelegate.shared.callManager.hasCall() {
             try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
         }
     }
@@ -140,7 +140,11 @@ class ChatRoomViewController: DogeChatViewController {
     
     @objc func displayHistoryIfNeeded() {
         if tableView.contentSize.height < view.bounds.height {
-            displayHistory()
+            manager.pingWithResult { success in
+                if success {
+                    self.displayHistory()
+                }
+            }
         }
     }
     
@@ -207,8 +211,8 @@ extension ChatRoomViewController: UIImagePickerControllerDelegate, UINavigationC
     }
     
     @objc func emojiButtonTapped() {
-        manager.getEmojis { [self] (paths) in
-            emojiSelectView.emojis = paths
+        emojiSelectView.collectionView.reloadData()
+        manager.getEmojis { _ in
         }
     }
 }
@@ -347,7 +351,6 @@ extension ChatRoomViewController {
     }
     
     @objc func receiveHistoryMessages(_ noti: Notification) {
-        guard navigationController?.visibleViewController == self else { return }
         var empty = true
         var tempHeight: CGFloat = 0
         for message in self.messages.reversed() {

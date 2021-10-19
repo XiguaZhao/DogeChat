@@ -15,7 +15,7 @@ extension ContactsTableViewController: ContactTableViewCellDelegate, UIContextMe
         let browser = ImageBrowserViewController()
         browser.modalPresentationStyle = .fullScreen
         browser.imagePaths = [WebSocketManager.url_pre + path]
-        appDelegate.navigationController.present(browser, animated: true, completion: nil)
+        self.navigationController?.present(browser, animated: true, completion: nil)
     }
     
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -27,25 +27,27 @@ extension ContactsTableViewController: ContactTableViewCellDelegate, UIContextMe
     
     func setupMyAvatar() {
         let label = UILabel()
+        label.font = .boldSystemFont(ofSize: 17)
         label.text = self.username
         avatarImageView.contentMode = .scaleAspectFill
         avatarImageView.layer.masksToBounds = true
-        if let navBar = self.navigationController?.navigationBar {
-            avatarImageView.layer.cornerRadius = navBar.bounds.height / 2
-        } else {
-            avatarImageView.layer.cornerRadius = 44 / 2
-        }
+        avatarImageView.layer.cornerRadius = 22;
         let stackView = UIStackView(arrangedSubviews: [avatarImageView, label])
-        stackView.spacing = 15
+        stackView.spacing = 10
+        avatarImageView.mas_updateConstraints { [weak self] make in
+            make?.width.mas_equalTo()(self?.avatarImageView.mas_height)
+        }
         if #available(iOS 13.0, *) {
             let interaction = UIContextMenuInteraction(delegate: self)
             stackView.addInteraction(interaction)
         }
         self.navigationItem.titleView = stackView
-        avatarImageView.mas_updateConstraints { [weak self] make in
-            make?.width.mas_equalTo()(self?.avatarImageView.mas_height)
-            
+        DispatchQueue.main.async { [self] in
+            if let bar = navigationController?.navigationBar {
+                avatarImageView.layer.cornerRadius = bar.bounds.height / 2
+            }
         }
+
         stackView.isUserInteractionEnabled = true
         let tapAvatar = UITapGestureRecognizer(target: self, action: #selector(changeAvatarAction(_:)))
         stackView.addGestureRecognizer(tapAvatar)
@@ -65,12 +67,10 @@ extension ContactsTableViewController: ContactTableViewCellDelegate, UIContextMe
         
     @objc func updateMyAvatar(_ noti: Notification) {
         let url = noti.userInfo?["path"] as! String
-        SDWebImageManager.shared.loadImage(with: URL(string: url), options: [.avoidDecodeImage, .allowInvalidSSLCertificates], progress: nil) { [self] image, data, error, _, _, _ in
+        ImageLoader.shared.requestImage(urlStr: url) { [self] image, data in
             if url.hasSuffix(".gif") {
-                if let data = data {
-                    avatarImageView.animatedImage = FLAnimatedImage(gifData: data)
-                    ContactTableViewCell.avatarCache[url] = data
-                }
+                avatarImageView.animatedImage = FLAnimatedImage(gifData: data)
+                ContactTableViewCell.avatarCache[url] = data
             } else {
                 if let image = image {
                     let data = compressEmojis(image)
@@ -88,8 +88,8 @@ extension ContactsTableViewController: ContactTableViewCellDelegate, UIContextMe
         let data = noti.userInfo?["data"] as! JSON
         let username = data["username"].stringValue
         let newAvatarUrl = data["avatarUrl"].stringValue
-        if let index = self.usersInfos.firstIndex(where: { $0.name == username }) {
-            self.usersInfos[index].avatarUrl = newAvatarUrl
+        if let index = self.usersInfos.firstIndex(where: { $0.username == username }) {
+            self.usersInfos[index].avatarURL = newAvatarUrl
             tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
             if let chatVC = AppDelegate.shared.navigationController.visibleViewController as? ChatRoomViewController {
                 if chatVC.navigationItem.title == username {

@@ -87,9 +87,3 @@ class TrackDownloadManager: NSObject {
     
 }
 
-func createDir(name: String) -> URL {
-    let url = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
-        .appendingPathComponent(name)
-    try? FileManager.default.createDirectory(at: url, withIntermediateDirectories: true, attributes: nil)
-    return url
-}

@@ -10,32 +10,33 @@ import UIKit
 
 extension ChatRoomViewController: UITableViewDragDelegate {
     
-    
     func tableView(_ tableView: UITableView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
         let message = messages[indexPath.row]
-        guard message.messageType == .image || message.messageType == .text || message.messageType == .draw else { return [] }
+        guard message.messageType == .image || message.messageType == .text || message.messageType == .draw || message.messageType == .voice || message.messageType == .video else { return [] }
         var items = [UIDragItem]()
         if message.messageType == .text {
             let str = message.message as NSString
             let item = UIDragItem(itemProvider: NSItemProvider(object: str))
             items.append(item)
-        } else if message.messageType == .image {
-            var imagePath = message.imageURL ?? "/"
+        } else if message.messageType == .image || message.messageType == .voice || message.messageType == .video {
+            let type = message.messageType
+            let dirName = type == .image ? photoDir : (type == .video ? videoDir : voiceDir)
+            let urlStr = type == .image ? message.imageURL : (type == .video ? message.videoURL : message.voiceURL)
+            var imagePath = urlStr ?? "/"
             if imagePath.isEmpty {
                 imagePath = "/"
             }
             imagePath.removeFirst()
             let str = url_pre + imagePath
-            if let key = SDWebImageManager.shared.cacheKey(for: URL(string: str)),
-               let image = SDImageCache.shared.imageFromCache(forKey: key) {
-                let item = UIDragItem(itemProvider: NSItemProvider(object: image))
+            if let fileName = URL(string: str)?.lastPathComponent, let localURL = fileURLAt(dirName: dirName, fileName: fileName) {
+                let item = UIDragItem(itemProvider: NSItemProvider(contentsOf: localURL)!)
                 items.append(item)
             }
         } else if message.messageType == .draw {
             if #available(iOS 13, *) {
                 if let url = fileURLAt(dirName: drawDir, fileName: (message.pkDataURL ?? "").components(separatedBy: "/").last ?? ""), let data = try? Data(contentsOf: url), let draw = try? PKDrawing(data: data) {
                     #if !targetEnvironment(macCatalyst)
-                    let image = draw.image(from: draw.bounds, scale: 1)
+                    let image = draw.image(from: draw.bounds, scale: UIScreen.main.scale)
                     let item = UIDragItem(itemProvider: NSItemProvider(object: image))
                     items.append(item)
                     #endif
@@ -51,9 +52,9 @@ extension ChatRoomViewController: UITableViewDragDelegate {
         let message = messages[indexPath.row]
         guard let cell = tableView.cellForRow(at: indexPath) as? MessageCollectionViewBaseCell else { return nil }
         var rect: CGRect?
-        if message.messageType == .text {
+        if message.messageType == .text || message.messageType == .voice {
             rect = (cell as! MessageCollectionViewTextCell).messageLabel.frame
-        } else if message.messageType == .image {
+        } else if message.messageType == .image || message.messageType == .video {
             rect = (cell as! MessageCollectionViewImageCell).animatedImageView.frame
         }
         guard var rect = rect, let targetView = cell.indicationNeighborView else {

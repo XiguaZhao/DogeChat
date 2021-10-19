@@ -99,9 +99,13 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
             handler(true)
         }
         share.backgroundColor = #colorLiteral(red: 0.2392156869, green: 0.6745098233, blue: 0.9686274529, alpha: 1)
-        let configuration = UISwipeActionsConfiguration(actions: [share, revoke])
+        var actions = [share]
+        if messages[indexPath.item].messageSender == .ourself {
+            actions.append(revoke)
+        }
+        let configuration = UISwipeActionsConfiguration(actions: actions)
         configuration.performsFirstActionWithFullSwipe = true
-        return configuration
+        return nil
     }
     
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
@@ -131,75 +135,72 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
         }
         let config = UISwipeActionsConfiguration(actions: actions)
         config.performsFirstActionWithFullSwipe = true
-        return config
+        return nil
     }
         
     //MARK: ContextMune
-    @available(iOS 13.0, *)
-    func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
-        let cell = tableView.cellForRow(at: indexPath) as! MessageCollectionViewBaseCell
-        let identifier = "\(indexPath.row)" as NSString
-        if let cell = cell as? MessageCollectionViewImageCell {
-            let convert = tableView.convert(point, to: cell.livePhotoView)
-            if cell.livePhotoView.bounds.contains(convert) {
-                return nil
-            }
-        }
-        return UIContextMenuConfiguration(identifier: identifier, previewProvider: nil
-        ) { [weak self, weak cell] (menuElement) -> UIMenu? in
-            guard let self = self, let cell = cell else { return nil }
-            let copyAction = UIAction(title: "复制") { (_) in
-                if let textCell = cell as? MessageCollectionViewTextCell {
-                    let text = textCell.messageLabel.text
-                    UIPasteboard.general.string = text
-                }
-            }
-            var revokeAction: UIAction?
-            var starEmojiAction: UIAction?
-            var addBackgroundColorAction: UIAction?
-            if self.messages[indexPath.row].messageSender == .ourself && self.messages[indexPath.row].messageType != .join {
-                revokeAction = UIAction(title: "撤回") { [weak self] (_) in
-                    guard let self = self else { return }
-                    self.revoke(message: self.messages[indexPath.row])
-                }
-            }
-            if let imageUrl = cell.message.imageURL, cell.message.sendStatus == .success {
-                starEmojiAction = UIAction(title: "收藏表情") { [weak self] (_) in
-                    let isGif = imageUrl.hasSuffix(".gif")
-                    self?.manager.starAndUploadEmoji(filePath: imageUrl, isGif: isGif)
-                }
-            }
-            if #available(iOS 14.0, *) {
-                if cell.message.messageType == .draw, let pkView = (cell as? MessageCollectionViewDrawCell)?.getPKView() {
-                    addBackgroundColorAction = UIAction(title: "添加背景颜色") { _ in
-                        pkView.backgroundColor = .lightGray
-                    }
-                }
-            }
-            let multiSelect = UIAction(title: "多选") { [weak self] _ in
-                guard let self = self else { return }
-                self.makeMultiSelection(indexPath)
-            }
-            var children: [UIAction] = [copyAction, multiSelect]
-            if revokeAction != nil { children.append(revokeAction!) }
-            if starEmojiAction != nil { children.append(starEmojiAction!) }
-            if addBackgroundColorAction != nil { children.append(addBackgroundColorAction!) }
-            let menu = UIMenu(title: "", image: nil, children: children)
-            return menu
-        }
-    }
+//    @available(iOS 13.0, *)
+//    func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+//        let cell = tableView.cellForRow(at: indexPath) as! MessageCollectionViewBaseCell
+//        let identifier = "\(indexPath.row)" as NSString
+//        if let cell = cell as? MessageCollectionViewImageCell {
+//            let convert = tableView.convert(point, to: cell.livePhotoView)
+//            if cell.livePhotoView.bounds.contains(convert) {
+//                return nil
+//            }
+//        }
+//        return UIContextMenuConfiguration(identifier: identifier, previewProvider: nil
+//        ) { [weak self, weak cell] (menuElement) -> UIMenu? in
+//            guard let self = self, let cell = cell else { return nil }
+//            let copyAction = UIAction(title: "复制") { (_) in
+//                if let textCell = cell as? MessageCollectionViewTextCell {
+//                    let text = textCell.messageLabel.text
+//                    UIPasteboard.general.string = text
+//                }
+//            }
+//            var revokeAction: UIAction?
+//            var starEmojiAction: UIAction?
+//            var addBackgroundColorAction: UIAction?
+//            if self.messages[indexPath.row].messageSender == .ourself && self.messages[indexPath.row].messageType != .join {
+//                revokeAction = UIAction(title: "撤回") { [weak self] (_) in
+//                    guard let self = self else { return }
+//                    self.revoke(message: self.messages[indexPath.row])
+//                }
+//            }
+//            if let imageUrl = cell.message.imageURL, cell.message.sendStatus == .success {
+//                starEmojiAction = UIAction(title: "收藏表情") { [weak self] (_) in
+//                    let isGif = imageUrl.hasSuffix(".gif")
+//                    self?.manager.starAndUploadEmoji(filePath: imageUrl, isGif: isGif)
+//                }
+//            }
+//            if #available(iOS 14.0, *) {
+//                if cell.message.messageType == .draw, let pkView = (cell as? MessageCollectionViewDrawCell)?.getPKView() {
+//                    addBackgroundColorAction = UIAction(title: "添加背景颜色") { _ in
+//                        pkView.backgroundColor = .lightGray
+//                    }
+//                }
+//            }
+//            let multiSelect = UIAction(title: "多选") { [weak self] _ in
+//                guard let self = self else { return }
+//                self.makeMultiSelection(indexPath)
+//            }
+//            var children: [UIAction] = [copyAction, multiSelect]
+//            if revokeAction != nil { children.append(revokeAction!) }
+//            if starEmojiAction != nil { children.append(starEmojiAction!) }
+//            if addBackgroundColorAction != nil { children.append(addBackgroundColorAction!) }
+//            let menu = UIMenu(title: "", image: nil, children: children)
+//            return menu
+//        }
+//    }
     
     func makeMultiSelection(_ indexPath: IndexPath? = nil) {
         tableView.allowsMultipleSelection = true
         tableView.allowsMultipleSelectionDuringEditing = true
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
-            guard let self = self else { return }
-            self.tableView.setEditing(true, animated: true)
-            self.tableView.selectRow(at: indexPath, animated: true, scrollPosition: .none)
-            let cancel = UIBarButtonItem(title: "取消", style: .plain, target: self, action: #selector(self.cancelItemAction))
-            let share = UIBarButtonItem(title: "转发", style: .plain, target: self, action: #selector(self.didFinishMultiSelection(_:)))
-            self.navigationItem.setRightBarButtonItems([cancel, share], animated: true)
-        }
+        self.tableView.setEditing(true, animated: true)
+        self.tableView.selectRow(at: indexPath, animated: true, scrollPosition: .none)
+        let cancel = UIBarButtonItem(title: "取消", style: .plain, target: self, action: #selector(self.cancelItemAction))
+        let share = UIBarButtonItem(title: "转发", style: .plain, target: self, action: #selector(self.didFinishMultiSelection(_:)))
+        self.navigationItem.setRightBarButtonItems([cancel, share], animated: true)
     }
     
     @objc func cancelItemAction() {
@@ -321,6 +322,9 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
         if messageInputBar.textView.isFirstResponder {
             messageInputBar.textViewResign()
         }
+        if #available(iOS 13.0, *) {
+            UIMenuController.shared.hideMenu()
+        } 
     }
     
     func needReload(indexPath: [IndexPath]) {

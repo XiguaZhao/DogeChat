@@ -132,10 +132,10 @@ extension JoinChatViewController: UITextFieldDelegate {
         manager.messageManager.login(username: username, password: password) { [weak self] loginResult in
             if loginResult == "登录成功" {
                 let contactsTVC = ContactsTableViewController()
+                WebSocketManager.usersToSocketManager[username] = manager
+                WebSocketManagerAdapter.usernameToAdapter[username] = adapter
                 if #available(iOS 13, *) {
                     SceneDelegate.usernameToDelegate[username] = (self?.view.window?.windowScene?.delegate as? SceneDelegate)
-                    WebSocketManager.usersToSocketManager[username] = manager
-                    WebSocketManagerAdapter.usernameToAdapter[username] = adapter
                     ((((self?.view.window?.windowScene?.delegate as? SceneDelegate)?.tabbarController.viewControllers?[1] as? UINavigationController))?.viewControllers.first as? PlayListViewController)?.username = username
                     ((((self?.view.window?.windowScene?.delegate as? SceneDelegate)?.tabbarController.viewControllers?[2] as? UINavigationController))?.viewControllers.first as? SettingViewController)?.username = username
                     (self?.view.window?.windowScene?.delegate as? SceneDelegate)?.socketManager = manager

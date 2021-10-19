@@ -24,7 +24,7 @@ class ContactTableViewCell: UITableViewCell {
     let avatarImageView = FLAnimatedImageView()
     let nameLabel = UILabel()
     let latestMessageLabel = UILabel()
-    var info: (name: String, avatarUrl: String, latestMessage: Message?)!
+    var info: Friend!
     var labelStackView: UIStackView!
     var stackView: UIStackView!
     weak var delegate: ContactTableViewCellDelegate?
@@ -78,9 +78,9 @@ class ContactTableViewCell: UITableViewCell {
 //        delegate?.avatarTapped(self, path: info.avatarUrl)
     }
     
-    func apply(_ info: (name: String, avatarUrl: String, latestMessage: Message?)) {
+    func apply(_ info: Friend) {
         self.info = info
-        nameLabel.text = info.name
+        nameLabel.text = info.username
         var text = ""
         if let message = info.latestMessage {
             switch message.messageType {
@@ -106,8 +106,8 @@ class ContactTableViewCell: UITableViewCell {
         } else {
             latestMessageLabel.removeFromSuperview()
         }
-        if !info.avatarUrl.isEmpty {
-            let avatarUrl = WebSocketManager.url_pre + info.avatarUrl
+        if !info.avatarURL.isEmpty {
+            let avatarUrl = WebSocketManager.url_pre + info.avatarURL
             let isGif = avatarUrl.hasSuffix(".gif")
             if let data = ContactTableViewCell.avatarCache[avatarUrl] {
                 if isGif {
@@ -117,9 +117,8 @@ class ContactTableViewCell: UITableViewCell {
                 }
                 return
             }
-            SDWebImageManager.shared.loadImage(with: URL(string: avatarUrl), options: [.avoidDecodeImage, .allowInvalidSSLCertificates]) { (received, total, url) in
-            } completed: { [self] (image, data, error, cacheType, finished, url) in
-                guard info.name == self.info.name else {
+            ImageLoader.shared.requestImage(urlStr: avatarUrl) { [self] image, data in
+                guard info.username == self.info.username else {
                     return
                 }
                 if !isGif, let image = image { // is photo
@@ -128,9 +127,7 @@ class ContactTableViewCell: UITableViewCell {
                     ContactTableViewCell.avatarCache[avatarUrl] = compressed
                 } else { // gif图处理
                     avatarImageView.animatedImage = FLAnimatedImage(gifData: data)
-                    if let data = data {
-                        ContactTableViewCell.avatarCache[avatarUrl] = data
-                    }
+                    ContactTableViewCell.avatarCache[avatarUrl] = data
                 }
             }
         }

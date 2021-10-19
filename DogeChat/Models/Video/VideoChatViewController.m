@@ -55,7 +55,7 @@ static CGFloat overlayWidth = 0;
     [self.view addSubview:_overlayVideoView];
     __weak VideoChatViewController *wself = self;
     [_overlayVideoView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.equalTo(wself.view).offset(10 + UIApplication.sharedApplication.statusBarFrame.size.height);
+        make.top.equalTo(wself.view.mas_safeAreaLayoutGuideTop);
         make.trailing.equalTo(wself.view).offset(-20);
         make.width.mas_equalTo(overlayWidth);
         make.height.mas_equalTo(200);
@@ -63,10 +63,11 @@ static CGFloat overlayWidth = 0;
     _count = 0;
     UISwipeGestureRecognizer *swipeDown = [[UISwipeGestureRecognizer alloc] initWithTarget:self action:@selector(dismiss)];
     swipeDown.direction = UISwipeGestureRecognizerDirectionDown;
-//    [self.view addGestureRecognizer:swipeDown];
+    [self.view addGestureRecognizer:swipeDown];
 }
 
 - (void)dismiss {
+    [self.encoder stopH264Encode];
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 

@@ -8,6 +8,7 @@ import DogeChatNetwork
 import RSAiOSWatchOS
 import DogeChatUniversal
 import Reachability
+import WatchConnectivity
 
 @objc enum SplitVCSide: Int {
     case left, right
@@ -33,7 +34,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var socketManager: WebSocketManager! {
         return WebSocketManager.usersToSocketManager[username]
     }
-    var username = ""
+    var username = "" {
+        didSet {
+            providerDelegate.username = username
+        }
+    }
     var navigationController: UINavigationController!
     var tabBarController: UITabBarController!
     var splitViewController: UISplitViewController!
@@ -49,7 +54,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var immersive: Bool {
         fileURLAt(dirName: "customBlur", fileName: userID) != nil || (PlayerManager.shared.isPlaying && UserDefaults.standard.bool(forKey: "immersive"))
     }
-    var isForceDarkMode: Bool {
+    @objc var isForceDarkMode: Bool {
         UserDefaults.standard.bool(forKey: "forceDarkMode") && immersive
     }
     @objc class var shared: AppDelegate {
@@ -57,6 +62,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        UserDefaults(suiteName: "group.demo.zhaoxiguang")?.set(true, forKey: "hostActive")
         registerPushAction()
         window = UIWindow(frame: UIScreen.main.bounds)
         if #available(iOS 13.0, *) {
@@ -110,12 +116,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         } else {
             login()
         }
+        providerDelegate = ProviderDelegate(callManager: callManager, username: username)
         if UserDefaults.standard.value(forKey: "immersive") == nil {
             UserDefaults.standard.setValue(true, forKey: "immersive")
         }
         if #available(iOS 13, *) {} else {
             setupReachability()
         }
+        WCSession.default.delegate = SessionDelegate.shared
+        WCSession.default.activate()
         return true
     }
     
@@ -141,6 +150,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     @available(iOS 13.0, *)
     func application(_ application: UIApplication, didDiscardSceneSessions sceneSessions: Set<UISceneSession>) {
         
+    }
+    
+    func applicationWillTerminate(_ application: UIApplication) {
+        UserDefaults(suiteName: "group.demo.zhaoxiguang")?.set(false, forKey: "hostActive")
     }
     
     @available(iOS 13.0, *)
@@ -222,7 +235,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 WebSocketManager.usersToSocketManager[username] = manager
                 WebSocketManagerAdapter.usernameToAdapter[username] = adapter
                 self.username = username
-                providerDelegate = ProviderDelegate(callManager: callManager, username: username)
                 socketManager.messageManager.encrypt = EncryptMessage()
                 contactVC.loginSuccess = true
             }
@@ -251,6 +263,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationDidBecomeActive(_ application: UIApplication) {
         print("become active")
         application.applicationIconBadgeNumber = 0
+        guard let socketManager = socketManager else { return }
         DispatchQueue.global().async {
             self.socketManager.sortMessages()
         }
@@ -323,8 +336,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     ) {
         print(userInfo)
         // socket如果断开却没回调通知我的话，就算收到推送也会安静
-        if !socketManager.connected {
-            socketManager.connect()
+        socketManager.pingWithResult { [weak self] success in
+            if !success {
+                self?.socketManager.connect()
+            }
         }
     }
     

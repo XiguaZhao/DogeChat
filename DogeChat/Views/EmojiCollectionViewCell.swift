@@ -34,7 +34,9 @@ class EmojiCollectionViewCell: DogeChatBaseCollectionViewCell {
     override init(frame: CGRect) {
         super.init(frame: frame)
         contentView.addSubview(emojiView)
-        emojiView.contentMode = .scaleAspectFit
+        emojiView.contentMode = .scaleAspectFill
+        emojiView.layer.cornerRadius = 5
+        emojiView.layer.masksToBounds = true
         let longPress = UILongPressGestureRecognizer(target: self, action: #selector(longPressAction(_:)))
         emojiView.isUserInteractionEnabled = true
         emojiView.addGestureRecognizer(longPress)
@@ -42,6 +44,10 @@ class EmojiCollectionViewCell: DogeChatBaseCollectionViewCell {
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    override var canBecomeFirstResponder: Bool {
+        return true
     }
     
     override func prepareForReuse() {
@@ -62,22 +68,14 @@ class EmojiCollectionViewCell: DogeChatBaseCollectionViewCell {
             self.emojiView.image = UIImage(data: data as Data)
             return
         }
-        DispatchQueue.global().async {
-            self.imageDownloader.loadImage(with: url, options: [.avoidDecodeImage, .allowInvalidSSLCertificates]) { (received, total, url) in
-
-            } completed: { (image, data, error, cacheType, finished, url) in
-                guard capturedUrl == self.url else { return }
-                self.layoutIfNeeded()
-                DispatchQueue.global().async {
-                    if let image = image {
-                        let compressed = compressEmojis(image)
-                        DispatchQueue.main.async {
-                            self.emojiView.image = UIImage(data: compressed)
-                        }
-                        self.cache?.setObject(compressed as NSData, forKey: urlString as NSString
-                        )
-                    }
-                }
+        ImageLoader.shared.requestImage(urlStr: urlString) { image, data in
+            guard capturedUrl == self.url else { return }
+            self.layoutIfNeeded()
+            if let image = image {
+                let compressed = compressEmojis(image)
+                self.emojiView.image = UIImage(data: compressed)
+                self.cache?.setObject(compressed as NSData, forKey: urlString as NSString
+                )
             }
         }
     }

@@ -61,13 +61,7 @@ extension ChatRoomViewController {
         tableView.estimatedSectionHeaderHeight = 0
         tableView.estimatedSectionFooterHeight = 0
         layoutViews(size: view.bounds.size)
-        if !messages.isEmpty {
-            tableView.reloadData()
-            tableView.contentOffset = CGPoint(x: 0, y: tableView.contentSize.height - tableView.bounds.height + messageInputBar.frame.height + navigationController!.navigationBar.bounds.height + UIApplication.shared.statusBarFrame.height)
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                self.scrollViewDidEndDecelerating(self.tableView)
-            }
-        }
+        scrollToBottomWithoutAnimation()
         tableView.register(MessageCollectionViewTextCell.self, forCellReuseIdentifier: MessageCollectionViewTextCell.cellID)
         tableView.register(MessageCollectionViewImageCell.self, forCellReuseIdentifier: MessageCollectionViewImageCell.cellID)
         tableView.register(MessageCollectionViewDrawCell.self, forCellReuseIdentifier: MessageCollectionViewDrawCell.cellID)
@@ -78,8 +72,10 @@ extension ChatRoomViewController {
         emojiSelectView.username = username
         
         view.addSubview(tableView)
-        view.addSubview(messageInputBar)
-        view.addSubview(emojiSelectView)
+        if !isPeek {
+            view.addSubview(messageInputBar)
+            view.addSubview(emojiSelectView)
+        }
 
         messageInputBar.delegate = self
         
@@ -88,12 +84,40 @@ extension ChatRoomViewController {
         view.addGestureRecognizer(pan!)
 
     }
+    
+    func scrollToBottomWithoutAnimation() {
+        if !messages.isEmpty {
+            for i in (0..<messages.count).reversed() {
+                if messages.count - i > 10 {
+                    break
+                }
+                messages[i].syncGetMedia = true //为了让点进来的时候图片直接显示，不然下一个runloop会闪一下
+            }
+            tableView.reloadData()
+            let navigationBarHeight = navigationController?.navigationBar.bounds.height ?? 0
+            let statusBarHeight = UIApplication.shared.statusBarFrame.height
+            let offset = CGPoint(x: 0, y: tableView.contentSize.height - tableView.bounds.height + (isPeek ? 0 : messageInputBar.frame.height) + navigationBarHeight + (isPeek ? 0 : statusBarHeight))
+            if isPeek {
+                DispatchQueue.main.async { [self] in
+                    tableView.contentOffset = CGPoint(x: 0, y: tableView.contentSize.height - tableView.bounds.height + (isPeek ? 0 : messageInputBar.frame.height) + navigationBarHeight + (isPeek ? 0 : statusBarHeight))
+                }
+            } else {
+                tableView.contentOffset = offset
+            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                self.scrollViewDidEndDecelerating(self.tableView)
+            }
+        }
+    }
         
     func layoutViews(size: CGSize) {
         let size = view.frame.size
         tableView.frame = CGRect(x: 0, y: 0, width: size.width, height: size.height)
-        tableView.contentInset = .init(top: 0, left: 0, bottom: messageBarHeight - UIApplication.shared.keyWindow!.safeAreaInsets.bottom, right: 0)
-        messageInputBar.frame = CGRect(x: 0, y: size.height - messageBarHeight, width: size.width, height: messageBarHeight)
+        if !isPeek {
+            tableView.contentInset = .init(top: 0, left: 0, bottom: messageBarHeight - UIApplication.shared.keyWindow!.safeAreaInsets.bottom, right: 0)
+        }
+        let barFrame = CGRect(x: 0, y: size.height - messageBarHeight, width: size.width, height: messageBarHeight)
+        messageInputBar.frame = barFrame
         
         let emojiViewHeight: CGFloat = MessageInputView.ratioOfEmojiView * view.bounds.height
         emojiSelectView.frame = CGRect(x: 0, y: messageInputBar.frame.maxY, width: size.width, height: emojiViewHeight)
@@ -173,7 +197,6 @@ extension ChatRoomViewController {
                 return
             }
         }
-        
     }
     
     func stopScrolling() {

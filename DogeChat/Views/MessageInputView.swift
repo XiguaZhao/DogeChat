@@ -115,35 +115,13 @@ class MessageInputView: DogeChatStaticBlurView {
         if #available(iOS 13, *) {} else {
             width = 25
         }
-                
-        voiceButton.mas_makeConstraints { make in
-            make?.width.height().mas_equalTo()(width)
+             
+        toolStack.arrangedSubviews.forEach { button in
+            button.mas_makeConstraints { make in
+                make?.width.height().mas_lessThanOrEqualTo()(button == photoButton ? width - 3 : width)
+            }
         }
         
-        cameraButton.mas_makeConstraints { make in
-            make?.width.height().mas_equalTo()(width)
-        }
-
-        photoButton.mas_makeConstraints { make in
-            make?.width.height().mas_equalTo()(width - 3)
-        }
-
-        livePhotoButton.mas_makeConstraints { make in
-            make?.width.height().mas_equalTo()(width)
-        }
-
-        videoButton.mas_makeConstraints { make in
-            make?.width.height().mas_equalTo()(width)
-        }
-
-        drawButton.mas_makeConstraints { make in
-            make?.width.height().mas_equalTo()(width)
-        }
-        
-        addButton.mas_makeConstraints { make in
-            make?.width.height().mas_equalTo()(width)
-        }
-
         upArrowButton.isHidden = true
         upArrowButton.mas_makeConstraints { make in
             make?.edges.equalTo()(emojiButton)?.offset()
@@ -256,7 +234,7 @@ class MessageInputView: DogeChatStaticBlurView {
     
     @objc func emojiButtonTapped() {
         let block = {
-            let screenSize = AppDelegate.shared.window?.bounds.size ?? UIScreen.main.bounds.size
+            let screenSize = AppDelegate.shared.navigationController.view.bounds.size
             let ratio: CGFloat = MessageInputView.ratioOfEmojiView
             let userInfo = [UIResponder.keyboardFrameEndUserInfoKey: NSValue(cgRect: CGRect(x: 0, y: (1-ratio)*screenSize.height, width: screenSize.width, height: ratio*screenSize.height))]
             NotificationCenter.default.post(name: UIResponder.keyboardWillChangeFrameNotification, object: self, userInfo: userInfo)

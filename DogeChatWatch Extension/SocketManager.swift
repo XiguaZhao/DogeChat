@@ -17,6 +17,8 @@ class SocketManager: NSObject, URLSessionDelegate, URLSessionWebSocketDelegate {
     let url_pre = "https://121.5.152.193/"
     var socket: URLSessionWebSocketTask!
     var connected = false
+    var connectTime = 0
+    var lastResponseTimer = Date().timeIntervalSince1970
     weak var receiveTimer: Timer?
     lazy var session: URLSession = {
         let sesssion = URLSession(configuration: URLSessionConfiguration.default, delegate: self, delegateQueue: nil)
@@ -28,23 +30,56 @@ class SocketManager: NSObject, URLSessionDelegate, URLSessionWebSocketDelegate {
     }
     
     func connect() {
-        guard !messageManager.cookie.isEmpty else {
-            return 
+        syncOnMain {
+            _connect()
         }
-        DispatchQueue.main.async {
-            WKExtension.shared().visibleInterfaceController?.setTitle("正在连接....")
+    }
+    
+    private func _connect() {
+        guard !messageManager.cookie.isEmpty else {
+            return
         }
         if receiveTimer != nil {
             receiveTimer?.invalidate()
             receiveTimer = nil
         }
-        var request = URLRequest(url: URL(string: "wss://121.5.152.193/webSocket")!)
+        syncOnMain {
+            NotificationCenter.default.post(name: .connecting, object: nil)
+        }
+        var request = URLRequest(url: URL(string: "wss://121.5.152.193/webSocket?deviceType=3")!)
         request.addValue("SESSION="+messageManager.cookie, forHTTPHeaderField: "Cookie")
         self.socket = session.webSocketTask(with: request)
         socket.resume()
         sendKey()
         sendToken()
         onReceive()
+        
+        connectTime += 1
+        if connectTime > 5 { return }
+        let latestRequestTime = Date().timeIntervalSince1970
+        var success = false
+        let timer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] timer in
+            print("connectTimer执行")
+            if let self = self {
+                if self.lastResponseTimer > latestRequestTime {
+                    timer.invalidate()
+                    if !success {
+                        print("连接成功，关闭定时器")
+                        success = true
+                        self.connectTime = 0
+                    }
+                }
+            }
+        }
+        timer.tolerance = 0.2
+        
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            timer.invalidate()
+            if !success {
+                print("失败，重新连接")
+                self.connect()
+            }
+        }
     }
     
     func disconnect() {
@@ -73,6 +108,7 @@ class SocketManager: NSObject, URLSessionDelegate, URLSessionWebSocketDelegate {
             guard let self = self else { return }
             switch result {
             case .success(let message):
+                self.lastResponseTimer = Date().timeIntervalSince1970
                 switch message {
                 case .data(_):
                     break
@@ -89,14 +125,8 @@ class SocketManager: NSObject, URLSessionDelegate, URLSessionWebSocketDelegate {
         }
     }
     
-    func setInterfaceControllerTitle() {
-        if let vc = WKExtension.shared().visibleInterfaceController {
-            if vc is ContactInterfaceController {
-                vc.setTitle(messageManager.myName)
-            } else if let chatVC = vc as? ChatRoomInterfaceController {
-                chatVC.setTitle(chatVC.friendName)
-            }
-        }
+    public func processSendSuccess(_ data: JSON, toAll: Bool) {
+        let _ = messageManager.processSendSuccess(data, toAll: toAll)
     }
     
     func processString(str: String) {
@@ -104,12 +134,18 @@ class SocketManager: NSObject, URLSessionDelegate, URLSessionWebSocketDelegate {
         let method = json["method"].stringValue
         switch method {
         case "publicKey":
-            DispatchQueue.main.async {
-                self.setInterfaceControllerTitle()
+            syncOnMain {
+                NotificationCenter.default.post(name: .connected, object: nil)
             }
             let key = json["data"].stringValue
             messageManager.encrypt.key = key
             getPublicUnreadMessage()
+        case "sendToAllSuccess":
+            let data = json["data"]
+            processSendSuccess(data, toAll: true)
+        case "sendPersonalMessageSuccess":
+            let data = json["data"]
+            processSendSuccess(data, toAll: false)
         case "PublicNewMessage":  // 收到群聊消息
             if let newMessage = messageManager.wrapMessage(messageJSON: json["data"]) {
                 processNewMessages([newMessage], isPublic: true)
@@ -189,7 +225,8 @@ class SocketManager: NSObject, URLSessionDelegate, URLSessionWebSocketDelegate {
                 chatVC.insertMessages(messages)
             } else {
                 for message in messages {
-                    if message.option == chatVC.messageOption && message.senderUsername == vcTitle {
+                    let friendName = message.messageSender == .ourself ? message.receiver : message.senderUsername
+                    if message.option == chatVC.messageOption && friendName == vcTitle {
                         chatVC.insertMessages([message])
                     } else {
                         postNotification(message: message)

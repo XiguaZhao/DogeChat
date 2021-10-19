@@ -16,6 +16,7 @@ class LoginInterfaceController: WKInterfaceController {
     var password = ""
     
     override func awake(withContext context: Any?) {
+        NotificationCenter.default.addObserver(self, selector: #selector(getWCSessionMessage(_:)), name: .wcSessionMessage, object: nil)
     }
     
     @IBAction func usernameAction(_ value: NSString?) {
@@ -50,4 +51,7 @@ class LoginInterfaceController: WKInterfaceController {
         }
     }
     
+    @objc func getWCSessionMessage(_ noti: Notification) {
+        self.pop()
+    }
 }

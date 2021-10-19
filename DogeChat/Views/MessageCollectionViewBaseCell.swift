@@ -21,11 +21,12 @@ protocol MessageTableViewCellDelegate: AnyObject {
     func sharedTracksTap(_ cell: MessageCollectionViewBaseCell, tracks: [Track])
     func downloadProgressUpdate(progress: Progress, message: Message)
     func downloadSuccess(message: Message)
+    func longPressCell(_ cell: MessageCollectionViewBaseCell, ges: UILongPressGestureRecognizer!)
 }
 
 protocol ContactDataSource: AnyObject {
     var usernames: [String] { get }
-    var userInfos: [UserInfo] { get }
+    var userInfos: [Friend] { get }
 }
 
 class MessageCollectionViewBaseCell: DogeChatTableViewCell {
@@ -54,7 +55,12 @@ class MessageCollectionViewBaseCell: DogeChatTableViewCell {
     static let emojiWidth: CGFloat = 80
     static let pkViewHeight: CGFloat = 100
     var cache: NSCache<NSString, NSData>!
-    var indicationNeighborView: UIView?
+    var indicationNeighborView: UIView? {
+        didSet {
+            indicationNeighborView?.isUserInteractionEnabled = true
+            indicationNeighborView?.addGestureRecognizer(UILongPressGestureRecognizer(target: self, action: #selector(onLongPress(_:))))
+        }
+    }
     var pinchGes: UIPinchGestureRecognizer?
     let avatarImageView = FLAnimatedImageView()
     let avatarDoubleTapGes = UITapGestureRecognizer()
@@ -95,6 +101,7 @@ class MessageCollectionViewBaseCell: DogeChatTableViewCell {
         indicator.startAnimating()
         progress.isHidden = true
         progress.thicknessRatio = 0.3
+        progress.progressTintColor = UIColor(named: "progressCircle")
         progress.bounds = CGRect(x: 0, y: 0, width: 25, height: 25)
     }
         
@@ -104,6 +111,10 @@ class MessageCollectionViewBaseCell: DogeChatTableViewCell {
         avatarImageView.image = nil
         avatarImageView.animatedImage = nil
         progress.isHidden = true
+    }
+    
+    override var canBecomeFirstResponder: Bool {
+        return true
     }
     
     override func layoutSubviews() {
@@ -135,9 +146,14 @@ class MessageCollectionViewBaseCell: DogeChatTableViewCell {
         timeLabel.center = timeLabelCenter
     }
     
+    @objc func onLongPress(_ ges: UILongPressGestureRecognizer) {
+        guard ges.state == .ended else { return }
+        delegate?.longPressCell(self, ges: ges)
+    }
+    
     func layoutEmojis() {
         for (emojiInfo, imageView) in emojis {
-            let emojiSize = MessageCollectionViewBaseCell.sizeFromStr(emojiInfo.imageLink)
+            let emojiSize = sizeFromStr(emojiInfo.imageLink)
             let width = emojiInfo.scale * MessageCollectionViewBaseCell.emojiWidth
             let contentSize = self.contentSize
             var size = CGSize(width: width, height: width)
@@ -188,7 +204,7 @@ class MessageCollectionViewBaseCell: DogeChatTableViewCell {
             switch message.option {
             case .toOne:
                 if let index = contactDataSource?.usernames.firstIndex(of: username),
-                   let path = contactDataSource?.userInfos[index].avatarUrl {
+                   let path = contactDataSource?.userInfos[index].avatarURL {
                     url = WebSocketManager.url_pre + path
                 }
             case .toAll:
@@ -216,8 +232,8 @@ class MessageCollectionViewBaseCell: DogeChatTableViewCell {
             let url = manager.messageManager.myAvatarUrl
             block(url)
         } else if message.option == .toOne {
-            if let index = contactDataSource?.userInfos.firstIndex(where: { $0.name == message.senderUsername }),
-               let path = contactDataSource?.userInfos[index].avatarUrl {
+            if let index = contactDataSource?.userInfos.firstIndex(where: { $0.username == message.senderUsername }),
+               let path = contactDataSource?.userInfos[index].avatarURL {
                 let url = WebSocketManager.url_pre + path
                 block(url)
             }
@@ -233,19 +249,16 @@ class MessageCollectionViewBaseCell: DogeChatTableViewCell {
                 }
             } else {
                 let capturedMessage = self.message
-                SDWebImageManager.shared.loadImage(with: URL(string: url), options: [.avoidDecodeImage, .allowInvalidSSLCertificates], progress: nil) { [weak self] image, data, _, _, _, _ in
-                    guard let self = self, capturedMessage?.uuid == self.message.uuid else { return }
+                ImageLoader.shared.requestImage(urlStr: url) { image, data in
+                    guard capturedMessage?.uuid == self.message.uuid else { return }
                     if !isGif, let image = image { // is photo
                         let compressed = compressEmojis(image)
                         self.avatarImageView.image = UIImage(data: compressed)
                         ContactTableViewCell.avatarCache[url] = compressed
                     } else { // gif图处理
                         self.avatarImageView.animatedImage = FLAnimatedImage(gifData: data)
-                        if let data = data {
-                            ContactTableViewCell.avatarCache[url] = data
-                        }
+                        ContactTableViewCell.avatarCache[url] = data
                     }
-                    
                 }
             }
         }
@@ -329,47 +342,7 @@ class MessageCollectionViewBaseCell: DogeChatTableViewCell {
         message.cellHeight = wholeFrame.height
         return wholeFrame.height
     }
-    
-    class func boundsForDraw(_ message: Message) -> CGRect? {
-        if let str = message.pkDataURL {
-            var components = str.components(separatedBy: "+")
-            if components.count >= 4 {
-                let height = Int(components.removeLast())!
-                let width = Int(components.removeLast())!
-                let y = Int(components.removeLast())!
-                let x = Int(components.removeLast())!
-                return CGRect(x: x, y: y, width: width, height: height)
-            }
-        }
-        return nil
-    }
-    
-    class func sizeForImageOrVideo(_ message: Message) -> CGSize? {
-        if message.imageSize != .zero {
-            return message.imageSize
-        }
-        var _str: String?
-        if message.imageURL != nil {
-            _str = message.imageURL
-        } else if message.videoURL != nil {
-            _str = message.videoURL
-        }
-        guard let str = _str else { return nil }
-        return sizeFromStr(str)
-    }
-    
-    class func sizeFromStr(_ str: String) -> CGSize? {
-        var str = str as NSString
-        str = str.replacingOccurrences(of: ".jpeg", with: "") as NSString
-        str = str.replacingOccurrences(of: ".gif", with: "") as NSString
-        str = str.replacingOccurrences(of: ".mov", with: "") as NSString
-        var components = str.components(separatedBy: "+")
-        if components.count >= 2, let height = Int(components.removeLast()), let width = Int(components.removeLast()) {
-            return CGSize(width: width, height: height)
-        }
-        return nil
-    }
-    
+        
     class func height(forText text: String, fontSize: CGFloat, maxSize: CGSize) -> CGFloat {
         let font = UIFont(name: "Helvetica", size: fontSize)!
         let attrString = NSAttributedString(string: text, attributes:[NSAttributedString.Key.font: font,

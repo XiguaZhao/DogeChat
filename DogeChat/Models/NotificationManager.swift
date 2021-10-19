@@ -97,11 +97,15 @@ class NotificationManager: NSObject {
     }
     
     func prepareVoiceChat(caller: String, uuid: UUID) {
-        login {
-            self.manager.connect()
-        } fail: {
-            if let call = AppDelegate.shared.callManager.callWithUUID(uuid) {
-                AppDelegate.shared.callManager.end(call: call)
+        manager.pingWithResult { [self] success in
+            if !success {
+                login {
+                    self.manager.connect()
+                } fail: {
+                    if let call = AppDelegate.shared.callManager.callWithUUID(uuid) {
+                        AppDelegate.shared.callManager.end(call: call)
+                    }
+                }
             }
         }
 

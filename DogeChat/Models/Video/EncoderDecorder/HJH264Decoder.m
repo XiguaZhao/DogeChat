@@ -67,7 +67,7 @@
         int nalType = packetBuffer[4] & 0x1F;  // NALU类型  & 0001  1111
         switch (nalType) {
             case 0x05:
-               NSLog(@"*********** IDR frame, I帧");
+//               NSLog(@"*********** IDR frame, I帧");
                 [self initVideoToolBox]; // 当读入IDR帧的时候初始化VideoToolbox，并开始同步解码
                 pixelBuffer = [self decode]; // 解码得到的CVPixelBufferRef会传入OpenGL ES类进行解析渲染
                 break;
@@ -78,7 +78,7 @@
                 memcpy(mSPS, packetBuffer + 4, mSPSSize);
                 break;
             case 0x08:
-               NSLog(@"*********** PPS");
+//               NSLog(@"*********** PPS");
                 mPPSSize = packetSize - 4;
                 mPPS = malloc(mPPSSize);
                 memcpy(mPPS, packetBuffer + 4, mPPSSize);
