@@ -268,14 +268,4 @@ func compressImage(_ image: UIImage, needSave: Bool = true) -> (image: UIImage, 
     return (result, fileUrl, result.size)
 }
 
-public func getCacheImage(from cache: NSCache<NSString, NSData>?, path: String, completion: @escaping ((_ image: UIImage?, _ data: Data?) -> Void)) {
-    if let data = cache?.object(forKey: path as NSString) {
-        completion(nil, data as Data)
-    } else {
-        ImageLoader.shared.requestImage(urlStr: path) { image, data in
-            cache?.setObject(data as NSData, forKey: path as NSString)
-            completion(image, data)
-        }
-    }
-}
 

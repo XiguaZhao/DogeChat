@@ -43,9 +43,7 @@ extension ChatRoomViewController: UITableViewDropDelegate {
                         guard let self = self, let str = str else {
                             return
                         }
-                        let message = Message(message: str, messageSender: .ourself, sender: self.username, messageType: .text, option: self.messageOption)
-                        message.receiver = self.friendName
-                        message.sendStatus = .fail
+                        let message = self.processMessageString(for: str, type: .text, imageURL: nil, videoURL: nil)
                         textMessages.append(message)
                         if textMessages.count == strCount {
                             self.insertNewMessageCell(textMessages)

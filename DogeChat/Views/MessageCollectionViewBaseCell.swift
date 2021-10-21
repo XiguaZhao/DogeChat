@@ -25,7 +25,6 @@ protocol MessageTableViewCellDelegate: AnyObject {
 }
 
 protocol ContactDataSource: AnyObject {
-    var usernames: [String] { get }
     var userInfos: [Friend] { get }
 }
 
@@ -196,18 +195,18 @@ class MessageCollectionViewBaseCell: DogeChatTableViewCell {
     }
     
     @objc func tapAvatarAction(_ ges: UITapGestureRecognizer) {
-        let username = message.senderUsername
+        let userID = message.senderUserID
         var url: String?
         if message.messageSender == .ourself {
             url = manager.messageManager.myAvatarUrl
         } else {
             switch message.option {
             case .toOne:
-                if let index = contactDataSource?.usernames.firstIndex(of: username),
+                if let index = contactDataSource?.userInfos.firstIndex(where: { $0.userID == userID }),
                    let path = contactDataSource?.userInfos[index].avatarURL {
                     url = WebSocketManager.url_pre + path
                 }
-            case .toAll:
+            case .toGroup:
                 url = message.avatarUrl
             }
         }
@@ -298,12 +297,12 @@ class MessageCollectionViewBaseCell: DogeChatTableViewCell {
                     height = size.height * width / size.width + nameHeight + 30
                 } else {
                     height = min(screenHeight * scale, size.height) + nameHeight + 30
-                    
                 }
                 message.imageSize = size
             } else {
                 height = nameHeight + 150
             }
+            height = min(screenHeight * 0.6, height)
         case .draw:
             if  #available(iOS 14.0, *) {
                 height = nameHeight + pkViewHeight
@@ -375,22 +374,35 @@ extension MessageCollectionViewBaseCell {
             contentView.addSubview(imageView)
             contentView.bringSubviewToFront(imageView)
             emojis[emojiInfo] = imageView
-            getCacheImage(from: cache, path: emojiInfo.imageLink) { [weak self] (image, data) in
-                guard let self = self, self.message == capturedMessage else {
-                    return
-                }
-                if let data = data {
-                    if emojiInfo.imageLink.hasSuffix(".gif") {
-                        DispatchQueue.global().async {
-                            let image = FLAnimatedImage(gifData: data)
-                            DispatchQueue.main.async {
-                                imageView.animatedImage = image
-                            }
+            let path = emojiInfo.imageLink
+            let displayBlock: (Data) -> Void = { data in
+                if path.hasSuffix(".gif") {
+                    DispatchQueue.global().async {
+                        let image = FLAnimatedImage(gifData: data)
+                        DispatchQueue.main.async {
+                            imageView.animatedImage = image
                         }
-                    } else {
-                        imageView.image = UIImage(data: data)
                     }
+                } else {
+                    imageView.image = UIImage(data: data)
                 }
+            }
+            if let data = cache.object(forKey: path as NSString) {
+                displayBlock(data as Data)
+            } else {
+                ImageLoader.shared.requestImage(urlStr: path, syncIfCan: false, completion: { image, data in
+                    if path.hasPrefix(".gif") {
+                        displayBlock(data)
+                    } else {
+                        if let image = image {
+                            let compressed = compressEmojis(image)
+                            displayBlock(compressed)
+                            self.cache.setObject(data as NSData, forKey: emojiInfo.imageLink as NSString)
+                        } else {
+                            displayBlock(data)
+                        }
+                    }
+                }, progress: nil)
             }
             imageView.isUserInteractionEnabled = true
             let beginReceiveGes = UITapGestureRecognizer(target: self, action: #selector(beginReceiveGes(_:)))

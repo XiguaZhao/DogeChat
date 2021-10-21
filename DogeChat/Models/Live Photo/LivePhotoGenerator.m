@@ -45,7 +45,7 @@
 
 - (NSData *)generateStillImageURL:(NSURL *)imageURL uuid:(NSString *)uuid windowWidth:(CGFloat)windowWidth {
     UIImage *image = [[UIImage alloc] initWithData:[NSData dataWithContentsOfURL:imageURL]];
-    CGFloat screenWidth = windowWidth * 0.5;
+    CGFloat screenWidth = windowWidth * 0.8;
     if (image.size.width / UIScreen.mainScreen.scale < screenWidth) {
         screenWidth = image.size.width / UIScreen.mainScreen.scale;
     }

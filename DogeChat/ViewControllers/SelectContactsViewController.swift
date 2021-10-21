@@ -7,16 +7,17 @@
 //
 
 import UIKit
+import DogeChatUniversal
 
 protocol SelectContactsDelegate: AnyObject {
-    func didSelectContacts(_ contacts: [String], vc: SelectContactsViewController)
+    func didSelectContacts(_ contacts: [Friend], vc: SelectContactsViewController)
     func didCancelSelectContacts(_ vc: SelectContactsViewController)
 }
 
 class SelectContactsViewController: DogeChatViewController, UITableViewDataSource {
     
-    var contacts: [String] {
-        dataSourcea?.usernames ?? []
+    var contacts: [Friend] {
+        dataSourcea?.userInfos ?? []
     }
     var username = ""
     weak var dataSourcea: ContactDataSource?
@@ -73,7 +74,7 @@ class SelectContactsViewController: DogeChatViewController, UITableViewDataSourc
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: DogeChatTableViewCell.cellID()) as! DogeChatTableViewCell
-        cell.textLabel?.text = contacts[indexPath.row]
+        cell.textLabel?.text = contacts[indexPath.row].username
         return cell
     }
 }

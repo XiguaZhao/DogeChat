@@ -88,8 +88,8 @@ extension ContactsTableViewController: ContactTableViewCellDelegate, UIContextMe
         let data = noti.userInfo?["data"] as! JSON
         let username = data["username"].stringValue
         let newAvatarUrl = data["avatarUrl"].stringValue
-        if let index = self.usersInfos.firstIndex(where: { $0.username == username }) {
-            self.usersInfos[index].avatarURL = newAvatarUrl
+        if let index = self.friends.firstIndex(where: { $0.username == username }) {
+            self.friends[index].avatarURL = newAvatarUrl
             tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
             if let chatVC = AppDelegate.shared.navigationController.visibleViewController as? ChatRoomViewController {
                 if chatVC.navigationItem.title == username {

@@ -225,7 +225,7 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
         present(selectContactsVC, animated: true, completion: nil)
     }
     
-    func didSelectContacts(_ contacts: [String], vc: SelectContactsViewController) {
+    func didSelectContacts(_ contacts: [Friend], vc: SelectContactsViewController) {
         defer {
             vc.dismiss(animated: true) {
                 self.cancelItemAction()
@@ -243,15 +243,17 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
         }
         let selectedMessages = selectedIndexPaths.map { self.messages[$0.row].copied() }
         for contact in contacts {
-            if contact == friendName {
+            if contact.userID == self.friend.userID {
                 continue
             }
             for message in selectedMessages {
                 message.uuid = UUID().uuidString
                 message.senderUsername = username
-                message.receiver = contact
+                message.senderUserID = manager.messageManager.myId
+                message.receiver = contact.username
+                message.receiverUserID = contact.userID
                 message.id = maxID + 1
-                message.option = contact == "群聊" ? .toAll : .toOne
+                message.option = contact.isGroup ? .toGroup : .toOne
                 manager.sendWrappedMessage(message)
             }
         }

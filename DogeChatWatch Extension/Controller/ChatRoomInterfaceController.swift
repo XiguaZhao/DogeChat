@@ -50,12 +50,19 @@ class ChatRoomInterfaceController: WKInterfaceController {
         }
     }
     @IBOutlet weak var table: WKInterfaceTable!
+    var friend: Friend!
     var isFirstTimeFetch = false
     let manager = SocketManager.shared
-    var messages: [Message]!
-    var messagesUUIDs: Set<String>!
+    var messages: [Message]! {
+        friend.messages
+    }
+    var messagesUUIDs: Set<String>! {
+        friend.messageUUIDs
+    }
     var pagesAndCurNum = (pages: 1, curNum: 1)
-    var friendName = ""
+    var friendName: String {
+        friend.username
+    }
     var messageOption: MessageOption = .toOne
     let messageRowType = "message"
     static let numberOfHistory = 10
@@ -64,14 +71,10 @@ class ChatRoomInterfaceController: WKInterfaceController {
     override func awake(withContext context: Any?) {
         self.setTitle("awake")
         guard let context = context as? [String: Any],
-              let username = context["friendName"] as? String,
-              let messages = context["messages"] as? [Message],
-              let messagesUUIDs = context["messagesUUIDs"] as? Set<String> else { return }
-        self.setTitle(username)
-        self.messages = messages
-        self.friendName = username
-        self.messagesUUIDs = messagesUUIDs
-        self.messageOption = friendName == "群聊" ? .toAll : .toOne
+              let friend = context["friend"] as? Friend else { return }
+        self.friend = friend
+        self.setTitle(friendName)
+        self.messageOption = friendName == "群聊" ? .toGroup : .toOne
         NotificationCenter.default.addObserver(self, selector: #selector(receiveHistory(noti:)), name: .receiveHistoryMessages, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(receiveNewMessageNotification(_:)), name: .receiveNewMessage, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(selectEmojiAction(_:)), name: .selectEmoji, object: nil)
@@ -108,15 +111,14 @@ class ChatRoomInterfaceController: WKInterfaceController {
     @IBAction func sendAction() {
         guard !input.isEmpty else { return }
         inputTF.setText(nil)
-        let message = Message(message: input, messageSender: .ourself, receiver: friendName, sender: SocketManager.shared.messageManager.myName, messageType: .text, option: self.messageOption, id: 0)
+        let message = Message(message: input, friend: friend, messageSender: .ourself, receiver: friendName, receiverUserID: friend.userID, sender: SocketManager.shared.messageManager.myName, senderUserID: SocketManager.shared.messageManager.myId, messageType: .text, option: self.messageOption, id: 0)
         insertMessages([message])
         SocketManager.shared.sendMessage(message)
     }
     
     @objc func selectEmojiAction(_ noti: Notification) {
         let path = noti.object as! String
-        let message = Message(message: path, messageSender: .ourself, sender: SocketManager.shared.messageManager.myName, messageType: .image, option: messageOption)
-        message.receiver = friendName
+        let message = Message(message: path, friend: friend, messageSender: .ourself, receiver: friendName, receiverUserID: friend.userID, sender: SocketManager.shared.messageManager.myName, senderUserID: SocketManager.shared.messageManager.myId, messageType: .image, option: messageOption)
         message.imageURL = path
         insertMessages([message])
         SocketManager.shared.sendMessage(message)
@@ -127,7 +129,6 @@ class ChatRoomInterfaceController: WKInterfaceController {
         self.pagesAndCurNum.pages = pages
         let filtered = messages.filter { !self.messagesUUIDs.contains($0.uuid) }.reversed() as [Message]
         let oldIndex = min(self.messages.count, filtered.count)
-        self.messages.insert(contentsOf: filtered, at: 0)
         let indexSet = IndexSet(0..<filtered.count)
         self.table.insertRows(at: indexSet, withRowType: messageRowType)
         insertAlreadyAndHistoryMessages(filtered, oldIndex: oldIndex, toBottom: false)
@@ -139,7 +140,6 @@ class ChatRoomInterfaceController: WKInterfaceController {
         }
         if message.option == .toOne && message.senderUsername != friendName { return }
         table.insertRows(at: IndexSet(integer: self.messages.count), withRowType: messageRowType)
-        self.messages.append(message)
         insertAlreadyAndHistoryMessages([message], oldIndex: 0, toBottom: true)
     }
     
@@ -151,7 +151,6 @@ class ChatRoomInterfaceController: WKInterfaceController {
             showNameAndContent(message: newMessage, index: index + alreadyCount)
         }
         table.scrollToRow(at: newCount-1)
-        self.messages.append(contentsOf: messages)
     }
     
     func showNameAndContent(message: Message, index: Int) {
@@ -212,7 +211,7 @@ class ChatRoomInterfaceController: WKInterfaceController {
             return
         }
         pagesAndCurNum.curNum = (self.messages.count / ChatRoomInterfaceController.numberOfHistory) + 1
-        manager.historyMessages(for: (messageOption == .toAll) ? "chatRoom" : friendName, pageNum: pagesAndCurNum.curNum)
+        manager.historyMessages(for: (messageOption == .toGroup) ? "chatRoom" : friendName, pageNum: pagesAndCurNum.curNum)
         pagesAndCurNum.curNum += 1
     }
     

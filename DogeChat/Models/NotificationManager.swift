@@ -17,7 +17,7 @@ class NotificationManager: NSObject {
         return WebSocketManager.usersToSocketManager[username]
     }
     static let shared = NotificationManager()
-    var nowPushInfo: (sender: String, content: String) = ("", "")
+    var nowPushInfo: (sender: String, content: String, senderID: String) = ("", "", "")
     var actionCompletionHandler: (() -> Void)?
     var quickReplyMessage: Message?
     var remoteNotificationUsername = "" {
@@ -76,8 +76,9 @@ class NotificationManager: NSObject {
     public func processRemoteNotification(_ notification: [String: AnyObject]) {
         guard let alert = notification["alert"] as? [String: AnyObject],
               let sender = alert["title"] as? String,
-              let content = alert["body"] as? String else { return }
-        nowPushInfo = (sender, content)
+              let content = alert["body"] as? String,
+              let senderID = alert["senderId"] as? String else { return }
+        nowPushInfo = (sender, content, senderID)
         UIApplication.shared.applicationIconBadgeNumber = 0
         if !AppDelegate.shared.launchedByPushAction {
             remoteNotificationUsername = sender
@@ -87,12 +88,12 @@ class NotificationManager: NSObject {
     private func login(success: @escaping (()->Void), fail: @escaping (()->Void)) {
         guard let info = UserDefaults.standard.value(forKey: usernameToPswKey) as? [String : String],
               let password = info[username] else { return }
-        manager.messageManager.login(username: username, password: password) { (result) in
-            guard result == "登录成功" else {
+        manager.loginAndConnect(username: username, password: password) { _success in
+            if _success {
+                success()
+            } else {
                 fail()
-                return
             }
-            success()
         }
     }
     
@@ -112,13 +113,12 @@ class NotificationManager: NSObject {
     }
     
     func processReplyAction(replyContent: String) {
-        login { [weak self] in
-            guard let self = self, self.nowPushInfo.sender.count != 0 else { return }
-            let option: MessageOption = self.nowPushInfo.sender == "群聊" ? .toAll : .toOne
-            let message = Message(message: replyContent, imageURL: nil, videoURL: nil, messageSender: .ourself, receiver: self.nowPushInfo.sender, uuid: UUID().uuidString, sender: self.manager.messageManager.myName, messageType: .text, option: option, id: .max, sendStatus: .fail, emojisInfo: [])
+        login { [self] in
+            guard self.nowPushInfo.sender.count != 0 else { return }
+            guard let friend = manager.messageManager.friends.first(where: { $0.userID == self.nowPushInfo.senderID }) else { return }
+            let message = Message(message: replyContent, friend: friend, imageURL: nil, videoURL: nil, messageSender: .ourself, receiver: self.nowPushInfo.sender, receiverUserID: nowPushInfo.senderID, uuid: UUID().uuidString, sender: self.manager.messageManager.myName, senderUserID: manager.messageManager.myId, messageType: .text, option: friend.isGroup ? .toGroup : .toOne, sendStatus: .fail, emojisInfo: [])
             self.quickReplyMessage = message
             self.manager.quickReplyUUID = message.uuid
-            self.manager.connect()
             self.manager.messageManager.notSendContent.append(message)
             DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
                 if !self.manager.quickReplyUUID.isEmpty {

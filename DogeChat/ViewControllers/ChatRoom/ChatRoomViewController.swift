@@ -14,8 +14,13 @@ class ChatRoomViewController: DogeChatViewController {
     }
     let tableView = DogeChatTableView()
     let messageInputBar = MessageInputView()
-    var messageOption: MessageOption = .toAll
-    var friendName = ""
+    var messageOption: MessageOption {
+        friend.isGroup ? .toGroup : .toOne
+    }
+    var friend: Friend!
+    var friendName: String {
+        friend.username
+    }
     var heightCache = [Int : CGFloat]()
     var pagesAndCurNum = (pages: 1, curNum: 1)
     var originOfInputBar = CGPoint()
@@ -25,12 +30,20 @@ class ChatRoomViewController: DogeChatViewController {
     var pickedVideos: (url: URL, size: CGSize)?
     var voiceInfo: (url: URL, duration: Int)?
     let emojiSelectView = EmojiSelectView()
-    var messages = [Message]()
-    var messagesUUIDs = Set<String>()
+    var messages: [Message] {
+        friend.messages
+    }
+    var messagesUUIDs: Set<String> {
+        friend.messageUUIDs
+    }
     var activePKView: UIView!
     var drawingIndexPath: IndexPath!
-    var username = ""
-    var friendAvatarUrl = ""
+    var username: String {
+        friend.username
+    }
+    var friendAvatarUrl: String {
+        friend.avatarURL
+    }
     var dontLayout = false
     weak var contactVC: ContactsTableViewController?
     weak var activeMenuCell: MessageCollectionViewBaseCell?
@@ -159,7 +172,7 @@ class ChatRoomViewController: DogeChatViewController {
         }
         self.messages[index].sendStatus = .success
         self.messages[index].id = correctId
-        guard message.receiver == friendName || (message.receiver == "PublicPino" && messageOption == .toAll) else {
+        guard message.receiver == friendName || (message.receiver == "PublicPino" && messageOption == .toGroup) else {
             return
         }
         let indexPath = IndexPath(row: index, section: 0)
@@ -184,7 +197,7 @@ extension ChatRoomViewController: UIImagePickerControllerDelegate, UINavigationC
     func sendWasTapped(content: String) {
         guard !content.isEmpty else { return }
         playHaptic()
-        let wrappedMessage = processMessageString(for: content)
+        let wrappedMessage = processMessageString(for: content, type: .text, imageURL: nil, videoURL: nil)
         manager.messageManager.notSendContent.append(wrappedMessage)
         insertNewMessageCell([wrappedMessage])
         manager.sendWrappedMessage(wrappedMessage)
@@ -206,8 +219,21 @@ extension ChatRoomViewController: UIImagePickerControllerDelegate, UINavigationC
         guard let _ = targetCell as? MessageCollectionViewBaseCell else { return }
     }
     
-    private func processMessageString(for string: String) -> Message {
-        return Message(message: string, messageSender: .ourself, receiver: friendName, sender: username, messageType: .text, option: messageOption, id: manager.messageManager.maxId + 1, sendStatus: .fail, fontSize: messageInputBar.textView.font!.pointSize)
+    func processMessageString(for string: String, type: MessageType, imageURL: String?, videoURL: String?) -> Message {
+        return Message(message: string,
+                       friend: friend,
+                       imageURL: imageURL,
+                       videoURL: videoURL,
+                       messageSender: .ourself,
+                       receiver: friendName,
+                       receiverUserID: friend.userID,
+                       sender: username,
+                       senderUserID: manager.messageManager.myId,
+                       messageType: type,
+                       option: messageOption,
+                       id: manager.messageManager.maxId + 1,
+                       sendStatus: .fail,
+                       fontSize: messageInputBar.textView.font!.pointSize)
     }
     
     @objc func emojiButtonTapped() {
@@ -219,7 +245,7 @@ extension ChatRoomViewController: UIImagePickerControllerDelegate, UINavigationC
 
 extension ChatRoomViewController: EmojiViewDelegate {
     func didSelectEmoji(filePath: String) {
-        let message = Message(message: filePath, imageURL: filePath, videoURL: nil, messageSender: .ourself, receiver: friendName, sender: username, messageType: .image, option: messageOption, id: manager.messageManager.maxId+1, sendStatus: .fail)
+        let message = processMessageString(for: filePath, type: .image, imageURL: filePath, videoURL: nil)
         manager.sendWrappedMessage(message)
         insertNewMessageCell([message])
     }
@@ -319,7 +345,7 @@ extension ChatRoomViewController: MessageDelegate {
     }
     
     func updateOnlineNumber(to newNumber: Int) {
-        guard messageOption == .toAll else { return }
+        guard messageOption == .toGroup else { return }
         navigationItem.title = "群聊"// + "(\(newNumber)人在线)"
     }
     
@@ -346,7 +372,7 @@ extension ChatRoomViewController {
         }
         navigationItem.title = "正在加载..."
         pagesAndCurNum.curNum = (self.messages.count / ChatRoomViewController.numberOfHistory) + 1
-        manager.historyMessages(for: (messageOption == .toAll) ? "chatRoom" : friendName, pageNum: pagesAndCurNum.curNum)
+        manager.historyMessages(for: (messageOption == .toGroup) ? "chatRoom" : friendName, pageNum: pagesAndCurNum.curNum)
         pagesAndCurNum.curNum += 1
     }
     
@@ -376,10 +402,6 @@ extension ChatRoomViewController {
         }
         let _ = IndexPath(item: min(self.messages.count, filtered.count), section: 0)
         
-        self.messages.insert(contentsOf: filtered, at: 0)
-        for message in filtered {
-            self.messagesUUIDs.insert(message.uuid)
-        }
         let indexPaths = [Int](0..<filtered.count).map{ IndexPath(item: $0, section: 0) }
         var myselfIndexPaths = [IndexPath]()
         var othersIndexPaths = [IndexPath]()
@@ -420,13 +442,6 @@ extension ChatRoomViewController {
     func removeMessage(index: Int) {
         messages[index].message = "\(messages[index].senderUsername)撤回了一条消息"
         messages[index].messageType = .join
-        let updatedMessage = messages[index]
-        switch messageOption {
-        case .toAll:
-            manager.messageManager.messagesGroup[index] = updatedMessage
-        case .toOne:
-            manager.messageManager.messagesSingle.update(at: index, for: friendName, with: updatedMessage)
-        }
         let indexPath = IndexPath(row: index, section: 0)
         tableView.reloadRows(at: [indexPath], with: .none)
     }

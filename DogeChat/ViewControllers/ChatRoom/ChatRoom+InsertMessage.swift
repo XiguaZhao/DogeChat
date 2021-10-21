@@ -42,15 +42,7 @@ extension ChatRoomViewController {
         scrollToBottom = scrollToBottom || forceScrollBottom
         syncOnMainThread { [weak self] in
             guard let self = self else { return }
-            var indexPaths: [IndexPath] = []
-            for message in filtered {
-                indexPaths.append(IndexPath(row: self.messages.count, section: 0))
-                self.messages.append(message)
-                self.messagesUUIDs.insert(message.uuid)
-            }
-            UIView.performWithoutAnimation {
-                self.tableView.insertRows(at: indexPaths, with: .none)
-            }
+            self.tableView.reloadData()
             needScrollToBottom = scrollToBottom
             completion?()
         }
@@ -62,7 +54,7 @@ extension ChatRoomViewController {
         let infos = self.latestPickedImageInfos
         var newMessages = [Message]()
         for (_, imageURL, size) in infos {
-            let message = Message(message: "", imageURL: imageURL.absoluteString, videoURL: nil, messageSender: .ourself, receiver: friendName, sender: username, messageType: .image, option: messageOption, sendStatus: .fail)
+            let message = processMessageString(for: "", type: .image, imageURL: imageURL.absoluteString, videoURL: nil)
             message.imageSize = size
             manager.messageManager.imageDict[message.uuid] = imageURL
             newMessages.append(message)
@@ -88,11 +80,9 @@ extension ChatRoomViewController {
             self.voiceInfo = nil
         }
         guard let info = self.voiceInfo else { return }
-        let message = Message(message: "", messageSender: .ourself, sender: username, messageType: .voice, option: messageOption)
-        message.receiver = friendName
+        let message = processMessageString(for: "", type: .voice, imageURL: nil, videoURL: nil)
         message.voiceLocalPath = info.url
         message.voiceDuration = info.duration
-        message.sendStatus = .fail
         manager.uploadPhoto(imageUrl: info.url, message: message, size: .zero, voiceDuration: info.duration) { [weak self] progress in
             self?.downloadProgressUpdate(progress: progress, message: message)
         } success: { [weak self] task, data in
@@ -119,11 +109,10 @@ extension ChatRoomViewController {
             self.pickedVideos = nil
         }
         guard let info = self.pickedVideos else { return }
-        let message = Message(message: "", messageSender: .ourself, sender: username, messageType: .video, option: messageOption)
+        let message = processMessageString(for: "", type: .video, imageURL: nil, videoURL: nil)
         message.videoLocalPath = info.url
         message.receiver = friendName
         message.imageSize = info.size
-        message.sendStatus = .fail
         manager.uploadPhoto(imageUrl: info.url, message: message, size: info.size) { [weak self] progress in
             self?.downloadProgressUpdate(progress: progress, message: message)
 
@@ -149,13 +138,11 @@ extension ChatRoomViewController {
     func sendLivePhotos() {
         var newMessages = [Message]()
         for livePhoto in pickedLivePhotos {
-            let message = Message(message: "", messageSender: .ourself, sender: username, messageType: .livePhoto, option: messageOption)
+            let message = processMessageString(for: "", type: .livePhoto, imageURL: nil, videoURL: nil)
             message.imageURL = livePhoto.imageURL.absoluteString
             message.videoURL = livePhoto.videoURL.absoluteString
-            message.receiver = friendName
             message.livePhoto = livePhoto.live
             message.imageSize = livePhoto.size
-            message.sendStatus = .fail
             newMessages.append(message)
             manager.uploadPhoto(imageUrl: livePhoto.imageURL, message: message, size: livePhoto.size) { _ in
                 

@@ -123,7 +123,7 @@ class ContactInterfaceController: WKInterfaceController {
         guard let message = noti.userInfo?["message"] as? Message else { return }
         let friendName: String
         var needUpdate: Bool = false
-        if message.option == .toAll {
+        if message.option == .toGroup {
             friendName = "群聊"
             let alreadyMax = usersInfos.first?.latestMessage?.id ?? 0
             needUpdate = message.id > alreadyMax
@@ -156,11 +156,11 @@ class ContactInterfaceController: WKInterfaceController {
     func showUnreadCount(message: Message) {
         if message.messageSender == .someoneElse {
             var sender = message.senderUsername
-            if message.option == .toAll {
+            if message.option == .toGroup {
                 sender = "群聊"
             }
             if let chatVC =  WKExtension.shared().visibleInterfaceController as? ChatRoomInterfaceController {
-                if chatVC.messageOption == .toAll && message.option == .toAll {
+                if chatVC.messageOption == .toGroup && message.option == .toGroup {
                     return
                 } else if chatVC.messageOption == .toOne && message.senderUsername == chatVC.friendName {
                     return
@@ -215,23 +215,11 @@ class ContactInterfaceController: WKInterfaceController {
     }
     
     override func table(_ table: WKInterfaceTable, didSelectRowAt rowIndex: Int) {
-        var messages: [Message]
-        let username: String
-        var messagesUUIDs: Set<String>
-        if rowIndex == 0 {
-            username = "群聊"
-            messages = manager.messageManager.messagesGroup
-            messagesUUIDs = manager.messageManager.groupUUIDs
-        } else {
-            username = usersInfos[rowIndex].username
-            messages = manager.messageManager.messagesSingle[username] ?? []
-            messagesUUIDs = manager.messageManager.singleUUIDs[username] ?? []
+        let friend = self.usersInfos[rowIndex]
+        if friend.messages.count > 10 {
+            friend.messages.removeSubrange(0..<friend.messages.count-10)
         }
-        if messages.count > 10 {
-            messages.removeSubrange(0..<messages.count-10)
-            messagesUUIDs = Set(messages.map { $0.uuid })
-        }
-        let context = ["friendName": username, "messages": messages, "messagesUUIDs": messagesUUIDs] as [String : Any]
+        let context = ["friend": friend] as [String : Any]
         self.pushController(withName: "chatroom", context: context)
         if let row = table.rowController(at: rowIndex) as? ContactsRowController {
             row.usernameLabel.setText(usernames[rowIndex])

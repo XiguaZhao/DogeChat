@@ -182,7 +182,7 @@ class HistoryVC: DogeChatViewController {
     
     
     func requestPage(_ page: Int) {
-        socketForUsername(username).historyMessages(for: option == .toAll ? "chatRoom" : name, pageNum: page)
+        socketForUsername(username).historyMessages(for: option == .toGroup ? "chatRoom" : name, pageNum: page)
     }
     
     @objc func refreshFooterAction() {

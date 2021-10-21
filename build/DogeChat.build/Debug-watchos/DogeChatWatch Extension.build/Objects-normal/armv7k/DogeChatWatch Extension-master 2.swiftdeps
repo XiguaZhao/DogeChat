@@ -1,0 +1,25 @@
+version: "Apple Swift version 5.5 (swiftlang-1300.0.31.1 clang-1300.0.29.1)"
+options: "a4a5fd1e69331ede1e908ad663066287c6ba45dc8977d5f07c9a05f4813fd137"
+build_start_time: [1633840594, 537058830]
+build_end_time: [1633840599, 69373130]
+inputs:
+  "/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/DogeChat/DogeChat/Shared/Common.swift": !private [1632743271, 617309331]
+  "/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/DogeChat/DogeChat/Shared/Encrypt.swift": !private [1623422462, 0]
+  ? "/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/DogeChat/DogeChatWatch Extension/ComplicationController.swift"
+  : !private [1623068878, 0]
+  ? "/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/DogeChat/DogeChatWatch Extension/Controller/ChatRoomInterfaceController.swift"
+  : !private [1631443019, 249188899]
+  ? "/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/DogeChat/DogeChatWatch Extension/Controller/ContactInterfaceController.swift"
+  : !private [1632156160, 108355760]
+  ? "/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/DogeChat/DogeChatWatch Extension/Controller/LoginInterfaceController.swift"
+  : !private [1624528492, 0]
+  ? "/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/DogeChat/DogeChatWatch Extension/ExtensionDelegate.swift"
+  : !private [1624528492, 0]
+  ? "/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/DogeChat/DogeChatWatch Extension/NotificationController.swift"
+  : !private [1623068878, 0]
+  ? "/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/DogeChat/DogeChatWatch Extension/SocketManager.swift"
+  : !private [1630562857, 898343563]
+  ? "/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/DogeChat/DogeChatWatch Extension/Views/ContactsRowController.swift"
+  : !private [1623071536, 0]
+  ? "/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/DogeChat/DogeChatWatch Extension/Views/MessageRow.swift"
+  : !private [1623401666, 0]

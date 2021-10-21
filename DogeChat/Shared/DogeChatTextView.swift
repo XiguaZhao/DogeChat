@@ -23,6 +23,13 @@ class DogeChatTextView: UITextView, UITextPasteDelegate {
         fatalError("init(coder:) has not been implemented")
     }
     
+    override func becomeFirstResponder() -> Bool {
+        if isMac() {
+            (self.superview as? MessageInputView)?.frameDown()
+        }
+        return super.becomeFirstResponder()
+    }
+    
     @objc func forceDarkMode(noti: Notification) {
         let force = AppDelegate.shared.isForceDarkMode
         if #available(iOS 13.0, *) {
