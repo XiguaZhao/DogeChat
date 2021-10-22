@@ -99,7 +99,7 @@ extension ChatRoomViewController: MessageInputDelegate, VoiceRecordDelegate {
                 guard let self = self else { return }
                 let vc = HistoryVC()
                 vc.option = self.messageOption
-                vc.name = self.friendName
+                vc.friend = self.friend
                 vc.cache = self.cache
                 vc.username = self.username
                 self.navigationController?.pushViewController(vc, animated: true)

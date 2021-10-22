@@ -184,8 +184,8 @@ class SocketManager: NSObject, URLSessionDelegate, URLSessionWebSocketDelegate {
         }
     }
     
-    public func historyMessages(for name: String, pageNum: Int)  {
-        let paras: [String: Any] = ["method": "getHistory", "friend": name, "pageNum": pageNum]
+    public func historyMessages(for friend: Friend, pageNum: Int)  {
+        let paras: [String: Any] = ["method": "getHistory", "friend": friend.username, "userId": friend.userID, "pageNum": pageNum]
         send(params: paras, failure: nil)
     }
     

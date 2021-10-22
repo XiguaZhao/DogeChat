@@ -116,7 +116,7 @@ class NotificationManager: NSObject {
         login { [self] in
             guard self.nowPushInfo.sender.count != 0 else { return }
             guard let friend = manager.messageManager.friends.first(where: { $0.userID == self.nowPushInfo.senderID }) else { return }
-            let message = Message(message: replyContent, friend: friend, imageURL: nil, videoURL: nil, messageSender: .ourself, receiver: self.nowPushInfo.sender, receiverUserID: nowPushInfo.senderID, uuid: UUID().uuidString, sender: self.manager.messageManager.myName, senderUserID: manager.messageManager.myId, messageType: .text, option: friend.isGroup ? .toGroup : .toOne, sendStatus: .fail, emojisInfo: [])
+            let message = Message(message: replyContent, friend: friend, imageURL: nil, videoURL: nil, messageSender: .ourself, receiver: self.nowPushInfo.sender, receiverUserID: nowPushInfo.senderID, uuid: UUID().uuidString, sender: self.manager.messageManager.myName, senderUserID: manager.messageManager.myId, messageType: .text, sendStatus: .fail, emojisInfo: [])
             self.quickReplyMessage = message
             self.manager.quickReplyUUID = message.uuid
             self.manager.messageManager.notSendContent.append(message)

@@ -409,7 +409,7 @@ class ContactsTableViewController: DogeChatViewController, UIImagePickerControll
     private func chatroomVC(for indexPath: IndexPath) -> ChatRoomViewController {
         let chatRoomVC = ChatRoomViewController()
         let friend = self.friends[indexPath.row]
-        chatRoomVC.navigationItem.title = friend.username
+        chatRoomVC.friend = friend
         chatRoomVC.contactVC = self
         chatRoomVC.cache = self.cache
         return chatRoomVC

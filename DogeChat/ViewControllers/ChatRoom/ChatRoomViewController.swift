@@ -17,7 +17,13 @@ class ChatRoomViewController: DogeChatViewController {
     var messageOption: MessageOption {
         friend.isGroup ? .toGroup : .toOne
     }
-    var friend: Friend!
+    var friend: Friend! {
+        didSet {
+            messages = friend.messages
+            messagesUUIDs = friend.messageUUIDs
+            self.navigationItem.title = friend.username
+        }
+    }
     var friendName: String {
         friend.username
     }
@@ -30,12 +36,8 @@ class ChatRoomViewController: DogeChatViewController {
     var pickedVideos: (url: URL, size: CGSize)?
     var voiceInfo: (url: URL, duration: Int)?
     let emojiSelectView = EmojiSelectView()
-    var messages: [Message] {
-        friend.messages
-    }
-    var messagesUUIDs: Set<String> {
-        friend.messageUUIDs
-    }
+    var messages = [Message]()
+    var messagesUUIDs = Set<String>()
     var activePKView: UIView!
     var drawingIndexPath: IndexPath!
     var username: String {
@@ -230,7 +232,6 @@ extension ChatRoomViewController: UIImagePickerControllerDelegate, UINavigationC
                        sender: username,
                        senderUserID: manager.messageManager.myId,
                        messageType: type,
-                       option: messageOption,
                        id: manager.messageManager.maxId + 1,
                        sendStatus: .fail,
                        fontSize: messageInputBar.textView.font!.pointSize)
@@ -372,7 +373,7 @@ extension ChatRoomViewController {
         }
         navigationItem.title = "正在加载..."
         pagesAndCurNum.curNum = (self.messages.count / ChatRoomViewController.numberOfHistory) + 1
-        manager.historyMessages(for: (messageOption == .toGroup) ? "chatRoom" : friendName, pageNum: pagesAndCurNum.curNum)
+        manager.historyMessages(for: friend, pageNum: pagesAndCurNum.curNum)
         pagesAndCurNum.curNum += 1
     }
     
@@ -391,7 +392,7 @@ extension ChatRoomViewController {
         if messages[0].option != messageOption {
             return
         } else if messageOption == .toOne {
-            if (messages[0].messageSender == .ourself && messages[0].receiver != friendName) || (messages[0].messageSender == .someoneElse && messages[0].senderUsername != friendName) {
+            if (messages[0].messageSender == .ourself && messages[0].receiverUserID != friend.userID) || (messages[0].messageSender == .someoneElse && messages[0].senderUserID != friend.userID) {
                 return
             }
         }
@@ -402,6 +403,10 @@ extension ChatRoomViewController {
         }
         let _ = IndexPath(item: min(self.messages.count, filtered.count), section: 0)
         
+        self.messages.insert(contentsOf: filtered, at: 0)
+        for message in filtered {
+            self.messagesUUIDs.insert(message.uuid)
+        }
         let indexPaths = [Int](0..<filtered.count).map{ IndexPath(item: $0, section: 0) }
         var myselfIndexPaths = [IndexPath]()
         var othersIndexPaths = [IndexPath]()

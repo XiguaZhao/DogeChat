@@ -307,7 +307,6 @@ class PlayListViewController: DogeChatViewController, SelectContactsDelegate {
                                           sender: self.username,
                                           senderUserID: self.manager.messageManager.myId,
                                           messageType: .track,
-                                          option:friend.isGroup ? .toGroup : .toOne,
                                           tracks: tracks)
                     socketForUsername(self.username).sendWrappedMessage(message)
                     if #available(iOS 13, *) {

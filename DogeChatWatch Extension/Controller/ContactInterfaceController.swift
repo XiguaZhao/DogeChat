@@ -215,11 +215,14 @@ class ContactInterfaceController: WKInterfaceController {
     }
     
     override func table(_ table: WKInterfaceTable, didSelectRowAt rowIndex: Int) {
-        let friend = self.usersInfos[rowIndex]
-        if friend.messages.count > 10 {
-            friend.messages.removeSubrange(0..<friend.messages.count-10)
+        let friend = usersInfos[rowIndex]
+        var messages = friend.messages
+        var messagesUUIDs: Set<String> = friend.messageUUIDs
+        if messages.count > 10 {
+            messages.removeSubrange(0..<messages.count-10)
+            messagesUUIDs = Set(messages.map { $0.uuid })
         }
-        let context = ["friend": friend] as [String : Any]
+        let context = ["friend": friend, "messages": messages, "messagesUUIDs": messagesUUIDs] as [String : Any]
         self.pushController(withName: "chatroom", context: context)
         if let row = table.rowController(at: rowIndex) as? ContactsRowController {
             row.usernameLabel.setText(usernames[rowIndex])
