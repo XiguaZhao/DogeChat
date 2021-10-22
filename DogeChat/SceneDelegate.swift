@@ -61,6 +61,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
     
     func setupWindows() {
+        window?.backgroundColor = .systemBackground
+        splitVC.view.backgroundColor = .systemBackground
         pushWindow = FloatWindow(type: .push, alwayDisplayType: .shouldDismiss, delegate: self)
         callWindow = FloatWindow(type: .alwaysDisplay, alwayDisplayType: .shouldDismiss, delegate: self)
         switcherWindow = FloatWindow(type: .alwaysDisplay, alwayDisplayType: .shouldNotDimiss, delegate: self)

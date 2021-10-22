@@ -98,6 +98,7 @@ extension ChatRoomViewController: MessageInputDelegate, VoiceRecordDelegate {
             actionSheet.addAction(UIAlertAction(title: "历史记录", style: .default, handler: { [weak self] (action) in
                 guard let self = self else { return }
                 let vc = HistoryVC()
+                vc.contactDataSource = self.contactVC
                 vc.option = self.messageOption
                 vc.name = self.friendName
                 vc.cache = self.cache

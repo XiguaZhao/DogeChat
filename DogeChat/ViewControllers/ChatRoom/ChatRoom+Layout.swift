@@ -155,6 +155,10 @@ extension ChatRoomViewController {
     
     func textViewDidChange(_ textView: UITextView) {
         dontLayout = true
+        if let markRange = textView.markedTextRange,
+           textView.position(from: markRange.start, offset: 0) != nil {
+            return
+        }
         showEmojiButton(textView.text.isEmpty)
         let oldFrame = messageInputBar.frame
         let textHeight = textView.contentSize.height

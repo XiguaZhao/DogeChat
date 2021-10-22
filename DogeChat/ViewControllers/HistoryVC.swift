@@ -29,6 +29,7 @@ class HistoryVC: DogeChatViewController {
     let slider = UISlider()
     let progressLabel = UILabel()
     var stack: UIStackView!
+    weak var contactDataSource: ContactDataSource?
     var isFooter = false
     var totalPages = 0 {
         didSet {
@@ -128,6 +129,7 @@ class HistoryVC: DogeChatViewController {
                 id = MessageCollectionViewTrackCell.cellID
             }
             let cell = tableView.dequeueReusableCell(withIdentifier: id, for: indexPath) as! MessageCollectionViewBaseCell
+            cell.contactDataSource = self?.contactDataSource
             cell.indexPath = indexPath
             cell.tableView = tableView
             cell.cache = self?.cache
