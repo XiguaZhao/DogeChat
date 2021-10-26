@@ -308,7 +308,7 @@ class PlayListViewController: DogeChatViewController, SelectContactsDelegate {
                                           senderUserID: self.manager.messageManager.myId,
                                           messageType: .track,
                                           tracks: tracks)
-                    socketForUsername(self.username).sendWrappedMessage(message)
+                    socketForUsername(self.username).commonWebSocket.sendWrappedMessage(message)
                     if #available(iOS 13, *) {
                         if let chatVC = (self.view.window?.windowScene?.delegate as? SceneDelegate)?.navigationController.visibleViewController as? ChatRoomViewController {
                             chatVC.insertNewMessageCell([message])

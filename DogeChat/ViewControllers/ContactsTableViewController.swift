@@ -169,15 +169,14 @@ class ContactsTableViewController: DogeChatViewController, UIImagePickerControll
             guard let self = self else { return }
             if error != nil {
                 self.navigationItem.title = "获取联系人失败"
-                self.friends = userInfos
-                self.tableView.refreshControl?.endRefreshing()
                 return
             }
             print(userInfos)
-            self.tableView.refreshControl?.endRefreshing()
+            self.friends = userInfos
             self.tableView.reloadData()
             self.navigationItem.title = self.username
             completion?()
+            self.tableView.refreshControl?.endRefreshing()
         }
         #if targetEnvironment(macCatalyst)
         if appDelegate.needRelogin() {
@@ -302,7 +301,7 @@ class ContactsTableViewController: DogeChatViewController, UIImagePickerControll
         remoteFilePath = manager.messageManager.encrypt.decryptMessage(remoteFilePath)
         remoteFilePath = WebSocketManager.url_pre + remoteFilePath
         message.message = remoteFilePath
-        manager.sendWrappedMessage(message)
+        manager.commonWebSocket.sendWrappedMessage(message)
     }
     
     
@@ -410,6 +409,7 @@ class ContactsTableViewController: DogeChatViewController, UIImagePickerControll
         let chatRoomVC = ChatRoomViewController()
         let friend = self.friends[indexPath.row]
         chatRoomVC.friend = friend
+        chatRoomVC.username = username
         chatRoomVC.contactVC = self
         chatRoomVC.cache = self.cache
         return chatRoomVC

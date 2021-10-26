@@ -150,10 +150,10 @@ extension JoinChatViewController: UITextFieldDelegate {
                 contactsTVC.password = password
                 contactsTVC.navigationItem.title = username
                 self?.navigationController?.setViewControllers([contactsTVC], animated: true)
-                contactsTVC.refreshContacts {
-                    socketForUsername(username).connect()
-                }
-                DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                    contactsTVC.refreshContacts {
+                        socketForUsername(username).connect()
+                    }
                     NotificationCenter.default.post(name: .updateMyAvatar, object: username, userInfo: ["path": socketForUsername(username).messageManager.myAvatarUrl])
                 }
                 UserDefaults.standard.setValue(username, forKey: "lastUsername")

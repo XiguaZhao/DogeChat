@@ -11,15 +11,35 @@ import AFNetworking
 import SwiftyJSON
 import DogeChatUniversal
 
-class SocketManager: NSObject, URLSessionDelegate, URLSessionWebSocketDelegate {
+class SocketManager: NSObject, URLSessionDelegate, URLSessionWebSocketDelegate, DCWebSocketProtocol {
+    
+    
     static let shared = SocketManager()
-    let messageManager = MessageManager()
+    var commonSocket: DogeChatWebSocket!
     let url_pre = "https://121.5.152.193/"
     var socket: URLSessionWebSocketTask!
-    var connected = false
+    var messageManager: MessageManager {
+        commonSocket.messageManager
+    }
+    private var latestResponseTime = Date().timeIntervalSince1970 {
+        didSet {
+            commonSocket.latestResponseTime = latestResponseTime
+        }
+    }
+    private var latestConnectTime = Date().timeIntervalSince1970 {
+        didSet {
+            commonSocket.latestConnectTime = latestConnectTime
+        }
+    }
+    var connected: Bool {
+        get {
+            commonSocket.connected
+        }
+        set {
+            commonSocket.connected = newValue
+        }
+    }
     var connectTime = 0
-    var lastResponseTimer = Date().timeIntervalSince1970
-    weak var receiveTimer: Timer?
     lazy var session: URLSession = {
         let sesssion = URLSession(configuration: URLSessionConfiguration.default, delegate: self, delegateQueue: nil)
         return sesssion
@@ -27,6 +47,13 @@ class SocketManager: NSObject, URLSessionDelegate, URLSessionWebSocketDelegate {
     
     override init() {
         super.init()
+        commonSocket = DogeChatWebSocket(socketProtocol: self)
+        NotificationCenter.default.addObserver(forName: .receiveUnreadMessage, object: nil, queue: .main) { [weak self] noti in
+            let userInfo = noti.userInfo!
+            let newMessages = userInfo["messages"] as! [Message]
+            let isPublic = userInfo["isPublic"] as! Bool
+            self?.processNewMessages(newMessages, isPublic: isPublic)
+        }
     }
     
     func connect() {
@@ -39,68 +66,22 @@ class SocketManager: NSObject, URLSessionDelegate, URLSessionWebSocketDelegate {
         guard !messageManager.cookie.isEmpty else {
             return
         }
-        if receiveTimer != nil {
-            receiveTimer?.invalidate()
-            receiveTimer = nil
-        }
-        syncOnMain {
-            NotificationCenter.default.post(name: .connecting, object: nil)
-        }
         var request = URLRequest(url: URL(string: "wss://121.5.152.193/webSocket?deviceType=3")!)
         request.addValue("SESSION="+messageManager.cookie, forHTTPHeaderField: "Cookie")
         self.socket = session.webSocketTask(with: request)
         socket.resume()
-        sendKey()
-        sendToken()
-        onReceive()
-        
-        connectTime += 1
-        if connectTime > 5 { return }
-        let latestRequestTime = Date().timeIntervalSince1970
-        var success = false
-        let timer = Timer.scheduledTimer(withTimeInterval: 0.1, repeats: true) { [weak self] timer in
-            print("connectTimer执行")
-            if let self = self {
-                if self.lastResponseTimer > latestRequestTime {
-                    timer.invalidate()
-                    if !success {
-                        print("连接成功，关闭定时器")
-                        success = true
-                        self.connectTime = 0
-                    }
-                }
-            }
-        }
-        timer.tolerance = 0.2
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-            timer.invalidate()
-            if !success {
-                print("失败，重新连接")
-                self.connect()
-            }
-        }
     }
     
     func disconnect() {
-        receiveTimer?.invalidate()
-        receiveTimer = nil
         socket?.cancel(with: .normalClosure, reason: nil)
         connected = false
     }
     
     func sendToken() {
         guard let token = ExtensionDelegate.shared.deviceToken else { return }
-        let params = ["method": "token", "token": token]
-        send(params: params, failure: nil)
+        commonSocket.sendToken(token)
     }
-    
-    func sendKey() {
-        self.connected = true
-        guard let paras = messageManager.prepareEncrypt() else { return }
-        send(params: paras, failure: nil)
-    }
-    
+        
     func onReceive() {
         print("call receive")
         socket.receive {[weak self] result in
@@ -108,13 +89,13 @@ class SocketManager: NSObject, URLSessionDelegate, URLSessionWebSocketDelegate {
             guard let self = self else { return }
             switch result {
             case .success(let message):
-                self.lastResponseTimer = Date().timeIntervalSince1970
+                self.latestResponseTime = Date().timeIntervalSince1970
                 switch message {
                 case .data(_):
                     break
                 case .string(let string):
                     print(string)
-                    self.processString(str: string)
+                    self.commonSocket.parseReceivedMessage(string)
                     self.onReceive()
                 default:
                     break
@@ -124,94 +105,24 @@ class SocketManager: NSObject, URLSessionDelegate, URLSessionWebSocketDelegate {
             }
         }
     }
-    
-    public func processSendSuccess(_ data: JSON, toAll: Bool) {
-        let _ = messageManager.processSendSuccess(data, toAll: toAll)
-    }
-    
-    func processString(str: String) {
-        let json = JSON(parseJSON: str)
-        let method = json["method"].stringValue
-        switch method {
-        case "publicKey":
-            syncOnMain {
-                NotificationCenter.default.post(name: .connected, object: nil)
-            }
-            let key = json["data"].stringValue
-            messageManager.encrypt.key = key
-            getPublicUnreadMessage()
-        case "sendToAllSuccess":
-            let data = json["data"]
-            processSendSuccess(data, toAll: true)
-        case "sendPersonalMessageSuccess":
-            let data = json["data"]
-            processSendSuccess(data, toAll: false)
-        case "PublicNewMessage":  // 收到群聊消息
-            if let newMessage = messageManager.wrapMessage(messageJSON: json["data"]) {
-                processNewMessages([newMessage], isPublic: true)
-            }
-            NotificationCenter.default.post(name: .playSound, object: nil)
-        case "getPublicUnreadMessage": // 群聊未读消息,socket连接上后会获取
-            let messages = json["data"].arrayValue
-            var newMessages = [Message]()
-            for message in messages {
-                if let newMessage = messageManager.wrapMessage(messageJSON: message) {
-                    newMessages.append(newMessage)
-                }
-            }
-            processNewMessages(newMessages, isPublic: true)
-        case "PersonalNewMessage": // 收到私人消息
-            let data = json["data"].arrayValue
-            var messages = [Message]()
-            for msg in data {
-                if let newMessage = messageManager.wrapMessage(messageJSON: msg) {
-                    messages.append(newMessage)
-                }
-            }
-            processNewMessages(messages, isPublic: false)
-        case "getHistory":  // 获取群聊、个人历史记录
-            let pages = json["data"]["pages"].intValue
-            let messages = json["data"]["records"].arrayValue
-            var result = [Message]()
-            for message in messages {
-                if let newMessage = messageManager.wrapMessage(messageJSON: message, insertPosition: .top) {
-                    result.append(newMessage)
-                }
-            }
-            NotificationCenter.default.post(name: .receiveHistoryMessages, object: nil, userInfo: ["messages": result, "pages": pages])
-        default:
-            break
-        }
-    }
-    
-    public func historyMessages(for friend: Friend, pageNum: Int)  {
-        let paras: [String: Any] = ["method": "getHistory", "friend": friend.username, "userId": friend.userID, "pageNum": pageNum]
-        send(params: paras, failure: nil)
-    }
-    
+                
     public func postNotification(message: Message) {
         NotificationCenter.default.post(name: .receiveNewMessage, object: message)
     }
     
-    public func getPublicUnreadMessage() {
-        let paras: [String: Any] = ["method": "getPublicUnreadMessage", "id": messageManager.maxId]
-        send(params: paras, failure: nil)
-    }
-
-    func send(params: [String: Any], failure: ((Error?)->Void)?) {
-        let jsonStr = messageManager.makeJsonString(for: params)
-        let message = URLSessionWebSocketTask.Message.string(jsonStr)
-        self.socket.send(message) { error in
-            NotificationCenter.default.post(name: .socketError, object: params)
-            failure?(error)
+    func sendText(_ text: String) {
+        let message = URLSessionWebSocketTask.Message.string(text)
+        self.socket.send(message) { _ in
         }
-
     }
     
+    func sendData(_ data: Data) {
+        
+    }
+    
+        
     func sendMessage(_ message: Message) {
-        let paras = messageManager.sendMessage(message.message, to: message.receiver, from: message.senderUsername, option: message.option, uuid: message.uuid, type: message.messageType.rawValue)
-        send(params: paras, failure: nil)
-        messageManager.saveSendMessage(message)
+        commonSocket.sendMessage(message)
     }
     
     func processNewMessages(_ messages: [Message], isPublic: Bool) {
@@ -238,6 +149,20 @@ class SocketManager: NSObject, URLSessionDelegate, URLSessionWebSocketDelegate {
                 postNotification(message: message)
             }
         }
+    }
+    
+    func urlSession(_ session: URLSession, webSocketTask: URLSessionWebSocketTask, didOpenWithProtocol protocol: String?) {
+        print("手表webSocket已打开")
+        self.connected = true
+        commonSocket.prepareEncrypt()
+        self.latestConnectTime = Date().timeIntervalSince1970
+        sendToken()
+        onReceive()
+    }
+    
+    func urlSession(_ session: URLSession, webSocketTask: URLSessionWebSocketTask, didCloseWith closeCode: URLSessionWebSocketTask.CloseCode, reason: Data?) {
+        print("手表websocket已关闭")
+        self.connected = false
     }
     
     func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {

@@ -48,7 +48,7 @@ extension ChatRoomViewController: UITableViewDropDelegate {
                         if textMessages.count == strCount {
                             self.insertNewMessageCell(textMessages)
                             for newMessage in textMessages {
-                                socketForUsername(self.username).sendWrappedMessage(newMessage)
+                                socketForUsername(self.username).commonWebSocket.sendWrappedMessage(newMessage)
                             }
                         }
                     }

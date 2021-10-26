@@ -40,9 +40,7 @@ class ChatRoomViewController: DogeChatViewController {
     var messagesUUIDs = Set<String>()
     var activePKView: UIView!
     var drawingIndexPath: IndexPath!
-    var username: String {
-        friend.username
-    }
+    var username = ""
     var friendAvatarUrl: String {
         friend.avatarURL
     }
@@ -155,7 +153,7 @@ class ChatRoomViewController: DogeChatViewController {
     
     @objc func displayHistoryIfNeeded() {
         if tableView.contentSize.height < view.bounds.height {
-            manager.pingWithResult { success in
+            manager.commonWebSocket.pingWithResult { success in
                 if success {
                     self.displayHistory()
                 }
@@ -188,7 +186,7 @@ class ChatRoomViewController: DogeChatViewController {
         guard let message = notification.userInfo?["message"] as? Message else { return }
         guard let index = messages.firstIndex(of: message) else { return }
         messages[index].sendStatus = .success
-        manager.sendWrappedMessage(message)
+        manager.commonWebSocket.sendWrappedMessage(message)
     }
     
 }
@@ -202,7 +200,7 @@ extension ChatRoomViewController: UIImagePickerControllerDelegate, UINavigationC
         let wrappedMessage = processMessageString(for: content, type: .text, imageURL: nil, videoURL: nil)
         manager.messageManager.notSendContent.append(wrappedMessage)
         insertNewMessageCell([wrappedMessage])
-        manager.sendWrappedMessage(wrappedMessage)
+        manager.commonWebSocket.sendWrappedMessage(wrappedMessage)
     }
     
     func sendCallRequest() {
@@ -247,7 +245,7 @@ extension ChatRoomViewController: UIImagePickerControllerDelegate, UINavigationC
 extension ChatRoomViewController: EmojiViewDelegate {
     func didSelectEmoji(filePath: String) {
         let message = processMessageString(for: filePath, type: .image, imageURL: filePath, videoURL: nil)
-        manager.sendWrappedMessage(message)
+        manager.commonWebSocket.sendWrappedMessage(message)
         insertNewMessageCell([message])
     }
 }

@@ -42,7 +42,7 @@ class WebSocketManagerAdapter: NSObject {
         self.init()
         self.manager = manager
         self.username = username
-        manager.dataDelegate = self
+        manager.commonWebSocket.dataDelegate = self
         registerNotification()
     }
     
@@ -85,8 +85,8 @@ class WebSocketManagerAdapter: NSObject {
     }
     
     @objc func sendToken(noti: Notification) {
-        manager.sendToken((UIApplication.shared.delegate as! AppDelegate).deviceToken)
-        manager.sendVoipToken(AppDelegate.shared.pushKitToken)
+        manager.commonWebSocket.sendToken((UIApplication.shared.delegate as! AppDelegate).deviceToken)
+        manager.commonWebSocket.sendVoipToken(AppDelegate.shared.pushKitToken)
     }
     
     @objc func startCall(noti: Notification) {

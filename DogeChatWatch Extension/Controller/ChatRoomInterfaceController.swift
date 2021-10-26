@@ -82,11 +82,11 @@ class ChatRoomInterfaceController: WKInterfaceController {
         NotificationCenter.default.addObserver(self, selector: #selector(receiveHistory(noti:)), name: .receiveHistoryMessages, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(receiveNewMessageNotification(_:)), name: .receiveNewMessage, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(selectEmojiAction(_:)), name: .selectEmoji, object: nil)
-        NotificationCenter.default.addObserver(forName: .connecting, object: nil, queue: nil) { _ in
-            self.setTitle("正在连接...")
+        NotificationCenter.default.addObserver(forName: .connecting, object: nil, queue: nil) { [weak self] _ in
+            self?.setTitle("正在连接...")
         }
-        NotificationCenter.default.addObserver(forName: .connected, object: nil, queue: nil) { _ in
-            self.setTitle(SocketManager.shared.messageManager.myName)
+        NotificationCenter.default.addObserver(forName: .connected, object: nil, queue: nil) { [weak self] _ in
+            self?.setTitle(SocketManager.shared.messageManager.myName)
         }
         SocketManager.shared.messageManager.getEmoji { emojis in
             self.emojis = emojis
@@ -218,7 +218,7 @@ class ChatRoomInterfaceController: WKInterfaceController {
             return
         }
         pagesAndCurNum.curNum = (self.messages.count / ChatRoomInterfaceController.numberOfHistory) + 1
-        manager.historyMessages(for: friend, pageNum: pagesAndCurNum.curNum)
+        manager.commonSocket.historyMessages(for: friend, pageNum: pagesAndCurNum.curNum)
         pagesAndCurNum.curNum += 1
     }
     

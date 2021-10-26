@@ -391,6 +391,7 @@ extension MessageCollectionViewBaseCell {
                 displayBlock(data as Data)
             } else {
                 ImageLoader.shared.requestImage(urlStr: path, syncIfCan: false, completion: { image, data in
+                    guard self.message == capturedMessage else { return }
                     if path.hasPrefix(".gif") {
                         displayBlock(data)
                     } else {

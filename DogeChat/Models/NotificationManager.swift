@@ -77,7 +77,7 @@ class NotificationManager: NSObject {
         guard let alert = notification["alert"] as? [String: AnyObject],
               let sender = alert["title"] as? String,
               let content = alert["body"] as? String,
-              let senderID = alert["senderId"] as? String else { return }
+              let senderID = notification["senderId"] as? String else { return }
         nowPushInfo = (sender, content, senderID)
         UIApplication.shared.applicationIconBadgeNumber = 0
         if !AppDelegate.shared.launchedByPushAction {
@@ -98,7 +98,7 @@ class NotificationManager: NSObject {
     }
     
     func prepareVoiceChat(caller: String, uuid: UUID) {
-        manager.pingWithResult { [self] success in
+        manager.commonWebSocket.pingWithResult { [self] success in
             if !success {
                 login {
                     self.manager.connect()
@@ -119,7 +119,7 @@ class NotificationManager: NSObject {
             let message = Message(message: replyContent, friend: friend, imageURL: nil, videoURL: nil, messageSender: .ourself, receiver: self.nowPushInfo.sender, receiverUserID: nowPushInfo.senderID, uuid: UUID().uuidString, sender: self.manager.messageManager.myName, senderUserID: manager.messageManager.myId, messageType: .text, sendStatus: .fail, emojisInfo: [])
             self.quickReplyMessage = message
             self.manager.quickReplyUUID = message.uuid
-            self.manager.messageManager.notSendContent.append(message)
+            self.manager.commonWebSocket.sendMessage(message)
             DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
                 if !self.manager.quickReplyUUID.isEmpty {
                     self.actionCompletionHandler?()

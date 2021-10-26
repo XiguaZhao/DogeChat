@@ -89,7 +89,7 @@ class SettingViewController: DogeChatViewController, DatePickerChangeDelegate, U
                 text = url_pre
                 key = "host"
             case .wsAddress:
-                text = WebSocketManager.socketUrl
+                text = DogeChatWebSocket.socketUrl
                 key = "socketUrl"
             default:
                 break

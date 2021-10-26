@@ -149,7 +149,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard !AppDelegate.shared.callManager.hasCall() else { return }
         if let socket = self.socketManager {
             socket.disconnect()
-            socket.invalidatePingTimer()
+            socket.commonWebSocket.invalidatePingTimer()
         }
     }
     
@@ -172,7 +172,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func processReloginOrReConnect() {
         guard let socketManager = self.socketManager else { return }
         DispatchQueue.global().async {
-            socketManager.sortMessages()
+            socketManager.commonWebSocket.sortMessages()
         }
         if AppDelegate.shared.callManager.hasCall() {
             return
@@ -183,7 +183,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func setupReachability() {
         Self.reachability.whenReachable = { [self] reachable in
             guard let socket = self.socketManager else { return }
-            socket.pingWithResult { success in
+            socket.commonWebSocket.pingWithResult { success in
                 if !success {
                     if !socket.messageManager.isLogin {
                         contactVC?.loginAndConnect()

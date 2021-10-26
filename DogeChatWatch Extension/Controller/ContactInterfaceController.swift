@@ -16,7 +16,7 @@ var url_pre: String {
     SocketManager.shared.messageManager.url_pre
 }
 
-typealias ContactInfo = (name: String, avatarUrl: String, latestMessage: Message?)
+var loginInProgress = false
 
 class ContactInterfaceController: WKInterfaceController {
     
@@ -29,7 +29,6 @@ class ContactInterfaceController: WKInterfaceController {
     }
     
     var loginCount = 0
-    var loginInProgress = false
     
     override func awake(withContext context: Any?) {
         NotificationCenter.default.addObserver(self, selector: #selector(canGetContacts), name: NSNotification.Name("canGetContacts"), object: nil)

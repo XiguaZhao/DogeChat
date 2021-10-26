@@ -15,6 +15,7 @@
 #import <Masonry/Masonry.h>
 #import "DogeChat-Swift.h"
 #import "Recorder.h"
+@import DogeChatNetwork;
 
 #if CompileVideo
 

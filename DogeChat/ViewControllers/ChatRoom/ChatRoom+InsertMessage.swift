@@ -42,7 +42,15 @@ extension ChatRoomViewController {
         scrollToBottom = scrollToBottom || forceScrollBottom
         syncOnMainThread { [weak self] in
             guard let self = self else { return }
-            self.tableView.reloadData()
+            var indexPaths: [IndexPath] = []
+            for message in filtered {
+                indexPaths.append(IndexPath(row: self.messages.count, section: 0))
+                self.messages.append(message)
+                self.messagesUUIDs.insert(message.uuid)
+            }
+            UIView.performWithoutAnimation {
+                self.tableView.insertRows(at: indexPaths, with: .none)
+            }
             needScrollToBottom = scrollToBottom
             completion?()
         }
