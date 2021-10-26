@@ -365,10 +365,16 @@ class MessageCollectionViewImageCell: MessageCollectionViewBaseCell, PHLivePhoto
             guard let capturedMessage = capturedMessage, capturedMessage.imageURL == message.imageURL else {
                 return
             }
+            var cacheKey = imageUrl
             if !isGif, let image = image { // is photo
-                let compressed = compressEmojis(image)
+                var size: CGSize!
+                if self.superview?.bounds.width ?? 0 > 500 {
+                    size = CGSize(width: 300, height: 0)
+                    cacheKey.insert(contentsOf: "HD-", at: cacheKey.startIndex)
+                }
+                let compressed = compressEmojis(image, askedSize: size)
                 animatedImageView.image = UIImage(data: compressed)
-                cache.setObject(compressed as NSData, forKey: imageUrl as NSString)
+                cache.setObject(compressed as NSData, forKey: cacheKey as NSString)
             } else { // gif图处理
                 animatedImageView.animatedImage = FLAnimatedImage(gifData: data)
                 cache.setObject(data as NSData, forKey: imageUrl as NSString)

@@ -20,7 +20,7 @@ class HistoryVC: DogeChatViewController {
     
     var cache: NSCache<NSString, NSData>!
     var option: MessageOption = .toOne
-    var name = ""
+    var friend: Friend!
     var messages = [Message]()
     var uuids = Set<String>()
     var username = ""
@@ -54,7 +54,7 @@ class HistoryVC: DogeChatViewController {
         manager.needInsertWhenWrap = false
         
         view.addSubview(tableView)
-        navigationItem.title = name + "的历史记录"
+        navigationItem.title = friend.username + "的历史记录"
         
         tableView.delegate = self
         configDataSource()
@@ -184,7 +184,7 @@ class HistoryVC: DogeChatViewController {
     
     
     func requestPage(_ page: Int) {
-        socketForUsername(username).historyMessages(for: option == .toAll ? "chatRoom" : name, pageNum: page)
+        socketForUsername(username).historyMessages(for: friend, pageNum: page)
     }
     
     @objc func refreshFooterAction() {

@@ -61,7 +61,7 @@ extension ChatRoomViewController: MessageInputDelegate, VoiceRecordDelegate {
                 let drawVC = DrawViewController()
                 drawVC.username = username
                 drawVC.pkViewDelegate.dataChangedDelegate = self
-                let newMessage = Message(message: "", messageSender: .ourself, receiver: self.friendName, uuid: UUID().uuidString, sender: self.username, messageType: .draw, option: self.messageOption)
+                let newMessage = processMessageString(for: "", type: .draw, imageURL: nil, videoURL: nil)
                 drawVC.message = newMessage
                 drawVC.modalPresentationStyle = .fullScreen
                 drawVC.chatRoomVC = self
@@ -100,7 +100,7 @@ extension ChatRoomViewController: MessageInputDelegate, VoiceRecordDelegate {
                 let vc = HistoryVC()
                 vc.contactDataSource = self.contactVC
                 vc.option = self.messageOption
-                vc.name = self.friendName
+                vc.friend = self.friend
                 vc.cache = self.cache
                 vc.username = self.username
                 self.navigationController?.pushViewController(vc, animated: true)

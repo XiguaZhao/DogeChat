@@ -17,6 +17,8 @@
 		050CB4F46B3AB080B5400FC5230D2606 /* SDWebImageIndicator.h in Headers */ = {isa = PBXBuildFile; fileRef = 22339DD52CC277A9BD57E5629DE7E8AC /* SDWebImageIndicator.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		054CDF3A96FD0777E45C64998B79B1C6 /* FoundationHTTPHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = C35F7C364A62783C7350D785FC9144BA /* FoundationHTTPHandler.swift */; };
 		0678631C84F13FC4184E546E9034DA67 /* NSLayoutConstraint+MASDebugAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 4ED05D56DB9BA23424FD7E7F9294DD09 /* NSLayoutConstraint+MASDebugAdditions.m */; };
+		07110DE32726A3A400D9323E /* WebSocketCommon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07110DE22726A3A300D9323E /* WebSocketCommon.swift */; };
+		07110DE42726A3A400D9323E /* WebSocketCommon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07110DE22726A3A300D9323E /* WebSocketCommon.swift */; };
 		0741ABA6F7E7E1C97C6CF994481251C5 /* MJRefreshAutoNormalFooter.m in Sources */ = {isa = PBXBuildFile; fileRef = A2E5E194481C808B086598B4E0C108C4 /* MJRefreshAutoNormalFooter.m */; };
 		076FE05E367F50E1CE503F6951FE6357 /* LookinAppInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 2A8098644108377C9140D28F808556C2 /* LookinAppInfo.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		07C87DEB4B0002E11EBAFFA18F6EB4B8 /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = F08CECB093DBC2D17FC34F6A95028DC9 /* Message.swift */; };
@@ -789,7 +791,8 @@
 		05D76C34320146DCD3B0FECD3DB1750B /* SDImageLoader.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDImageLoader.h; path = SDWebImage/Core/SDImageLoader.h; sourceTree = "<group>"; };
 		05FA3EF750110F2B4C5A12A8DE893B88 /* SDAnimatedImageView+WebCache.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "SDAnimatedImageView+WebCache.h"; path = "SDWebImage/Core/SDAnimatedImageView+WebCache.h"; sourceTree = "<group>"; };
 		069FDDD788FB9F7F6D0E128C80B6A9F9 /* NSData+ImageContentType.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "NSData+ImageContentType.h"; path = "SDWebImage/Core/NSData+ImageContentType.h"; sourceTree = "<group>"; };
-		06F190733D960BC2D8437546D276759A /* FLAnimatedImage.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = FLAnimatedImage.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		06F190733D960BC2D8437546D276759A /* FLAnimatedImage.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; path = FLAnimatedImage.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		07110DE22726A3A300D9323E /* WebSocketCommon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = WebSocketCommon.swift; path = DogeChatUniversal/Classes/WebSocketCommon.swift; sourceTree = "<group>"; };
 		07281FC237239830E5C22424F548DCFC /* NSData+SHA.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "NSData+SHA.h"; path = "Source/NSData+SHA.h"; sourceTree = "<group>"; };
 		07B1A9B4B7724887FBF30B642EA7E9D6 /* SwiftyRSA-iOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "SwiftyRSA-iOS.release.xcconfig"; sourceTree = "<group>"; };
 		07F59684379A2EF17FC4CACCB41A4DD0 /* LKS_PerspectiveViewController.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = LKS_PerspectiveViewController.m; path = Src/Server/Perspective/LKS_PerspectiveViewController.m; sourceTree = "<group>"; };
@@ -831,7 +834,7 @@
 		1702FFC9F49D9EA5DD5E8124D191EC57 /* LookinAttributeModification.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = LookinAttributeModification.h; path = Src/Shared/LookinAttributeModification.h; sourceTree = "<group>"; };
 		1731D395CDD2002F79F5587DA045A024 /* NSString+Lookin.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "NSString+Lookin.m"; path = "Src/Shared/Category/NSString+Lookin.m"; sourceTree = "<group>"; };
 		17688F82BF31672A5F519C01FB31F638 /* MJRefresh-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "MJRefresh-prefix.pch"; sourceTree = "<group>"; };
-		1800E8F0146783A4E2667A9599CE25ED /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; path = LICENSE; sourceTree = "<group>"; };
+		1800E8F0146783A4E2667A9599CE25ED /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		18AD942223A5571BC435B5DF4457ADB6 /* DogeChatNetwork */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = DogeChatNetwork; path = libDogeChatNetwork.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		190D04B9FE938EDEFC1D5AB5E924D1D8 /* SDImageTransformer.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDImageTransformer.m; path = SDWebImage/Core/SDImageTransformer.m; sourceTree = "<group>"; };
 		191B484C5C7FF4009B130CEEB9E1C754 /* MJRefreshHeader.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = MJRefreshHeader.h; path = MJRefresh/Base/MJRefreshHeader.h; sourceTree = "<group>"; };
@@ -853,7 +856,7 @@
 		1E617AD1445D2D5AC0F3A42B07DBBB6A /* MASViewAttribute.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = MASViewAttribute.h; path = Masonry/MASViewAttribute.h; sourceTree = "<group>"; };
 		1ED04073604AD41E1BCDA8AB07455285 /* UIActivityIndicatorView+AFNetworking.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UIActivityIndicatorView+AFNetworking.m"; path = "UIKit+AFNetworking/UIActivityIndicatorView+AFNetworking.m"; sourceTree = "<group>"; };
 		1EF390F67A1F4666E5FF09BCF2F1BF9B /* MJRefreshBackNormalFooter.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = MJRefreshBackNormalFooter.m; path = MJRefresh/Custom/Footer/Back/MJRefreshBackNormalFooter.m; sourceTree = "<group>"; };
-		1F3991F54EBA040BC98A0E4FB8539596 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; path = README.md; sourceTree = "<group>"; };
+		1F3991F54EBA040BC98A0E4FB8539596 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		1FBDB716F8D99B5ABE316E9EC0762347 /* RSAiOSWatchOS-iOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "RSAiOSWatchOS-iOS.debug.xcconfig"; sourceTree = "<group>"; };
 		1FFED36A657123030ABB700256D73F15 /* Masonry */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = Masonry; path = libMasonry.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		203942B13E2892D565FD926CF913A886 /* Starscream.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = Starscream.release.xcconfig; sourceTree = "<group>"; };
@@ -870,7 +873,7 @@
 		26EBB6BD2172FE074FC3E85A5ED795F6 /* SwiftyRSA-watchOS-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "SwiftyRSA-watchOS-prefix.pch"; path = "../SwiftyRSA-watchOS/SwiftyRSA-watchOS-prefix.pch"; sourceTree = "<group>"; };
 		26FCA8377239962388462495563B59D1 /* AFNetworking-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "AFNetworking-dummy.m"; sourceTree = "<group>"; };
 		27428F446E1F5B437143E422C78E3D5A /* DogeChatNetwork-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "DogeChatNetwork-umbrella.h"; sourceTree = "<group>"; };
-		27670A02B4B91835A2D94373CE6B9839 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; path = README.md; sourceTree = "<group>"; };
+		27670A02B4B91835A2D94373CE6B9839 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		28431609508845FAEF6814BEA242298E /* Starscream.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = Starscream.modulemap; sourceTree = "<group>"; };
 		286934CAD6C37E4B3FA1097B1DFEA364 /* Masonry.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = Masonry.modulemap; sourceTree = "<group>"; };
 		28BA659C0E0D31CE2EE47A8525422397 /* MJRefreshHeader.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = MJRefreshHeader.m; path = MJRefresh/Base/MJRefreshHeader.m; sourceTree = "<group>"; };
@@ -944,7 +947,7 @@
 		477AFA4E6BD0F17D8CA60D4B02A76392 /* UITextField+LookinServer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "UITextField+LookinServer.h"; path = "Src/Server/Category/UITextField+LookinServer.h"; sourceTree = "<group>"; };
 		47C14E73E28F05108218C05A3F222DAC /* UIGestureRecognizer+LookinServer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "UIGestureRecognizer+LookinServer.h"; path = "Src/Server/Category/UIGestureRecognizer+LookinServer.h"; sourceTree = "<group>"; };
 		47E83D298074E2B8E03B67FC74BDA32E /* SDImageIOAnimatedCoder.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDImageIOAnimatedCoder.m; path = SDWebImage/Core/SDImageIOAnimatedCoder.m; sourceTree = "<group>"; };
-		484224E7188056DCC5EC712017C200A5 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; path = LICENSE; sourceTree = "<group>"; };
+		484224E7188056DCC5EC712017C200A5 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		492BD18ED1724D96D685BB00FE040899 /* LKS_ObjectRegistry.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = LKS_ObjectRegistry.h; path = Src/Server/Others/LKS_ObjectRegistry.h; sourceTree = "<group>"; };
 		49B84AA639B9B29FC3E10A507EFF0DA2 /* DogeChatNetwork-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "DogeChatNetwork-dummy.m"; sourceTree = "<group>"; };
 		4A6B75E97BBF1B285562CEF92DD346B5 /* Pods-DogeChat-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-DogeChat-umbrella.h"; sourceTree = "<group>"; };
@@ -952,7 +955,7 @@
 		4B22D23493D0F7F016606E7AD4089911 /* RSAiOSWatchOS-watchOS.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; name = "RSAiOSWatchOS-watchOS.modulemap"; path = "../RSAiOSWatchOS-watchOS/RSAiOSWatchOS-watchOS.modulemap"; sourceTree = "<group>"; };
 		4B7426A5AD268EBE52EE285B1173ED3F /* UIColor+LookinServer.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UIColor+LookinServer.m"; path = "Src/Server/Category/UIColor+LookinServer.m"; sourceTree = "<group>"; };
 		4C3CD586E5966B33720BE9E8C2478DD4 /* CALayer+LookinServer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "CALayer+LookinServer.h"; path = "Src/Server/Category/CALayer+LookinServer.h"; sourceTree = "<group>"; };
-		4D53C780C7229592CDCD12B68D031E7A /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; path = LICENSE; sourceTree = "<group>"; };
+		4D53C780C7229592CDCD12B68D031E7A /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		4D99C589FF2B001CACFF66F5D9BFC855 /* LKS_AttrModificationPatchHandler.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = LKS_AttrModificationPatchHandler.h; path = Src/Server/Connection/RequestHandler/LKS_AttrModificationPatchHandler.h; sourceTree = "<group>"; };
 		4EB4A5AC844873D6F60D28083E2A812D /* LookinServer-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "LookinServer-prefix.pch"; sourceTree = "<group>"; };
 		4ED05D56DB9BA23424FD7E7F9294DD09 /* NSLayoutConstraint+MASDebugAdditions.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "NSLayoutConstraint+MASDebugAdditions.m"; path = "Masonry/NSLayoutConstraint+MASDebugAdditions.m"; sourceTree = "<group>"; };
@@ -964,7 +967,7 @@
 		51347F8FB1BAB7E70C275E45A9516906 /* DACircularProgress */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = DACircularProgress; path = libDACircularProgress.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		518F8B2AC3DC62CE8BF5F21E61787102 /* PTChannel.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PTChannel.m; path = Src/Shared/Peertalk/PTChannel.m; sourceTree = "<group>"; };
 		5192F054DA3619EC5FA4E94210000E7F /* LKS_EventHandlerMaker.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = LKS_EventHandlerMaker.m; path = Src/Server/Others/LKS_EventHandlerMaker.m; sourceTree = "<group>"; };
-		52CB354FEE58579F79B43EACEC44D0DC /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; path = README.md; sourceTree = "<group>"; };
+		52CB354FEE58579F79B43EACEC44D0DC /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		5375C0524FC31996E4A2434DEB2F720C /* LookinServer.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = LookinServer.modulemap; sourceTree = "<group>"; };
 		538A960003C5CE1D6656826E4B438BA0 /* LookinAttributesSection.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = LookinAttributesSection.h; path = Src/Shared/LookinAttributesSection.h; sourceTree = "<group>"; };
 		53B7CCB0CCB1C0ABE20BAA7CD71B3B02 /* RSAiOSWatchOS-watchOS-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "RSAiOSWatchOS-watchOS-prefix.pch"; path = "../RSAiOSWatchOS-watchOS/RSAiOSWatchOS-watchOS-prefix.pch"; sourceTree = "<group>"; };
@@ -989,7 +992,7 @@
 		59D586D353D4933D9EF7335CAE7C340D /* UITextView+LookinServer.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UITextView+LookinServer.m"; path = "Src/Server/Category/UITextView+LookinServer.m"; sourceTree = "<group>"; };
 		5A36E8919130530ED06CF7FDF47047A6 /* SDWebImageOperation.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDWebImageOperation.m; path = SDWebImage/Core/SDWebImageOperation.m; sourceTree = "<group>"; };
 		5A9565FBCAA3549101E83C7AD43BC99B /* LookinDefines.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = LookinDefines.h; path = Src/Shared/LookinDefines.h; sourceTree = "<group>"; };
-		5B90EFEE5F9F887D325B67CD119F4D46 /* RSAiOSWatchOS.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = RSAiOSWatchOS.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		5B90EFEE5F9F887D325B67CD119F4D46 /* RSAiOSWatchOS.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; path = RSAiOSWatchOS.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		5C1A0920C06392FA9AAF3CF5B4272871 /* NSImage+Compatibility.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "NSImage+Compatibility.m"; path = "SDWebImage/Core/NSImage+Compatibility.m"; sourceTree = "<group>"; };
 		5C1B65426766BC84E441EAC731A10051 /* SwiftyRSA-watchOS-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "SwiftyRSA-watchOS-umbrella.h"; path = "../SwiftyRSA-watchOS/SwiftyRSA-watchOS-umbrella.h"; sourceTree = "<group>"; };
 		5CFFB105AC3ED05310A6246DF3078F48 /* MJRefreshAutoStateFooter.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = MJRefreshAutoStateFooter.m; path = MJRefresh/Custom/Footer/Auto/MJRefreshAutoStateFooter.m; sourceTree = "<group>"; };
@@ -1001,7 +1004,7 @@
 		5EF1B36D4E9D0F7DB6D2E974014C6C81 /* LKS_HierarchyDisplayItemsMaker.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = LKS_HierarchyDisplayItemsMaker.h; path = Src/Server/Others/LKS_HierarchyDisplayItemsMaker.h; sourceTree = "<group>"; };
 		5F7FBE5BBCFAA3759024E5FB1D78E959 /* SDWebImageCacheSerializer.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDWebImageCacheSerializer.m; path = SDWebImage/Core/SDWebImageCacheSerializer.m; sourceTree = "<group>"; };
 		605FA539800BCAB94FAA634739E6A31C /* SDWebImageDownloaderResponseModifier.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDWebImageDownloaderResponseModifier.m; path = SDWebImage/Core/SDWebImageDownloaderResponseModifier.m; sourceTree = "<group>"; };
-		6195ACCD3654D2673B7E6670CA5E8EAC /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; path = README.md; sourceTree = "<group>"; };
+		6195ACCD3654D2673B7E6670CA5E8EAC /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		61C667400DD684C9C64C4BD691C33798 /* UIImage+MemoryCacheCost.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UIImage+MemoryCacheCost.m"; path = "SDWebImage/Core/UIImage+MemoryCacheCost.m"; sourceTree = "<group>"; };
 		631243692264D0A0E54C3430E1D1034E /* SDWebImage.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = SDWebImage.release.xcconfig; sourceTree = "<group>"; };
 		632F29EB796280D692413BDA881681A3 /* LKS_RequestHandler.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = LKS_RequestHandler.m; path = Src/Server/Connection/LKS_RequestHandler.m; sourceTree = "<group>"; };
@@ -1043,7 +1046,7 @@
 		75B82A298A55F07C0530CB6E0FF394CA /* UIActivityIndicatorView+AFNetworking.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "UIActivityIndicatorView+AFNetworking.h"; path = "UIKit+AFNetworking/UIActivityIndicatorView+AFNetworking.h"; sourceTree = "<group>"; };
 		76315737C0EB9120F7A68340425D257B /* UIVisualEffectView+LookinServer.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UIVisualEffectView+LookinServer.m"; path = "Src/Server/Category/UIVisualEffectView+LookinServer.m"; sourceTree = "<group>"; };
 		7664381B332C5017EBC67122E62C703D /* SDAnimatedImageView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDAnimatedImageView.h; path = SDWebImage/Core/SDAnimatedImageView.h; sourceTree = "<group>"; };
-		766A3087B800EBF61FE1E072BD8CA581 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; path = LICENSE; sourceTree = "<group>"; };
+		766A3087B800EBF61FE1E072BD8CA581 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		769B09121FBCC3164771718ABD1117AC /* LookinAttrType.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = LookinAttrType.h; path = Src/Shared/LookinAttrType.h; sourceTree = "<group>"; };
 		76B4B9203398865E0ED4FC272BBB811A /* LookinObject.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = LookinObject.h; path = Src/Shared/LookinObject.h; sourceTree = "<group>"; };
 		76FD37987334D3F53B46704CB48C5B57 /* SDImageTransformer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDImageTransformer.h; path = SDWebImage/Core/SDImageTransformer.h; sourceTree = "<group>"; };
@@ -1067,7 +1070,7 @@
 		80C9C2ABA8639B5BFED59DF632A1A769 /* SDImageCoderHelper.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDImageCoderHelper.m; path = SDWebImage/Core/SDImageCoderHelper.m; sourceTree = "<group>"; };
 		81A9DAE53254F5AF2B18E119214A61CC /* SDWebImageDownloaderConfig.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDWebImageDownloaderConfig.h; path = SDWebImage/Core/SDWebImageDownloaderConfig.h; sourceTree = "<group>"; };
 		837764DE3EEE91A5A7957F99DDFA430D /* NSBezierPath+SDRoundedCorners.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "NSBezierPath+SDRoundedCorners.h"; path = "SDWebImage/Private/NSBezierPath+SDRoundedCorners.h"; sourceTree = "<group>"; };
-		837C5E6095BB8409E7E4D12C2DA43B03 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; path = LICENSE; sourceTree = "<group>"; };
+		837C5E6095BB8409E7E4D12C2DA43B03 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		83CE270726C775FF84645F8387F17096 /* SwiftyRSA-watchOS.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; name = "SwiftyRSA-watchOS.modulemap"; path = "../SwiftyRSA-watchOS/SwiftyRSA-watchOS.modulemap"; sourceTree = "<group>"; };
 		83F1500EE86EC20B1DE7E1246270932F /* SDImageHEICCoder.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDImageHEICCoder.m; path = SDWebImage/Core/SDImageHEICCoder.m; sourceTree = "<group>"; };
 		8404909D4B23885AB074119A9569F75C /* SDWebImage.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = SDWebImage.debug.xcconfig; sourceTree = "<group>"; };
@@ -1136,7 +1139,7 @@
 		9BCC5C80133DFE265D2506D66BD7F66A /* SDImageCoderHelper.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDImageCoderHelper.h; path = SDWebImage/Core/SDImageCoderHelper.h; sourceTree = "<group>"; };
 		9C34C0C1578E654AD3902CDF4FCB68D0 /* LookinAttrIdentifiers.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = LookinAttrIdentifiers.m; path = Src/Shared/LookinAttrIdentifiers.m; sourceTree = "<group>"; };
 		9D4FFF6075E12A6C90420A1731D12B85 /* LKS_ExportManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = LKS_ExportManager.m; path = Src/Server/Others/LKS_ExportManager.m; sourceTree = "<group>"; };
-		9D940727FF8FB9C785EB98E56350EF41 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		9D940727FF8FB9C785EB98E56350EF41 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		9DDAC1B8B245635102B77CF8FB300EA2 /* MASConstraintMaker.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = MASConstraintMaker.m; path = Masonry/MASConstraintMaker.m; sourceTree = "<group>"; };
 		9EE22BAEC98849FF9278206586DC7ED2 /* SwiftyRSA-watchOS-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "SwiftyRSA-watchOS-dummy.m"; path = "../SwiftyRSA-watchOS/SwiftyRSA-watchOS-dummy.m"; sourceTree = "<group>"; };
 		9F2A7890A7227C20255C9BE6AC66B5A7 /* PTProtocol.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = PTProtocol.h; path = Src/Shared/Peertalk/PTProtocol.h; sourceTree = "<group>"; };
@@ -1199,7 +1202,7 @@
 		B69BA638DD8E471949FF70F50561C1AB /* LKS_HierarchyDisplayItemsMaker.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = LKS_HierarchyDisplayItemsMaker.m; path = Src/Server/Others/LKS_HierarchyDisplayItemsMaker.m; sourceTree = "<group>"; };
 		B766EE92C9D7D28FB9288E6AF90AE297 /* MASLayoutConstraint.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = MASLayoutConstraint.m; path = Masonry/MASLayoutConstraint.m; sourceTree = "<group>"; };
 		B78061D971BEC64CBBA1B08953CBCB84 /* UIImage+Transform.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "UIImage+Transform.h"; path = "SDWebImage/Core/UIImage+Transform.h"; sourceTree = "<group>"; };
-		B786AF308F4216E739381F570B552168 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; path = README.md; sourceTree = "<group>"; };
+		B786AF308F4216E739381F570B552168 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		B79BFBA164E1AB451DA8F7B967A80C25 /* FLAnimatedImage.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = FLAnimatedImage.h; sourceTree = "<group>"; };
 		B7A2859155DA6A2B296558D9AE41E7C8 /* SDInternalMacros.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDInternalMacros.m; path = SDWebImage/Private/SDInternalMacros.m; sourceTree = "<group>"; };
 		B7AF635ED57FA93C0C7D8913A6798273 /* UIScrollView+MJExtension.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "UIScrollView+MJExtension.h"; path = "MJRefresh/UIScrollView+MJExtension.h"; sourceTree = "<group>"; };
@@ -1266,7 +1269,7 @@
 		CF186A1B071A5227B8C8FC87F02355AF /* SDAssociatedObject.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDAssociatedObject.h; path = SDWebImage/Private/SDAssociatedObject.h; sourceTree = "<group>"; };
 		CF2063E263B15F810ECDA4C06AD72975 /* SDWebImageOperation.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDWebImageOperation.h; path = SDWebImage/Core/SDWebImageOperation.h; sourceTree = "<group>"; };
 		CF4FDC4260695C4A72581B5021BDAADA /* FrameCollector.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FrameCollector.swift; path = Sources/Framer/FrameCollector.swift; sourceTree = "<group>"; };
-		CF58550E671017BA19F86D0078458245 /* DogeChatNetwork.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = DogeChatNetwork.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		CF58550E671017BA19F86D0078458245 /* DogeChatNetwork.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; path = DogeChatNetwork.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		CF9C0C46882431D7ECF4EF46E5F9F2C9 /* SDWeakProxy.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDWeakProxy.h; path = SDWebImage/Private/SDWeakProxy.h; sourceTree = "<group>"; };
 		CFF07A2E7FA609298EFC7027D3DE8197 /* MJRefreshAutoFooter.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = MJRefreshAutoFooter.m; path = MJRefresh/Base/MJRefreshAutoFooter.m; sourceTree = "<group>"; };
 		D0348876D76E7D91CF64EC2D6E9A2927 /* SwiftyRSA+ObjC.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "SwiftyRSA+ObjC.swift"; path = "Source/SwiftyRSA+ObjC.swift"; sourceTree = "<group>"; };
@@ -1351,7 +1354,7 @@
 		F2F5C4897A6A1D6BE26FDA679671A7E9 /* UILabel+LookinServer.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UILabel+LookinServer.m"; path = "Src/Server/Category/UILabel+LookinServer.m"; sourceTree = "<group>"; };
 		F3077DB2E6C47F00CBC96E3BC8B8D5A3 /* RSAiOSWatchOS-iOS-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "RSAiOSWatchOS-iOS-prefix.pch"; sourceTree = "<group>"; };
 		F34683053B7359991CDC32D0CF5672A6 /* Pods-DogeChat-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-DogeChat-acknowledgements.markdown"; sourceTree = "<group>"; };
-		F41348E3221F04C45952B4B3AA71AB60 /* DogeChatUniversal.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = DogeChatUniversal.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		F41348E3221F04C45952B4B3AA71AB60 /* DogeChatUniversal.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; path = DogeChatUniversal.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		F4B11721B01B4F2D4C7D1BC02D2E6C5C /* LKS_MethodTraceManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = LKS_MethodTraceManager.m; path = Src/Server/Others/LKS_MethodTraceManager.m; sourceTree = "<group>"; };
 		F4BF59B861CE0F045AA40E33E68C879F /* PrivateKey.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = PrivateKey.swift; path = Source/PrivateKey.swift; sourceTree = "<group>"; };
 		F4F76A75E18180A56B163F7FC3EA62D0 /* ViewController+MASAdditions.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "ViewController+MASAdditions.h"; path = "Masonry/ViewController+MASAdditions.h"; sourceTree = "<group>"; };
@@ -1364,7 +1367,7 @@
 		F6C48910F0503404BDA8686A18D22ADC /* SDWebImageDownloaderDecryptor.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDWebImageDownloaderDecryptor.m; path = SDWebImage/Core/SDWebImageDownloaderDecryptor.m; sourceTree = "<group>"; };
 		F7279B249CDE5EB854CDB95369A8ED03 /* SDWebImageDefine.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDWebImageDefine.m; path = SDWebImage/Core/SDWebImageDefine.m; sourceTree = "<group>"; };
 		F74511CDC9E0BFF2E0BBC79284BE3FE7 /* MJRefreshAutoGifFooter.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = MJRefreshAutoGifFooter.m; path = MJRefresh/Custom/Footer/Auto/MJRefreshAutoGifFooter.m; sourceTree = "<group>"; };
-		F75DA00720297D2A35D70BE3F1E58DF7 /* SwiftyRSA.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = SwiftyRSA.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		F75DA00720297D2A35D70BE3F1E58DF7 /* SwiftyRSA.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; path = SwiftyRSA.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		F77F911C11BE167D5CDB2A00C0E9C633 /* NSData+ImageContentType.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "NSData+ImageContentType.m"; path = "SDWebImage/Core/NSData+ImageContentType.m"; sourceTree = "<group>"; };
 		F81F22E165D8117528C0A4ED6AC32856 /* NSLayoutConstraint+MASDebugAdditions.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "NSLayoutConstraint+MASDebugAdditions.h"; path = "Masonry/NSLayoutConstraint+MASDebugAdditions.h"; sourceTree = "<group>"; };
 		F823AE5D4F330E1C6A4219234D44600D /* UIButton+WebCache.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UIButton+WebCache.m"; path = "SDWebImage/Core/UIButton+WebCache.m"; sourceTree = "<group>"; };
@@ -1819,7 +1822,6 @@
 				8BD1485709948109E1CFD503561B1724 /* WSEngine.swift */,
 				41A7E706471AEE81BF4BC3D18A57318C /* Support Files */,
 			);
-			name = Starscream;
 			path = Starscream;
 			sourceTree = "<group>";
 		};
@@ -1852,7 +1854,6 @@
 				35849AFD727619019A51CC737A930B81 /* SwiftyJSON.swift */,
 				9D141525F23927751EAEB184ECBD4187 /* Support Files */,
 			);
-			name = SwiftyJSON;
 			path = SwiftyJSON;
 			sourceTree = "<group>";
 		};
@@ -1971,7 +1972,6 @@
 				D75F19F8674394A74CDF7C77D1CBB2FB /* ViewController+MASAdditions.m */,
 				02F0B89FD9AC4849E530175B839428BF /* Support Files */,
 			);
-			name = Masonry;
 			path = Masonry;
 			sourceTree = "<group>";
 		};
@@ -1986,7 +1986,6 @@
 				0B5ABAFBB48EC74BF6929781C7D2916E /* Support Files */,
 				88F0781991C3BEEF4F161809D7E5F8FD /* UIKit */,
 			);
-			name = AFNetworking;
 			path = AFNetworking;
 			sourceTree = "<group>";
 		};
@@ -2110,6 +2109,7 @@
 				640D25E1DAD361A67C9A56F6DDC30C3E /* Friend.swift */,
 				8626BA556808F7904CCF4D5207D39F7C /* Helper.swift */,
 				3262D064C4D526990BCC8FBAD3115708 /* Message.swift */,
+				07110DE22726A3A300D9323E /* WebSocketCommon.swift */,
 				C90DBCA5B85A4C0C021E9DB7F003BB76 /* MessageManager.swift */,
 				9A587CBD5516005CEADA200AF3B39965 /* Notification+Names.swift */,
 				39CFFA14A777E1434023603AED4C4F47 /* StringExtension.swift */,
@@ -2323,7 +2323,6 @@
 				76315737C0EB9120F7A68340425D257B /* UIVisualEffectView+LookinServer.m */,
 				F360CFA7BDB632D2142735D276F3B6E9 /* Support Files */,
 			);
-			name = LookinServer;
 			path = LookinServer;
 			sourceTree = "<group>";
 		};
@@ -2371,7 +2370,6 @@
 				0B18F4F105CF3C9D0C3B749738418B89 /* Core */,
 				6B4FE355BB88441546CB04E3D63CC7E6 /* Support Files */,
 			);
-			name = SDWebImage;
 			path = SDWebImage;
 			sourceTree = "<group>";
 		};
@@ -2557,7 +2555,6 @@
 				9916D580612553F330AEBFFEE3B64C30 /* Resources */,
 				4BCCABAC9D570DB9B5C525AA47809608 /* Support Files */,
 			);
-			name = MJRefresh;
 			path = MJRefresh;
 			sourceTree = "<group>";
 		};
@@ -2584,7 +2581,6 @@
 				6C658DCDC45A417A6AD69629B3EFD90D /* DALabeledCircularProgressView.m */,
 				A9FDEB57ACDC4C62D8869736687E0E7C /* Support Files */,
 			);
-			name = DACircularProgress;
 			path = DACircularProgress;
 			sourceTree = "<group>";
 		};
@@ -2594,7 +2590,6 @@
 				8037489E244AAED97D1F35FE49C2D873 /* Reachability.swift */,
 				FB37093FA579A7E36D4B37FC817FADEC /* Support Files */,
 			);
-			name = ReachabilitySwift;
 			path = ReachabilitySwift;
 			sourceTree = "<group>";
 		};
@@ -3757,6 +3752,7 @@
 				E36D07112CC7138D7D50F10A4F6DE956 /* DogeChatUniversal-watchOS-dummy.m in Sources */,
 				6F442CFD61A97624786E82CB6F1CA506 /* Friend.swift in Sources */,
 				E7C2453FB3F6E66AA7D4C1CC1ED82C6F /* Helper.swift in Sources */,
+				07110DE42726A3A400D9323E /* WebSocketCommon.swift in Sources */,
 				2AC997ECE33FEC27D42A21E3F0A11A9E /* Message.swift in Sources */,
 				3A7ED294F79A54133AC31FA06875548F /* MessageManager.swift in Sources */,
 				1FCE978F8BA531AC566E7BBB2CAB75EF /* Notification+Names.swift in Sources */,
@@ -4179,6 +4175,7 @@
 				973CFA3582E5A52C16F3F5741510A9F5 /* DogeChatUniversal-iOS-dummy.m in Sources */,
 				BD9BA37BAD6F184FA7FB7673B9CD0E8F /* Friend.swift in Sources */,
 				678CBDBCB0853A831F0A66C00D2F67B3 /* Helper.swift in Sources */,
+				07110DE32726A3A400D9323E /* WebSocketCommon.swift in Sources */,
 				396C630A6B6AD644241980F656994ADF /* Message.swift in Sources */,
 				A4B719E88517607085A9D56BBDCAC942 /* MessageManager.swift in Sources */,
 				52328EE42D291D7726940965F41BD289 /* Notification+Names.swift in Sources */,

@@ -1,0 +1,8 @@
+Target dependency graph (4 targets)
+DogeChatWatch Extension in DogeChat, no dependencies
+DogeChatWatch in DogeChat, depends on:
+DogeChatWatch Extension in DogeChat (explicit)
+mynotification in DogeChat, no dependencies
+DogeChat in DogeChat, depends on:
+DogeChatWatch in DogeChat (explicit)
+mynotification in DogeChat (explicit)

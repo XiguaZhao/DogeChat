@@ -54,6 +54,9 @@ class PlayListViewController: DogeChatViewController, SelectContactsDelegate {
         }
     }
     var username = ""
+    var manager: WebSocketManager {
+        return socketForUsername(username)
+    }
     var type: PlayListVCType = .normal
     var message: Message!
     var playListName: String?
@@ -285,7 +288,7 @@ class PlayListViewController: DogeChatViewController, SelectContactsDelegate {
         return ((self.splitViewController?.viewControllers.first as? UITabBarController)?.viewControllers?.first as? UINavigationController)?.viewControllers.first as! ContactsTableViewController
     }
     
-    func shareTracksToFriends(_ friends: [String], tracks: [Track]) {
+    func shareTracksToFriends(_ friends: [Friend], tracks: [Track]) {
         if let tracksData = try? JSONEncoder().encode(selectedTracks) {
             socketForUsername(username).uploadData(tracksData, path: "message/uploadImg", name: "upload", fileName: "", needCookie: true, contentType: "application/octet-stream", params: nil) { [weak self] task, data in
                 guard let self = self, let data = data else { return }
@@ -296,8 +299,16 @@ class PlayListViewController: DogeChatViewController, SelectContactsDelegate {
                 }
                 let filePath = socketForUsername(self.username).messageManager.encrypt.decryptMessage(json["filePath"].stringValue)
                 for friend in friends {
-                    let message = Message(message: filePath, messageSender: .ourself, receiver: friend, sender: self.username, messageType: .track, option:friend == "群聊" ? .toAll : .toOne, tracks: tracks)
-                    socketForUsername(self.username).sendWrappedMessage(message)
+                    let message = Message(message: filePath,
+                                          friend: friend,
+                                          messageSender: .ourself,
+                                          receiver: friend.username,
+                                          receiverUserID: friend.userID,
+                                          sender: self.username,
+                                          senderUserID: self.manager.messageManager.myId,
+                                          messageType: .track,
+                                          tracks: tracks)
+                    socketForUsername(self.username).commonWebSocket.sendWrappedMessage(message)
                     if #available(iOS 13, *) {
                         if let chatVC = (self.view.window?.windowScene?.delegate as? SceneDelegate)?.navigationController.visibleViewController as? ChatRoomViewController {
                             chatVC.insertNewMessageCell([message])
@@ -316,7 +327,7 @@ class PlayListViewController: DogeChatViewController, SelectContactsDelegate {
         }
     }
     
-    func didSelectContacts(_ contacts: [String], vc: SelectContactsViewController) {
+    func didSelectContacts(_ contacts: [Friend], vc: SelectContactsViewController) {
         vc.dismiss(animated: true, completion: nil)
         guard !selectedTracks.isEmpty && !contacts.isEmpty else { return }
         shareTracksToFriends(contacts, tracks: self.selectedTracks)

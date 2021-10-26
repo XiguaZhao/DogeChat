@@ -165,15 +165,18 @@ class MessageInputView: DogeChatStaticBlurView {
         super.updateConstraints()
     }
     
+    func frameDown() {
+        let screenSize = UIApplication.shared.windows.first(where: { $0.isKeyWindow })?.bounds.size ?? UIScreen.main.bounds.size
+        let userInfo = [UIResponder.keyboardFrameEndUserInfoKey: NSValue(cgRect: CGRect(x: 0, y: screenSize.height, width: screenSize.width, height: screenSize.height))]
+        NotificationCenter.default.post(name: UIResponder.keyboardWillChangeFrameNotification, object: self, userInfo: userInfo)
+    }
     
     @objc func textViewResign() {
         textView.resignFirstResponder()
         if self.frame.maxY == self.superview!.bounds.maxY {
             return
         }
-        let screenSize = UIApplication.shared.windows.first(where: { $0.isKeyWindow })?.bounds.size ?? UIScreen.main.bounds.size
-        let userInfo = [UIResponder.keyboardFrameEndUserInfoKey: NSValue(cgRect: CGRect(x: 0, y: screenSize.height, width: screenSize.width, height: screenSize.height))]
-        NotificationCenter.default.post(name: UIResponder.keyboardWillChangeFrameNotification, object: self, userInfo: userInfo)
+        frameDown()
     }
     
     @objc func voiceButtonTapped(_ sender: UIButton) {

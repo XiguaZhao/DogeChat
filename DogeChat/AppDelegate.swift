@@ -73,7 +73,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         if UserDefaults.standard.value(forKey: "forceDarkMode") == nil {
             UserDefaults.standard.setValue(true, forKey: "forceDarkMode")
         }
-        if #available(iOS 13, *) {} else {
+        if #available(iOS 13, *) {
+            for session in UIApplication.shared.openSessions {
+                if session.stateRestorationActivity == nil {
+                    UIApplication.shared.requestSceneSessionDestruction(session, options: nil, errorHandler: nil)
+                }
+            }
+        } else {
             window?.rootViewController = UIStoryboard(name: "main", bundle: .main).instantiateInitialViewController() as? UISplitViewController
             splitViewController = window?.rootViewController as? UISplitViewController
             splitViewController.delegate = splitVCDelegate
@@ -305,7 +311,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         lastAppEnterBackgroundTime = NSDate().timeIntervalSince1970
         guard !callManager.hasCall() else { return }
         socketManager.disconnect()
-        socketManager.invalidatePingTimer()
+        socketManager.commonWebSocket.invalidatePingTimer()
     }
     
     func application(_ application: UIApplication, performActionFor shortcutItem: UIApplicationShortcutItem, completionHandler: @escaping (Bool) -> Void) {
@@ -336,7 +342,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     ) {
         print(userInfo)
         // socket如果断开却没回调通知我的话，就算收到推送也会安静
-        socketManager.pingWithResult { [weak self] success in
+        socketManager.commonWebSocket.pingWithResult { [weak self] success in
             if !success {
                 self?.socketManager.connect()
             }

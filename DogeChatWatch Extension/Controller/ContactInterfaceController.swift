@@ -16,7 +16,7 @@ var url_pre: String {
     SocketManager.shared.messageManager.url_pre
 }
 
-typealias ContactInfo = (name: String, avatarUrl: String, latestMessage: Message?)
+var loginInProgress = false
 
 class ContactInterfaceController: WKInterfaceController {
     
@@ -29,7 +29,6 @@ class ContactInterfaceController: WKInterfaceController {
     }
     
     var loginCount = 0
-    var loginInProgress = false
     
     override func awake(withContext context: Any?) {
         NotificationCenter.default.addObserver(self, selector: #selector(canGetContacts), name: NSNotification.Name("canGetContacts"), object: nil)
@@ -123,7 +122,7 @@ class ContactInterfaceController: WKInterfaceController {
         guard let message = noti.userInfo?["message"] as? Message else { return }
         let friendName: String
         var needUpdate: Bool = false
-        if message.option == .toAll {
+        if message.option == .toGroup {
             friendName = "群聊"
             let alreadyMax = usersInfos.first?.latestMessage?.id ?? 0
             needUpdate = message.id > alreadyMax
@@ -156,11 +155,11 @@ class ContactInterfaceController: WKInterfaceController {
     func showUnreadCount(message: Message) {
         if message.messageSender == .someoneElse {
             var sender = message.senderUsername
-            if message.option == .toAll {
+            if message.option == .toGroup {
                 sender = "群聊"
             }
             if let chatVC =  WKExtension.shared().visibleInterfaceController as? ChatRoomInterfaceController {
-                if chatVC.messageOption == .toAll && message.option == .toAll {
+                if chatVC.messageOption == .toGroup && message.option == .toGroup {
                     return
                 } else if chatVC.messageOption == .toOne && message.senderUsername == chatVC.friendName {
                     return
@@ -215,23 +214,14 @@ class ContactInterfaceController: WKInterfaceController {
     }
     
     override func table(_ table: WKInterfaceTable, didSelectRowAt rowIndex: Int) {
-        var messages: [Message]
-        let username: String
-        var messagesUUIDs: Set<String>
-        if rowIndex == 0 {
-            username = "群聊"
-            messages = manager.messageManager.messagesGroup
-            messagesUUIDs = manager.messageManager.groupUUIDs
-        } else {
-            username = usersInfos[rowIndex].username
-            messages = manager.messageManager.messagesSingle[username] ?? []
-            messagesUUIDs = manager.messageManager.singleUUIDs[username] ?? []
-        }
+        let friend = usersInfos[rowIndex]
+        var messages = friend.messages
+        var messagesUUIDs: Set<String> = friend.messageUUIDs
         if messages.count > 10 {
             messages.removeSubrange(0..<messages.count-10)
             messagesUUIDs = Set(messages.map { $0.uuid })
         }
-        let context = ["friendName": username, "messages": messages, "messagesUUIDs": messagesUUIDs] as [String : Any]
+        let context = ["friend": friend, "messages": messages, "messagesUUIDs": messagesUUIDs] as [String : Any]
         self.pushController(withName: "chatroom", context: context)
         if let row = table.rowController(at: rowIndex) as? ContactsRowController {
             row.usernameLabel.setText(usernames[rowIndex])

@@ -50,13 +50,22 @@ class ChatRoomInterfaceController: WKInterfaceController {
         }
     }
     @IBOutlet weak var table: WKInterfaceTable!
+    var friend: Friend! {
+        didSet {
+            self.setTitle(friendName)
+        }
+    }
     var isFirstTimeFetch = false
     let manager = SocketManager.shared
     var messages: [Message]!
     var messagesUUIDs: Set<String>!
     var pagesAndCurNum = (pages: 1, curNum: 1)
-    var friendName = ""
-    var messageOption: MessageOption = .toOne
+    var friendName: String {
+        friend.username
+    }
+    var messageOption: MessageOption {
+        friend.isGroup ? .toGroup : .toOne
+    }
     let messageRowType = "message"
     static let numberOfHistory = 10
     var emojis = [String]()
@@ -64,22 +73,20 @@ class ChatRoomInterfaceController: WKInterfaceController {
     override func awake(withContext context: Any?) {
         self.setTitle("awake")
         guard let context = context as? [String: Any],
-              let username = context["friendName"] as? String,
+              let friend = context["friend"] as? Friend,
               let messages = context["messages"] as? [Message],
               let messagesUUIDs = context["messagesUUIDs"] as? Set<String> else { return }
-        self.setTitle(username)
+        self.friend = friend
         self.messages = messages
-        self.friendName = username
         self.messagesUUIDs = messagesUUIDs
-        self.messageOption = friendName == "群聊" ? .toAll : .toOne
         NotificationCenter.default.addObserver(self, selector: #selector(receiveHistory(noti:)), name: .receiveHistoryMessages, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(receiveNewMessageNotification(_:)), name: .receiveNewMessage, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(selectEmojiAction(_:)), name: .selectEmoji, object: nil)
-        NotificationCenter.default.addObserver(forName: .connecting, object: nil, queue: nil) { _ in
-            self.setTitle("正在连接...")
+        NotificationCenter.default.addObserver(forName: .connecting, object: nil, queue: nil) { [weak self] _ in
+            self?.setTitle("正在连接...")
         }
-        NotificationCenter.default.addObserver(forName: .connected, object: nil, queue: nil) { _ in
-            self.setTitle(SocketManager.shared.messageManager.myName)
+        NotificationCenter.default.addObserver(forName: .connected, object: nil, queue: nil) { [weak self] _ in
+            self?.setTitle(SocketManager.shared.messageManager.myName)
         }
         SocketManager.shared.messageManager.getEmoji { emojis in
             self.emojis = emojis
@@ -108,15 +115,14 @@ class ChatRoomInterfaceController: WKInterfaceController {
     @IBAction func sendAction() {
         guard !input.isEmpty else { return }
         inputTF.setText(nil)
-        let message = Message(message: input, messageSender: .ourself, receiver: friendName, sender: SocketManager.shared.messageManager.myName, messageType: .text, option: self.messageOption, id: 0)
+        let message = Message(message: input, friend: friend, messageSender: .ourself, receiver: friendName, receiverUserID: friend.userID, sender: SocketManager.shared.messageManager.myName, senderUserID: SocketManager.shared.messageManager.myId, messageType: .text, id: 0)
         insertMessages([message])
         SocketManager.shared.sendMessage(message)
     }
     
     @objc func selectEmojiAction(_ noti: Notification) {
         let path = noti.object as! String
-        let message = Message(message: path, messageSender: .ourself, sender: SocketManager.shared.messageManager.myName, messageType: .image, option: messageOption)
-        message.receiver = friendName
+        let message = Message(message: path, friend: friend, messageSender: .ourself, receiver: friendName, receiverUserID: friend.userID, sender: SocketManager.shared.messageManager.myName, senderUserID: SocketManager.shared.messageManager.myId, messageType: .image)
         message.imageURL = path
         insertMessages([message])
         SocketManager.shared.sendMessage(message)
@@ -212,7 +218,7 @@ class ChatRoomInterfaceController: WKInterfaceController {
             return
         }
         pagesAndCurNum.curNum = (self.messages.count / ChatRoomInterfaceController.numberOfHistory) + 1
-        manager.historyMessages(for: (messageOption == .toAll) ? "chatRoom" : friendName, pageNum: pagesAndCurNum.curNum)
+        manager.commonSocket.historyMessages(for: friend, pageNum: pagesAndCurNum.curNum)
         pagesAndCurNum.curNum += 1
     }
     
