@@ -3,7 +3,7 @@
 //  DogeChat
 //
 //  Created by 赵锡光 on 2021/5/30.
-//  Copyright © 2021 Luke Parham. All rights reserved.
+//  Copyright © 2021 赵锡光. All rights reserved.
 //
 
 import UIKit
@@ -117,7 +117,7 @@ class ContactTableViewCell: UITableViewCell {
                 }
                 return
             }
-            ImageLoader.shared.requestImage(urlStr: avatarUrl) { [self] image, data in
+            ImageLoader.shared.requestImage(urlStr: avatarUrl) { [self] image, data, _ in
                 guard info.username == self.info.username else {
                     return
                 }

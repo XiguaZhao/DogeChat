@@ -3,7 +3,7 @@
 //  DogeChat
 //
 //  Created by 赵锡光 on 2021/6/19.
-//  Copyright © 2021 Luke Parham. All rights reserved.
+//  Copyright © 2021 赵锡光. All rights reserved.
 //
 
 import UIKit
@@ -61,7 +61,7 @@ class ImageBrowserCell: UICollectionViewCell {
             }
             return
         }
-        ImageLoader.shared.requestImage(urlStr: imagePath) { image, data in
+        ImageLoader.shared.requestImage(urlStr: imagePath) { image, data, _ in
             guard self.imagePath == imagePath else { return }
             self.cache?.setObject(data as NSData, forKey: imagePath as NSString)
             block(imagePath, data)

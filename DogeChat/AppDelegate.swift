@@ -30,6 +30,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var deviceToken: String?
     var pushKitToken: String?
     var launchedByPushAction = false
+    var backgroundSessionCompletionHandler: (() -> Void)?
     var notificationManager = NotificationManager.shared
     var socketManager: WebSocketManager! {
         return WebSocketManager.usersToSocketManager[username]
@@ -131,6 +132,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         WCSession.default.delegate = SessionDelegate.shared
         WCSession.default.activate()
+        NotificationCenter.default.addObserver(forName: .backgroundSessionFinish, object: nil, queue: .main) { [weak self] _ in
+            self?.backgroundSessionCompletionHandler?()
+        }
         return true
     }
     
@@ -139,7 +143,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             if !self.socketManager.messageManager.isLogin {
                 if let username = UserDefaults.standard.value(forKey: "lastUsername") as? String,
                    let password = UserDefaults.standard.value(forKey: "lastPassword") as? String {
-                    self.socketManager.messageManager.login(username: username, password: password) { res in
+                    self.socketManager.commonWebSocket.httpRequestsManager.login(username: username, password: password) { res in
                         if res == "登录成功", let contactVC = self.getContactVC() {
                             contactVC.refreshContacts {
                                 self.socketManager.connect()
@@ -229,7 +233,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             self.contactVC = contactVC
             self.navigationController.viewControllers = [contactVC]
             isLoginInProgress = true
-            socketManager.messageManager.login(username: username, password: password) { [self]
+            socketManager.commonWebSocket.httpRequestsManager.login(username: username, password: password) { [self]
                 (loginResult) in
                 try? self.reachability.startNotifier()
                 self.isLoginInProgress = false
@@ -258,6 +262,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return nowTime - lastAppEnterBackgroundTime >= 20 * 60
     }
     
+    func application(_ application: UIApplication, handleEventsForBackgroundURLSession identifier: String, completionHandler: @escaping () -> Void) {
+        self.backgroundSessionCompletionHandler = completionHandler
+    }
+    
     func applicationWillEnterForeground(_ application: UIApplication) {
         //通知中心，控制中心，快捷访问都不会触发这里。重新登录的逻辑在这里可能更合适
     }
@@ -284,7 +292,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         func reloginFunc() {
             reloginCount += 1
             if reloginCount < 5, let password = UserDefaults.standard.value(forKey: "lastPassword") as? String {
-                socketManager.messageManager.login(username: socketManager.messageManager.myName, password: password) { (result) in
+                socketManager.commonWebSocket.httpRequestsManager.login(username: socketManager.messageManager.myName, password: password) { (result) in
                     if result == "登录成功" {
                         self.socketManager.connect()
                     } else {
@@ -390,7 +398,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         case "DO_NOT_DISTURT_ACTION":
             if let username = UserDefaults.standard.value(forKey: "lastUsername") as? String,
                let password = UserDefaults.standard.value(forKey: "lastPassword") as? String {
-                socketManager.messageManager.login(username: username, password: password) { res in
+                socketManager.commonWebSocket.httpRequestsManager.login(username: username, password: password) { res in
                     if res == "登录成功" {
                         self.socketManager.doNotDisturb(for: "", hour: 4) {
                             completionHandler()

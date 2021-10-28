@@ -3,7 +3,7 @@
 //  DogeChat
 //
 //  Created by 赵锡光 on 2021/6/5.
-//  Copyright © 2021 Luke Parham. All rights reserved.
+//  Copyright © 2021 赵锡光. All rights reserved.
 //
 
 import Foundation
@@ -67,7 +67,7 @@ extension ContactsTableViewController: ContactTableViewCellDelegate, UIContextMe
         
     @objc func updateMyAvatar(_ noti: Notification) {
         let url = noti.userInfo?["path"] as! String
-        ImageLoader.shared.requestImage(urlStr: url) { [self] image, data in
+        ImageLoader.shared.requestImage(urlStr: url) { [self] image, data, _ in
             if url.hasSuffix(".gif") {
                 avatarImageView.animatedImage = FLAnimatedImage(gifData: data)
                 ContactTableViewCell.avatarCache[url] = data

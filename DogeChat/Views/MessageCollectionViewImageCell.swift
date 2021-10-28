@@ -3,7 +3,7 @@
 //  DogeChat
 //
 //  Created by 赵锡光 on 2021/5/28.
-//  Copyright © 2021 Luke Parham. All rights reserved.
+//  Copyright © 2021 赵锡光. All rights reserved.
 //
 
 import UIKit
@@ -344,9 +344,12 @@ class MessageCollectionViewImageCell: MessageCollectionViewBaseCell, PHLivePhoto
             }
             return
         }
-        // 接下来进入下载操作
         let capturedMessage = message
-        if let data = cache.object(forKey: imageUrl as NSString) {
+        var cacheKey = imageUrl
+        if isPad() && !isGif {
+            cacheKey.insert(contentsOf: "HD-", at: cacheKey.startIndex)
+        }
+        if let data = cache.object(forKey: cacheKey as NSString) {
             if !isGif {
                 self.animatedImageView.image = UIImage(data: data as Data)
                 layoutIfNeeded()
@@ -360,15 +363,15 @@ class MessageCollectionViewImageCell: MessageCollectionViewBaseCell, PHLivePhoto
                 }
             }
         }
-        
-        ImageLoader.shared.requestImage(urlStr: imageUrl, syncIfCan: message.syncGetMedia) { [self] image, data in
+        // 接下来进入下载操作
+        ImageLoader.shared.requestImage(urlStr: imageUrl, syncIfCan: message.syncGetMedia) { [self] image, data, _ in
             guard let capturedMessage = capturedMessage, capturedMessage.imageURL == message.imageURL else {
                 return
             }
             var cacheKey = imageUrl
             if !isGif, let image = image { // is photo
                 var size: CGSize!
-                if self.superview?.bounds.width ?? 0 > 500 {
+                if isPad() {
                     size = CGSize(width: 300, height: 0)
                     cacheKey.insert(contentsOf: "HD-", at: cacheKey.startIndex)
                 }

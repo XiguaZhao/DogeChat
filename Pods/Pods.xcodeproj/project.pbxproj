@@ -19,6 +19,8 @@
 		0678631C84F13FC4184E546E9034DA67 /* NSLayoutConstraint+MASDebugAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 4ED05D56DB9BA23424FD7E7F9294DD09 /* NSLayoutConstraint+MASDebugAdditions.m */; };
 		07110DE32726A3A400D9323E /* WebSocketCommon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07110DE22726A3A300D9323E /* WebSocketCommon.swift */; };
 		07110DE42726A3A400D9323E /* WebSocketCommon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07110DE22726A3A300D9323E /* WebSocketCommon.swift */; };
+		07110DEB272821A000D9323E /* HttpRequests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07110DEA272821A000D9323E /* HttpRequests.swift */; };
+		07110DEC272821A000D9323E /* HttpRequests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07110DEA272821A000D9323E /* HttpRequests.swift */; };
 		0741ABA6F7E7E1C97C6CF994481251C5 /* MJRefreshAutoNormalFooter.m in Sources */ = {isa = PBXBuildFile; fileRef = A2E5E194481C808B086598B4E0C108C4 /* MJRefreshAutoNormalFooter.m */; };
 		076FE05E367F50E1CE503F6951FE6357 /* LookinAppInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 2A8098644108377C9140D28F808556C2 /* LookinAppInfo.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		07C87DEB4B0002E11EBAFFA18F6EB4B8 /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = F08CECB093DBC2D17FC34F6A95028DC9 /* Message.swift */; };
@@ -793,6 +795,7 @@
 		069FDDD788FB9F7F6D0E128C80B6A9F9 /* NSData+ImageContentType.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "NSData+ImageContentType.h"; path = "SDWebImage/Core/NSData+ImageContentType.h"; sourceTree = "<group>"; };
 		06F190733D960BC2D8437546D276759A /* FLAnimatedImage.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; path = FLAnimatedImage.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		07110DE22726A3A300D9323E /* WebSocketCommon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = WebSocketCommon.swift; path = DogeChatUniversal/Classes/WebSocketCommon.swift; sourceTree = "<group>"; };
+		07110DEA272821A000D9323E /* HttpRequests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = HttpRequests.swift; path = DogeChatUniversal/Classes/HttpRequests.swift; sourceTree = "<group>"; };
 		07281FC237239830E5C22424F548DCFC /* NSData+SHA.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "NSData+SHA.h"; path = "Source/NSData+SHA.h"; sourceTree = "<group>"; };
 		07B1A9B4B7724887FBF30B642EA7E9D6 /* SwiftyRSA-iOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "SwiftyRSA-iOS.release.xcconfig"; sourceTree = "<group>"; };
 		07F59684379A2EF17FC4CACCB41A4DD0 /* LKS_PerspectiveViewController.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = LKS_PerspectiveViewController.m; path = Src/Server/Perspective/LKS_PerspectiveViewController.m; sourceTree = "<group>"; };
@@ -2108,11 +2111,12 @@
 			children = (
 				640D25E1DAD361A67C9A56F6DDC30C3E /* Friend.swift */,
 				8626BA556808F7904CCF4D5207D39F7C /* Helper.swift */,
+				07110DEA272821A000D9323E /* HttpRequests.swift */,
 				3262D064C4D526990BCC8FBAD3115708 /* Message.swift */,
-				07110DE22726A3A300D9323E /* WebSocketCommon.swift */,
 				C90DBCA5B85A4C0C021E9DB7F003BB76 /* MessageManager.swift */,
 				9A587CBD5516005CEADA200AF3B39965 /* Notification+Names.swift */,
 				39CFFA14A777E1434023603AED4C4F47 /* StringExtension.swift */,
+				07110DE22726A3A300D9323E /* WebSocketCommon.swift */,
 				E5FA7946221E55AE344B7264AB9E22EC /* Pod */,
 				6AF5E05B6291C38EA3DA8EFC6763E580 /* Support Files */,
 			);
@@ -3755,6 +3759,7 @@
 				07110DE42726A3A400D9323E /* WebSocketCommon.swift in Sources */,
 				2AC997ECE33FEC27D42A21E3F0A11A9E /* Message.swift in Sources */,
 				3A7ED294F79A54133AC31FA06875548F /* MessageManager.swift in Sources */,
+				07110DEC272821A000D9323E /* HttpRequests.swift in Sources */,
 				1FCE978F8BA531AC566E7BBB2CAB75EF /* Notification+Names.swift in Sources */,
 				1DBB2163A719460A7B0F152AA0029A63 /* StringExtension.swift in Sources */,
 			);
@@ -4178,6 +4183,7 @@
 				07110DE32726A3A400D9323E /* WebSocketCommon.swift in Sources */,
 				396C630A6B6AD644241980F656994ADF /* Message.swift in Sources */,
 				A4B719E88517607085A9D56BBDCAC942 /* MessageManager.swift in Sources */,
+				07110DEB272821A000D9323E /* HttpRequests.swift in Sources */,
 				52328EE42D291D7726940965F41BD289 /* Notification+Names.swift in Sources */,
 				C54D79291BAFA7144743C4C36531C9D7 /* StringExtension.swift in Sources */,
 			);

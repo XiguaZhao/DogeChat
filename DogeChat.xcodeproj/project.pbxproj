@@ -11,6 +11,7 @@
 		0709ECBA2719626C007F229F /* SessionDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0709ECB92719626C007F229F /* SessionDelegate.swift */; };
 		0709ECBB2719626C007F229F /* SessionDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0709ECB92719626C007F229F /* SessionDelegate.swift */; };
 		070C41742489204F0035314A /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 070C41732489204F0035314A /* SearchViewController.swift */; };
+		07110DEE27295A7800D9323E /* ImageLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 075293A82715629400D10D65 /* ImageLoader.swift */; };
 		071379A426898E2E007EF6D6 /* MessageCollectionViewTrackCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 071379A326898E2E007EF6D6 /* MessageCollectionViewTrackCell.swift */; };
 		071379A62689B636007EF6D6 /* SelectContactsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 071379A52689B636007EF6D6 /* SelectContactsViewController.swift */; };
 		071379A82689DCBD007EF6D6 /* ChatRoom+CellDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 071379A72689DCBD007EF6D6 /* ChatRoom+CellDelegate.swift */; };
@@ -1157,6 +1158,7 @@
 			files = (
 				07FE06D42701E6D90048B6A7 /* Common.swift in Sources */,
 				07FE06C627019DE90048B6A7 /* NotificationService.swift in Sources */,
+				07110DEE27295A7800D9323E /* ImageLoader.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1453,7 +1455,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = mynotification/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = mynotification;
-				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2021 Luke Parham. All rights reserved.";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2021 赵锡光. All rights reserved.";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1492,7 +1494,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = mynotification/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = mynotification;
-				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2021 Luke Parham. All rights reserved.";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2021 赵锡光. All rights reserved.";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1562,6 +1564,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2021 赵锡光. All rights reserved.";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -1616,6 +1619,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2021 赵锡光. All rights reserved.";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;

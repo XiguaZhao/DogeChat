@@ -127,9 +127,9 @@ extension JoinChatViewController: UITextFieldDelegate {
         let socketManager = WebSocketManager()
         adapter = WebSocketManagerAdapter(manager: socketManager, username: username)
         manager = socketManager
-        socketManager.messageManager.encrypt = EncryptMessage()
-        manager.messageManager.myName = username
-        manager.messageManager.login(username: username, password: password) { [weak self] loginResult in
+        socketManager.commonWebSocket.httpRequestsManager.encrypt = EncryptMessage()
+        manager.commonWebSocket.httpRequestsManager.myName = username
+        manager.commonWebSocket.httpRequestsManager.login(username: username, password: password) { [weak self] loginResult in
             if loginResult == "登录成功" {
                 let contactsTVC = ContactsTableViewController()
                 WebSocketManager.usersToSocketManager[username] = manager

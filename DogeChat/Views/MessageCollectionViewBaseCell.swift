@@ -36,7 +36,7 @@ class MessageCollectionViewBaseCell: DogeChatTableViewCell {
         return socketForUsername(username)
     }
     var session: AFHTTPSessionManager {
-        return manager.messageManager.session
+        return manager.commonWebSocket.httpRequestsManager.session
     }
     weak var delegate: MessageTableViewCellDelegate?
     var message: Message!
@@ -248,7 +248,7 @@ class MessageCollectionViewBaseCell: DogeChatTableViewCell {
                 }
             } else {
                 let capturedMessage = self.message
-                ImageLoader.shared.requestImage(urlStr: url) { image, data in
+                ImageLoader.shared.requestImage(urlStr: url) { image, data, _ in
                     guard capturedMessage?.uuid == self.message.uuid else { return }
                     if !isGif, let image = image { // is photo
                         let compressed = compressEmojis(image)
@@ -390,7 +390,7 @@ extension MessageCollectionViewBaseCell {
             if let data = cache.object(forKey: path as NSString) {
                 displayBlock(data as Data)
             } else {
-                ImageLoader.shared.requestImage(urlStr: path, syncIfCan: false, completion: { image, data in
+                ImageLoader.shared.requestImage(urlStr: path, syncIfCan: false, completion: { image, data, _ in
                     guard self.message == capturedMessage else { return }
                     if path.hasPrefix(".gif") {
                         displayBlock(data)

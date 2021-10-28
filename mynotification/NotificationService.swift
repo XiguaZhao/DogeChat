@@ -3,20 +3,19 @@
 //  mynotification
 //
 //  Created by 赵锡光 on 2021/9/27.
-//  Copyright © 2021 Luke Parham. All rights reserved.
+//  Copyright © 2021 赵锡光. All rights reserved.
 //
 
 import UserNotifications
 import PencilKit
+import DogeChatUniversal
 
-class NotificationService: UNNotificationServiceExtension, URLSessionDelegate {
+class NotificationService: UNNotificationServiceExtension {
 
     var contentHandler: ((UNNotificationContent) -> Void)?
     var bestAttemptContent: UNMutableNotificationContent?
-    lazy var session: URLSession = {
-        let sesssion = URLSession(configuration: URLSessionConfiguration.default, delegate: self, delegateQueue: nil)
-        return sesssion
-    }()
+    
+    let manager = HttpRequestsManager()
     
     func complete() {
         if let bestAttemptContent = bestAttemptContent {
@@ -59,8 +58,12 @@ class NotificationService: UNNotificationServiceExtension, URLSessionDelegate {
                     if type == "livePhoto" {
                         self.bestAttemptContent?.body = "[Live Photo]"
                     }
-                    let task = session.dataTask(with: url) { data, response, error in
-                        if let data = data {
+                    guard let username = UserDefaults(suiteName: "group.demo.zhaoxiguang")?.value(forKey: "sharedUsername") as? String,
+                          let password = UserDefaults(suiteName: "group.demo.zhaoxiguang")?.value(forKey: "sharedPassword") as? String else { return }
+                    manager.login(username: username, password: password) { res in
+                        guard res == "登录成功", !manager.cookie.isEmpty else { return }
+                        ImageLoader.shared.cookie = manager.cookie
+                        ImageLoader.shared.requestImage(urlStr: path, syncIfCan: false, completion: { _, data, localURL in
                             var finalData: Data? = data
                             var ext = url.pathExtension
 #if !targetEnvironment(macCatalyst)
@@ -84,10 +87,9 @@ class NotificationService: UNNotificationServiceExtension, URLSessionDelegate {
                                 complete()
                                 return
                             }
-                        }
-                        complete()
+                            complete()
+                        }, progress: nil)
                     }
-                    task.resume()
                 } else {
                     complete()
                 }
@@ -108,12 +110,6 @@ class NotificationService: UNNotificationServiceExtension, URLSessionDelegate {
             contentHandler(bestAttemptContent)
         }
     }
-
-    func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
-        let credential = URLCredential(trust: challenge.protectionSpace.serverTrust!)
-        completionHandler(.useCredential, credential)
-    }
-    
 
 }
 

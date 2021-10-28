@@ -3,7 +3,7 @@
 //  DogeChatWatch Extension
 //
 //  Created by 赵锡光 on 2021/6/7.
-//  Copyright © 2021 Luke Parham. All rights reserved.
+//  Copyright © 2021 赵锡光. All rights reserved.
 //
 
 import WatchKit
@@ -15,8 +15,6 @@ var isLogin = false
 var url_pre: String {
     SocketManager.shared.messageManager.url_pre
 }
-
-var loginInProgress = false
 
 class ContactInterfaceController: WKInterfaceController {
     
@@ -35,13 +33,26 @@ class ContactInterfaceController: WKInterfaceController {
         NotificationCenter.default.addObserver(self, selector: #selector(updateLatestMessage(_:)), name: .updateLatesetMessage, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(getWCSessionMessage(_:)), name: .wcSessionMessage, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(willEnterForeground), name: .becomeActive, object: nil)
-        NotificationCenter.default.addObserver(forName: .connecting, object: nil, queue: nil) { _ in
-            self.setTitle("正在连接...")
+        NotificationCenter.default.addObserver(forName: .connecting, object: nil, queue: .main) { [weak self] _ in
+            self?.setTitle("正在连接...")
         }
-        NotificationCenter.default.addObserver(forName: .connected, object: nil, queue: nil) { _ in
-            self.setTitle(SocketManager.shared.messageManager.myName)
+        NotificationCenter.default.addObserver(forName: .connected, object: nil, queue: .main) { [weak self] _ in
+            self?.setTitle(SocketManager.shared.messageManager.myName)
         }
-        login()
+        NotificationCenter.default.addObserver(forName: .logining, object: nil, queue: .main) { [weak self] _ in
+            self?.setTitle("正在登录...")
+            isLogin = false
+        }
+        NotificationCenter.default.addObserver(forName: .logined, object: nil, queue: .main) { _ in
+            isLogin = true
+            ImageLoader.shared.cookie = SocketManager.shared.httpManager.cookie
+        }
+        NotificationCenter.default.addObserver(forName: .friendListChange, object: nil, queue: .main) { [weak self] _ in
+            self?.showContacts(SocketManager.shared.commonSocket.httpRequestsManager.friends)
+        }
+        NotificationCenter.default.addObserver(forName: .refreshingContacts, object: nil, queue: .main) { [weak self] _ in
+            self?.setTitle("获取联系人...")
+        }
     }
         
     override func willActivate() {
@@ -53,26 +64,30 @@ class ContactInterfaceController: WKInterfaceController {
     }
     
     @objc func willEnterForeground() {
-        if !loginInProgress {
-            login()
-        }
+        login()
     }
     @IBAction func refreshAction() {
         login()
     }
     
     @objc func canGetContacts() {
-        SocketManager.shared.messageManager.getContacts { usersInfos, error in
+        SocketManager.shared.httpManager.getContacts { usersInfos, error in
             self.showContacts(usersInfos)
             SocketManager.shared.connect()
         }
     }
     
     @objc func getWCSessionMessage(_ noti: Notification) {
-        guard !isLogin, let info = noti.userInfo as? [String: String],
+        guard let info = noti.userInfo as? [String: String],
         let username = info["username"],
         let password = info["password"] else { return }
-        login(username: username, password: password)
+        if !isLogin {
+            login(username: username, password: password)
+        } else {
+            if username != UserDefaults.standard.value(forKey: "username") as? String || password != UserDefaults.standard.value(forKey: "password") as? String {
+                login(username: username, password: password)
+            }
+        }
     }
     
     func login() {
@@ -87,33 +102,10 @@ class ContactInterfaceController: WKInterfaceController {
     }
     
     func login(username: String, password: String) {
-        self.setTitle("正在登录...")
-        isLogin = false
-        loginInProgress = true
-        SocketManager.shared.messageManager.login(username: username, password: password) { [self] result in
-            loginCount += 1
-            loginInProgress = false
-            guard loginCount <= 6 else { return }
-            if result == "登录成功" {
-                UserDefaults.standard.setValue(username, forKey: "username")
-                UserDefaults.standard.setValue(password, forKey: "password")
-                isLogin = true
-                loginCount = 0
-                if usersInfos.isEmpty {
-                    setTitle("获取联系人...")
-                    SocketManager.shared.messageManager.getContacts { [weak self] usersInfos, error in
-                        guard let self = self else { return }
-                        self.showContacts(usersInfos)
-                        SocketManager.shared.connect()
-                    }
-                } else {
-                    SocketManager.shared.connect()
-                }
-            } else {
-                isLogin = false
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                    login(username: username, password: password)
-                }
+        SocketManager.shared.commonSocket.loginAndConnect(username: username, password: password, needContact: usersInfos.isEmpty) { success in
+            if success {
+                UserDefaults.standard.set(username, forKey: "username")
+                UserDefaults.standard.set(password, forKey: "password")
             }
         }
     }
@@ -191,7 +183,7 @@ class ContactInterfaceController: WKInterfaceController {
         if let imageData = imageCahce.object(forKey: urlStr as NSString), let image = UIImage(data: imageData as Data) {
             row.avatarImageView.setImage(image)
         } else {
-            ImageLoader.shared.requestImage(urlStr: urlStr, syncIfCan: false, completion: { image, data in
+            ImageLoader.shared.requestImage(urlStr: urlStr, syncIfCan: false, completion: { image, data, _ in
                 guard let image = image else { return }
                 DispatchQueue.global(qos: .userInteractive).async {
                     let compressedData = compressEmojis(image)

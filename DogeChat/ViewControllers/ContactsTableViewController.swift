@@ -147,6 +147,7 @@ class ContactsTableViewController: DogeChatViewController, UIImagePickerControll
     
     @objc func loginedNoti(_ noti: Notification) {
         WCSession.default.sendMessage(["username": username, "password": password], replyHandler: nil, errorHandler: nil)
+        ImageLoader.shared.cookie = manager.cookie
     }
     
     @objc func refreshContactsNoti(_ noti: Notification) {
@@ -165,7 +166,7 @@ class ContactsTableViewController: DogeChatViewController, UIImagePickerControll
     }
     
     @objc func refreshContacts(completion: (()->Void)? = nil) {
-        manager.messageManager.getContacts { [weak self] userInfos, error  in
+        manager.commonWebSocket.httpRequestsManager.getContacts { [weak self] userInfos, error  in
             guard let self = self else { return }
             if error != nil {
                 self.navigationItem.title = "获取联系人失败"
@@ -187,11 +188,14 @@ class ContactsTableViewController: DogeChatViewController, UIImagePickerControll
     
     @objc func downRefreshAction(_ refreshControl: UIRefreshControl) {
         removeAllMessage()
-        loginAndConnect()
+        manager.disconnect()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            self.loginAndConnect()
+        }
     }
     
     func removeAllMessage() {
-        manager.messageManager.friends.removeAll()
+        manager.commonWebSocket.httpRequestsManager.friends.removeAll()
     }
     
     @objc func loginAndConnect() {
@@ -212,7 +216,7 @@ class ContactsTableViewController: DogeChatViewController, UIImagePickerControll
     
     
     deinit {
-        manager.messageManager.friends.removeAll()
+        manager.commonWebSocket.httpRequestsManager.friends.removeAll()
         manager.disconnect()
         removeSocketForUsername(username)
     }
@@ -322,23 +326,26 @@ class ContactsTableViewController: DogeChatViewController, UIImagePickerControll
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: ContactTableViewCell.cellID, for: indexPath) as! ContactTableViewCell
-        cell.apply(self.friends[indexPath.row])
-        cell.delegate = self
-        let height = self.tableView(tableView, heightForRowAt: indexPath)
-        let offset: CGFloat = 10
-        let adjustedWidth = height - 30
-        let origin = offset / 2
-        let label = UILabel(frame: CGRect(x: origin, y: origin, width: adjustedWidth, height: adjustedWidth))
-        label.layer.cornerRadius = label.frame.height / 2
-        label.layer.masksToBounds = true
-        label.backgroundColor = .red
-        label.textAlignment = .center
-        if let number = unreadMessage[self.usernames[indexPath.row]], number > 0 {
-            label.text = String(number)
-            cell.accessoryView = label
-        }  else {
-            cell.accessoryView = nil
+        var cell: ContactTableViewCell!
+        syncOnMainThread {
+            cell = tableView.dequeueReusableCell(withIdentifier: ContactTableViewCell.cellID, for: indexPath) as? ContactTableViewCell
+            cell.apply(self.friends[indexPath.row])
+            cell.delegate = self
+            let height = self.tableView(tableView, heightForRowAt: indexPath)
+            let offset: CGFloat = 10
+            let adjustedWidth = height - 30
+            let origin = offset / 2
+            let label = UILabel(frame: CGRect(x: origin, y: origin, width: adjustedWidth, height: adjustedWidth))
+            label.layer.cornerRadius = label.frame.height / 2
+            label.layer.masksToBounds = true
+            label.backgroundColor = .red
+            label.textAlignment = .center
+            if let number = unreadMessage[self.usernames[indexPath.row]], number > 0 {
+                label.text = String(number)
+                cell.accessoryView = label
+            }  else {
+                cell.accessoryView = nil
+            }
         }
         return cell
     }
@@ -426,11 +433,13 @@ class ContactsTableViewController: DogeChatViewController, UIImagePickerControll
             UIView.performWithoutAnimation {
                 self.tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
             }
-            tableView.performBatchUpdates {
-                let removed = self.friends.remove(at: index)
-                self.friends.insert(removed, at: 0)
-                tableView.moveRow(at: IndexPath(row: index, section: 0), to: IndexPath(row: 0, section: 0))
-            } completion: { _ in
+            if index != 0 {
+                tableView.performBatchUpdates {
+                    let removed = self.friends.remove(at: index)
+                    self.friends.insert(removed, at: 0)
+                    tableView.moveRow(at: IndexPath(row: index, section: 0), to: IndexPath(row: 0, section: 0))
+                } completion: { _ in
+                }
             }
         }
     }
@@ -456,14 +465,28 @@ extension ContactsTableViewController: UIViewControllerPreviewingDelegate {
 }
 
 extension ContactsTableViewController: MessageDelegate, AddContactDelegate {
-    func revokeMessage(_ id: Int) {
-//        let messages = manager.messageManager.messagesSingle
-//        guard let index = messages.firstIndex(where: { $0.value.contains(where: {$0.id == id}) }) else { return }
-//        let keyValue = messages[index]
-//        guard let indexOfMessage = messages[keyValue.key]!.firstIndex(where: {$0.id == id}) else { return }
-//        manager.messageManager.messagesSingle[keyValue.key]![indexOfMessage].message = "\(keyValue.key)撤回了一条消息"
-//        manager.messageManager.messagesSingle[keyValue.key]![indexOfMessage].messageType = .join
-//        self.receiveNewMessage(notification: Notification(name: .receiveNewMessage, object: username, userInfo: ["message": manager.messageManager.messagesSingle[keyValue.key]?[indexOfMessage] as Any]))
+    
+    func findChatRoomVC() -> ChatRoomViewController? {
+        var nav: UINavigationController?
+        if self.splitViewController!.isCollapsed {
+            nav = self.navigationController
+        } else {
+            if let _nav = self.splitViewController?.viewControllers[1] as? UINavigationController {
+                nav = _nav
+            }
+        }
+        if let nav = nav {
+            for vc in nav.viewControllers {
+                if let chatRoom = vc as? ChatRoomViewController {
+                    return chatRoom
+                }
+            }
+        }
+        return nil
+    }
+        
+    func revokeMessage(_ id: Int, senderID: String, receiverID: String) {
+        findChatRoomVC()?.revokeMessage(id, senderID: senderID, receiverID: receiverID)
     }
     
     func newFriend() {
@@ -477,8 +500,8 @@ extension ContactsTableViewController: MessageDelegate, AddContactDelegate {
         }
     }
     
-    func revokeSuccess(id: Int) {
-        
+    func revokeSuccess(id: Int, senderID: String, receiverID: String) {
+        findChatRoomVC()?.revokeSuccess(id: id, senderID: senderID, receiverID: receiverID)
     }
         
     func addSuccess() {

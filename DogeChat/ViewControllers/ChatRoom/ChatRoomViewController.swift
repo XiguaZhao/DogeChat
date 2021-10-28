@@ -75,7 +75,6 @@ class ChatRoomViewController: DogeChatViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        manager.messageManager.messageDelegate = self
         NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillChange(notification:)), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(sendSuccess(notification:)), name: .sendSuccess, object: username)
         NotificationCenter.default.addObserver(self, selector: #selector(uploadSuccess(notification:)), name: .uploadSuccess, object: username)
@@ -86,6 +85,9 @@ class ChatRoomViewController: DogeChatViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(receiveHistoryMessages(_:)), name: .receiveHistoryMessages, object: username)
         NotificationCenter.default.addObserver(self, selector: #selector(displayHistoryIfNeeded), name: .connected, object: username)
         NotificationCenter.default.addObserver(self, selector: #selector(pasteImageAction(_:)), name: .pasteImage, object: messageInputBar.textView)
+        NotificationCenter.default.addObserver(forName: .logout, object: username, queue: .main) { [weak self] _ in
+            self?.navigationController?.viewControllers = []
+        }
         navigationItem.largeTitleDisplayMode = .never
         addRefreshController()
         loadViews()
@@ -332,7 +334,7 @@ extension ChatRoomViewController: PKViewChangedDelegate {
     }
 }
 
-extension ChatRoomViewController: MessageDelegate {
+extension ChatRoomViewController {
     
     @objc func receiveNewMessageNotification(_ notification: Notification) {
         guard let message = notification.userInfo?["message"] as? Message, message.option == messageOption else {
@@ -342,18 +344,8 @@ extension ChatRoomViewController: MessageDelegate {
         if message.option == .toOne && newMessageFriendName != friendName { return }
         insertNewMessageCell([message], forceScrollBottom: true)
     }
+        
     
-    func updateOnlineNumber(to newNumber: Int) {
-        guard messageOption == .toGroup else { return }
-        navigationItem.title = "群聊"// + "(\(newNumber)人在线)"
-    }
-    
-    
-    func newFriendRequest() {
-        guard let contactVC = navigationController?.viewControllers.filter({ $0 is ContactsTableViewController }).first as? ContactsTableViewController else { return }
-        navigationItem.rightBarButtonItem = contactVC.itemRequest
-        adapterFor(username: username).playSound()
-    }
 }
 
 extension ChatRoomViewController {
@@ -433,23 +425,20 @@ extension ChatRoomViewController {
     
     
     func revoke(message: Message) {
-        let id = message.id
-        manager.revokeMessage(id: id)
+        manager.revokeMessage(message)
     }
     
-    func revokeSuccess(id: Int) {
+    func revokeSuccess(id: Int, senderID: String, receiverID: String) {
         guard let index = messages.firstIndex(where: { $0.id == id }) else { return }
         removeMessage(index: index)
     }
     
     func removeMessage(index: Int) {
-        messages[index].message = "\(messages[index].senderUsername)撤回了一条消息"
-        messages[index].messageType = .join
         let indexPath = IndexPath(row: index, section: 0)
         tableView.reloadRows(at: [indexPath], with: .none)
     }
     
-    func revokeMessage(_ id: Int) {
+    func revokeMessage(_ id: Int, senderID: String, receiverID: String) {
         guard let index = messages.firstIndex(where: { $0.id == id }) else { return }
         removeMessage(index: index)
     }

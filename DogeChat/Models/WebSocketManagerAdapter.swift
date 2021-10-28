@@ -99,7 +99,7 @@ class WebSocketManagerAdapter: NSObject {
     @objc func preloadEmojiPaths(noti: Notification) {
         if !AppDelegate.shared.launchedByPushAction {
             manager.getEmojis { [weak self] (paths) in
-                self?.manager.messageManager.emojiPaths = paths
+                self?.manager.commonWebSocket.httpRequestsManager.emojiPaths = paths
             }
         }
     }

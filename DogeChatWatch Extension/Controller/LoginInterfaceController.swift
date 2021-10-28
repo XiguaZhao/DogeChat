@@ -3,7 +3,7 @@
 //  DogeChatWatch Extension
 //
 //  Created by 赵锡光 on 2021/6/8.
-//  Copyright © 2021 Luke Parham. All rights reserved.
+//  Copyright © 2021 赵锡光. All rights reserved.
 //
 
 import WatchKit
@@ -35,7 +35,7 @@ class LoginInterfaceController: WKInterfaceController {
         guard !username.isEmpty && !password.isEmpty else {
             return
         }
-        SocketManager.shared.messageManager.login(username: username, password: password) { result in
+        SocketManager.shared.httpManager.login(username: username, password: password) { result in
             if result == "登录成功" {
                 isLogin = true
                 NotificationCenter.default.post(name: NSNotification.Name("canGetContacts"), object: nil)

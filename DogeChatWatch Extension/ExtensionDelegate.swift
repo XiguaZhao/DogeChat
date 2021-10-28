@@ -3,7 +3,7 @@
 //  DogeChatWatch Extension
 //
 //  Created by 赵锡光 on 2021/6/7.
-//  Copyright © 2021 Luke Parham. All rights reserved.
+//  Copyright © 2021 赵锡光. All rights reserved.
 //
 
 import WatchKit
@@ -22,7 +22,7 @@ class ExtensionDelegate: NSObject, WKExtensionDelegate, UNUserNotificationCenter
         // Perform any final initialization of your application.
         WCSession.default.delegate = SessionDelegate.shared
         WCSession.default.activate()
-        SocketManager.shared.messageManager.encrypt = EncryptMessage()
+        SocketManager.shared.httpManager.encrypt = EncryptMessage()
         let center = UNUserNotificationCenter.current()
         center.delegate = self
         center.requestAuthorization(options: [.badge, .alert, .sound]) { granted, error in
@@ -52,7 +52,6 @@ class ExtensionDelegate: NSObject, WKExtensionDelegate, UNUserNotificationCenter
     func applicationWillResignActive() {
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
         // Use this method to pause ongoing tasks, disable timers, etc.
-        loginInProgress = false
         lastEnterBackgroundTime = Date().timeIntervalSince1970
         SocketManager.shared.disconnect()
     }

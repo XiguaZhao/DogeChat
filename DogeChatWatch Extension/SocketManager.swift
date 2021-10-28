@@ -3,7 +3,7 @@
 //  DogeChatWatch Extension
 //
 //  Created by 赵锡光 on 2021/6/7.
-//  Copyright © 2021 Luke Parham. All rights reserved.
+//  Copyright © 2021 赵锡光. All rights reserved.
 //
 
 import Foundation
@@ -20,6 +20,9 @@ class SocketManager: NSObject, URLSessionDelegate, URLSessionWebSocketDelegate, 
     var socket: URLSessionWebSocketTask!
     var messageManager: MessageManager {
         commonSocket.messageManager
+    }
+    var httpManager: HttpRequestsManager {
+        commonSocket.httpRequestsManager
     }
     private var latestResponseTime = Date().timeIntervalSince1970 {
         didSet {
@@ -153,6 +156,7 @@ class SocketManager: NSObject, URLSessionDelegate, URLSessionWebSocketDelegate, 
     
     func urlSession(_ session: URLSession, webSocketTask: URLSessionWebSocketTask, didOpenWithProtocol protocol: String?) {
         print("手表webSocket已打开")
+        NotificationCenter.default.post(name: .connected, object: nil)
         self.connected = true
         commonSocket.prepareEncrypt()
         self.latestConnectTime = Date().timeIntervalSince1970

@@ -25,7 +25,7 @@ class EmojiSelectView: DogeChatStaticBlurView {
         }
         set {
             self.isHidden = false
-            manager.messageManager.emojiPaths = newValue
+            manager.commonWebSocket.httpRequestsManager.emojiPaths = newValue
             collectionView.reloadData()
         }
     }

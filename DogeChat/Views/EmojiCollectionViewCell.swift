@@ -68,7 +68,7 @@ class EmojiCollectionViewCell: DogeChatBaseCollectionViewCell {
             self.emojiView.image = UIImage(data: data as Data)
             return
         }
-        ImageLoader.shared.requestImage(urlStr: urlString) { image, data in
+        ImageLoader.shared.requestImage(urlStr: urlString) { image, data, _ in
             guard capturedUrl == self.url else { return }
             self.layoutIfNeeded()
             if let image = image {

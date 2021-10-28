@@ -3,7 +3,7 @@
 //  DogeChatWatch Extension
 //
 //  Created by 赵锡光 on 2021/10/17.
-//  Copyright © 2021 Luke Parham. All rights reserved.
+//  Copyright © 2021 赵锡光. All rights reserved.
 //
 
 import WatchKit
@@ -28,7 +28,7 @@ class EmojiInterfaceController: WKInterfaceController {
     override func didAppear() {
         super.didAppear()
         if emojis.isEmpty {
-            SocketManager.shared.messageManager.getEmoji { emojis in
+            SocketManager.shared.httpManager.getEmoji { emojis in
                 self.emojis = emojis
                 self.reloadEmojis()
             }
@@ -59,7 +59,7 @@ class EmojiInterfaceController: WKInterfaceController {
                 } else {
                     row.rightPath = emojiPath
                 }
-                ImageLoader.shared.requestImage(urlStr: emojiPath, syncIfCan: false, completion: { image, data in
+                ImageLoader.shared.requestImage(urlStr: emojiPath, syncIfCan: false, completion: { image, data, _ in
                     guard let image = image else { return }
                     DispatchQueue.global(qos: .userInteractive).async {
                         let compressed = compressEmojis(image)

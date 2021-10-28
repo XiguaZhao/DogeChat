@@ -3,7 +3,7 @@
 //  DogeChat
 //
 //  Created by 赵锡光 on 2021/6/1.
-//  Copyright © 2021 Luke Parham. All rights reserved.
+//  Copyright © 2021 赵锡光. All rights reserved.
 //
 
 import UIKit
@@ -59,6 +59,7 @@ class SettingViewController: DogeChatViewController, DatePickerChangeDelegate, U
     }
 
     @objc func logout() {
+        NotificationCenter.default.post(name: .logout, object: username)
         if #available(iOS 13, *) {
             if let sceneDelegate = self.view.window?.windowScene?.delegate as? SceneDelegate {
                 if let contactVCNav = sceneDelegate.contactVC?.navigationController {

@@ -3,7 +3,7 @@
 //  DogeChatWatch Extension
 //
 //  Created by 赵锡光 on 2021/6/7.
-//  Copyright © 2021 Luke Parham. All rights reserved.
+//  Copyright © 2021 赵锡光. All rights reserved.
 //
 
 import WatchKit
@@ -88,7 +88,7 @@ class ChatRoomInterfaceController: WKInterfaceController {
         NotificationCenter.default.addObserver(forName: .connected, object: nil, queue: nil) { [weak self] _ in
             self?.setTitle(SocketManager.shared.messageManager.myName)
         }
-        SocketManager.shared.messageManager.getEmoji { emojis in
+        SocketManager.shared.httpManager.getEmoji { emojis in
             self.emojis = emojis
         }
         if messages.isEmpty {
@@ -182,7 +182,7 @@ class ChatRoomInterfaceController: WKInterfaceController {
                         let height = width/size.width * size.height
                         messageRow.image.setHeight(height)
                     }
-                    ImageLoader.shared.requestImage(urlStr: url_pre + (url as String), syncIfCan: false, completion: { image, data in
+                    ImageLoader.shared.requestImage(urlStr: url_pre + (url as String), syncIfCan: false, completion: { image, data, _ in
                         guard let image = image else { return }
                         let compressedData = compressEmojis(image)
                         messageRow.image.setHeight(width/image.size.width * image.size.height)
