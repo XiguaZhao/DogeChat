@@ -9,6 +9,7 @@
 import UIKit
 import DogeChatNetwork
 import SwiftyJSON
+import DogeChatUniversal
 
 @objc protocol EmojiViewDelegate: AnyObject {
     @objc optional func didSelectEmoji(filePath: String)
@@ -21,17 +22,18 @@ class EmojiSelectView: DogeChatStaticBlurView {
     let collectionView: DogeChatBaseCollectionView!
     var emojis: [String] {
         get {
-            manager.messageManager.emojiPaths
+            HttpRequestsManager.emojiPaths
         }
         set {
             self.isHidden = false
-            manager.commonWebSocket.httpRequestsManager.emojiPaths = newValue
+            HttpRequestsManager.emojiPaths = newValue
             collectionView.reloadData()
         }
     }
     static var emojiPathToId: [String: String] = [:]
     static let cache = NSCache<NSString, NSData>()
     var username = ""
+    var friend: Friend!
     var manager: WebSocketManager {
         socketForUsername(username)
     }
@@ -72,10 +74,14 @@ class EmojiSelectView: DogeChatStaticBlurView {
 extension EmojiSelectView: UICollectionViewDataSource, UICollectionViewDelegateFlowLayout, UICollectionViewDelegate, UICollectionViewDataSourcePrefetching, EmojiSelectCellLongPressDelegate {
     
     func didLongPressEmojiCell(_ cell: EmojiCollectionViewCell) {
-        let avatarMenuItem = UIMenuItem(title: "设为头像", action: #selector(useAsAvatar(sender:)))
+        let avatarMenuItem = UIMenuItem(title: "设为自己头像", action: #selector(useAsAvatar(sender:)))
         let deleteMenuItem = UIMenuItem(title: "删除", action: #selector(deleteMenuItemAction(sender:)))
         let controller = UIMenuController.shared
-        controller.menuItems = [avatarMenuItem, deleteMenuItem]
+        var items = [avatarMenuItem, deleteMenuItem]
+        if friend.isGroup {
+            items.append(UIMenuItem(title: "设为群聊头像", action: #selector(useAsGroupAvatar(sender:))))
+        }
+        controller.menuItems = items
         cell.becomeFirstResponder()
         let rect = CGRect(x: cell.bounds.width/2, y: 10, width: 0, height: 0)
         if #available(iOS 13.0, *) {
@@ -86,9 +92,18 @@ extension EmojiSelectView: UICollectionViewDataSource, UICollectionViewDelegateF
         }
     }
     
+    func updateDownloadProgress(_ cell: EmojiCollectionViewCell, progress: Double, path: String) {
+        
+    }
+    
     @objc func useAsAvatar(sender: UIMenuController) {
         guard let cell = sender.value(forKey: "targetView") as? EmojiCollectionViewCell else { return }
         useAsSelfAvatar(cell: cell)
+    }
+    
+    @objc func useAsGroupAvatar(sender: UIMenuController) {
+        guard let cell = sender.value(forKey: "targetView") as? EmojiCollectionViewCell else { return }
+        useAsSelfAvatar(cell: cell, append: "&groupId=\(self.friend.userID)")
     }
     
     @objc func deleteMenuItemAction(sender: UIMenuController) {
@@ -98,7 +113,7 @@ extension EmojiSelectView: UICollectionViewDataSource, UICollectionViewDelegateF
             self.deleteEmoji(cell: cell)
         }))
         confirmAlert.addAction(UIAlertAction(title: "取消", style: .cancel, handler: nil))
-        AppDelegate.shared.navigationController.present(confirmAlert, animated: true, completion: nil)
+        AppDelegate.shared.navigationController?.present(confirmAlert, animated: true, completion: nil)
     }
 
     func deleteEmoji(cell: EmojiCollectionViewCell) {
@@ -111,13 +126,25 @@ extension EmojiSelectView: UICollectionViewDataSource, UICollectionViewDelegateF
         }
     }
     
-    func useAsSelfAvatar(cell: EmojiCollectionViewCell) {
+    func useAsSelfAvatar(cell: EmojiCollectionViewCell, append: String? = nil) {
         if let index = cell.indexPath?.item {
-            let path = (emojis[index] as NSString).replacingOccurrences(of: url_pre, with: "")
-            manager.changeAvatarWithPath(path) { task, data in
+            var path = (emojis[index] as NSString).replacingOccurrences(of: url_pre, with: "")
+            if let append = append {
+                path += append
+            }
+            manager.changeAvatarWithPath(path) { [self] task, data in
                 guard let data = data else { return }
-                if JSON(data)["status"].stringValue == "success" {
-                    self.manager.messageManager.myAvatarUrl = url_pre + JSON(data)["avatarUrl"].stringValue
+                let json = JSON(data)
+                if json["status"].stringValue == "success" {
+                    let avatarURL = json["avatarUrl"].stringValue
+                    if append != nil {
+                        if let friend = socketForUsername(username).httpsManager.friends.first(where: { $0.userID == self.friend.userID } ) {
+                            friend.avatarURL = avatarURL
+                            NotificationCenter.default.post(name: .friendChangeAvatar, object: username, userInfo: ["friend": friend])
+                        }
+                    } else {
+                        self.manager.messageManager.myAvatarUrl = url_pre + JSON(data)["avatarUrl"].stringValue
+                    }
                 }
             }
         }
@@ -155,6 +182,12 @@ extension EmojiSelectView: UICollectionViewDataSource, UICollectionViewDelegateF
         cell.displayEmoji(urlString: emojis[indexPath.item])
         return cell
     }
+    
+#if targetEnvironment(macCatalyst)
+    func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+        return nil
+    }
+#endif
     
 }
 

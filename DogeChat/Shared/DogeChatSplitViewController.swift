@@ -18,18 +18,39 @@ class DogeChatSplitViewController: UISplitViewController {
         vcDelegate.splitVC = self
         self.preferredPrimaryColumnWidthFraction = 0.35
         self.preferredDisplayMode = .allVisible
-        // Do any additional setup after loading the view.
     }
     
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+    func findContactVC() -> ContactsTableViewController? {
+        if let tabBarController = self.viewControllers.first as? UITabBarController {
+            if let nav = tabBarController.viewControllers?.first as? UINavigationController {
+                for vc in nav.viewControllers {
+                    if let contactVC = vc as? ContactsTableViewController {
+                        return contactVC
+                    }
+                }
+            }
+        }
+        return nil
     }
-    */
+    
+    func findChatRoomVC() -> ChatRoomViewController? {
+        var nav: UINavigationController?
+        if self.isCollapsed {
+            nav = self.findContactVC()?.navigationController
+        } else {
+            if let _nav = self.viewControllers[1] as? UINavigationController {
+                nav = _nav
+            }
+        }
+        if let nav = nav {
+            for vc in nav.viewControllers {
+                if let chatRoom = vc as? ChatRoomViewController {
+                    return chatRoom
+                }
+            }
+        }
+        return nil
+
+    }
 
 }

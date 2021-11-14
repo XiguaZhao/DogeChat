@@ -10,14 +10,14 @@ import UIKit
 import DogeChatNetwork
 import DogeChatUniversal
 
-@available(iOS 14.0, *)
+@available(iOS 13.0, *)
 class DrawViewController: UIViewController, PKViewAutoOffsetDelegate {
     
     var username = ""
     var pkView = PKCanvasView()
     let pkViewDelegate = PKViewDelegate()
     var message: Message!
-    let toolPicker = PKToolPicker()
+    var toolPicker: PKToolPicker!
     var toolBar = UIToolbar()
     var didSendNeedRealTime = false
     var cachedOffset: CGPoint = .zero
@@ -26,9 +26,15 @@ class DrawViewController: UIViewController, PKViewAutoOffsetDelegate {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        if #available(iOS 14.0, *) {
+            toolPicker = PKToolPicker()
+        } else {
+            toolPicker = PKToolPicker.shared(for: self.view.window!)
+        }
+        if isPhone() && (UIDevice.current.orientation != .landscapeLeft && UIDevice.current.orientation != .landscapeRight) {
+            UIDevice.current.setValue(NSNumber(integerLiteral: UIInterfaceOrientation.landscapeRight.rawValue), forKey: "orientation")
+        }
         self.view.addSubview(toolBar)
-        ChatRoomViewController.needRotate = true
         toolBar.mas_makeConstraints { [weak self] make in
             guard let self = self else { return }
             make?.top.equalTo()(self.view.mas_safeAreaLayoutGuideTop)
@@ -52,9 +58,13 @@ class DrawViewController: UIViewController, PKViewAutoOffsetDelegate {
         let confirmButton = UIBarButtonItem(title: "确认", style: .done, target: self, action: #selector(confirmTapAction(_:)))
         self.navigationItem.rightBarButtonItem = confirmButton
         
-        let flex = UIBarButtonItem(systemItem: .flexibleSpace)
+        var items = [cancleButton, previewBarItem, switcherBarItem, returnBarItem, confirmButton]
+        if #available(iOS 14.0, *) {
+            let flex = UIBarButtonItem(systemItem: .flexibleSpace)
+            items = [cancleButton, flex, previewBarItem, flex, switcherBarItem, flex, returnBarItem, flex, confirmButton]
+        }
         
-        toolBar.setItems([cancleButton, flex, previewBarItem, flex, switcherBarItem, flex, returnBarItem, flex, confirmButton], animated: true)
+        toolBar.setItems(items, animated: true)
         view.addSubview(pkView)
         pkView.contentInsetAdjustmentBehavior = .never
         pkView.backgroundColor = .gray
@@ -88,6 +98,13 @@ class DrawViewController: UIViewController, PKViewAutoOffsetDelegate {
         forwardButton.sizeToFit()
         forwardButton.center = CGPoint(x: view.bounds.width - forwardButton.bounds.width - view.safeAreaInsets.right, y: view.center.y)
     }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        if isPhone() {
+            UIDevice.current.setValue(NSNumber(integerLiteral: UIInterfaceOrientation.portrait.rawValue), forKey: "orientation")
+        }
+    }
         
     @objc func realTimerSwitchAction(_ switcher: UISwitch) {
         message.needRealTimeDraw = switcher.isOn
@@ -105,9 +122,12 @@ class DrawViewController: UIViewController, PKViewAutoOffsetDelegate {
     
     
     @objc func confirmTapAction(_ sender: UIBarButtonItem) {
-        ChatRoomViewController.needRotate = false
         self.dismiss(animated: true) { [self] in
-            if !pkView.drawing.strokes.isEmpty {
+            if #available(iOS 14.0, *) {
+                if !pkView.drawing.strokes.isEmpty {
+                    pkViewDelegate.dataChangedDelegate?.pkViewDidFinishDrawing(pkView, message: message as Any)
+                }
+            } else {
                 pkViewDelegate.dataChangedDelegate?.pkViewDidFinishDrawing(pkView, message: message as Any)
             }
         }
@@ -120,7 +140,6 @@ class DrawViewController: UIViewController, PKViewAutoOffsetDelegate {
     }
     
     @objc func cancelTapAction(_ sender: UIBarButtonItem) {
-        ChatRoomViewController.needRotate = false
         pkViewDelegate.dataChangedDelegate?.pkViewDidCancelDrawing(pkView, message: message)
         self.dismiss(animated: true, completion: nil)
     }

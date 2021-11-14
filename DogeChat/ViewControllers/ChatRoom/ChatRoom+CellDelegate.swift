@@ -12,12 +12,12 @@ import UIKit
 
 extension ChatRoomViewController: MessageTableViewCellDelegate {
     
-    func downloadProgressUpdate(progress: Progress, message: Message) {
+    func downloadProgressUpdate(progress: Double, message: Message) {
         syncOnMainThread {
             if let index = self.messages.firstIndex(where: { $0.uuid == message.uuid }) {
                 let hud = (self.tableView.cellForRow(at: IndexPath(row: index, section: 0)) as? MessageCollectionViewBaseCell)?.progress
-                hud?.isHidden = progress.fractionCompleted >= 1
-                hud?.setProgress(CGFloat(progress.fractionCompleted), animated: false)
+                hud?.isHidden = progress >= 1
+                hud?.setProgress(CGFloat(progress), animated: false)
             }
         }
     }
@@ -31,6 +31,8 @@ extension ChatRoomViewController: MessageTableViewCellDelegate {
                     cell.apply(message: message)
                     cell.layoutIfNeeded()
                     cell.setNeedsLayout()
+                } else {
+                    tableView.reloadRows(at: [indexPath], with: .none)
                 }
             }
         }
@@ -38,9 +40,9 @@ extension ChatRoomViewController: MessageTableViewCellDelegate {
         
     func imageViewTapped(_ cell: MessageCollectionViewBaseCell, imageView: FLAnimatedImageView, path: String, isAvatar: Bool) {
         messageInputBar.textViewResign()
-        let browser = ImageBrowserViewController()
+        let browser = MediaBrowserViewController()
         if !isAvatar {
-            let paths = (self.messages.filter { $0.messageType == .image }).compactMap { $0.imageLocalPath?.absoluteString ?? $0.imageURL }
+            let paths = (self.messages.filter { $0.messageType == .image || $0.messageType == .livePhoto || $0.messageType == .video }).map { $0.text }
             browser.imagePaths = paths
             if let index = paths.firstIndex(of: path) {
                 browser.targetIndex = index
@@ -49,7 +51,7 @@ extension ChatRoomViewController: MessageTableViewCellDelegate {
             browser.imagePaths = [path]
         }
         browser.modalPresentationStyle = .fullScreen
-        AppDelegate.shared.navigationController.present(browser, animated: true, completion: nil)
+        AppDelegate.shared.navigationController?.present(browser, animated: true, completion: nil)
     }
 
     //MARK: PKView手写
@@ -66,7 +68,7 @@ extension ChatRoomViewController: MessageTableViewCellDelegate {
         if let indexPath = tableView.indexPath(for: cell) {
             drawingIndexPath = indexPath
         }
-        if #available(iOS 14.0, *) {
+        if #available(iOS 13.0, *) {
 
             let drawVC = DrawViewController()
             drawVC.username = username
@@ -159,7 +161,7 @@ extension ChatRoomViewController: MessageTableViewCellDelegate {
     @objc func copyMenuItemAction(sender: UIMenuController) {
         guard let cell = activeMenuCell,
               let index = tableView.indexPath(for: cell)?.row else { return }
-        let text = messages[index].message
+        let text = messages[index].text
         UIPasteboard.general.string = text
     }
     
@@ -173,9 +175,7 @@ extension ChatRoomViewController: MessageTableViewCellDelegate {
         guard let cell = activeMenuCell,
               let indexPath = tableView.indexPath(for: cell) else { return }
         self.activeSwipeIndexPath = indexPath
-        let contactVC = SelectContactsViewController()
-        contactVC.username = self.username
-        contactVC.dataSourcea = self.contactVC
+        let contactVC = SelectContactsViewController(username: username)
         contactVC.modalPresentationStyle = .formSheet
         contactVC.delegate = self
         self.present(contactVC, animated: true)

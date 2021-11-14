@@ -57,6 +57,7 @@ class MessageCollectionViewImageCell: MessageCollectionViewBaseCell, PHLivePhoto
         }
         addGestureForImageView()
         addGestureForVideoView()
+        addGestureForLivePhotoView()
         
         NotificationCenter.default.addObserver(self, selector: #selector(playToEnd(_:)), name: .AVPlayerItemDidPlayToEndTime, object: nil)
         
@@ -113,6 +114,8 @@ class MessageCollectionViewImageCell: MessageCollectionViewBaseCell, PHLivePhoto
             makeLivePhoto()
         } else if message.messageType == .video {
             makeVideo()
+        } else {
+            loadImageIfNeeded()
         }
     }
     
@@ -135,8 +138,7 @@ class MessageCollectionViewImageCell: MessageCollectionViewBaseCell, PHLivePhoto
     
     func activeSession() {
         if !PlayerManager.shared.isPlaying {
-            try? AVAudioSession.sharedInstance().setCategory(.playback, options: PlayerManager.shared.isMute ? .mixWithOthers : .duckOthers)
-            try? AVAudioSession.sharedInstance().setActive(true, options: .notifyOthersOnDeactivation)
+            try? AVAudioSession.sharedInstance().setCategory(.ambient, options: .allowBluetooth)
         }
     }
     
@@ -153,7 +155,7 @@ class MessageCollectionViewImageCell: MessageCollectionViewBaseCell, PHLivePhoto
         }
         if playNow {
             activeSession()
-            self.player.isMuted = PlayerManager.shared.isMute
+            self.player.isMuted = true
             self.player.seek(to: .zero)
             self.player.play()
             videoEnd = false
@@ -183,27 +185,20 @@ class MessageCollectionViewImageCell: MessageCollectionViewBaseCell, PHLivePhoto
             url = _url
             block(playNow)
         } else {
-            let fileName = self.message.videoURL!.components(separatedBy: "/").last!
-            if !message.isDownloading {
-                message.isDownloading = true
-                session.get(url_pre + message.videoURL!, parameters: nil, headers: ["Cookie": "SESSION="+cookie], progress: { [weak self] progress in
-                    self?.delegate?.downloadProgressUpdate(progress: progress, message: captured!)
-                }, success: { [weak self] task, data in
-                    captured?.isDownloading = false
-                    guard let data = data as? Data else { return }
-                    saveFileToDisk(dirName: videoDir, fileName: fileName, data: data)
-                    print("videoDone")
-                    self?.delegate?.downloadSuccess(message: captured!)
-                }) { task, error in
-                    print(error)
-                }
+            MediaLoader.shared.requestImage(urlStr: url_pre + message.videoURL!, type: .video, cookie: cookie, syncIfCan: true) { [weak self] _, _, localURL in
+                captured?.isDownloading = false
+                print("videoDone")
+                self?.delegate?.downloadSuccess(message: captured!)
+                NotificationCenter.default.post(name: .mediaDownloadFinished, object: captured?.text, userInfo: nil)
+            } progress: { [weak self] progress in
+                self?.delegate?.downloadProgressUpdate(progress: progress, message: captured!)
             }
         }
     }
     
     func playLivePhoto() {
         self.activeSession()
-        self.livePhotoView.isMuted = false
+        self.livePhotoView.isMuted = true
         self.livePhotoView.startPlayback(with: .full)
     }
     
@@ -246,23 +241,18 @@ class MessageCollectionViewImageCell: MessageCollectionViewBaseCell, PHLivePhoto
         } else {
             let imageURL = URL(string: url_pre + message.imageURL!)!
             let videoURL = URL(string: url_pre + message.videoURL!)!
-            if !message.isDownloading {
-                message.isDownloading = true
-                session.get(imageURL.absoluteString, parameters: nil, headers: ["Cookie": "SESSION="+cookie], progress: nil, success: { task, data in
-                    guard let data = data as? Data else { return }
-                    print("liveImageDone")
-                    saveFileToDisk(dirName: livePhotoDir, fileName: imageName, data: data)
-                    self.session.get(videoURL.absoluteString, parameters: nil, headers: ["Cookie": "SESSION="+self.cookie], progress: { [weak self] progress in
-                        self?.delegate?.downloadProgressUpdate(progress: progress, message: capturedMessage!)
-                    }, success: { [weak self] task, videoData in
-                        capturedMessage?.isDownloading = false
-                        if let videoData = videoData as? Data {
-                            saveFileToDisk(dirName: livePhotoDir, fileName: videoName, data: videoData)
-                            self?.delegate?.downloadSuccess(message: capturedMessage!)
-                            print("liveVideoDone")
-                        }
-                    }, failure: nil)
-                }, failure: nil)
+            MediaLoader.shared.requestImage(urlStr: imageURL.absoluteString, type: .livePhoto, cookie: cookie, syncIfCan: true) { _, _, localPathImage in
+                print("liveImageDone")
+                MediaLoader.shared.requestImage(urlStr: videoURL.absoluteString, type: .livePhoto, cookie: self.cookie, syncIfCan: true) { [weak self] _, _, localPathVideo in
+                    self?.delegate?.downloadSuccess(message: capturedMessage!)
+                    NotificationCenter.default.post(name: .mediaDownloadFinished, object: capturedMessage?.text, userInfo: nil)
+                    capturedMessage?.isDownloading = false
+                } progress: { [weak self] progress in
+                    self?.delegate?.downloadProgressUpdate(progress: progress, message: capturedMessage!)
+                }
+                
+            } progress: { _ in
+                
             }
         }
     }
@@ -275,13 +265,19 @@ class MessageCollectionViewImageCell: MessageCollectionViewBaseCell, PHLivePhoto
     
     func addGestureForVideoView() {
         videoView.isUserInteractionEnabled = true
-        let videoSingleTap = UITapGestureRecognizer(target: self, action: #selector(videoSingleTap(_:)))
+        let videoSingleTap = UITapGestureRecognizer(target: self, action: #selector(imageTapped))
         videoView.addGestureRecognizer(videoSingleTap)
         
         let videoDoubleTap = UITapGestureRecognizer(target: self, action: #selector(videoDoubleTap(_:)))
         videoDoubleTap.numberOfTapsRequired = 2
         videoView.addGestureRecognizer(videoDoubleTap)
         videoSingleTap.require(toFail: videoDoubleTap)
+    }
+    
+    func addGestureForLivePhotoView() {
+        livePhotoView.isUserInteractionEnabled = true
+        let tap = UITapGestureRecognizer(target: self, action: #selector(imageTapped))
+        livePhotoView.addGestureRecognizer(tap)
     }
     
     @objc func videoSingleTap(_ tap: UITapGestureRecognizer) {
@@ -304,7 +300,7 @@ class MessageCollectionViewImageCell: MessageCollectionViewBaseCell, PHLivePhoto
     }
     
     @objc func imageTapped() {
-        delegate?.imageViewTapped(self, imageView: animatedImageView, path: message.imageLocalPath?.absoluteString ?? message.imageURL ?? "", isAvatar: false)
+        delegate?.imageViewTapped(self, imageView: animatedImageView, path: message.text, isAvatar: false)
     }
     
     func layoutImageView() {
@@ -364,32 +360,31 @@ class MessageCollectionViewImageCell: MessageCollectionViewBaseCell, PHLivePhoto
             }
         }
         // 接下来进入下载操作
-        ImageLoader.shared.requestImage(urlStr: imageUrl, syncIfCan: message.syncGetMedia) { [self] image, data, _ in
-            guard let capturedMessage = capturedMessage, capturedMessage.imageURL == message.imageURL else {
-                return
-            }
-            var cacheKey = imageUrl
-            if !isGif, let image = image { // is photo
-                var size: CGSize!
-                if isPad() {
-                    size = CGSize(width: 300, height: 0)
-                    cacheKey.insert(contentsOf: "HD-", at: cacheKey.startIndex)
+            MediaLoader.shared.requestImage(urlStr: imageUrl, type: .image, syncIfCan: message.syncGetMedia) { [self] image, data, _ in
+                guard let capturedMessage = capturedMessage, capturedMessage.imageURL == message.imageURL, let data = data else {
+                    return
                 }
-                let compressed = compressEmojis(image, askedSize: size)
-                animatedImageView.image = UIImage(data: compressed)
-                cache.setObject(compressed as NSData, forKey: cacheKey as NSString)
-            } else { // gif图处理
-                animatedImageView.animatedImage = FLAnimatedImage(gifData: data)
-                cache.setObject(data as NSData, forKey: imageUrl as NSString)
+                var cacheKey = imageUrl
+                if !isGif, let image = image { // is photo
+                    var size: CGSize!
+                    if isPad() {
+                        size = CGSize(width: 300, height: 0)
+                        cacheKey.insert(contentsOf: "HD-", at: cacheKey.startIndex)
+                    }
+                    let compressed = compressEmojis(image, askedSize: size)
+                    animatedImageView.image = UIImage(data: compressed)
+                    cache.setObject(compressed as NSData, forKey: cacheKey as NSString)
+                } else { // gif图处理
+                    animatedImageView.animatedImage = FLAnimatedImage(gifData: data)
+                    cache.setObject(data as NSData, forKey: imageUrl as NSString)
+                }
+                layoutIfNeeded()
+                capturedMessage.sendStatus = .success
+                capturedMessage.isDownloading = false
+                NotificationCenter.default.post(name: .mediaDownloadFinished, object: capturedMessage.text, userInfo: nil)
+            } progress: { progress in
+                self.delegate?.downloadProgressUpdate(progress: progress, message: capturedMessage!)
             }
-            layoutIfNeeded()
-            capturedMessage.sendStatus = .success
-        } progress: { _progress in
-            let progress = Progress()
-            progress.totalUnitCount = Int64(1000)
-            progress.completedUnitCount = Int64(_progress * 1000)
-            self.delegate?.downloadProgressUpdate(progress: progress, message: capturedMessage!)
-        }
         message.syncGetMedia = false
         
     }

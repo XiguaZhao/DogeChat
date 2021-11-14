@@ -37,5 +37,5 @@ class DogeChatNavigationController: UINavigationController {
             recoverVC(self, blurView: &blurView)
         }
     }
-
+    
 }

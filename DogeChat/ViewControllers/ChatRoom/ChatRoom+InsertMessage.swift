@@ -67,16 +67,17 @@ extension ChatRoomViewController {
             manager.messageManager.imageDict[message.uuid] = imageURL
             newMessages.append(message)
             manager.uploadPhoto(imageUrl: imageURL, message: message, size: size) { [weak self] progress in
-                self?.downloadProgressUpdate(progress: progress, message: message)
+                self?.downloadProgressUpdate(progress: progress.fractionCompleted, message: message)
             } success: { [weak self] task, data in
                 guard let self = self else { return }
                 let json = JSON(data as Any)
                 var filePath = json["filePath"].stringValue
                 filePath = socketForUsername(self.username).messageManager.encrypt.decryptMessage(filePath)
                 message.imageURL = filePath
-                message.message = message.imageURL ?? ""
+                message.text = message.imageURL ?? ""
                 message.imageLocalPath = imageURL
                 NotificationCenter.default.post(name: .uploadSuccess, object: self.username, userInfo: ["message": message])
+            } fail: {
             }
         }
         insertNewMessageCell(newMessages, forceScrollBottom: true)
@@ -92,7 +93,7 @@ extension ChatRoomViewController {
         message.voiceLocalPath = info.url
         message.voiceDuration = info.duration
         manager.uploadPhoto(imageUrl: info.url, message: message, size: .zero, voiceDuration: info.duration) { [weak self] progress in
-            self?.downloadProgressUpdate(progress: progress, message: message)
+            self?.downloadProgressUpdate(progress: progress.fractionCompleted, message: message)
         } success: { [weak self] task, data in
             guard let self = self, let data = data as? Data else { return }
             let json = JSON(data as Any)
@@ -100,7 +101,7 @@ extension ChatRoomViewController {
             voicePath = socketForUsername(self.username).messageManager.encrypt.decryptMessage(voicePath)
             print(voicePath)
             message.voiceURL = voicePath
-            message.message = voicePath
+            message.text = voicePath
             NotificationCenter.default.post(name: .uploadSuccess, object: self.username, userInfo: ["message": message])
             DispatchQueue.global().async {
                 let dir = createDir(name: voiceDir)
@@ -108,6 +109,7 @@ extension ChatRoomViewController {
                 try? FileManager.default.moveItem(at: info.url, to: newVoiceUrl)
                 message.videoLocalPath = newVoiceUrl
             }
+        } fail: {
         }
         insertNewMessageCell([message], forceScrollBottom: true)
     }
@@ -122,7 +124,7 @@ extension ChatRoomViewController {
         message.receiver = friendName
         message.imageSize = info.size
         manager.uploadPhoto(imageUrl: info.url, message: message, size: info.size) { [weak self] progress in
-            self?.downloadProgressUpdate(progress: progress, message: message)
+            self?.downloadProgressUpdate(progress: progress.fractionCompleted, message: message)
 
         } success: { [weak self] task, data in
             guard let self = self, let data = data as? Data else { return }
@@ -130,7 +132,7 @@ extension ChatRoomViewController {
             var videoPath = json["filePath"].stringValue
             videoPath = socketForUsername(self.username).messageManager.encrypt.decryptMessage(videoPath)
             print(videoPath)
-            message.message = videoPath
+            message.text = videoPath
             message.videoURL = videoPath
             NotificationCenter.default.post(name: .uploadSuccess, object: self.username, userInfo: ["message": message])
             DispatchQueue.global().async {
@@ -139,6 +141,7 @@ extension ChatRoomViewController {
                 try? FileManager.default.moveItem(at: info.url, to: newVideoUrl)
                 message.videoLocalPath = newVideoUrl
             }
+        } fail: {
         }
         insertNewMessageCell([message], forceScrollBottom: true)
     }
@@ -161,7 +164,7 @@ extension ChatRoomViewController {
                 imagePath = socketForUsername(self.username).messageManager.encrypt.decryptMessage(imagePath)
                 print(imagePath)
                 self.manager.uploadPhoto(imageUrl: livePhoto.videoURL, message: message, size: livePhoto.size) { [weak self] progress in
-                    self?.downloadProgressUpdate(progress: progress, message: message)
+                    self?.downloadProgressUpdate(progress: progress.fractionCompleted, message: message)
                 } success: { [weak self] task, data in
                     guard let self = self else { return }
                     let json = JSON(data as Any)
@@ -170,7 +173,7 @@ extension ChatRoomViewController {
                     print(videoPath)
                     message.imageURL = imagePath
                     message.videoURL = videoPath
-                    message.message = imagePath + " " + videoPath
+                    message.text = imagePath + " " + videoPath
                     NotificationCenter.default.post(name: .uploadSuccess, object: self.username, userInfo: ["message": message])
                     DispatchQueue.global().async {
                         let dir = createDir(name: livePhotoDir)
@@ -179,11 +182,30 @@ extension ChatRoomViewController {
                         try? FileManager.default.moveItem(at: livePhoto.imageURL, to: newImageUrl)
                         try? FileManager.default.moveItem(at: livePhoto.videoURL, to: newVideoUrl)
                     }
+                } fail: {
                 }
+            } fail: {
             }
         }
         insertNewMessageCell(newMessages)
         pickedLivePhotos.removeAll()
     }
     
+    func sendWasTapped(content: String) {
+        guard !content.isEmpty else { return }
+        playHaptic()
+        let wrappedMessage = processMessageString(for: content, type: .text, imageURL: nil, videoURL: nil)
+        insertNewMessageCell([wrappedMessage])
+        manager.commonWebSocket.sendWrappedMessage(wrappedMessage)
+    }
+    
 }
+
+extension ChatRoomViewController: EmojiViewDelegate {
+    func didSelectEmoji(filePath: String) {
+        let message = processMessageString(for: filePath, type: .image, imageURL: filePath, videoURL: nil)
+        insertNewMessageCell([message])
+        manager.commonWebSocket.sendWrappedMessage(message)
+    }
+}
+

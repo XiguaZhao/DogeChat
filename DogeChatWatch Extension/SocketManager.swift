@@ -51,12 +51,6 @@ class SocketManager: NSObject, URLSessionDelegate, URLSessionWebSocketDelegate, 
     override init() {
         super.init()
         commonSocket = DogeChatWebSocket(socketProtocol: self)
-        NotificationCenter.default.addObserver(forName: .receiveUnreadMessage, object: nil, queue: .main) { [weak self] noti in
-            let userInfo = noti.userInfo!
-            let newMessages = userInfo["messages"] as! [Message]
-            let isPublic = userInfo["isPublic"] as! Bool
-            self?.processNewMessages(newMessages, isPublic: isPublic)
-        }
     }
     
     func connect() {
@@ -78,6 +72,7 @@ class SocketManager: NSObject, URLSessionDelegate, URLSessionWebSocketDelegate, 
     func disconnect() {
         socket?.cancel(with: .normalClosure, reason: nil)
         connected = false
+        commonSocket.invalidatePingTimer()
     }
     
     func sendToken() {
@@ -125,38 +120,11 @@ class SocketManager: NSObject, URLSessionDelegate, URLSessionWebSocketDelegate, 
     
         
     func sendMessage(_ message: Message) {
-        commonSocket.sendMessage(message)
+        commonSocket.sendWrappedMessage(message)
     }
-    
-    func processNewMessages(_ messages: [Message], isPublic: Bool) {
-        if messages.isEmpty {
-            return
-        }
-        WKInterfaceDevice.current().play(.success)
-        if let chatVC = WKExtension.shared().visibleInterfaceController as? ChatRoomInterfaceController {
-            let vcTitle = chatVC.friendName
-            if isPublic && vcTitle == "群聊" {
-                chatVC.insertMessages(messages)
-            } else {
-                for message in messages {
-                    let friendName = message.messageSender == .ourself ? message.receiver : message.senderUsername
-                    if message.option == chatVC.messageOption && friendName == vcTitle {
-                        chatVC.insertMessages([message])
-                    } else {
-                        postNotification(message: message)
-                    }
-                }
-            }
-        } else {
-            for message in messages {
-                postNotification(message: message)
-            }
-        }
-    }
-    
+        
     func urlSession(_ session: URLSession, webSocketTask: URLSessionWebSocketTask, didOpenWithProtocol protocol: String?) {
         print("手表webSocket已打开")
-        NotificationCenter.default.post(name: .connected, object: nil)
         self.connected = true
         commonSocket.prepareEncrypt()
         self.latestConnectTime = Date().timeIntervalSince1970

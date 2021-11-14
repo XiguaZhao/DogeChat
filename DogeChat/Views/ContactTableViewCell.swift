@@ -32,7 +32,6 @@ class ContactTableViewCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         self.backgroundColor = .clear
-        self.selectionStyle = .none
         nameLabel.font = UIFont.systemFont(ofSize: 15)
         
         latestMessageLabel.textColor = .lightGray
@@ -78,34 +77,47 @@ class ContactTableViewCell: UITableViewCell {
 //        delegate?.avatarTapped(self, path: info.avatarUrl)
     }
     
-    func apply(_ info: Friend) {
+    func apply(_ info: Friend, titleMore: String? = nil, subTitle: String? = nil) {
         self.info = info
-        nameLabel.text = info.username
+        var title = info.username
+        if let nickName = info.nickName, !nickName.isEmpty {
+            title = nickName
+        }
+        if let titleMore = titleMore {
+            title += titleMore
+        }
+        self.nameLabel.text = title
         var text = ""
         if let message = info.latestMessage {
+            if info.isGroup {
+                text += "\(message.senderUsername)："
+            } 
             switch message.messageType {
             case .draw:
-                text = "[速绘]"
+                text += "[速绘]"
             case .image:
-                text = "[图片]"
+                text += "[图片]"
             case .livePhoto:
-                text = "[Live Photo]"
+                text += "[Live Photo]"
             case .join, .text:
-                text = message.message
+                text += message.text
             case .video:
-                text = "[视频]"
+                text += "[视频]"
             case .track:
-                text = "[歌曲分享]"
+                text += "[歌曲分享]"
             case .voice:
-                text = "[语音]"
+                text += "[语音]"
             }
             latestMessageLabel.text = text
             if latestMessageLabel.superview == nil {
                 labelStackView.addArrangedSubview(latestMessageLabel)
             }
+        } else if let subTitle = subTitle {
+            latestMessageLabel.text = subTitle
         } else {
-            latestMessageLabel.removeFromSuperview()
+            latestMessageLabel.isHidden = true
         }
+        avatarImageView.isHidden = info.avatarURL.isEmpty
         if !info.avatarURL.isEmpty {
             let avatarUrl = WebSocketManager.url_pre + info.avatarURL
             let isGif = avatarUrl.hasSuffix(".gif")
@@ -117,7 +129,7 @@ class ContactTableViewCell: UITableViewCell {
                 }
                 return
             }
-            ImageLoader.shared.requestImage(urlStr: avatarUrl) { [self] image, data, _ in
+            MediaLoader.shared.requestImage(urlStr: avatarUrl, type: .image) { [self] image, data, _ in
                 guard info.username == self.info.username else {
                     return
                 }

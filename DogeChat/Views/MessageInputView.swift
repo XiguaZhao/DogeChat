@@ -26,7 +26,6 @@ class MessageInputView: DogeChatStaticBlurView {
     weak var delegate: MessageInputDelegate?
     
     static let ratioOfEmojiView: CGFloat = 0.45
-    static var becauseEmojiTapped = false
     let textView = DogeChatTextView()
     let addButton = UIButton()
     let emojiButton = UIButton()
@@ -168,7 +167,7 @@ class MessageInputView: DogeChatStaticBlurView {
     func frameDown() {
         let screenSize = UIApplication.shared.windows.first(where: { $0.isKeyWindow })?.bounds.size ?? UIScreen.main.bounds.size
         let userInfo = [UIResponder.keyboardFrameEndUserInfoKey: NSValue(cgRect: CGRect(x: 0, y: screenSize.height, width: screenSize.width, height: screenSize.height))]
-        NotificationCenter.default.post(name: UIResponder.keyboardWillChangeFrameNotification, object: self, userInfo: userInfo)
+        NotificationCenter.default.post(name: UIResponder.keyboardWillChangeFrameNotification, object: false, userInfo: userInfo)
     }
     
     @objc func textViewResign() {
@@ -237,17 +236,16 @@ class MessageInputView: DogeChatStaticBlurView {
     
     @objc func emojiButtonTapped() {
         let block = {
-            let screenSize = AppDelegate.shared.navigationController.view.bounds.size
+            let screenSize = AppDelegate.shared.navigationController!.view.bounds.size
             let ratio: CGFloat = MessageInputView.ratioOfEmojiView
             let userInfo = [UIResponder.keyboardFrameEndUserInfoKey: NSValue(cgRect: CGRect(x: 0, y: (1-ratio)*screenSize.height, width: screenSize.width, height: ratio*screenSize.height))]
-            NotificationCenter.default.post(name: UIResponder.keyboardWillChangeFrameNotification, object: self, userInfo: userInfo)
+            NotificationCenter.default.post(name: UIResponder.keyboardWillChangeFrameNotification, object: true, userInfo: userInfo)
         }
         if textView.isFirstResponder {
-            MessageInputView.becauseEmojiTapped = true
-            self.textView.resignFirstResponder()
             DispatchQueue.main.async {
                 NotificationCenter.default.post(name: .emojiButtonTapped, object: self)
                 block()
+                self.textView.resignFirstResponder()
             }
         } else {
             NotificationCenter.default.post(name: .emojiButtonTapped, object: self)

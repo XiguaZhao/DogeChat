@@ -47,7 +47,7 @@ class NotificationService: UNNotificationServiceExtension {
                     }
                 }
                 let wholePath = "https://121.5.152.193" + path
-                if let url = URL(string: wholePath) {
+                if let _ = URL(string: wholePath) {
                     guard !path.hasSuffix(".gif") else {
                         complete()
                         return
@@ -62,30 +62,27 @@ class NotificationService: UNNotificationServiceExtension {
                           let password = UserDefaults(suiteName: "group.demo.zhaoxiguang")?.value(forKey: "sharedPassword") as? String else { return }
                     manager.login(username: username, password: password) { res in
                         guard res == "登录成功", !manager.cookie.isEmpty else { return }
-                        ImageLoader.shared.cookie = manager.cookie
-                        ImageLoader.shared.requestImage(urlStr: path, syncIfCan: false, completion: { _, data, localURL in
-                            var finalData: Data? = data
-                            var ext = url.pathExtension
+                        MediaLoader.shared.cookie = manager.cookie
+                        MediaLoader.shared.requestImage(urlStr: path, type: .voice, syncIfCan: false, completion: { _, data, localURL in
+                            var localURL = localURL
 #if !targetEnvironment(macCatalyst)
                             if type == "draw" {
                                 if #available(iOSApplicationExtension 13.0, *) {
-                                    if let draw = try? PKDrawing(data: data) {
-                                        finalData = draw.image(from: draw.bounds, scale: 1).pngData()
-                                        ext = "jpeg"
+                                    if let data = try? Data(contentsOf: localURL),
+                                       let draw = try? PKDrawing(data: data) {
+                                        let drawData = draw.image(from: draw.bounds, scale: 1).pngData()
+                                        let fileName = localURL.lastPathComponent + ".jpeg"
+                                        saveFileToDisk(dirName: drawDir, fileName: fileName, data: drawData!)
+                                        if let newLocalURL = fileURLAt(dirName: drawDir, fileName: fileName) {
+                                            localURL = newLocalURL
+                                        }
                                         self.bestAttemptContent?.body = "[Drawing]"
                                     }
                                 }
                             }
 #endif
-                            if let finalData = finalData  {
-                                let fileUrl = URL(string: "file://" + NSTemporaryDirectory() + UUID().uuidString + ".\(ext)")!
-                                try? finalData.write(to: fileUrl)
-                                if let attachment = try? UNNotificationAttachment(identifier: path, url: fileUrl, options: nil) {
-                                    self.bestAttemptContent?.attachments = [attachment]
-                                }
-                            } else {
-                                complete()
-                                return
+                            if let attachment = try? UNNotificationAttachment(identifier: path, url: localURL, options: nil) {
+                                self.bestAttemptContent?.attachments = [attachment]
                             }
                             complete()
                         }, progress: nil)

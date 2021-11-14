@@ -32,12 +32,12 @@ class NameAndPassword: NSObject, NSCoding {
     }
     
     let username: String
-    var password: String?
+    let password: String
 }
 
 class SelectShortcutTVC: UITableViewController {
     
-    var namesAndPasswords: [NameAndPassword] {
+    static var namesAndPasswords: [NameAndPassword] {
         get {
             let data = (UserDefaults.standard.value(forKey: keyForNameAndPwd) as? Data) ?? Data()
             return (NSKeyedUnarchiver.unarchiveObject(with: data) as? [NameAndPassword]) ?? []
@@ -47,8 +47,15 @@ class SelectShortcutTVC: UITableViewController {
             UserDefaults.standard.set(data, forKey: keyForNameAndPwd)
         }
     }
+    static var shortcutItems: [UIApplicationShortcutItem] {
+        var items = [UIApplicationShortcutItem]()
+        for item in Self.namesAndPasswords {
+            items.append(makeShortcutItem(item.username, password: item.password))
+        }
+        return items
+    }
     let cellIdentifier = "shortcutCell"
-    let keyForNameAndPwd = "usernamesAndPasswords"
+    static let keyForNameAndPwd = "usernamesAndPasswords"
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -57,7 +64,7 @@ class SelectShortcutTVC: UITableViewController {
     }
     
     
-    func makeShortcutItem(_ username: String, password: String) -> UIApplicationShortcutItem {
+    static func makeShortcutItem(_ username: String, password: String) -> UIApplicationShortcutItem {
         let icon = UIApplicationShortcutIcon(type: .contact)
         let item = UIApplicationShortcutItem(type: "contact", localizedTitle: username, localizedSubtitle: nil, icon: icon, userInfo: ["username": username, "password": password] as [String : NSSecureCoding])
         return item
@@ -74,25 +81,25 @@ class SelectShortcutTVC: UITableViewController {
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
-        return namesAndPasswords.count + 1
+        return Self.namesAndPasswords.count + 1
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier, for: indexPath)
         switch indexPath.row {
-        case namesAndPasswords.count:
+        case Self.namesAndPasswords.count:
             if #available(iOS 13.0, *) {
                 cell.imageView?.image = UIImage(systemName: "plus")
             }
             cell.textLabel?.text = "添加新捷径"
         default:
-            cell.textLabel?.text = namesAndPasswords[indexPath.row].username
+            cell.textLabel?.text = Self.namesAndPasswords[indexPath.row].username
         }
         return cell
     }
     
     override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        if indexPath.row == namesAndPasswords.count { return false }
+        if indexPath.row == Self.namesAndPasswords.count { return false }
         return true
     }
     
@@ -103,7 +110,7 @@ class SelectShortcutTVC: UITableViewController {
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         guard editingStyle == .delete else { return }
         let row = indexPath.row
-        namesAndPasswords.remove(at: row)
+        Self.namesAndPasswords.remove(at: row)
         tableView.deleteRows(at: [indexPath], with: .automatic)
         UIApplication.shared.shortcutItems?.remove(at: row)
     }
@@ -118,8 +125,8 @@ class SelectShortcutTVC: UITableViewController {
         alert.addTextField { (passwordTextField) in
             passwordTextField.placeholder = "password:"
         }
-        if indexPath.row == namesAndPasswords.count {
-            guard namesAndPasswords.count <= 3 else {
+        if indexPath.row == Self.namesAndPasswords.count {
+            guard Self.namesAndPasswords.count <= 4 else {
                 let warning = UIAlertController(title: "超过数量", message: nil, preferredStyle: .alert)
                 present(warning, animated: true)
                 Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { (_) in
@@ -129,17 +136,17 @@ class SelectShortcutTVC: UITableViewController {
             }
             alert.addAction(UIAlertAction(title: "完成", style: .default, handler: { (action) in
                 if let username = alert.textFields?[0].text, let password = alert.textFields?[1].text {
-                    self.namesAndPasswords.insert(NameAndPassword(username: username, password: password), at: 0)
+                    Self.namesAndPasswords.insert(NameAndPassword(username: username, password: password), at: 0)
                     self.tableView.insertRows(at: [IndexPath(row: 0, section: 0)], with: .automatic)
-                    UIApplication.shared.shortcutItems?.insert(self.makeShortcutItem(username, password: password), at: 0)
+                    Self.updateShortcuts()
                 }
             }))
         } else {
             alert.addAction(UIAlertAction(title: "修改", style: .default, handler: { (action) in
                 if let username = alert.textFields?[0].text, let password = alert.textFields?[1].text {
-                    self.namesAndPasswords[indexPath.row] = NameAndPassword(username: username, password: password)
+                    Self.namesAndPasswords[indexPath.row] = NameAndPassword(username: username, password: password)
                     self.tableView.reloadRows(at: [indexPath], with: .automatic)
-                    UIApplication.shared.shortcutItems?[indexPath.row] = self.makeShortcutItem(username, password: password)
+                    Self.updateShortcuts()
                 }
             }))
         }
@@ -147,4 +154,11 @@ class SelectShortcutTVC: UITableViewController {
         present(alert, animated: true)
     }
     
+    static func updateShortcuts() {
+        var items = [UIApplicationShortcutItem]()
+        for item in Self.namesAndPasswords {
+            items.append(Self.makeShortcutItem(item.username, password: item.password))
+        }
+        UIApplication.shared.shortcutItems = items
+    }
 }

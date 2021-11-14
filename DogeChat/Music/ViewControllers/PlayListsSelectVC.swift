@@ -14,13 +14,12 @@ enum PlayListSelectType {
     case addTrack
 }
 
-class PlayListsSelectVC: DogeChatViewController {
-    
-    let tableView = DogeChatTableView()
+class PlayListsSelectVC: DogeChatViewController, DogeChatVCTableDataSource {
+
+    var tableView = DogeChatTableView()
     var playLists = [String]()
     var type: PlayListSelectType = .normal
     var tracks = [Track]()
-    var username = ""
 
     override func viewDidLoad() {
         super.viewDidLoad()

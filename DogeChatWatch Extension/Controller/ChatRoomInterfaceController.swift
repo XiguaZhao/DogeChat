@@ -25,7 +25,7 @@ func contentForSpecialType(_ message: Message?) -> String {
     guard let message = message else { return "" }
     switch message.messageType {
     case .text, .join:
-        return message.message
+        return message.text
     case .image, .livePhoto:
         return "[图片]"
     case .draw:
@@ -58,7 +58,9 @@ class ChatRoomInterfaceController: WKInterfaceController {
     var isFirstTimeFetch = false
     let manager = SocketManager.shared
     var messages: [Message]!
-    var messagesUUIDs: Set<String>!
+    var messagesUUIDs: Set<String>! {
+        return Set(messages.map { $0.uuid })
+    }
     var pagesAndCurNum = (pages: 1, curNum: 1)
     var friendName: String {
         friend.username
@@ -75,12 +77,10 @@ class ChatRoomInterfaceController: WKInterfaceController {
         guard let context = context as? [String: Any],
               let friend = context["friend"] as? Friend,
               let messages = context["messages"] as? [Message],
-              let messagesUUIDs = context["messagesUUIDs"] as? Set<String> else { return }
+              let _ = context["messagesUUIDs"] as? Set<String> else { return }
         self.friend = friend
         self.messages = messages
-        self.messagesUUIDs = messagesUUIDs
         NotificationCenter.default.addObserver(self, selector: #selector(receiveHistory(noti:)), name: .receiveHistoryMessages, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(receiveNewMessageNotification(_:)), name: .receiveNewMessage, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(selectEmojiAction(_:)), name: .selectEmoji, object: nil)
         NotificationCenter.default.addObserver(forName: .connecting, object: nil, queue: nil) { [weak self] _ in
             self?.setTitle("正在连接...")
@@ -105,6 +105,19 @@ class ChatRoomInterfaceController: WKInterfaceController {
     
     override func willDisappear() {
         super.willDisappear()
+    }
+    
+    override func didAppear() {
+        super.didAppear()
+        let userActivity = NSUserActivity(activityType: "com.zhaoxiguang.dogechat")
+        userActivity.title = "ChatRoom"
+        userActivity.userInfo = ["username": manager.commonSocket.myName,
+                                 "password": manager.messageManager.getPassword(),
+                                 "friendID": friend.userID]
+        userActivity.isEligibleForHandoff = true
+        userActivity.requiredUserInfoKeys = ["username", "password", "friendID"]
+        userActivity.becomeCurrent()
+        self.update(userActivity)
     }
     
     func showAlreadyMessages() {
@@ -138,19 +151,10 @@ class ChatRoomInterfaceController: WKInterfaceController {
         self.table.insertRows(at: indexSet, withRowType: messageRowType)
         insertAlreadyAndHistoryMessages(filtered, oldIndex: oldIndex, toBottom: false)
     }
-    
-    @objc func receiveNewMessageNotification(_ notification: Notification) {
-        guard let message = notification.object as? Message, message.option == messageOption, !self.messagesUUIDs.contains(message.uuid) else {
-            return
-        }
-        if message.option == .toOne && message.senderUsername != friendName { return }
-        table.insertRows(at: IndexSet(integer: self.messages.count), withRowType: messageRowType)
-        self.messages.append(message)
-        insertAlreadyAndHistoryMessages([message], oldIndex: 0, toBottom: true)
-    }
-    
+        
     func insertMessages(_ messages: [Message]) {
         let alreadyCount = self.messages.count
+        let messages = messages.filter({ !messagesUUIDs.contains($0.uuid) })
         let newCount = alreadyCount + messages.count
         table.insertRows(at: IndexSet(alreadyCount..<newCount), withRowType: messageRowType)
         for (index, newMessage) in messages.enumerated() {
@@ -182,11 +186,11 @@ class ChatRoomInterfaceController: WKInterfaceController {
                         let height = width/size.width * size.height
                         messageRow.image.setHeight(height)
                     }
-                    ImageLoader.shared.requestImage(urlStr: url_pre + (url as String), syncIfCan: false, completion: { image, data, _ in
+                    MediaLoader.shared.requestImage(urlStr: url_pre + (url as String), type: .image, syncIfCan: false, completion: { image, data, _ in
                         guard let image = image else { return }
                         let compressedData = compressEmojis(image)
-                        messageRow.image.setHeight(width/image.size.width * image.size.height)
-                        messageRow.image.setImageData(compressedData)
+                        messageRow.image?.setHeight(width/image.size.width * image.size.height)
+                        messageRow.image?.setImageData(compressedData)
                         imageCahce.setObject(compressedData as NSData, forKey: url)
                     }, progress: nil)
                 }
@@ -223,7 +227,7 @@ class ChatRoomInterfaceController: WKInterfaceController {
     }
     
     @IBAction func emojiAction() {
-        self.presentController(withName: "emoji", context: emojis)
+        self.presentController(withName: "emoji", context: emojis.isEmpty ? HttpRequestsManager.emojiPaths : emojis)
     }
     
     

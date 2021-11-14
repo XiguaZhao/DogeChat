@@ -12,18 +12,16 @@ import DogeChatNetwork
 import MJRefresh
 
 @available(iOS 13.0, *)
-class HistoryVC: DogeChatViewController {
+class HistoryVC: DogeChatViewController, DogeChatVCTableDataSource {
     
     enum Section {
         case main
     }
     
     var cache: NSCache<NSString, NSData>!
-    var option: MessageOption = .toOne
     var friend: Friend!
     var messages = [Message]()
     var uuids = Set<String>()
-    var username = ""
     var tableView = DogeChatTableView()
     var dataSource: UITableViewDiffableDataSource<Section, Message>!
     let slider = UISlider()
@@ -47,20 +45,21 @@ class HistoryVC: DogeChatViewController {
     var manager: WebSocketManager! {
         return WebSocketManager.usersToSocketManager[username]
     }
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         manager.needInsertWhenWrap = false
-        
+                
         view.addSubview(tableView)
         navigationItem.title = friend.username + "的历史记录"
         
         tableView.delegate = self
-        configDataSource()
-        configRefresh()
+        configDataSource()        
+        let header = UIRefreshControl()
+        header.addTarget(self, action: #selector(refreshHeaderAction), for: .valueChanged)
+        tableView.refreshControl = header
         
-                
         NotificationCenter.default.addObserver(self, selector: #selector(receiveHistory(_:)), name: .receiveHistoryMessages, object: username)
         
         let leftLabel = UILabel()
@@ -71,6 +70,8 @@ class HistoryVC: DogeChatViewController {
         slider.isContinuous = false
         slider.addTarget(self, action: #selector(sliderAction(_:)), for: .valueChanged)
         
+        self.navigationController?.setToolbarHidden(false, animated: true)
+        self.setToolbarItems([UIBarButtonItem(customView: stack)], animated: true)
 
         nowPage = 1
         requestPage(1)
@@ -78,16 +79,6 @@ class HistoryVC: DogeChatViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        navigationController?.setToolbarHidden(false, animated: true)
-        let toolBar = navigationController?.toolbar
-        toolBar?.addSubview(stack)
-        
-        stack.mas_remakeConstraints { [weak toolBar] make in
-            let offset: CGFloat = 20
-            make?.leading.equalTo()(toolBar)?.offset()(offset)
-            make?.trailing.equalTo()(toolBar)?.offset()(-offset)
-            make?.bottom.equalTo()(toolBar)?.offset()(-10)
-        }
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -105,10 +96,7 @@ class HistoryVC: DogeChatViewController {
     
     private func configRefresh() {
         let footer = MJRefreshAutoStateFooter(refreshingTarget: self, refreshingAction: #selector(refreshFooterAction))
-        let header = UIRefreshControl()
-        header.addTarget(self, action: #selector(refreshHeaderAction), for: .valueChanged)
         tableView.mj_footer = footer
-        tableView.refreshControl = header
     }
     
     private func configDataSource() {
@@ -180,6 +168,9 @@ class HistoryVC: DogeChatViewController {
         downNowPage = nowPage
         upNowPage = nowPage
         requestPage(nowPage)
+        if tableView.mj_footer == nil {
+            configRefresh()
+        }
     }
     
     
@@ -215,7 +206,7 @@ class HistoryVC: DogeChatViewController {
 extension HistoryVC: UITableViewDelegate, MessageTableViewCellDelegate {
     
     func imageViewTapped(_ cell: MessageCollectionViewBaseCell, imageView: FLAnimatedImageView, path: String, isAvatar: Bool) {
-        let browser = ImageBrowserViewController()
+        let browser = MediaBrowserViewController()
         if !isAvatar {
             let paths = (self.messages.filter { $0.messageType == .image }).compactMap { $0.imageLocalPath?.absoluteString ?? $0.imageURL }
             browser.imagePaths = paths
@@ -226,7 +217,7 @@ extension HistoryVC: UITableViewDelegate, MessageTableViewCellDelegate {
             browser.imagePaths = [path]
         }
         browser.modalPresentationStyle = .fullScreen
-        AppDelegate.shared.navigationController.present(browser, animated: true, completion: nil)
+        AppDelegate.shared.navigationController?.present(browser, animated: true, completion: nil)
     }
 
     func emojiOutBounds(from cell: MessageCollectionViewBaseCell, gesture: UIGestureRecognizer) {
@@ -249,7 +240,7 @@ extension HistoryVC: UITableViewDelegate, MessageTableViewCellDelegate {
         
     }
     
-    func downloadProgressUpdate(progress: Progress, message: Message) {
+    func downloadProgressUpdate(progress: Double, message: Message) {
         
     }
     

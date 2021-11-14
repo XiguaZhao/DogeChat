@@ -31,7 +31,9 @@ func removeSocketForUsername(_ username: String) {
     if let index = WebSocketManagerAdapter.usernameToAdapter.firstIndex(where: { $0.key == username }) {
         WebSocketManagerAdapter.usernameToAdapter.remove(at: index)
     }
-
+    if #available(iOS 13.0, *) {
+        _ = SceneDelegate.usernameToDelegate.remove(key: username)
+    }
 }
 
 var safeArea: UIEdgeInsets {

@@ -34,7 +34,6 @@ class SplitViewControllerDelegate: UISplitViewControllerDelegate {
             if let pop = nav.popToRootViewController(animated: false)?.first {
                 let newNav = DogeChatNavigationController(rootViewController: pop)
                 svc.showDetailViewController(newNav, sender: nil)
-                AppDelegate.shared.navigationController = newNav
             }
         }
     }

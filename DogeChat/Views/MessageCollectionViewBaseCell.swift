@@ -19,13 +19,13 @@ protocol MessageTableViewCellDelegate: AnyObject {
     func pkViewTapped(_ cell: MessageCollectionViewBaseCell, pkView: UIView!)
     func avatarDoubleTap(_ cell: MessageCollectionViewBaseCell)
     func sharedTracksTap(_ cell: MessageCollectionViewBaseCell, tracks: [Track])
-    func downloadProgressUpdate(progress: Progress, message: Message)
+    func downloadProgressUpdate(progress: Double, message: Message)
     func downloadSuccess(message: Message)
     func longPressCell(_ cell: MessageCollectionViewBaseCell, ges: UILongPressGestureRecognizer!)
 }
 
 protocol ContactDataSource: AnyObject {
-    var userInfos: [Friend] { get }
+    var friends: [Friend] { get }
 }
 
 class MessageCollectionViewBaseCell: DogeChatTableViewCell {
@@ -107,6 +107,7 @@ class MessageCollectionViewBaseCell: DogeChatTableViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         cleanEmojis()
+        cleanAvatar()
         avatarImageView.image = nil
         avatarImageView.animatedImage = nil
         progress.isHidden = true
@@ -168,14 +169,21 @@ class MessageCollectionViewBaseCell: DogeChatTableViewCell {
     
     func apply(message: Message) {
         self.message = message
-        nameLabel.text = message.senderUsername
-        if isHistory {
-            nameLabel.text = message.senderUsername + "   " + (message.date).replacingOccurrences(of: "\n", with: "  ")
+        var name = message.senderUsername
+        if let nickname = manager.friendsDict[message.senderUserID]?.nickName, !nickname.isEmpty {
+            name = nickname
         }
+        if let group = message.friend as? Group, let nameInGroup = group.membersDict?[message.senderUserID]?.nameInGroup {
+            name = nameInGroup
+        }
+        if isHistory {
+            name += "   " + (message.date).replacingOccurrences(of: "\n", with: "  ")
+        }
+        nameLabel.text = name
         avatarDoubleTapGes.isEnabled = message.messageSender == .someoneElse
         timeLabel.text = message.date
-//        loadAvatar()
-//        addEmojis()
+        loadAvatar()
+        addEmojis()
     }
     
     func cleanEmojis() {
@@ -202,8 +210,8 @@ class MessageCollectionViewBaseCell: DogeChatTableViewCell {
         } else {
             switch message.option {
             case .toOne:
-                if let index = contactDataSource?.userInfos.firstIndex(where: { $0.userID == userID }),
-                   let path = contactDataSource?.userInfos[index].avatarURL {
+                if let index = contactDataSource?.friends.firstIndex(where: { $0.userID == userID }),
+                   let path = contactDataSource?.friends[index].avatarURL {
                     url = WebSocketManager.url_pre + path
                 }
             case .toGroup:
@@ -219,26 +227,6 @@ class MessageCollectionViewBaseCell: DogeChatTableViewCell {
     
     private func _loadAvatar() {
         let block: (String) -> Void = { [self] url in
-            if let data = ContactTableViewCell.avatarCache[url] {
-                if url.hasSuffix(".gif") {
-                    avatarImageView.animatedImage = FLAnimatedImage(gifData: data)
-                } else {
-                    avatarImageView.image = UIImage(data: data)
-                }
-            }
-        }
-        if message.messageSender == .ourself {
-            let url = manager.messageManager.myAvatarUrl
-            block(url)
-        } else if message.option == .toOne {
-            if let index = contactDataSource?.userInfos.firstIndex(where: { $0.username == message.senderUsername }),
-               let path = contactDataSource?.userInfos[index].avatarURL {
-                let url = WebSocketManager.url_pre + path
-                block(url)
-            }
-        } else { // 群聊 someoneElse
-            let url = message.avatarUrl
-            guard !url.isEmpty else { return }
             let isGif = url.hasSuffix(".gif")
             if let data = ContactTableViewCell.avatarCache[url] {
                 if isGif {
@@ -247,9 +235,9 @@ class MessageCollectionViewBaseCell: DogeChatTableViewCell {
                     avatarImageView.image = UIImage(data: data)
                 }
             } else {
-                let capturedMessage = self.message
-                ImageLoader.shared.requestImage(urlStr: url) { image, data, _ in
-                    guard capturedMessage?.uuid == self.message.uuid else { return }
+                let captured = message
+                MediaLoader.shared.requestImage(urlStr: url, type: .image, cookie: nil, syncIfCan: false) { image, data, _ in
+                    guard captured?.uuid == self.message.uuid else { return }
                     if !isGif, let image = image { // is photo
                         let compressed = compressEmojis(image)
                         self.avatarImageView.image = UIImage(data: compressed)
@@ -258,8 +246,16 @@ class MessageCollectionViewBaseCell: DogeChatTableViewCell {
                         self.avatarImageView.animatedImage = FLAnimatedImage(gifData: data)
                         ContactTableViewCell.avatarCache[url] = data
                     }
+                } progress: { _ in
                 }
             }
+        }
+        if message.messageSender == .ourself {
+            let url = manager.messageManager.myAvatarUrl
+            block(url)
+        } else {
+            let url = message.avatarUrl
+            block(url)
         }
     }
     
@@ -282,7 +278,7 @@ class MessageCollectionViewBaseCell: DogeChatTableViewCell {
     class func height(for message: Message, username: String) -> CGFloat {
         let maxSize = CGSize(width: 2*(AppDelegate.shared.widthFor(side: .right, username: username)/3), height: CGFloat.greatestFiniteMagnitude)
         let nameHeight = message.messageSender == .ourself ? 0 : (height(forText: message.senderUsername, fontSize: 10, maxSize: maxSize) + 4 )
-        let messageHeight = height(forText: message.message, fontSize: message.fontSize, maxSize: maxSize)
+        let messageHeight = height(forText: message.text, fontSize: message.fontSize, maxSize: maxSize)
         var height: CGFloat
         let screenWidth = AppDelegate.shared.widthFor(side: .right, username: username)
         let screenHeight = AppDelegate.shared.heightFor(side: .right, username: username)
@@ -304,7 +300,7 @@ class MessageCollectionViewBaseCell: DogeChatTableViewCell {
             }
             height = min(screenHeight * 0.6, height)
         case .draw:
-            if  #available(iOS 14.0, *) {
+            if  #available(iOS 13.0, *) {
                 height = nameHeight + pkViewHeight
                 let block: (CGRect) -> CGFloat = { bounds in
                     let maxWidth = screenWidth * 0.8
@@ -315,12 +311,12 @@ class MessageCollectionViewBaseCell: DogeChatTableViewCell {
                         return nameHeight + bounds.maxY + 30
                     }
                 }
-                if let pkDrawing = getPKDrawing(message: message) as? PKDrawing {
-                    let bounds = pkDrawing.bounds
-                    height = block(bounds)
-                } else if let bounds = message.drawBounds {
+                if let bounds = message.drawBounds {
                     height = block(bounds)
                 } else if let bounds = boundsForDraw(message) {
+                    height = block(bounds)
+                } else if let pkDrawing = getPKDrawing(message: message) as? PKDrawing {
+                    let bounds = pkDrawing.bounds
                     height = block(bounds)
                 } else {
                     height = 350
@@ -390,8 +386,8 @@ extension MessageCollectionViewBaseCell {
             if let data = cache.object(forKey: path as NSString) {
                 displayBlock(data as Data)
             } else {
-                ImageLoader.shared.requestImage(urlStr: path, syncIfCan: false, completion: { image, data, _ in
-                    guard self.message == capturedMessage else { return }
+                MediaLoader.shared.requestImage(urlStr: path, type: .image, syncIfCan: false, completion: { image, data, _ in
+                    guard self.message == capturedMessage, let data = data else { return }
                     if path.hasPrefix(".gif") {
                         displayBlock(data)
                     } else {

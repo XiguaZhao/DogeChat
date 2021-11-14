@@ -119,7 +119,7 @@ class NotificationManager: NSObject {
             let message = Message(message: replyContent, friend: friend, imageURL: nil, videoURL: nil, messageSender: .ourself, receiver: self.nowPushInfo.sender, receiverUserID: nowPushInfo.senderID, uuid: UUID().uuidString, sender: self.manager.messageManager.myName, senderUserID: manager.messageManager.myId, messageType: .text, sendStatus: .fail, emojisInfo: [])
             self.quickReplyMessage = message
             self.manager.quickReplyUUID = message.uuid
-            self.manager.commonWebSocket.sendMessage(message)
+            self.manager.commonWebSocket.sendWrappedMessage(message)
             DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
                 if !self.manager.quickReplyUUID.isEmpty {
                     self.actionCompletionHandler?()

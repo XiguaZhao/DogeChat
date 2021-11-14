@@ -134,14 +134,15 @@ class MessageCollectionViewTrackCell: MessageCollectionViewBaseCell {
         } else {
             if !message.isDownloading {
                 message.isDownloading = true
-                if let url = URL(string: url_pre + message.message) {
-                    session.get(url.absoluteString, parameters: nil, headers: nil, progress: nil, success: { [weak self] task, data in
-                        guard let tracksData = data as? Data,
-                              let tracks = try? JSONDecoder().decode([Track].self, from: tracksData) else { return }
+                MediaLoader.shared.requestImage(urlStr: message.text, type: .draw, cookie: manager.cookie, syncIfCan: true) { [weak self] _, _, localURL in
+                    if let data = try? Data(contentsOf: localURL),
+                       let tracks = try? JSONDecoder().decode([Track].self, from: data) {
                         captured.tracks = tracks
                         captured.isDownloading = false
                         self?.delegate?.downloadSuccess(message: captured)
-                    }, failure: nil)
+                    }
+                } progress: { _ in
+                    
                 }
             }
         }

@@ -9,13 +9,15 @@
 import UIKit
 import DogeChatUniversal
 
-var miniPlayerView: MiniPlayerView!
 
 class DogeChatTabBarController: UITabBarController, UITabBarControllerDelegate {
+
+    var miniPlayerView: MiniPlayerView!
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        self.tabBar.layer.masksToBounds = true
         self.delegate = self
         setupMiniPlayer()
         NotificationCenter.default.addObserver(self, selector: #selector(nowPlayingTrackChangedNoti(_:)), name: .nowPlayingTrackChanged, object: nil)

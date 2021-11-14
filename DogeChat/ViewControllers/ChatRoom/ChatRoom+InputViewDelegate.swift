@@ -57,7 +57,7 @@ extension ChatRoomViewController: MessageInputDelegate, VoiceRecordDelegate {
             self.present(imagePicker, animated: true, completion: nil)
             self.messageInputBar.textView.resignFirstResponder()
         case .draw:
-            if #available(iOS 14, *) {
+            if #available(iOS 13, *) {
                 let drawVC = DrawViewController()
                 drawVC.username = username
                 drawVC.pkViewDelegate.dataChangedDelegate = self
@@ -92,18 +92,6 @@ extension ChatRoomViewController: MessageInputDelegate, VoiceRecordDelegate {
             actionSheet.addAction(UIAlertAction(title: "视频通话", style: .default, handler: { (action) in
                 startCallAction()
                 Recorder.sharedInstance().needSendVideo = true
-            }))
-        }
-        if #available(iOS 13.0, *) {
-            actionSheet.addAction(UIAlertAction(title: "历史记录", style: .default, handler: { [weak self] (action) in
-                guard let self = self else { return }
-                let vc = HistoryVC()
-                vc.contactDataSource = self.contactVC
-                vc.option = self.messageOption
-                vc.friend = self.friend
-                vc.cache = self.cache
-                vc.username = self.username
-                self.navigationController?.pushViewController(vc, animated: true)
             }))
         }
         actionSheet.addAction(UIAlertAction(title: "Music", style: .default, handler: { [weak self] _ in
@@ -168,9 +156,8 @@ extension ChatRoomViewController: MessageInputDelegate, VoiceRecordDelegate {
                         if let live = livePhoto as? PHLivePhoto {
                             alert.title = "正在压缩" + "0/\(results.count)"
                             LivePhotoGenerator().generate(for: live, windowWidth: AppDelegate.shared.widthFor(side: .right, username: self.username)) { livePhoto in
-                                let sel = Selector(("imageURL"))
-                                let imageURL = livePhoto.perform(sel).takeUnretainedValue() as! URL
-                                let videoURL = livePhoto.perform(Selector(("videoURL"))).takeUnretainedValue() as! URL
+                                let imageURL = livePhoto.value(forKey: "imageURL") as! URL
+                                let videoURL = livePhoto.value(forKey: "videoURL") as! URL
                                 self.pickedLivePhotos.append((imageURL, videoURL, livePhoto.size, livePhoto))
                                 alert.title = "正在压缩" + "\(self.pickedLivePhotos.count)/\(results.count)"
                                 if self.pickedLivePhotos.count == results.count {

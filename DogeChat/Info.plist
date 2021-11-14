@@ -2,6 +2,61 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>CFBundleIcons</key>
+	<dict>
+		<key>CFBundleAlternateIcons</key>
+		<dict>
+            <key>__海贼王</key>
+            <dict>
+                <key>CFBundleIconFiles</key>
+                <array>
+                    <string>__海贼王</string>
+                </array>
+            </dict>
+			<key>_海贼王2</key>
+			<dict>
+				<key>CFBundleIconFiles</key>
+				<array>
+					<string>_海贼王2</string>
+				</array>
+			</dict>
+			<key>_蜡笔小新</key>
+			<dict>
+				<key>CFBundleIconFiles</key>
+				<array>
+					<string>_蜡笔小新</string>
+				</array>
+			</dict>
+			<key>_小黄人</key>
+			<dict>
+				<key>CFBundleIconFiles</key>
+				<array>
+					<string>_小黄人</string>
+				</array>
+			</dict>
+			<key>_小黄人2</key>
+			<dict>
+				<key>CFBundleIconFiles</key>
+				<array>
+					<string>_小黄人2</string>
+				</array>
+			</dict>
+			<key>猫咪2</key>
+			<dict>
+				<key>CFBundleIconFiles</key>
+				<array>
+					<string>猫咪2</string>
+				</array>
+			</dict>
+			<key>_哆啦A梦</key>
+			<dict>
+				<key>CFBundleIconFiles</key>
+				<array>
+					<string>_哆啦A梦</string>
+				</array>
+			</dict>
+		</dict>
+	</dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
@@ -24,10 +79,10 @@
 	<string></string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
-    <key>NSUserActivityTypes</key>
-    <array>
-        <string>com.zhaoxiguang.dogechat</string>
-    </array>
+	<key>NSUserActivityTypes</key>
+	<array>
+		<string>com.zhaoxiguang.dogechat</string>
+	</array>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>

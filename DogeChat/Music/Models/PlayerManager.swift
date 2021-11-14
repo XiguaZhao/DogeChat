@@ -26,7 +26,7 @@ class PlayerManager: NSObject {
         willSet {
             guard newValue != playingMessage else { return }
             playingMessage?.isPlaying = false
-            if let chatVC = AppDelegate.shared.navigationController.visibleViewController as? ChatRoomViewController {
+            if let chatVC = AppDelegate.shared.navigationController?.visibleViewController as? ChatRoomViewController {
                 DispatchQueue.main.async {
                     chatVC.tableView.reloadData()
                 }
@@ -73,8 +73,8 @@ class PlayerManager: NSObject {
     var isPlaying = false {
         didSet {
             DispatchQueue.main.async {
-                miniPlayerView.toggle(begin: self.isPlaying)
-                miniPlayerView.changePlayPauseButton()
+//                miniPlayerView.toggle(begin: self.isPlaying)
+//                miniPlayerView.changePlayPauseButton()
             }
         }
     }

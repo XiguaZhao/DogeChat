@@ -9,12 +9,13 @@
 import Foundation
 import SwiftyJSON
 import DogeChatNetwork
+import DogeChatUniversal
 
 extension ContactsTableViewController: ContactTableViewCellDelegate, UIContextMenuInteractionDelegate {
     func avatarTapped(_ cell: ContactTableViewCell?, path: String) {
-        let browser = ImageBrowserViewController()
+        let browser = MediaBrowserViewController()
         browser.modalPresentationStyle = .fullScreen
-        browser.imagePaths = [WebSocketManager.url_pre + path]
+        browser.imagePaths = [path]
         self.navigationController?.present(browser, animated: true, completion: nil)
     }
     
@@ -37,10 +38,9 @@ extension ContactsTableViewController: ContactTableViewCellDelegate, UIContextMe
         avatarImageView.mas_updateConstraints { [weak self] make in
             make?.width.mas_equalTo()(self?.avatarImageView.mas_height)
         }
-        if #available(iOS 13.0, *) {
-            let interaction = UIContextMenuInteraction(delegate: self)
-            stackView.addInteraction(interaction)
-        }
+        let longPress = UILongPressGestureRecognizer(target: self, action: #selector(longPressRightButton(sender:)))
+        longPress.minimumPressDuration = 0.2
+        stackView.addGestureRecognizer(longPress)
         self.navigationItem.titleView = stackView
         DispatchQueue.main.async { [self] in
             if let bar = navigationController?.navigationBar {
@@ -53,11 +53,24 @@ extension ContactsTableViewController: ContactTableViewCellDelegate, UIContextMe
         stackView.addGestureRecognizer(tapAvatar)
     }
     
+    @objc func longPressRightButton(sender: UILongPressGestureRecognizer!) {
+        if sender.state == .began {
+            playHaptic()
+        }
+        guard sender.state == .ended else {
+            return
+        }
+        let browser = MediaBrowserViewController()
+        browser.imagePaths = [manager.messageManager.myAvatarUrl]
+        self.splitViewController?.present(browser, animated: true, completion: nil)
+        playHaptic()
+    }
+    
     @available(iOS 13.0, *)
     func contextMenuInteraction(_ interaction: UIContextMenuInteraction, configurationForMenuAtLocation location: CGPoint) -> UIContextMenuConfiguration? {
         return .init(identifier: nil) { [weak self] in
             guard let self = self else { return nil }
-            let browser = ImageBrowserViewController()
+            let browser = MediaBrowserViewController()
             browser.imagePaths = [self.manager.messageManager.myAvatarUrl]
             return browser
         } actionProvider: { _ in
@@ -67,7 +80,7 @@ extension ContactsTableViewController: ContactTableViewCellDelegate, UIContextMe
         
     @objc func updateMyAvatar(_ noti: Notification) {
         let url = noti.userInfo?["path"] as! String
-        ImageLoader.shared.requestImage(urlStr: url) { [self] image, data, _ in
+        MediaLoader.shared.requestImage(urlStr: url, type: .image, cookie: manager.cookie) { [self] image, data, _ in
             if url.hasSuffix(".gif") {
                 avatarImageView.animatedImage = FLAnimatedImage(gifData: data)
                 ContactTableViewCell.avatarCache[url] = data
@@ -85,23 +98,15 @@ extension ContactsTableViewController: ContactTableViewCellDelegate, UIContextMe
     }
     
     @objc func friendChangeAvatar(_ noti: Notification) {
-        let data = noti.userInfo?["data"] as! JSON
-        let username = data["username"].stringValue
-        let newAvatarUrl = data["avatarUrl"].stringValue
-        if let index = self.friends.firstIndex(where: { $0.username == username }) {
-            self.friends[index].avatarURL = newAvatarUrl
+        let friend = noti.userInfo?["friend"] as! Friend
+        if let index = self.friends.firstIndex(of: friend) {
+            self.friends[index].avatarURL = friend.avatarURL
             tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
-            if let chatVC = AppDelegate.shared.navigationController.visibleViewController as? ChatRoomViewController {
-                if chatVC.navigationItem.title == username {
-                    chatVC.tableView.reloadData()
-                } else if chatVC.navigationItem.title == "群聊" {
-                    let allMessage = chatVC.messages
-                    let messagesWhoChangeAvatar = allMessage.filter { $0.senderUsername == username }
-                    for message in messagesWhoChangeAvatar {
-                        message.avatarUrl = WebSocketManager.url_pre + newAvatarUrl
-                    }
-                    chatVC.tableView.reloadData()
+            if let chatVC = findChatRoomVC() {
+                for message in chatVC.messages where message.senderUserID == friend.userID {
+                    message.avatarUrl = friend.avatarURL
                 }
+                chatVC.tableView.reloadData()
             }
         }
     }

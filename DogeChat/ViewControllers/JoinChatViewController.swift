@@ -128,7 +128,7 @@ extension JoinChatViewController: UITextFieldDelegate {
         adapter = WebSocketManagerAdapter(manager: socketManager, username: username)
         manager = socketManager
         socketManager.commonWebSocket.httpRequestsManager.encrypt = EncryptMessage()
-        manager.commonWebSocket.httpRequestsManager.myName = username
+        manager.myInfo.username = username
         manager.commonWebSocket.httpRequestsManager.login(username: username, password: password) { [weak self] loginResult in
             if loginResult == "登录成功" {
                 let contactsTVC = ContactsTableViewController()
@@ -150,12 +150,14 @@ extension JoinChatViewController: UITextFieldDelegate {
                 contactsTVC.password = password
                 contactsTVC.navigationItem.title = username
                 self?.navigationController?.setViewControllers([contactsTVC], animated: true)
-                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                    contactsTVC.refreshContacts {
-                        socketForUsername(username).connect()
-                    }
-                    NotificationCenter.default.post(name: .updateMyAvatar, object: username, userInfo: ["path": socketForUsername(username).messageManager.myAvatarUrl])
-                }
+                contactsTVC.loginAndConnect()
+//                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+//                    contactsTVC.refreshContacts {
+//                        socketForUsername(username).connect()
+//                    }
+//                    NotificationCenter.default.post(name: .logined, object: username, userInfo: nil)
+//                    NotificationCenter.default.post(name: .updateMyAvatar, object: username, userInfo: ["path": socketForUsername(username).messageManager.myAvatarUrl])
+//                }
                 UserDefaults.standard.setValue(username, forKey: "lastUsername")
                 UserDefaults.standard.setValue(password, forKey: "lastPassword")
             } else {

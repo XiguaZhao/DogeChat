@@ -5,16 +5,6 @@ import DogeChatUniversal
 
 extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, SelectContactsDelegate {
     
-    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-        super.viewWillTransition(to: size, with: coordinator)
-        if !ChatRoomViewController.needRotate {
-            layoutViews(size: view.bounds.size)
-            tableView.reloadData()
-        }
-        self.messageInputBar.textViewResign()
-        dontLayout = false
-    }
-            
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return messages.count
     }
@@ -47,16 +37,16 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
     }
     
     func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        (cell as? MessageCollectionViewBaseCell)?.cleanEmojis()
-        (cell as? MessageCollectionViewImageCell)?.cleanAvatar()
-        (cell as? MessageCollectionViewImageCell)?.cleanAnimatedImageView()
+//        (cell as? MessageCollectionViewBaseCell)?.cleanEmojis()
+//        (cell as? MessageCollectionViewImageCell)?.cleanAvatar()
+//        (cell as? MessageCollectionViewImageCell)?.cleanAnimatedImageView()
         (cell as? DogeChatTableViewCell)?.endDisplayBlock?(cell as! DogeChatTableViewCell, tableView)
     }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        (cell as? MessageCollectionViewBaseCell)?.addEmojis()
-        (cell as? MessageCollectionViewBaseCell)?.loadAvatar()
-        (cell as? MessageCollectionViewImageCell)?.loadImageIfNeeded()
+//        (cell as? MessageCollectionViewBaseCell)?.addEmojis()
+//        (cell as? MessageCollectionViewBaseCell)?.loadAvatar()
+//        (cell as? MessageCollectionViewImageCell)?.loadImageIfNeeded()
         (cell as? DogeChatTableViewCell)?.willDisplayBlock?(cell as! DogeChatTableViewCell, tableView)
     }
     
@@ -86,9 +76,7 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
             guard let self = self else { return }
             handler(true)
             self.activeSwipeIndexPath = indexPath
-            let contactVC = SelectContactsViewController()
-            contactVC.username = self.username
-            contactVC.dataSourcea = self.contactVC
+            let contactVC = SelectContactsViewController(username: self.username)
             contactVC.modalPresentationStyle = .formSheet
             contactVC.delegate = self
             self.present(contactVC, animated: true)
@@ -139,60 +127,61 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
     }
         
     //MARK: ContextMune
-//    @available(iOS 13.0, *)
-//    func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
-//        let cell = tableView.cellForRow(at: indexPath) as! MessageCollectionViewBaseCell
-//        let identifier = "\(indexPath.row)" as NSString
-//        if let cell = cell as? MessageCollectionViewImageCell {
-//            let convert = tableView.convert(point, to: cell.livePhotoView)
-//            if cell.livePhotoView.bounds.contains(convert) {
-//                return nil
-//            }
-//        }
-//        return UIContextMenuConfiguration(identifier: identifier, previewProvider: nil
-//        ) { [weak self, weak cell] (menuElement) -> UIMenu? in
-//            guard let self = self, let cell = cell else { return nil }
-//            let copyAction = UIAction(title: "复制") { (_) in
-//                if let textCell = cell as? MessageCollectionViewTextCell {
-//                    let text = textCell.messageLabel.text
-//                    UIPasteboard.general.string = text
-//                }
-//            }
-//            var revokeAction: UIAction?
-//            var starEmojiAction: UIAction?
-//            var addBackgroundColorAction: UIAction?
-//            if self.messages[indexPath.row].messageSender == .ourself && self.messages[indexPath.row].messageType != .join {
-//                revokeAction = UIAction(title: "撤回") { [weak self] (_) in
-//                    guard let self = self else { return }
-//                    self.revoke(message: self.messages[indexPath.row])
-//                }
-//            }
-//            if let imageUrl = cell.message.imageURL, cell.message.sendStatus == .success {
-//                starEmojiAction = UIAction(title: "收藏表情") { [weak self] (_) in
-//                    let isGif = imageUrl.hasSuffix(".gif")
-//                    self?.manager.starAndUploadEmoji(filePath: imageUrl, isGif: isGif)
-//                }
-//            }
-//            if #available(iOS 14.0, *) {
-//                if cell.message.messageType == .draw, let pkView = (cell as? MessageCollectionViewDrawCell)?.getPKView() {
-//                    addBackgroundColorAction = UIAction(title: "添加背景颜色") { _ in
-//                        pkView.backgroundColor = .lightGray
-//                    }
-//                }
-//            }
-//            let multiSelect = UIAction(title: "多选") { [weak self] _ in
-//                guard let self = self else { return }
-//                self.makeMultiSelection(indexPath)
-//            }
-//            var children: [UIAction] = [copyAction, multiSelect]
-//            if revokeAction != nil { children.append(revokeAction!) }
-//            if starEmojiAction != nil { children.append(starEmojiAction!) }
-//            if addBackgroundColorAction != nil { children.append(addBackgroundColorAction!) }
-//            let menu = UIMenu(title: "", image: nil, children: children)
-//            return menu
-//        }
-//    }
-    
+#if targetEnvironment(macCatalyst)
+    @available(iOS 13.0, *)
+    func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+        let cell = tableView.cellForRow(at: indexPath) as! MessageCollectionViewBaseCell
+        let identifier = "\(indexPath.row)" as NSString
+        if let cell = cell as? MessageCollectionViewImageCell {
+            let convert = tableView.convert(point, to: cell.livePhotoView)
+            if cell.livePhotoView.bounds.contains(convert) {
+                return nil
+            }
+        }
+        return UIContextMenuConfiguration(identifier: identifier, previewProvider: nil
+        ) { [weak self, weak cell] (menuElement) -> UIMenu? in
+            guard let self = self, let cell = cell else { return nil }
+            let copyAction = UIAction(title: "复制") { (_) in
+                if let textCell = cell as? MessageCollectionViewTextCell {
+                    let text = textCell.messageLabel.text
+                    UIPasteboard.general.string = text
+                }
+            }
+            var revokeAction: UIAction?
+            var starEmojiAction: UIAction?
+            var addBackgroundColorAction: UIAction?
+            if self.messages[indexPath.row].messageSender == .ourself && self.messages[indexPath.row].messageType != .join {
+                revokeAction = UIAction(title: "撤回") { [weak self] (_) in
+                    guard let self = self else { return }
+                    self.revoke(message: self.messages[indexPath.row])
+                }
+            }
+            if let imageUrl = cell.message.imageURL, cell.message.sendStatus == .success {
+                starEmojiAction = UIAction(title: "收藏表情") { [weak self] (_) in
+                    let isGif = imageUrl.hasSuffix(".gif")
+                    self?.manager.starAndUploadEmoji(filePath: imageUrl, isGif: isGif)
+                }
+            }
+            if #available(iOS 13.0, *) {
+                if cell.message.messageType == .draw, let pkView = (cell as? MessageCollectionViewDrawCell)?.getPKView() {
+                    addBackgroundColorAction = UIAction(title: "添加背景颜色") { _ in
+                        pkView.backgroundColor = .lightGray
+                    }
+                }
+            }
+            let multiSelect = UIAction(title: "多选") { [weak self] _ in
+                guard let self = self else { return }
+                self.makeMultiSelection(indexPath)
+            }
+            var children: [UIAction] = [copyAction, multiSelect]
+            if revokeAction != nil { children.append(revokeAction!) }
+            if starEmojiAction != nil { children.append(starEmojiAction!) }
+            if addBackgroundColorAction != nil { children.append(addBackgroundColorAction!) }
+            let menu = UIMenu(title: "", image: nil, children: children)
+            return menu
+        }
+    }
+#endif
     func makeMultiSelection(_ indexPath: IndexPath? = nil) {
         tableView.allowsMultipleSelection = true
         tableView.allowsMultipleSelectionDuringEditing = true
@@ -206,15 +195,13 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
     @objc func cancelItemAction() {
         activeSwipeIndexPath = nil
         tableView.setEditing(false, animated: true)
-        navigationItem.setRightBarButtonItems(nil, animated: true)
+        makeDetailRightBarButton()
         tableView.indexPathsForVisibleRows?.forEach { tableView.deselectRow(at: $0, animated: true) }
     }
         
     @objc func didFinishMultiSelection(_ button: UIBarButtonItem) {
-        let selectContactsVC = SelectContactsViewController()
-        selectContactsVC.username = username
+        let selectContactsVC = SelectContactsViewController(username: username)
         selectContactsVC.delegate = self
-        selectContactsVC.dataSourcea = self.contactVC
         selectContactsVC.modalPresentationStyle = .popover
         selectContactsVC.preferredContentSize = CGSize(width: 300, height: 400)
         let popover = selectContactsVC.popoverPresentationController

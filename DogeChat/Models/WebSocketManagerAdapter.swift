@@ -11,10 +11,18 @@ import DogeChatNetwork
 import SwiftyJSON
 import DogeChatUniversal
 
+func playSound(needSound: Bool = true) {
+    if UIApplication.shared.applicationState == .active {
+        if needSound {
+            AudioServicesPlaySystemSound(1015)
+        }
+    }
+}
+
 class WebSocketManagerAdapter: NSObject {
     
     var username = ""
-    var sceneDelegate: Any!
+    weak var sceneDelegate: AnyObject!
     @objc static var usernameToAdapter = [String : WebSocketManagerAdapter]()
     weak var manager: WebSocketManager!
     @objc var readyToSendVideoData = false {
@@ -38,6 +46,17 @@ class WebSocketManagerAdapter: NSObject {
         }
     }
     
+    var chatRoom: ChatRoomViewController? {
+        if let nav = navigationController {
+            for vc in nav.viewControllers {
+                if let chatVC = vc as? ChatRoomViewController {
+                    return chatVC
+                }
+            }
+        }
+        return nil
+    }
+    
     convenience init(manager: WebSocketManager, username: String) {
         self.init()
         self.manager = manager
@@ -55,7 +74,6 @@ class WebSocketManagerAdapter: NSObject {
         NotificationCenter.default.addObserver(self, selector: #selector(sendToken(noti:)), name: .sendToken, object: username)
         NotificationCenter.default.addObserver(self, selector: #selector(startCall(noti:)), name: .startCall, object: username)
         NotificationCenter.default.addObserver(self, selector: #selector(preloadEmojiPaths(noti:)), name: .preloadEmojiPaths, object: username)
-        NotificationCenter.default.addObserver(self, selector: #selector(receiveUnreadMessage(_:)), name: .receiveUnreadMessage, object: username)
         NotificationCenter.default.addObserver(self, selector: #selector(playSound(_:)), name: .playSound, object: username)
         NotificationCenter.default.addObserver(self, selector: #selector(voiceChatAccept(noti:)), name: .voiceChatAccept, object: username)
         NotificationCenter.default.addObserver(self, selector: #selector(endVoiceChat(_:)), name: .endVoiceChat, object: username)
@@ -68,16 +86,9 @@ class WebSocketManagerAdapter: NSObject {
         if let mute = noti.userInfo?["mute"] as? Bool, mute == true {
             needSound = false
         }
-        playSound(needSound: needSound)
+        DogeChat.playSound(needSound: needSound)
     }
     
-    public func playSound(needSound: Bool = true) {
-        if UIApplication.shared.applicationState == .active {
-            if needSound {
-                AudioServicesPlaySystemSound(1015)
-            }
-        }
-    }
     
     @objc func emojiPathsFetched(noti: Notification) {
         let pathToID = noti.userInfo as! [String : String]
@@ -98,10 +109,14 @@ class WebSocketManagerAdapter: NSObject {
     
     @objc func preloadEmojiPaths(noti: Notification) {
         if !AppDelegate.shared.launchedByPushAction {
-            manager.getEmojis { [weak self] (paths) in
-                self?.manager.commonWebSocket.httpRequestsManager.emojiPaths = paths
+            manager.getEmojis { (paths) in
+                HttpRequestsManager.emojiPaths = paths
             }
         }
+    }
+    
+    deinit {
+        print("adapterDeinit")
     }
     
     @objc func receiveVoiceData(_ noti: Notification) {
@@ -111,35 +126,7 @@ class WebSocketManagerAdapter: NSObject {
         }
         Recorder.sharedInstance().receivedData?.append(data)
     }
-        
-    @objc func receiveUnreadMessage(_ noti: Notification) {
-        let userInfo = noti.userInfo!
-        let newMessages = userInfo["messages"] as! [Message]
-        let isPublic = userInfo["isPublic"] as! Bool
-        if let chatVC = navigationController?.topViewController as? ChatRoomViewController { // 当前在聊天页面
-            let vcTitle = chatVC.navigationItem.title
-            if isPublic && vcTitle == "群聊" { // 是群聊直接插入
-                chatVC.insertNewMessageCell(newMessages)
-            } else { // newMessages中包含了多个联系人，属于当前聊天界面的插入，不属于的发通知给ContactTVC更新小红点
-                for message in newMessages {
-                    let friendName = message.messageSender == .ourself ? message.receiver : message.senderUsername
-                    if message.option == chatVC.messageOption && friendName == vcTitle {
-                        chatVC.insertNewMessageCell([message])
-                    } else {
-                        manager.postNotification(message: message)
-                    }
-                }
-            }
-        } else {
-            for message in newMessages {
-                manager.postNotification(message: message)
-            }
-        }
-        if newMessages.filter({$0.messageSender == .someoneElse}).count != 0 {
-            playSound()
-        }
-    }
-    
+            
     @objc func voiceChatAccept(noti: Notification) {
         Recorder.sharedInstance().delegate = self
         Recorder.sharedInstance().startRecordAndPlay()
@@ -172,7 +159,7 @@ class WebSocketManagerAdapter: NSObject {
     }
     
     func getDrawCell(for message: Message) -> MessageCollectionViewDrawCell? {
-        guard let chatVC = AppDelegate.shared.navigationController.visibleViewController as? ChatRoomViewController else { return nil }
+        guard let chatVC = AppDelegate.shared.navigationController?.visibleViewController as? ChatRoomViewController else { return nil }
         if let cells = chatVC.tableView.visibleCells as? [MessageCollectionViewBaseCell] {
             if let index = cells.firstIndex(where: { $0.message == message }) {
                 return cells[index] as? MessageCollectionViewDrawCell
@@ -185,7 +172,7 @@ class WebSocketManagerAdapter: NSObject {
         guard let json = noti.userInfo?["json"] as? JSON else { return }
         let uuid = json["uuid"].stringValue
         let _ = json["sender"].stringValue
-        if #available(iOS 14.0, *) {
+        if #available(iOS 13.0, *) {
             guard let targetMessage = manager.messageManager.drawMessages.first(where: { $0.uuid == uuid} ) else { return }
             if let base64Str = json["base64Str"].string {
                 guard let strokeData = Data(base64Encoded: base64Str) else { return }

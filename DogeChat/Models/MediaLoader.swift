@@ -8,29 +8,33 @@
 
 import Foundation
 import UIKit
+import DogeChatUniversal
 
-class ImageLoader: NSObject, URLSessionDownloadDelegate {
-    static let shared = ImageLoader()
+class MediaLoader: NSObject, URLSessionDownloadDelegate {
+    static let shared = MediaLoader()
     var cookie: String?
     struct ImageRequest {
-        let completionHandler: ((UIImage?, Data, URL) -> Void)?
+        let type: MessageType
+        let completionHandler: ((UIImage?, Data?, URL) -> Void)?
         let progressBlock: ((Double) -> Void)?
     }
     
     var downloadingInfos = [String: [ImageRequest]]()
     
     let lock = NSLock()
-    
     lazy var session: URLSession = {
         let config = URLSessionConfiguration.background(withIdentifier: "com.dogechat.imageloader")
         config.httpMaximumConnectionsPerHost = 20
         config.timeoutIntervalForRequest = 600
-        let sesssion = URLSession(configuration: URLSessionConfiguration.default, delegate: self, delegateQueue: nil)
+        let sesssion = URLSession(configuration: config, delegate: self, delegateQueue: nil)
         
         return sesssion
     }()
     
-    func requestImage(urlStr: String, syncIfCan: Bool = false, completion: ((UIImage?, Data, URL) -> Void)? = nil, progress: ((Double) -> Void)? = nil) {
+    func requestImage(urlStr: String, type: MessageType, cookie: String? = nil, syncIfCan: Bool = false, completion: ((UIImage?, Data?, URL) -> Void)? = nil, progress: ((Double) -> Void)? = nil) {
+        if urlStr.isEmpty {
+            return
+        }
         let ip = "121.5.152.193"
         var newURLStr = urlStr
         newURLStr = newURLStr.replacingOccurrences(of: "procwq.top", with: ip)
@@ -39,13 +43,27 @@ class ImageLoader: NSObject, URLSessionDownloadDelegate {
         }
         guard let url = URL(string: newURLStr) else { return }
         var fileName = url.lastPathComponent
+        if fileName.isEmpty {
+            return
+        }
         fileName = fileName.replacingOccurrences(of: "%2B", with: "+")
-        if let localURL = fileURLAt(dirName: photoDir, fileName: fileName) {
+        if let localURL = fileURLAt(dirName: dirName(for: type), fileName: fileName) {
             let block = {
-                let data = try! Data(contentsOf: localURL)
-                self.lock.lock()
-                let image = UIImage(data: data)
-                self.lock.unlock()
+                var data: Data?
+                var image: UIImage?
+                if type == .image {
+                    data = try? Data(contentsOf: localURL)
+                    if let data = data {
+                        self.lock.lock()
+                        image = UIImage(data: data)
+                        self.lock.unlock()
+                    }
+                    if image == nil, let localURL = fileURLAt(dirName: photoDir, fileName: fileName) {
+                        try? FileManager.default.removeItem(at: localURL)
+                        self.requestImage(urlStr: urlStr, type: type, cookie: cookie, syncIfCan: syncIfCan, completion: completion, progress: progress)
+                        return
+                    }
+                }
                 syncOnMainThread {
                     completion?(image, data, localURL)
                 }
@@ -62,13 +80,14 @@ class ImageLoader: NSObject, URLSessionDownloadDelegate {
             syncOnMainThread {
                 let requestUrl = URL(string: "https://121.5.152.193/star/fileDownload/\(url.lastPathComponent.replacingOccurrences(of: "+", with: "%2B"))")!
                 var request = URLRequest(url: requestUrl)
-                if let cookie = cookie, !cookie.isEmpty {
+                let _cookie = cookie ?? self.cookie
+                if let cookie = _cookie, !cookie.isEmpty {
                     request.setValue("SESSION="+cookie, forHTTPHeaderField: "Cookie")
                     if downloadingInfos[fileName] != nil {
-                        downloadingInfos[fileName]?.append(ImageRequest(completionHandler: completion, progressBlock: progress))
+                        downloadingInfos[fileName]?.append(ImageRequest(type: type, completionHandler: completion, progressBlock: progress))
                         return
                     }
-                    downloadingInfos[fileName] = [ImageRequest(completionHandler: completion, progressBlock: progress)]
+                    downloadingInfos[fileName] = [ImageRequest(type: type, completionHandler: completion, progressBlock: progress)]
                     session.downloadTask(with: request).resume()
                 }
             }
@@ -81,7 +100,7 @@ class ImageLoader: NSObject, URLSessionDownloadDelegate {
             if let url = task.originalRequest?.url {
                 let fileName = url.lastPathComponent.replacingOccurrences(of: "%2B", with: "+")
                 let removed = downloadingInfos.remove(key: fileName)
-                requestImage(urlStr: url.absoluteString, completion: nil, progress: nil)
+                requestImage(urlStr: url.absoluteString, type: removed?.first?.type ?? .image, completion: nil, progress: nil)
                 if let removed = removed {
                     downloadingInfos[fileName] = removed
                 }
@@ -91,16 +110,26 @@ class ImageLoader: NSObject, URLSessionDownloadDelegate {
     
     func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
         guard let sourceURL = downloadTask.originalRequest?.url else { return }
-        guard let data = try? Data(contentsOf: location) else { return }
-        let image = UIImage(data: data)
         let fileName = sourceURL.lastPathComponent.replacingOccurrences(of: "%2B", with: "+")
-        DispatchQueue.global().async {
-            saveFileToDisk(dirName: photoDir, fileName: fileName, data: data)
-            syncOnMainThread {
-                self.downloadingInfos.remove(key: fileName)?.forEach( { request in
-                    request.completionHandler?(image, data, fileURLAt(dirName: photoDir, fileName: fileName)!)
-                })
+        guard (downloadTask.response as? HTTPURLResponse)?.statusCode ?? 0 == 200, let type = downloadingInfos[fileName]?.first?.type else  {
+            downloadingInfos.removeValue(forKey: fileName)
+            return
+        }
+        var data: Data!
+        var image: UIImage?
+        if type == .image {
+            if let _data = try? Data(contentsOf: location) {
+                data = _data
+                image = UIImage(data: data)
             }
+        }
+        let dirName = self.dirName(for: type)
+        let destination = createDir(name: dirName).appendingPathComponent(fileName)
+        try? FileManager.default.moveItem(at: location, to: destination)
+        syncOnMainThread {
+            self.downloadingInfos.remove(key: fileName)?.forEach( { request in
+                request.completionHandler?(image, data, fileURLAt(dirName: dirName, fileName: fileName)!)
+            })
         }
     }
     
@@ -108,9 +137,11 @@ class ImageLoader: NSObject, URLSessionDownloadDelegate {
         let progress = Double(totalBytesWritten) / Double(totalBytesExpectedToWrite)
         guard let sourceURL = downloadTask.originalRequest?.url else { return }
         let fileName = sourceURL.lastPathComponent.replacingOccurrences(of: "%2B", with: "+")
-        downloadingInfos[fileName]?.forEach( {
-            $0.progressBlock?(progress)
-        })
+        syncOnMainThread {
+            downloadingInfos[fileName]?.forEach( {
+                $0.progressBlock?(progress)
+            })
+        }
     }
     
     func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
@@ -120,5 +151,21 @@ class ImageLoader: NSObject, URLSessionDownloadDelegate {
     
     func urlSessionDidFinishEvents(forBackgroundURLSession session: URLSession) {
         NotificationCenter.default.post(name: .backgroundSessionFinish, object: session)
+    }
+    
+    func dirName(for type: MessageType) -> String {
+        let dirName: String
+        if type == .voice {
+            dirName = voiceDir
+        } else if type == .video {
+            dirName = videoDir
+        } else if type == .livePhoto {
+            dirName = livePhotoDir
+        } else if type == .draw {
+            dirName = drawDir
+        } else {
+            dirName = photoDir
+        }
+        return dirName
     }
 }

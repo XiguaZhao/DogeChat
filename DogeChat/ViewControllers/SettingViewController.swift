@@ -12,6 +12,7 @@ import DogeChatUniversal
 
 enum SettingType {
     case shortcut
+    case changeIcon
     case doNotDisturb
     case selectHost
     case wsAddress
@@ -20,17 +21,17 @@ enum SettingType {
     case customBlur
     case forceDarkMode
     case logout
+    case browseFiles
 }
 
-class SettingViewController: DogeChatViewController, DatePickerChangeDelegate, UITableViewDataSource, UITableViewDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+class SettingViewController: DogeChatViewController, DatePickerChangeDelegate, UITableViewDataSource, UITableViewDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, DogeChatVCTableDataSource {
     
     var logoutButton: UIBarButtonItem!
     
-    let settingOptions = ["快捷操作", "毛玻璃强制暗黑", "播放时沉浸", "自定义毛玻璃", "勿扰模式", "自定义host", "自定义ws地址", "重置host&ws", "退出登录"]
-    let settingTypes: [SettingType] = [.shortcut, .forceDarkMode, .switchImmersive, .customBlur, .doNotDisturb, .selectHost, .wsAddress, .resetHostAndWs, .logout]
-    let tableView = DogeChatTableView()
+    let settingOptions = ["快捷操作", "修改图标", "毛玻璃强制暗黑", "播放时沉浸", "自定义毛玻璃", "勿扰模式", "自定义host", "自定义ws地址", "重置host&ws", "查看文件", "退出登录"]
+    let settingTypes: [SettingType] = [.shortcut, .changeIcon, .forceDarkMode, .switchImmersive, .customBlur, .doNotDisturb, .selectHost, .wsAddress, .resetHostAndWs, .browseFiles, .logout]
+    var tableView = DogeChatTableView()
     var customBlurSwitcher: UISwitch!
-    var username = ""
     var manager: WebSocketManager {
         socketForUsername(username)
     }
@@ -44,7 +45,7 @@ class SettingViewController: DogeChatViewController, DatePickerChangeDelegate, U
         }
         tableView.separatorStyle = .none
         tableView.backgroundColor = .clear
-        tableView.register(SettingCell.self, forCellReuseIdentifier: SettingCell.cellID)
+        tableView.register(DogeChatTableViewCell.self, forCellReuseIdentifier: DogeChatTableViewCell.cellID())
         tableView.delegate = self
         tableView.dataSource = self
     }
@@ -55,7 +56,7 @@ class SettingViewController: DogeChatViewController, DatePickerChangeDelegate, U
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        miniPlayerView.processHidden(for: self)
+//        miniPlayerView.processHidden(for: self)
     }
 
     @objc func logout() {
@@ -133,13 +134,18 @@ class SettingViewController: DogeChatViewController, DatePickerChangeDelegate, U
             break
         case .logout:
             logout()
+        case .browseFiles:
+            navigationController?.pushViewController(FileBrowerVC(), animated: true)
+        case .changeIcon:
+            navigationController?.pushViewController(ChangeIconVC(), animated: true)
         }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: SettingCell.cellID) as! SettingCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: DogeChatTableViewCell.cellID()) as! DogeChatTableViewCell
         cell.backgroundColor = .clear
         cell.textLabel?.text = settingOptions[indexPath.row]
+        cell.accessoryView = nil
         if settingTypes[indexPath.row] == .switchImmersive {
             let switcher = UISwitch()
             switcher.addTarget(self, action: #selector(immersiveSwitchAction(_:)), for: .valueChanged)

@@ -9,6 +9,8 @@
 import UIKit
 
 class DogeChatTextView: UITextView, UITextPasteDelegate {
+    
+    var isActive = false
 
     override init(frame: CGRect, textContainer: NSTextContainer?) {
         super.init(frame: frame, textContainer: textContainer)
@@ -27,7 +29,13 @@ class DogeChatTextView: UITextView, UITextPasteDelegate {
         if isMac() {
             (self.superview as? MessageInputView)?.frameDown()
         }
+        isActive = true
         return super.becomeFirstResponder()
+    }
+    
+    override func resignFirstResponder() -> Bool {
+        isActive = false
+        return super.resignFirstResponder()
     }
     
     @objc func forceDarkMode(noti: Notification) {

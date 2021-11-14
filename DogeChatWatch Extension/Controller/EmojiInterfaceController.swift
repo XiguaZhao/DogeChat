@@ -59,7 +59,7 @@ class EmojiInterfaceController: WKInterfaceController {
                 } else {
                     row.rightPath = emojiPath
                 }
-                ImageLoader.shared.requestImage(urlStr: emojiPath, syncIfCan: false, completion: { image, data, _ in
+                MediaLoader.shared.requestImage(urlStr: emojiPath, type: .image, syncIfCan: false, completion: { image, data, _ in
                     guard let image = image else { return }
                     DispatchQueue.global(qos: .userInteractive).async {
                         let compressed = compressEmojis(image)

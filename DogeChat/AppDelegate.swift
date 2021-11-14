@@ -40,7 +40,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             providerDelegate.username = username
         }
     }
-    var navigationController: UINavigationController!
+    weak var navigationController: UINavigationController?
     var tabBarController: UITabBarController!
     var splitViewController: UISplitViewController!
     var providerDelegate: ProviderDelegate!
@@ -112,6 +112,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         isIOS = false
         #endif
         DispatchQueue.global().async {
+            SelectShortcutTVC.updateShortcuts()
             guard let files = try? FileManager.default.contentsOfDirectory(atPath: NSTemporaryDirectory()) else { return }
             for fileName in files {
                 if fileName.isImageOrVideoOrVoice() {
@@ -173,24 +174,24 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return UISceneConfiguration(name: "Default Configuration", sessionRole: connectingSceneSession.role)
     }
     
-    func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {
-        if isPad() {
-            return .all
-        } else {
-            if #available(iOS 14.0, *) {
-                if ChatRoomViewController.needRotate {
-                    return .landscape
-                } else {
-                    if let browser =  navigationController?.visibleViewController as? ImageBrowserViewController {
-                        return browser.canRotate ? .all : .portrait
-                    }
-                    return .portrait
-                }
-            } else {
-                return .portrait
-            }
-        }
-    }
+//    func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {
+//        if isPad() {
+//            return .all
+//        } else {
+//            if #available(iOS 14.0, *) {
+//                if ChatRoomViewController.needRotate {
+//                    return .landscape
+//                } else {
+//                    if let browser =  navigationController?.visibleViewController as? ImageBrowserViewController {
+//                        return browser.canRotate ? .all : .portrait
+//                    }
+//                    return .portrait
+//                }
+//            } else {
+//                return .portrait
+//            }
+//        }
+//    }
     
     private func sizeFor(side: SplitVCSide, username: String?) -> CGSize {
         let splitViewController: UISplitViewController
@@ -231,7 +232,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             contactVC.username = username
             contactVC.password = password
             self.contactVC = contactVC
-            self.navigationController.viewControllers = [contactVC]
+            self.navigationController?.viewControllers = [contactVC]
             isLoginInProgress = true
             socketManager.commonWebSocket.httpRequestsManager.login(username: username, password: password) { [self]
                 (loginResult) in
@@ -249,7 +250,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 contactVC.loginSuccess = true
             }
         } else {
-            self.navigationController.viewControllers = [JoinChatViewController()]
+            self.navigationController?.viewControllers = [JoinChatViewController()]
         }
     }
     
@@ -304,7 +305,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         if shouldReLogin {
             reloginFunc()
         }
-        if (self.navigationController).topViewController?.title == "JoinChatVC" { return }
+        if self.navigationController?.topViewController?.title == "JoinChatVC" { return }
         guard !socketManager.messageManager.cookie.isEmpty else {
             return
         }
@@ -319,7 +320,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         lastAppEnterBackgroundTime = NSDate().timeIntervalSince1970
         guard !callManager.hasCall() else { return }
         socketManager.disconnect()
-        socketManager.commonWebSocket.invalidatePingTimer()
     }
     
     func application(_ application: UIApplication, performActionFor shortcutItem: UIApplicationShortcutItem, completionHandler: @escaping (Bool) -> Void) {
@@ -455,7 +455,6 @@ extension AppDelegate: PKPushRegistryDelegate {
         guard let intent = userActivity.interaction?.intent as? INStartAudioCallIntent,
               let name = intent.contacts?.first?.personHandle?.value else { return false }
         let uuid = UUID().uuidString
-        socketManager.tapFromSystemPhoneInfo = (name, uuid)
         return true
     }
     
@@ -470,7 +469,7 @@ extension AppDelegate: VoiceDelegate {
 extension AppDelegate: FloatWindowTouchDelegate {
     func tapPush(_ window: FloatWindow!, sender: String, content: String) {
         self.tabBarController.selectedViewController = navigationController
-        if let contactVC = navigationController.viewControllers.first as? ContactsTableViewController,
+        if let contactVC = navigationController?.viewControllers.first as? ContactsTableViewController,
            let index = contactVC.usernames.firstIndex(of: sender) {
             contactVC.tableView(contactVC.tableView, didSelectRowAt: IndexPath(row: index, section: 0))
         }
@@ -484,7 +483,7 @@ extension AppDelegate: FloatWindowTouchDelegate {
             call.end()
             callManager.end(call: call)
             #if !targetEnvironment(macCatalyst)
-            if let videoVC = self.navigationController.visibleViewController as? VideoChatViewController {
+            if let videoVC = self.navigationController?.visibleViewController as? VideoChatViewController {
                 videoVC.dismiss()
             }
             #endif

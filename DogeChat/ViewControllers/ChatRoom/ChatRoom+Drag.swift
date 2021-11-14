@@ -15,7 +15,7 @@ extension ChatRoomViewController: UITableViewDragDelegate {
         guard message.messageType == .image || message.messageType == .text || message.messageType == .draw || message.messageType == .voice || message.messageType == .video else { return [] }
         var items = [UIDragItem]()
         if message.messageType == .text {
-            let str = message.message as NSString
+            let str = message.text as NSString
             let item = UIDragItem(itemProvider: NSItemProvider(object: str))
             items.append(item)
         } else if message.messageType == .image || message.messageType == .voice || message.messageType == .video {

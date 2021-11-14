@@ -10,11 +10,10 @@ import UIKit
 import DogeChatUniversal
 import DogeChatNetwork
 
-class SearchMusicViewController: DogeChatViewController {
+class SearchMusicViewController: DogeChatViewController, DogeChatVCTableDataSource {
     let searchBar = UISearchBar()
-    let tableView = DogeChatTableView()
+    var tableView = DogeChatTableView()
     var page = 1
-    var username = ""
     
     var country: TrackCountry = .US
     

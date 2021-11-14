@@ -45,15 +45,14 @@ enum PlayListVCType {
 
 let allPlayListTypes: [PlayListType] = [.allFavorite, .allDownloaded, .qq, .netease, .migu]
 
-class PlayListViewController: DogeChatViewController, SelectContactsDelegate {
-    let tableView = DogeChatTableView()
+class PlayListViewController: DogeChatViewController, SelectContactsDelegate, DogeChatVCTableDataSource {
+    var tableView = DogeChatTableView()
     var editButton: UIBarButtonItem!
     var playListType: PlayListType = .allFavorite {
         didSet {
             
         }
     }
-    var username = ""
     var manager: WebSocketManager {
         return socketForUsername(username)
     }
@@ -96,7 +95,7 @@ class PlayListViewController: DogeChatViewController, SelectContactsDelegate {
                 make?.edges.equalTo()(self?.view)
             }
         case .share:
-            AppDelegate.shared.navigationController.interactivePopGestureRecognizer?.isEnabled = false
+            AppDelegate.shared.navigationController?.interactivePopGestureRecognizer?.isEnabled = false
             tableView.allowsMultipleSelection = true
             tableView.allowsMultipleSelectionDuringEditing = true
             let toolBar = UIToolbar()
@@ -127,7 +126,7 @@ class PlayListViewController: DogeChatViewController, SelectContactsDelegate {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         if type == .normal {
-            miniPlayerView.processHidden(for: self)
+//            miniPlayerView.processHidden(for: self)
         }
         if type == .share || type == .miniPlayer {
             if let index = tracks.firstIndex(where: { $0.isPlaying }) {
@@ -224,7 +223,7 @@ class PlayListViewController: DogeChatViewController, SelectContactsDelegate {
         tableView.allowsMultipleSelectionDuringEditing = true
         tableView.allowsMultipleSelection = true
         tableView.setEditing(!tableView.isEditing, animated: true)
-        miniPlayerView.isHidden = tableView.isEditing
+//        miniPlayerView.isHidden = tableView.isEditing
         navigationController?.setToolbarHidden(!tableView.isEditing, animated: true)
         let allSelect = UIBarButtonItem(title: "全选", style: .plain, target: self, action: #selector(allSelectAction(_:)))
         let downloadButton = UIBarButtonItem(title: "下载", style: .plain, target: self, action: #selector(downloadMulti(_:)))
@@ -274,10 +273,8 @@ class PlayListViewController: DogeChatViewController, SelectContactsDelegate {
         guard let indexPaths = indexPaths else { return }
         self.selectedTracks = indexPaths.map { tracks[$0.row] }
         
-        let selectContactsVC = SelectContactsViewController()
-        selectContactsVC.username = username
+        let selectContactsVC = SelectContactsViewController(username: username)
         selectContactsVC.delegate = self
-        selectContactsVC.dataSourcea = contactVC()
         selectContactsVC.modalPresentationStyle = .formSheet
 
         present(selectContactsVC, animated: true, completion: nil)
@@ -309,15 +306,7 @@ class PlayListViewController: DogeChatViewController, SelectContactsDelegate {
                                           messageType: .track,
                                           tracks: tracks)
                     socketForUsername(self.username).commonWebSocket.sendWrappedMessage(message)
-                    if #available(iOS 13, *) {
-                        if let chatVC = (self.view.window?.windowScene?.delegate as? SceneDelegate)?.navigationController.visibleViewController as? ChatRoomViewController {
-                            chatVC.insertNewMessageCell([message])
-                        }
-                    } else {
-                        if let chatVC = AppDelegate.shared.navigationController?.visibleViewController as? ChatRoomViewController {
-                            chatVC.insertNewMessageCell([message])
-                        }
-                    }
+                    (self.splitViewController as? DogeChatSplitViewController)?.findContactVC()?.receiveNewMessages([message], isGroup: message.option == .toGroup)
                 }
                 self.makeAutoAlert(message: "发送成功", detail: nil, showTime: 0.2) {
                     self.dismiss(animated: true, completion: nil)
@@ -501,7 +490,7 @@ extension PlayListViewController: UITableViewDelegate, UITableViewDataSource {
             }
             if type == .normal {
                 reloadData()
-                miniPlayerView.isHidden = false
+//                miniPlayerView.isHidden = false
             } else {
                 tableView.reloadData()
             }

@@ -71,7 +71,7 @@ class MessageCollectionViewTextCell: MessageCollectionViewBaseCell {
     override func apply(message: Message) {
         super.apply(message: message)
         if message.messageType == .text || message.messageType == .join {
-            messageLabel.text = message.message
+            messageLabel.text = message.text
         } else if message.messageType == .voice {
             var count = message.voiceDuration
             count = min(count, 25)
@@ -145,18 +145,13 @@ class MessageCollectionViewTextCell: MessageCollectionViewBaseCell {
             url = _url
             block()
         } else {
-            let fileName = self.message.voiceURL!.components(separatedBy: "/").last!
             if !message.isDownloading {
                 message.isDownloading = true
-                let _ = session.get(url_pre + message.voiceURL!, parameters: nil, headers: nil, progress: { progress in
-                    self.delegate?.downloadProgressUpdate(progress: progress, message: captured)
-                }, success: { [weak self] task, data in
-                    guard let data = data as? Data else { return }
-                    saveFileToDisk(dirName: voiceDir, fileName: fileName, data: data)
+                MediaLoader.shared.requestImage(urlStr: message.voiceURL!, type: .voice, cookie: manager.cookie, syncIfCan: true) { [weak self] _, _, localURL in
                     captured.isDownloading = false
                     self?.delegate?.downloadSuccess(message: captured)
-                }) { task, error in
-                    print(error)
+                } progress: { progress in
+                    self.delegate?.downloadProgressUpdate(progress: progress, message: captured)
                 }
             }
         }

@@ -8,9 +8,11 @@
 
 import UIKit
 import DogeChatNetwork
+import DACircularProgress
 
 protocol EmojiSelectCellLongPressDelegate: AnyObject {
     func didLongPressEmojiCell(_ cell: EmojiCollectionViewCell)
+    func updateDownloadProgress(_ cell: EmojiCollectionViewCell, progress: Double, path: String)
 }
 
 class EmojiCollectionViewCell: DogeChatBaseCollectionViewCell {
@@ -23,12 +25,14 @@ class EmojiCollectionViewCell: DogeChatBaseCollectionViewCell {
     weak var delegate: EmojiSelectCellLongPressDelegate?
     var indexPath: IndexPath!
     var path: String!
+    let progress = DACircularProgressView()
     
     override func layoutSubviews() {
         super.layoutSubviews()
         let offset: CGFloat = 5
         let size = contentView.frame.size
         emojiView.frame = CGRect(x: offset, y: offset, width: size.width-2*offset, height: size.height-2*offset)
+        progress.center = self.contentView.center
     }
     
     override init(frame: CGRect) {
@@ -40,6 +44,12 @@ class EmojiCollectionViewCell: DogeChatBaseCollectionViewCell {
         let longPress = UILongPressGestureRecognizer(target: self, action: #selector(longPressAction(_:)))
         emojiView.isUserInteractionEnabled = true
         emojiView.addGestureRecognizer(longPress)
+        
+        contentView.addSubview(progress)
+        progress.isHidden = true
+        progress.thicknessRatio = 0.3
+        progress.progressTintColor = UIColor(named: "progressCircle")
+        progress.bounds = CGRect(x: 0, y: 0, width: 25, height: 25)
     }
     
     required init?(coder: NSCoder) {
@@ -53,6 +63,7 @@ class EmojiCollectionViewCell: DogeChatBaseCollectionViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         emojiView.image = nil
+        progress.setProgress(0, animated: false)
     }
     
     @objc func longPressAction(_ ges: UILongPressGestureRecognizer) {
@@ -68,7 +79,7 @@ class EmojiCollectionViewCell: DogeChatBaseCollectionViewCell {
             self.emojiView.image = UIImage(data: data as Data)
             return
         }
-        ImageLoader.shared.requestImage(urlStr: urlString) { image, data, _ in
+        MediaLoader.shared.requestImage(urlStr: urlString, type: .image, completion: { image, data, _ in
             guard capturedUrl == self.url else { return }
             self.layoutIfNeeded()
             if let image = image {
@@ -76,6 +87,12 @@ class EmojiCollectionViewCell: DogeChatBaseCollectionViewCell {
                 self.emojiView.image = UIImage(data: compressed)
                 self.cache?.setObject(compressed as NSData, forKey: urlString as NSString
                 )
+            }
+        }) { progress in
+            if self.url == capturedUrl {
+                self.delegate?.updateDownloadProgress(self, progress: progress, path: urlString)
+                self.progress.isHidden = progress >= 1
+                self.progress.setProgress(progress, animated: false)
             }
         }
     }

@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="19455" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19454"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="ChangeIconVC" customModule="DogeChat" customModuleProvider="target">
+            <connections>
+                <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="i5M-Pr-FkT">
+            <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="3" translatesAutoresizingMaskIntoConstraints="NO" id="6OD-Zq-hIW">
+                    <rect key="frame" x="0.0" y="249.5" width="414" height="397"/>
+                    <subviews>
+                        <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="c8d-o3-C1z">
+                            <rect key="frame" x="0.0" y="0.0" width="414" height="180"/>
+                            <subviews>
+                                <imageView clipsSubviews="YES" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="__海贼王.png" translatesAutoresizingMaskIntoConstraints="NO" id="iT8-Sw-RyM">
+                                    <rect key="frame" x="0.0" y="0.0" width="100" height="180"/>
+                                    <gestureRecognizers/>
+                                    <connections>
+                                        <outletCollection property="gestureRecognizers" destination="Tru-1Y-saT" appends="YES" id="3Td-EE-tMy"/>
+                                    </connections>
+                                </imageView>
+                                <imageView clipsSubviews="YES" tag="1" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="_哆啦A梦.png" translatesAutoresizingMaskIntoConstraints="NO" id="6dM-DF-wzd">
+                                    <rect key="frame" x="105" y="0.0" width="99.5" height="180"/>
+                                    <gestureRecognizers/>
+                                    <connections>
+                                        <outletCollection property="gestureRecognizers" destination="ZuL-c0-nnY" appends="YES" id="PtS-gE-3sA"/>
+                                    </connections>
+                                </imageView>
+                                <imageView clipsSubviews="YES" tag="2" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="_小黄人.png" translatesAutoresizingMaskIntoConstraints="NO" id="vNc-Rt-9Cs">
+                                    <rect key="frame" x="209.5" y="0.0" width="100" height="180"/>
+                                    <gestureRecognizers/>
+                                    <connections>
+                                        <outletCollection property="gestureRecognizers" destination="Kti-rf-69G" appends="YES" id="YJi-8F-9kE"/>
+                                    </connections>
+                                </imageView>
+                                <imageView clipsSubviews="YES" tag="3" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="_小黄人2.png" translatesAutoresizingMaskIntoConstraints="NO" id="too-GG-i9F">
+                                    <rect key="frame" x="314.5" y="0.0" width="99.5" height="180"/>
+                                    <gestureRecognizers/>
+                                    <connections>
+                                        <outletCollection property="gestureRecognizers" destination="HWZ-zh-4hO" appends="YES" id="F8R-I7-UvX"/>
+                                    </connections>
+                                </imageView>
+                            </subviews>
+                        </stackView>
+                        <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="su3-Oz-HOV">
+                            <rect key="frame" x="0.0" y="183" width="414" height="180"/>
+                            <subviews>
+                                <imageView clipsSubviews="YES" tag="4" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="_海贼王2.png" translatesAutoresizingMaskIntoConstraints="NO" id="TfO-Mm-k1p">
+                                    <rect key="frame" x="0.0" y="0.0" width="134.5" height="180"/>
+                                    <gestureRecognizers/>
+                                    <connections>
+                                        <outletCollection property="gestureRecognizers" destination="i6O-kz-bki" appends="YES" id="Rst-b3-jsZ"/>
+                                    </connections>
+                                </imageView>
+                                <imageView clipsSubviews="YES" tag="5" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="_蜡笔小新.png" translatesAutoresizingMaskIntoConstraints="NO" id="3xE-FC-6NM">
+                                    <rect key="frame" x="139.5" y="0.0" width="135" height="180"/>
+                                    <gestureRecognizers/>
+                                    <connections>
+                                        <outletCollection property="gestureRecognizers" destination="49G-JO-cd8" appends="YES" id="NJy-Ha-tP2"/>
+                                    </connections>
+                                </imageView>
+                                <imageView clipsSubviews="YES" tag="6" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="猫咪2.png" translatesAutoresizingMaskIntoConstraints="NO" id="zji-BB-EPF">
+                                    <rect key="frame" x="279.5" y="0.0" width="134.5" height="180"/>
+                                    <gestureRecognizers/>
+                                    <connections>
+                                        <outletCollection property="gestureRecognizers" destination="ycc-TL-EHN" appends="YES" id="pjM-rB-Som"/>
+                                    </connections>
+                                </imageView>
+                            </subviews>
+                        </stackView>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="od9-6u-SX1" userLabel="恢复默认">
+                            <rect key="frame" x="0.0" y="366" width="414" height="31"/>
+                            <state key="normal" title="Button"/>
+                            <buttonConfiguration key="configuration" style="plain" title="恢复默认"/>
+                            <connections>
+                                <action selector="recoverAction:" destination="-1" eventType="touchUpInside" id="6jo-O5-CqI"/>
+                            </connections>
+                        </button>
+                    </subviews>
+                </stackView>
+            </subviews>
+            <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
+            <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+            <constraints>
+                <constraint firstItem="6OD-Zq-hIW" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="Tsv-1s-5bK"/>
+                <constraint firstItem="6OD-Zq-hIW" firstAttribute="centerY" secondItem="i5M-Pr-FkT" secondAttribute="centerY" id="blL-4w-sq4"/>
+                <constraint firstAttribute="trailing" secondItem="6OD-Zq-hIW" secondAttribute="trailing" id="fWr-ic-r3E"/>
+                <constraint firstItem="6OD-Zq-hIW" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="j9P-tO-AdK"/>
+            </constraints>
+            <point key="canvasLocation" x="137.68115942028987" y="85.714285714285708"/>
+        </view>
+        <tapGestureRecognizer id="Tru-1Y-saT">
+            <connections>
+                <action selector="tapAction:" destination="-1" id="HMJ-5C-Q9s"/>
+            </connections>
+        </tapGestureRecognizer>
+        <tapGestureRecognizer id="ZuL-c0-nnY">
+            <connections>
+                <action selector="tapAction:" destination="-1" id="Ovj-x6-MOL"/>
+            </connections>
+        </tapGestureRecognizer>
+        <tapGestureRecognizer id="Kti-rf-69G">
+            <connections>
+                <action selector="tapAction:" destination="-1" id="hqZ-ZH-u5s"/>
+            </connections>
+        </tapGestureRecognizer>
+        <tapGestureRecognizer id="HWZ-zh-4hO">
+            <connections>
+                <action selector="tapAction:" destination="-1" id="HQd-ck-VWc"/>
+            </connections>
+        </tapGestureRecognizer>
+        <tapGestureRecognizer id="i6O-kz-bki">
+            <connections>
+                <action selector="tapAction:" destination="-1" id="MFB-sF-YED"/>
+            </connections>
+        </tapGestureRecognizer>
+        <tapGestureRecognizer id="49G-JO-cd8">
+            <connections>
+                <action selector="tapAction:" destination="-1" id="EeN-m9-08q"/>
+            </connections>
+        </tapGestureRecognizer>
+        <tapGestureRecognizer id="ycc-TL-EHN">
+            <connections>
+                <action selector="tapAction:" destination="-1" id="nNP-9n-ojm"/>
+            </connections>
+        </tapGestureRecognizer>
+    </objects>
+    <resources>
+        <image name="__海贼王.png" width="180" height="180"/>
+        <image name="_哆啦A梦.png" width="180" height="180"/>
+        <image name="_小黄人.png" width="180" height="180"/>
+        <image name="_小黄人2.png" width="180" height="180"/>
+        <image name="_海贼王2.png" width="180" height="180"/>
+        <image name="_蜡笔小新.png" width="180" height="180"/>
+        <image name="猫咪2.png" width="180" height="180"/>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
+</document>

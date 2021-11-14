@@ -13,7 +13,7 @@ class DogeChatTableView: UITableView {
     override init(frame: CGRect, style: UITableView.Style) {
         super.init(frame: frame, style: style)
         self.separatorStyle = .none
-//        updateBgColor()
+        updateBgColor()
 //        NotificationCenter.default.addObserver(self, selector: #selector(forceDarkMode(noti:)), name: .immersive, object: nil)
     }
     

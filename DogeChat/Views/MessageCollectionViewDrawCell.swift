@@ -11,15 +11,12 @@ import DogeChatNetwork
 import DogeChatUniversal
 
 func getPKDrawing(message: Message) -> Any? {
-    guard #available(iOS 14, *) else {
+    guard #available(iOS 13, *) else {
         return nil
     }
-    if let localURL = message.pkLocalURL, (localURL.lastPathComponent == message.pkDataURL || message.sendStatus == .fail) {
-        if let data = try? Data(contentsOf: localURL), let drawing = try? PKDrawing(data: data) {
-            return drawing
-        }
-    } else if let path = message.pkDataURL {
-        let fileName = path.components(separatedBy: "/").last!
+    if let localURL = message.pkLocalURL, let data = try? Data(contentsOf: localURL), let drawing = try? PKDrawing(data: data) {
+        return drawing
+    } else if let path = message.pkDataURL, let fileName = path.components(separatedBy: "/").last {
         if let url = fileURLAt(dirName: drawDir, fileName: fileName), let data = try? Data(contentsOf: url), let drawing = try? PKDrawing(data: data) {
             return drawing
         }
@@ -36,7 +33,7 @@ class MessageCollectionViewDrawCell: MessageCollectionViewBaseCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         addPKView()
-        if #available(iOS 14.0, *) {
+        if #available(iOS 13.0, *) {
             indicationNeighborView = getPKView()
         }
     }
@@ -47,7 +44,7 @@ class MessageCollectionViewDrawCell: MessageCollectionViewBaseCell {
     
     override func prepareForReuse() {
         super.prepareForReuse()
-        if #available(iOS 14.0, *) {
+        if #available(iOS 13.0, *) {
             self.getPKView()?.drawing = PKDrawing()
             self.getPKView()?.backgroundColor = .clear
         }
@@ -57,7 +54,7 @@ class MessageCollectionViewDrawCell: MessageCollectionViewBaseCell {
         super.layoutSubviews()
         guard message != nil else { return }
         layoutForDrawMessage()
-        if #available(iOS 14.0, *) {
+        if #available(iOS 13.0, *) {
             self.getPKView()?.setContentOffset(.zero, animated: false)
         }
         layoutIndicatorViewAndMainView()
@@ -71,7 +68,7 @@ class MessageCollectionViewDrawCell: MessageCollectionViewBaseCell {
     
     // PencilKit相关
     func layoutForDrawMessage() {
-        guard #available(iOS 14.0, *) else { return }
+        guard #available(iOS 13.0, *) else { return }
         guard let pkView = self.getPKView() else { return }
         let rightMargin:CGFloat = 0
         pkView.frame = CGRect(x: 0, y: 0, width: 0.8 * contentView.bounds.width + 20 - rightMargin, height: contentView.bounds.height - 30)
@@ -89,10 +86,12 @@ class MessageCollectionViewDrawCell: MessageCollectionViewBaseCell {
     }
     
     func addPKView() {
-        if #available(iOS 14.0, *) {
+        if #available(iOS 13.0, *) {
             let pkView = PKCanvasView()
             pkView.backgroundColor = .clear
-            pkView.drawingPolicy = .anyInput
+            if #available(iOS 14.0, *) {
+                pkView.drawingPolicy = .anyInput
+            }
             pkView.drawingGestureRecognizer.isEnabled = false
             self.contentView.addSubview(pkView)
             tapGes = UITapGestureRecognizer(target: self, action: #selector(pkViewTapAction(_:)))
@@ -102,7 +101,7 @@ class MessageCollectionViewDrawCell: MessageCollectionViewBaseCell {
         }
     }
     
-    @available(iOS 14.0, *)
+    @available(iOS 13.0, *)
     @objc func pkViewTapAction(_ tap: UITapGestureRecognizer) {
         if message.messageSender == .ourself {
             guard let pkView = self.getPKView() else { return }
@@ -110,7 +109,7 @@ class MessageCollectionViewDrawCell: MessageCollectionViewBaseCell {
         }
     }
     
-    @available(iOS 14.0, *)
+    @available(iOS 13.0, *)
     func getPKView() -> PKCanvasView? {
         for view in contentView.subviews {
             if view.isKind(of: PKCanvasView.self) {
@@ -120,7 +119,7 @@ class MessageCollectionViewDrawCell: MessageCollectionViewBaseCell {
         return nil
     }
     func downloadPKDataIfNeeded() {
-        guard #available(iOS 14.0, *), let capturedMessage = message else { return }
+        guard #available(iOS 13.0, *), let capturedMessage = message else { return }
         let displayBlock: () -> Void = { [weak self] in
             guard let self = self, capturedMessage == self.message else { return }
             self.setNeedsLayout()
@@ -130,22 +129,11 @@ class MessageCollectionViewDrawCell: MessageCollectionViewBaseCell {
         } else if let name = message.pkDataURL?.components(separatedBy: "/").last, fileURLAt(dirName: drawDir, fileName: name) != nil {
             displayBlock()
         } else if let path = message.pkDataURL {
-            if !message.isDownloading {
-                message.isDownloading = true
-                let _ = session.get(url_pre + path, parameters: nil, headers: nil, progress: { progress in
-                    self.delegate?.downloadProgressUpdate(progress: progress, message: capturedMessage)
-                }) { [weak self] task, data in
-                    if let data = data as? Data {
-                        let fileName = path.components(separatedBy: "/").last!
-                        saveFileToDisk(dirName: drawDir, fileName: fileName, data: data)
-                        capturedMessage.pkLocalURL = fileURLAt(dirName: drawDir, fileName: fileName)
-                        self?.delegate?.downloadSuccess(message: capturedMessage)
-                    }
-                    capturedMessage.isDownloading = false
-                } failure: { task, error in
-                    print(error)
-                }
-            }
+            MediaLoader.shared.requestImage(urlStr: path, type: .draw, cookie: manager.cookie, syncIfCan: true, completion: { [weak self] _, _, localPath in
+                capturedMessage.pkLocalURL = localPath
+                self?.delegate?.downloadSuccess(message: capturedMessage)
+                capturedMessage.isDownloading = false
+            }, progress: nil)
         }
     }
     

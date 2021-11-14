@@ -10,9 +10,14 @@ import UIKit
 import DogeChatUniversal
 import DogeChatNetwork
 
+protocol DogeChatVCTableDataSource: AnyObject {
+    var tableView: DogeChatTableView { get set }
+}
+
 class DogeChatViewController: UIViewController, UIPopoverPresentationControllerDelegate {
     
     var blurView: UIImageView!
+    var username = ""
         
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
@@ -53,45 +58,18 @@ class DogeChatViewController: UIViewController, UIPopoverPresentationControllerD
     }
     
     func toggleBlurView(force: Bool, needAnimation: Bool) {
+        if self.username.isEmpty, let myName = (self.splitViewController as? DogeChatSplitViewController)?.findContactVC()?.username {
+            self.username = myName
+        }
         if force {
             var tableView: UITableView?
-            var username: String?
-            if let playListVC = self as? PlayListViewController  {
-                tableView = playListVC.tableView
-                username = playListVC.username
-            } else if let selectPlayListVC = self as? PlayListsSelectVC {
-                tableView = selectPlayListVC.tableView
-                username = selectPlayListVC.username
-            } else if let settingVC = self as? SettingViewController {
-                tableView = settingVC.tableView
-                username = settingVC.username
-            } else if let searchVC = self as? SearchMusicViewController {
-                tableView = searchVC.tableView
-                username = searchVC.username
-            } else if let chatVC = self as? ChatRoomViewController {
-                tableView = chatVC.tableView
-                username = chatVC.username
-            } else if let contactVC = self as? ContactsTableViewController {
-                tableView = contactVC.tableView
-                username = contactVC.username
-            } else if let selectContact = self as? SelectContactsViewController {
-                tableView = selectContact.tableView
-                username = selectContact.username
-            } else if let addContactVC = self as? SearchViewController {
-                tableView = addContactVC.tableView
-                username = addContactVC.username
-            } else {
-                if #available(iOS 13.0, *) {
-                    if let historyVC = self as? HistoryVC {
-                        tableView = historyVC.tableView
-                        username = historyVC.username
-                    }
-                } 
+            if let tableViewDataSource = self as? DogeChatVCTableDataSource {
+                tableView = tableViewDataSource.tableView
             }
             if let tableView = tableView {
-                makeBlurViewForViewController(self, blurView: &blurView, needAnimation: needAnimation, addToThisView: tableView, username: username)
+                makeBlurViewForViewController(self, blurView: &blurView, needAnimation: needAnimation, addToThisView: tableView, username: self.username)
             } else {
-                makeBlurViewForViewController(self, blurView: &blurView, needAnimation: needAnimation, username: username)
+                makeBlurViewForViewController(self, blurView: &blurView, needAnimation: needAnimation, username: self.username)
             }
         } else {
             recoverVC(self, blurView: &blurView)
@@ -137,12 +115,11 @@ func makeBlurViewForViewController(_ vc: UIViewController, blurView: inout UIIma
             interfaceStyle = .unspecified
         }
         AppDelegate.shared.window?.overrideUserInterfaceStyle = interfaceStyle
-        vc.view.window?.overrideUserInterfaceStyle = interfaceStyle
         vc.navigationController?.overrideUserInterfaceStyle = interfaceStyle
         vc.splitViewController?.overrideUserInterfaceStyle = interfaceStyle
         vc.tabBarController?.overrideUserInterfaceStyle = interfaceStyle
         vc.overrideUserInterfaceStyle = interfaceStyle
-
+        SceneDelegate.usernameToDelegate[username ?? ""]?.window?.overrideUserInterfaceStyle = interfaceStyle
         vc.view.backgroundColor = .clear
     }
     vc.view.backgroundColor = .clear
@@ -218,6 +195,7 @@ func recoverVC(_ vc: UIViewController, blurView: inout UIImageView!) {
         vc.tabBarController?.overrideUserInterfaceStyle = .unspecified
         vc.overrideUserInterfaceStyle = .unspecified
         vc.view.backgroundColor = .systemBackground
+        vc.splitViewController?.view.backgroundColor = .systemBackground
     }
     UIView.animate(withDuration: 0.5) { [weak blurView] in
         blurView?.alpha = 0
