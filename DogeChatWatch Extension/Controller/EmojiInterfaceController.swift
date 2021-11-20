@@ -12,7 +12,7 @@ class EmojiInterfaceController: WKInterfaceController {
     
     var emojis = [String]()
     var showingCount = 0
-    var fetchCount = 10
+    var fetchCount = 40
     
     let rowID = "emojiRow"
     
@@ -59,19 +59,15 @@ class EmojiInterfaceController: WKInterfaceController {
                 } else {
                     row.rightPath = emojiPath
                 }
-                MediaLoader.shared.requestImage(urlStr: emojiPath, type: .image, syncIfCan: false, completion: { image, data, _ in
-                    guard let image = image else { return }
-                    DispatchQueue.global(qos: .userInteractive).async {
-                        let compressed = compressEmojis(image)
-                        let imageView = index % 2 == 0 ? row.leftImageView : row.rightImageView
-                        imageView?.setImageData(compressed)
-                    }
+                MediaLoader.shared.requestImage(urlStr: emojiPath, type: .image, syncIfCan: false, imageWidth: .width80, needStaticGif: true, completion: { image, data, _ in
+                    let imageView = index % 2 == 0 ? row.leftImageView : row.rightImageView
+                    imageView?.setImageData(data)
                 }, progress: nil)
             }
         }
         showingCount += emojis.count
-        if fetchCount < 20 {
-            fetchCount = 40
+        if fetchCount < 60 {
+            fetchCount = 60
         }
     }
 

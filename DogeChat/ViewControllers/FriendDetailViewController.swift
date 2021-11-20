@@ -56,7 +56,7 @@ class FriendDetailViewController: DogeChatViewController, UITableViewDataSource,
         self.username = username
         self.navigationItem.title = friend.nickName ?? friend.username
         if friend.isGroup, let group = friend as? Group {
-            rows = [.nickName, .nameInGroup, .groupOwner, .changeGroupAvatar, .doNotDisturb, .addMember, .removeMember]
+            rows = [.nickName, .nameInGroup, .groupOwner, .changeGroupAvatar, .addMember, .removeMember]
             if group.ownerID == manager.httpsManager.myId {
                 rows.append(.deleteGroup)
             }
@@ -213,10 +213,8 @@ class FriendDetailViewController: DogeChatViewController, UITableViewDataSource,
                 self.addMember()
             case .history:
                 if #available(iOS 13, *) {
-                    let vc = HistoryVC()
+                    let vc = HistoryVC(type: .history, username: username)
                     vc.friend = self.friend
-                    vc.cache = (self.splitViewController as? DogeChatSplitViewController)?.findChatRoomVC()?.cache
-                    vc.username = self.username
                     self.navigationController?.pushViewController(vc, animated: true)
                 }
             case .createGroup:
@@ -401,8 +399,13 @@ extension FriendDetailViewController: SelectContactsDelegate, UIImagePickerContr
             if row == .nameInGroup {
                 personal = true
             }
-            manager.httpsManager.changeNickName(targetID: friend.userID, nickName: text, personal: personal, isGroup: friend.isGroup) { success in
+            let targetID = friend.userID
+            manager.httpsManager.changeNickName(targetID: targetID, nickName: text, personal: personal, isGroup: friend.isGroup) { [weak manager] success in
+                guard let manager = manager else { return }
                 if success {
+                    if personal ?? false {
+                        self.updateMyNameInGroup(text: text)
+                    }
                     self.makeAutoAlert(message: "更换成功", detail: text, showTime: 1, completion: nil)
                     self.manager.httpsManager.getContacts(completion: nil)
                     if !self.friend.isGroup {
@@ -414,5 +417,13 @@ extension FriendDetailViewController: SelectContactsDelegate, UIImagePickerContr
         }
     }
     
+    func updateMyNameInGroup(text: String) {
+        manager.myInfo.nameInGroupsDict[friend.userID] = text
+        self.myNameInGroup = text
+        if let myself = self.members.first(where: { $0.userID == manager.myInfo.userID} ) {
+            myself.nameInGroup = text
+            self.tableView.reloadData()
+        }
+    }
 
 }

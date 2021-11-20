@@ -22,23 +22,18 @@ extension ChatRoomViewController: MessageTableViewCellDelegate {
         }
     }
     
-    func downloadSuccess(message: Message) {
+    func downloadSuccess(_ cell: MessageCollectionViewBaseCell?, message: Message) {
+        guard let cell = cell, cell.message == message else {
+            return
+        }
         syncOnMainThread {
-            if let index = self.messages.firstIndex(where: { $0.uuid == message.uuid }) {
-                let indexPath = IndexPath(row: index, section: 0)
-                if let cell = self.tableView.cellForRow(at: indexPath) as? MessageCollectionViewBaseCell {
-                    (cell as? MessageCollectionViewImageCell)?.playNow = true
-                    cell.apply(message: message)
-                    cell.layoutIfNeeded()
-                    cell.setNeedsLayout()
-                } else {
-                    tableView.reloadRows(at: [indexPath], with: .none)
-                }
-            }
+            cell.apply(message: message)
+            cell.layoutIfNeeded()
+            cell.setNeedsLayout()
         }
     }
         
-    func imageViewTapped(_ cell: MessageCollectionViewBaseCell, imageView: FLAnimatedImageView, path: String, isAvatar: Bool) {
+    func mediaViewTapped(_ cell: MessageCollectionViewBaseCell, path: String, isAvatar: Bool) {
         messageInputBar.textViewResign()
         let browser = MediaBrowserViewController()
         if !isAvatar {
@@ -98,17 +93,19 @@ extension ChatRoomViewController: MessageTableViewCellDelegate {
             emojiInfo.x = newPoint.x / UIScreen.main.bounds.width
             emojiInfo.y = newPoint.y / MessageCollectionViewBaseCell.height(for: messages[newIndexPath.item], username: username)
             emojiInfo.lastModifiedBy = manager.messageManager.myName
+            emojiInfo.lastModifiedUserId = manager.myInfo.userID
             messages[newIndexPath.item].emojisInfo.append(emojiInfo)
             needReload(indexPath: [newIndexPath, oldIndexPath])
-            manager.sendEmojiInfos([messages[oldIndexPath.item], messages[newIndexPath.item]], receiver: friendName)
+            manager.sendEmojiInfos([messages[oldIndexPath.item], messages[newIndexPath.item]])
         }
     }
     
     func emojiInfoDidChange(from oldInfo: EmojiInfo?, to newInfo: EmojiInfo?, cell: MessageCollectionViewBaseCell) {
         if let indexPahth = tableView.indexPath(for: cell) {
             needReload(indexPath: [indexPahth])
-            newInfo?.lastModifiedBy = manager.messageManager.myName
-            manager.sendEmojiInfos([messages[indexPahth.item]], receiver: friendName)
+            newInfo?.lastModifiedBy = manager.myName
+            newInfo?.lastModifiedUserId = manager.myInfo.userID
+            manager.sendEmojiInfos([messages[indexPahth.item]])
         }
     }
     
@@ -128,14 +125,18 @@ extension ChatRoomViewController: MessageTableViewCellDelegate {
     }
     
     func longPressCell(_ cell: MessageCollectionViewBaseCell, ges: UILongPressGestureRecognizer!) {
+        guard ges.state == .ended, cell.message.messageType != .join else { return }
         let controller = UIMenuController.shared
         guard let targetView = cell.indicationNeighborView else { return }
-        cell.becomeFirstResponder()
+        if !messageInputBar.textView.isFirstResponder {
+            cell.becomeFirstResponder()
+        }
         activeMenuCell = cell
         let index = tableView.indexPath(for: cell)!.row
         let message = messages[index]
         let copy = UIMenuItem(title: "复制", action: #selector(copyMenuItemAction(sender:)))
-        var items = [copy]
+        let refer = UIMenuItem(title: "引用", action: #selector(referAction(sender:)))
+        var items = [copy, refer]
         let sendToOthers = UIMenuItem(title: "转发", action: #selector(sendToOthersMenuItemAction(sender:)))
         items.append(sendToOthers)
         if message.messageSender == .ourself {
@@ -150,15 +151,23 @@ extension ChatRoomViewController: MessageTableViewCellDelegate {
         items.append(multiSele)
         controller.menuItems = items
         let rect = CGRect(x: targetView.bounds.width/2, y: 5, width: 0, height: 0)
+        messageInputBar.textView.ignoreActions = true
         if #available(iOS 13.0, *) {
             controller.showMenu(from: targetView, rect: rect)
         } else {
             controller.setTargetRect(rect, in: targetView)
             controller.setMenuVisible(true, animated: true)
         }
+        messageInputBar.textView.ignoreActions = false
+    }
+    
+    func menuItemDone() {
+        UIMenuController.shared.menuItems = nil
+        activeMenuCell?.resignFirstResponder()
     }
     
     @objc func copyMenuItemAction(sender: UIMenuController) {
+        menuItemDone()
         guard let cell = activeMenuCell,
               let index = tableView.indexPath(for: cell)?.row else { return }
         let text = messages[index].text
@@ -166,12 +175,14 @@ extension ChatRoomViewController: MessageTableViewCellDelegate {
     }
     
     @objc func revokeMenuItemAction(sender: UIMenuController) {
+        menuItemDone()
         guard let cell = activeMenuCell,
               let index = tableView.indexPath(for: cell)?.row else { return }
         revoke(message: messages[index])
     }
     
     @objc func sendToOthersMenuItemAction(sender: UIMenuController) {
+        menuItemDone()
         guard let cell = activeMenuCell,
               let indexPath = tableView.indexPath(for: cell) else { return }
         self.activeSwipeIndexPath = indexPath
@@ -182,6 +193,7 @@ extension ChatRoomViewController: MessageTableViewCellDelegate {
     }
     
     @objc func saveEmojiMenuItemAction(sender: UIMenuController) {
+        menuItemDone()
         guard let cell = activeMenuCell else { return }
         if let imageUrl = cell.message.imageURL, cell.message.sendStatus == .success {
             let isGif = imageUrl.hasSuffix(".gif")
@@ -190,6 +202,7 @@ extension ChatRoomViewController: MessageTableViewCellDelegate {
     }
     
     @objc func multiSeleMenuItemAction(sender: UIMenuController) {
+        menuItemDone()
         guard let cell = activeMenuCell,
               let indexPath = tableView.indexPath(for: cell) else { return }
         makeMultiSelection(indexPath)

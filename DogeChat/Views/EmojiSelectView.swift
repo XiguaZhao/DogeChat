@@ -31,7 +31,6 @@ class EmojiSelectView: DogeChatStaticBlurView {
         }
     }
     static var emojiPathToId: [String: String] = [:]
-    static let cache = NSCache<NSString, NSData>()
     var username = ""
     var friend: Friend!
     var manager: WebSocketManager {
@@ -46,21 +45,24 @@ class EmojiSelectView: DogeChatStaticBlurView {
         collectionView.register(EmojiCollectionViewCell.self, forCellWithReuseIdentifier: EmojiCollectionViewCell.cellID)
         collectionView.delegate = self
         collectionView.dataSource = self
-        collectionView.prefetchDataSource = self
         collectionView.dragDelegate = self
         collectionView.dragInteractionEnabled = true
         collectionView.backgroundColor = .clear
+        
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
+        let guide = self.safeAreaLayoutGuide
+        NSLayoutConstraint.activate([
+            collectionView.leadingAnchor.constraint(equalTo: guide.leadingAnchor),
+            collectionView.trailingAnchor.constraint(equalTo: guide.trailingAnchor),
+            collectionView.topAnchor.constraint(equalTo: guide.topAnchor),
+            collectionView.bottomAnchor.constraint(equalTo: self.bottomAnchor)
+        ])
     }
     
     deinit {
         SDWebImageManager.shared.imageCache.clear(with: .memory, completion: nil)
     }
-        
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        collectionView.frame = self.bounds
-    }
-    
+            
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -178,7 +180,6 @@ extension EmojiSelectView: UICollectionViewDataSource, UICollectionViewDelegateF
         cell.indexPath = indexPath
         cell.path = emojis[indexPath.item]
         cell.delegate = self
-        cell.cache = Self.cache
         cell.displayEmoji(urlString: emojis[indexPath.item])
         return cell
     }
@@ -198,7 +199,7 @@ extension EmojiSelectView: UICollectionViewDragDelegate {
         weak var weakCell = collectionView.cellForItem(at: indexPath) as? EmojiCollectionViewCell
         guard let cell = weakCell, let image = cell.emojiView.image else { return [] }
         let dragItem = UIDragItem(itemProvider: NSItemProvider(object: image))
-        dragItem.localObject = [cell.url?.absoluteString ?? "", Self.cache]
+        dragItem.localObject = [cell.url?.absoluteString ?? ""]
         playHaptic()
         return [dragItem]
     }

@@ -19,14 +19,23 @@ class ContactTableViewCell: UITableViewCell {
     static let cellID = "ContactTableViewCell"
     static let cellHeight: CGFloat = 60
     let avataroffset: CGFloat = 12
-    static var avatarCache = [String: Data]()
     
     let avatarImageView = FLAnimatedImageView()
     let nameLabel = UILabel()
     let latestMessageLabel = UILabel()
     var info: Friend!
+    let unreadLabel = UILabel()
+    var unreadCount = 0 {
+        didSet {
+            DispatchQueue.main.async { [self] in
+                unreadLabel.isHidden = unreadCount == 0
+                unreadLabel.text = String(unreadCount)
+            }
+        }
+    }
     var labelStackView: UIStackView!
     var stackView: UIStackView!
+    weak var manager: WebSocketManager?
     weak var delegate: ContactTableViewCellDelegate?
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -34,7 +43,11 @@ class ContactTableViewCell: UITableViewCell {
         self.backgroundColor = .clear
         nameLabel.font = UIFont.systemFont(ofSize: 15)
         
-        latestMessageLabel.textColor = .lightGray
+        if #available(iOS 13, *) {
+            latestMessageLabel.textColor = .lightGray
+        } else {
+            latestMessageLabel.textColor = #colorLiteral(red: 0.2549019754, green: 0.2745098174, blue: 0.3019607961, alpha: 1)
+        }
         latestMessageLabel.numberOfLines = 1
         latestMessageLabel.lineBreakMode = .byTruncatingTail
         latestMessageLabel.font = UIFont.systemFont(ofSize: nameLabel.font.pointSize - 3)
@@ -59,6 +72,22 @@ class ContactTableViewCell: UITableViewCell {
             make?.leading.equalTo()(self.contentView.mas_leading)?.offset()(15)
             make?.trailing.equalTo()(self.contentView.mas_trailing)?.offset()(-40)
         }
+        
+        unreadLabel.layer.masksToBounds = true
+        unreadLabel.backgroundColor = .red
+        unreadLabel.textAlignment = .center
+        unreadLabel.font = .systemFont(ofSize: 13)
+        unreadLabel.bounds = CGRect(x: 0, y: 0, width: 22, height: 22)
+        unreadLabel.layer.cornerRadius = 11
+        self.accessoryView = unreadLabel
+        unreadLabel.isHidden = true
+    }
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        avatarImageView.image = nil
+        avatarImageView.animatedImage = nil
+        unreadLabel.isHidden = true
     }
     
     required init?(coder: NSCoder) {
@@ -90,8 +119,14 @@ class ContactTableViewCell: UITableViewCell {
         var text = ""
         if let message = info.latestMessage {
             if info.isGroup {
-                text += "\(message.senderUsername)："
-            } 
+                if let manager = manager,
+                    message.messageSender == .ourself,
+                   let myNameInGroup = manager.myInfo.nameInGroupsDict[info.userID] {
+                    text += (myNameInGroup + "：")
+                } else {
+                    text += "\(message.senderUsername)："
+                }
+            }
             switch message.messageType {
             case .draw:
                 text += "[速绘]"
@@ -109,11 +144,10 @@ class ContactTableViewCell: UITableViewCell {
                 text += "[语音]"
             }
             latestMessageLabel.text = text
-            if latestMessageLabel.superview == nil {
-                labelStackView.addArrangedSubview(latestMessageLabel)
-            }
+            latestMessageLabel.isHidden = false
         } else if let subTitle = subTitle {
             latestMessageLabel.text = subTitle
+            latestMessageLabel.isHidden = false
         } else {
             latestMessageLabel.isHidden = true
         }
@@ -121,25 +155,14 @@ class ContactTableViewCell: UITableViewCell {
         if !info.avatarURL.isEmpty {
             let avatarUrl = WebSocketManager.url_pre + info.avatarURL
             let isGif = avatarUrl.hasSuffix(".gif")
-            if let data = ContactTableViewCell.avatarCache[avatarUrl] {
-                if isGif {
-                    avatarImageView.animatedImage = FLAnimatedImage(gifData: data as Data)
-                } else {
-                    avatarImageView.image = UIImage(data: data as Data)
-                }
-                return
-            }
-            MediaLoader.shared.requestImage(urlStr: avatarUrl, type: .image) { [self] image, data, _ in
-                guard info.username == self.info.username else {
+            MediaLoader.shared.requestImage(urlStr: avatarUrl, type: .image, syncIfCan: false) { [self] image, data, _ in
+                guard info.username == self.info.username, let data = data else {
                     return
                 }
-                if !isGif, let image = image { // is photo
-                    let compressed = compressEmojis(image)
-                    avatarImageView.image = UIImage(data: compressed)
-                    ContactTableViewCell.avatarCache[avatarUrl] = compressed
+                if !isGif { // is photo
+                    avatarImageView.image = UIImage(data: data)
                 } else { // gif图处理
                     avatarImageView.animatedImage = FLAnimatedImage(gifData: data)
-                    ContactTableViewCell.avatarCache[avatarUrl] = data
                 }
             }
         }

@@ -9,6 +9,8 @@
 import UIKit
 
 class DogeChatStaticBlurView: UIView {
+    
+    weak var topConstraint: NSLayoutConstraint!
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -21,9 +23,12 @@ class DogeChatStaticBlurView: UIView {
         }
         self.addSubview(blurView)
         self.sendSubviewToBack(blurView)
+        blurView.translatesAutoresizingMaskIntoConstraints = false
         blurView.mas_makeConstraints { [weak self] make in
-            make?.edges.equalTo()(self)
+            make?.leading.trailing().bottom().equalTo()(self)
         }
+        self.topConstraint = blurView.topAnchor.constraint(equalTo: self.topAnchor, constant: 0)
+        self.topConstraint.isActive = true
     }
     
     required init?(coder: NSCoder) {

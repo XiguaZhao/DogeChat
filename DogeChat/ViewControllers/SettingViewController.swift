@@ -10,26 +10,25 @@ import UIKit
 import DogeChatNetwork
 import DogeChatUniversal
 
-enum SettingType {
-    case shortcut
-    case changeIcon
-    case doNotDisturb
-    case selectHost
-    case wsAddress
-    case resetHostAndWs
-    case switchImmersive
-    case customBlur
-    case forceDarkMode
-    case logout
-    case browseFiles
+enum SettingType: String {
+    case shortcut = "快捷操作"
+    case changeIcon = "修改图标"
+    case doNotDisturb = "勿扰模式"
+    case selectHost = "自定义host"
+    case wsAddress = "自定义ws地址"
+    case resetHostAndWs = "重置host&ws"
+    case switchImmersive = "播放时沉浸"
+    case customBlur = "自定义毛玻璃"
+    case forceDarkMode = "毛玻璃强制暗黑"
+    case logout = "退出登录"
+    case browseFiles = "查看文件"
 }
 
 class SettingViewController: DogeChatViewController, DatePickerChangeDelegate, UITableViewDataSource, UITableViewDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, DogeChatVCTableDataSource {
     
     var logoutButton: UIBarButtonItem!
     
-    let settingOptions = ["快捷操作", "修改图标", "毛玻璃强制暗黑", "播放时沉浸", "自定义毛玻璃", "勿扰模式", "自定义host", "自定义ws地址", "重置host&ws", "查看文件", "退出登录"]
-    let settingTypes: [SettingType] = [.shortcut, .changeIcon, .forceDarkMode, .switchImmersive, .customBlur, .doNotDisturb, .selectHost, .wsAddress, .resetHostAndWs, .browseFiles, .logout]
+    var settingTypes: [SettingType] = [.shortcut, .changeIcon, .forceDarkMode, .switchImmersive, .customBlur, .doNotDisturb, .browseFiles, .logout]
     var tableView = DogeChatTableView()
     var customBlurSwitcher: UISwitch!
     var manager: WebSocketManager {
@@ -39,6 +38,12 @@ class SettingViewController: DogeChatViewController, DatePickerChangeDelegate, U
     override func viewDidLoad() {
         super.viewDidLoad()
         self.navigationItem.title = "设置"
+        if isMac() {
+            settingTypes.remove(at: 1)
+        }
+        if #available(iOS 13, *) {} else {
+            settingTypes.remove(at: 2)
+        }
         view.addSubview(tableView)
         tableView.mas_makeConstraints { [weak self] make in
             make?.edges.equalTo()(self?.view)
@@ -78,7 +83,7 @@ class SettingViewController: DogeChatViewController, DatePickerChangeDelegate, U
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return settingOptions.count
+        return settingTypes.count
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -144,7 +149,7 @@ class SettingViewController: DogeChatViewController, DatePickerChangeDelegate, U
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: DogeChatTableViewCell.cellID()) as! DogeChatTableViewCell
         cell.backgroundColor = .clear
-        cell.textLabel?.text = settingOptions[indexPath.row]
+        cell.textLabel?.text = settingTypes[indexPath.row].rawValue
         cell.accessoryView = nil
         if settingTypes[indexPath.row] == .switchImmersive {
             let switcher = UISwitch()
@@ -191,7 +196,7 @@ class SettingViewController: DogeChatViewController, DatePickerChangeDelegate, U
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         guard let image = info[.originalImage] as? UIImage else { return }
-        let compress = compressEmojis(image, needBig: false, askedSize: CGSize(width: 400, height: 400))
+        let compress = compressEmojis(image, imageWidth: .width400)
         if let userID = userIDFor(username: username) {
             saveFileToDisk(dirName: "customBlur", fileName: userID, data: compress)
             customBlurSwitcher.isOn = fileURLAt(dirName: "customBlur", fileName: userID) != nil

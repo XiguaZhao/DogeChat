@@ -11,6 +11,7 @@ import UIKit
 class DogeChatTextView: UITextView, UITextPasteDelegate {
     
     var isActive = false
+    var ignoreActions = false
 
     override init(frame: CGRect, textContainer: NSTextContainer?) {
         super.init(frame: frame, textContainer: textContainer)
@@ -25,7 +26,7 @@ class DogeChatTextView: UITextView, UITextPasteDelegate {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override func becomeFirstResponder() -> Bool {
+    @discardableResult override func becomeFirstResponder() -> Bool {
         if isMac() {
             (self.superview as? MessageInputView)?.frameDown()
         }
@@ -33,7 +34,7 @@ class DogeChatTextView: UITextView, UITextPasteDelegate {
         return super.becomeFirstResponder()
     }
     
-    override func resignFirstResponder() -> Bool {
+    @discardableResult override func resignFirstResponder() -> Bool {
         isActive = false
         return super.resignFirstResponder()
     }
@@ -65,6 +66,9 @@ class DogeChatTextView: UITextView, UITextPasteDelegate {
     }
     
     override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
+        if ignoreActions {
+            return false
+        }
         if action == #selector(UITextView.paste(_:)) {
             return true
         }

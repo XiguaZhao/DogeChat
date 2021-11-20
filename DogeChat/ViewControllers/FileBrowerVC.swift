@@ -78,6 +78,7 @@ class FileBrowerVC: DogeChatViewController {
     }
     
     func changeToType(_ type: FileType) {
+        nowType = type
         if let urls = self.dirTypes[type] {
             button.setTitle("删除\(urls.count)条数据", for: .normal)
             button.setTitleColor(.blue, for: .normal)

@@ -77,7 +77,7 @@ class MiniPlayerCell: DogeChatBaseCollectionViewCell {
             SDWebImageManager.shared.loadImage(with: URL(string: track.albumImageUrl), options: .avoidDecodeImage, progress: nil) { image, _, _, _, _, _ in
                 guard let image = image, self.track == track else { return }
                 DispatchQueue.global().async {
-                    let imageData = compressImage(image: image, needBig: false, askedSize: CGSize(width: 40, height: 40))
+                    let imageData = compressImage(image: image, imageWidth: .width400)
                     DispatchQueue.main.async {
                         self.albumImageView.image = UIImage(data: imageData)
                     }

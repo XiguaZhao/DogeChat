@@ -15,8 +15,12 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
         switch message.messageType {
         case .join, .text, .voice:
             cellID = MessageCollectionViewTextCell.cellID
-        case .image, .livePhoto, .video:
+        case .image:
             cellID = MessageCollectionViewImageCell.cellID
+        case .livePhoto:
+            cellID = MessageCollectionViewLivePhotoCell.cellID
+        case .video:
+            cellID = MessageCollectionViewVideoCell.cellID
         case .draw:
             cellID = MessageCollectionViewDrawCell.cellID
         case .track:
@@ -26,9 +30,9 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
               let cell = tableView.dequeueReusableCell(withIdentifier: cellID, for: indexPath) as? MessageCollectionViewBaseCell else {
             return UITableViewCell()
         }
+        cell.referView.delegate = self
         cell.indexPath = indexPath
         cell.delegate = self
-        cell.cache = cache
         cell.username = username
         cell.contactDataSource = self.contactVC
         cell.apply(message: message)
@@ -37,17 +41,12 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
     }
     
     func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-//        (cell as? MessageCollectionViewBaseCell)?.cleanEmojis()
-//        (cell as? MessageCollectionViewImageCell)?.cleanAvatar()
-//        (cell as? MessageCollectionViewImageCell)?.cleanAnimatedImageView()
         (cell as? DogeChatTableViewCell)?.endDisplayBlock?(cell as! DogeChatTableViewCell, tableView)
     }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-//        (cell as? MessageCollectionViewBaseCell)?.addEmojis()
-//        (cell as? MessageCollectionViewBaseCell)?.loadAvatar()
-//        (cell as? MessageCollectionViewImageCell)?.loadImageIfNeeded()
         (cell as? DogeChatTableViewCell)?.willDisplayBlock?(cell as! DogeChatTableViewCell, tableView)
+        
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -132,7 +131,7 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
     func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
         let cell = tableView.cellForRow(at: indexPath) as! MessageCollectionViewBaseCell
         let identifier = "\(indexPath.row)" as NSString
-        if let cell = cell as? MessageCollectionViewImageCell {
+        if let cell = cell as? MessageCollectionViewLivePhotoCell {
             let convert = tableView.convert(point, to: cell.livePhotoView)
             if cell.livePhotoView.bounds.contains(convert) {
                 return nil
@@ -141,6 +140,7 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
         return UIContextMenuConfiguration(identifier: identifier, previewProvider: nil
         ) { [weak self, weak cell] (menuElement) -> UIMenu? in
             guard let self = self, let cell = cell else { return nil }
+            self.activeMenuCell = cell
             let copyAction = UIAction(title: "复制") { (_) in
                 if let textCell = cell as? MessageCollectionViewTextCell {
                     let text = textCell.messageLabel.text
@@ -150,6 +150,7 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
             var revokeAction: UIAction?
             var starEmojiAction: UIAction?
             var addBackgroundColorAction: UIAction?
+            var referAction: UIAction?
             if self.messages[indexPath.row].messageSender == .ourself && self.messages[indexPath.row].messageType != .join {
                 revokeAction = UIAction(title: "撤回") { [weak self] (_) in
                     guard let self = self else { return }
@@ -169,11 +170,19 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
                     }
                 }
             }
+            if cell.message.messageType != .join {
+                referAction = UIAction(title: "引用") { [weak self] _ in
+                    self?.referAction(sender: nil)
+                }
+            }
             let multiSelect = UIAction(title: "多选") { [weak self] _ in
                 guard let self = self else { return }
                 self.makeMultiSelection(indexPath)
             }
             var children: [UIAction] = [copyAction, multiSelect]
+            if let referAction = referAction {
+                children.append(referAction)
+            }
             if revokeAction != nil { children.append(revokeAction!) }
             if starEmojiAction != nil { children.append(starEmojiAction!) }
             if addBackgroundColorAction != nil { children.append(addBackgroundColorAction!) }
@@ -187,16 +196,14 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
         tableView.allowsMultipleSelectionDuringEditing = true
         self.tableView.setEditing(true, animated: true)
         self.tableView.selectRow(at: indexPath, animated: true, scrollPosition: .none)
-        let cancel = UIBarButtonItem(title: "取消", style: .plain, target: self, action: #selector(self.cancelItemAction))
-        let share = UIBarButtonItem(title: "转发", style: .plain, target: self, action: #selector(self.didFinishMultiSelection(_:)))
-        self.navigationItem.setRightBarButtonItems([cancel, share], animated: true)
+        setupToolBar()
     }
     
     @objc func cancelItemAction() {
         activeSwipeIndexPath = nil
         tableView.setEditing(false, animated: true)
-        makeDetailRightBarButton()
         tableView.indexPathsForVisibleRows?.forEach { tableView.deselectRow(at: $0, animated: true) }
+        recoverInputBar()
     }
         
     @objc func didFinishMultiSelection(_ button: UIBarButtonItem) {
@@ -208,7 +215,7 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
         popover?.barButtonItem = button
         popover?.permittedArrowDirections = .right
         popover?.delegate = self
-
+        
         present(selectContactsVC, animated: true, completion: nil)
     }
     
@@ -236,6 +243,7 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
             for message in selectedMessages {
                 message.uuid = UUID().uuidString
                 message.senderUsername = username
+                message.messageSender = .ourself
                 message.senderUserID = manager.messageManager.myId
                 message.receiver = contact.username
                 message.receiverUserID = contact.userID
@@ -321,8 +329,8 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
     }
     
     @objc func receiveEmojiInfoChangedNotification(_ noti: Notification) {
-        guard let (receiver, sender) = noti.userInfo?["receiverAndSender"] as? (String, String), let message = noti.userInfo?["message"] as? Message else { return }
-        if (receiver == "PublicPino" && navigationItem.title == "群聊") || sender == friendName {
+        guard let (_, _, friend) = noti.userInfo?["receiverAndSender"] as? (String, String, Friend), let message = noti.userInfo?["message"] as? Message else { return }
+        if friend.userID == self.friend.userID {
             if let index = messages.firstIndex(of: message) { // 消息存在
                 let indexPath = IndexPath(item: index, section: 0)
                 tableView.reloadRows(at: [indexPath], with: .none)

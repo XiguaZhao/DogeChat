@@ -49,20 +49,16 @@ extension ChatRoomViewController: UITableViewDragDelegate {
     
     func tableView(_ tableView: UITableView, dragPreviewParametersForRowAt indexPath: IndexPath) -> UIDragPreviewParameters? {
         let preview = UIDragPreviewParameters()
-        let message = messages[indexPath.row]
         guard let cell = tableView.cellForRow(at: indexPath) as? MessageCollectionViewBaseCell else { return nil }
-        var rect: CGRect?
-        if message.messageType == .text || message.messageType == .voice {
-            rect = (cell as! MessageCollectionViewTextCell).messageLabel.frame
-        } else if message.messageType == .image || message.messageType == .video {
-            rect = (cell as! MessageCollectionViewImageCell).animatedImageView.frame
-        }
+        let rect: CGRect? = cell.indicationNeighborView?.frame
         guard var rect = rect, let targetView = cell.indicationNeighborView else {
             return nil
         }
         let offset = cell.bounds.width - cell.contentView.bounds.width
         rect.origin.x += offset
         let path = UIBezierPath(roundedRect: rect, cornerRadius: targetView.layer.cornerRadius)
+        let avatarPath = UIBezierPath(roundedRect: cell.avatarImageView.frame, cornerRadius: cell.avatarImageView.layer.cornerRadius)
+        path.append(avatarPath)
         preview.visiblePath = path
         return preview
 

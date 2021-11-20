@@ -16,7 +16,6 @@ class MediaBrowserViewController: UIViewController {
     var imagePaths = [String]()
     var targetIndex = 0
     let flowLayout = UICollectionViewFlowLayout()
-    var tap: UITapGestureRecognizer!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -43,12 +42,6 @@ class MediaBrowserViewController: UIViewController {
         let swipeDownGesture = UISwipeGestureRecognizer(target: self, action: #selector(swipeDown))
         swipeDownGesture.direction = .down
         self.view.addGestureRecognizer(swipeDownGesture)
-        tap = UITapGestureRecognizer(target: self, action: #selector(swipeDown))
-        self.view.addGestureRecognizer(tap)
-        let doubleTap = UITapGestureRecognizer(target: self, action: #selector(doubleTapAction(_:)))
-        doubleTap.numberOfTapsRequired = 2
-        self.view.addGestureRecognizer(doubleTap)
-        tap.require(toFail: doubleTap)
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -86,26 +79,13 @@ class MediaBrowserViewController: UIViewController {
     }
     
     deinit {
-        if !PlayerManager.shared.isPlaying && !AppDelegate.shared.callManager.hasCall() {
-            try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
-        }
+        PlayerManager.shared.playerTypes.remove(.mediaBrowser)
     }
 
     @objc func escapeAction(_ sender: Any) {
         self.dismiss(animated: true, completion: nil)
     }
     
-    @objc func doubleTapAction(_ ges: UITapGestureRecognizer) {
-        let location = ges.location(in: self.view)
-        if let cell = collectionView.visibleCells.first as? MediaBrowserCell {
-            let scale: CGFloat = cell.scrollView.zoomScale == 1 ? 2 : 1
-            cell.scrollView.setZoomScale(scale, animated: true)
-            if scale != 1 {
-                cell.scrollView.zoom(to: CGRect(center: location, size: .zero), animated: true)
-            }
-        }
-    }
-
     func scrollToIndex(_ index: Int) {
         collectionView.isPagingEnabled = false
         collectionView.scrollToItem(at: IndexPath(item: index, section: 0), at: .centeredHorizontally, animated: false)
@@ -149,7 +129,6 @@ extension MediaBrowserViewController: UICollectionViewDataSource, UICollectionVi
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         if let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MediaBrowserCell.cellID, for: indexPath) as? MediaBrowserCell {
-            cell.cache = cache
             cell.delegate = self
             return cell
         }
@@ -181,12 +160,14 @@ extension MediaBrowserViewController: UICollectionViewDataSource, UICollectionVi
 }
 
 extension MediaBrowserViewController: MediaBrowserCellDelegate {
+    func singleTap(_ cell: MediaBrowserCell) {
+        dismiss(animated: true, completion: nil)
+    }
+    
     func livePhotoWillBegin(_ cell: MediaBrowserCell, livePhotoView: PHLivePhotoView) {
-        tap.isEnabled = false
     }
     
     func livePhotoDidEnd(_ cell: MediaBrowserCell, livePhotoView: PHLivePhotoView) {
-        tap.isEnabled = true
     }
     
     

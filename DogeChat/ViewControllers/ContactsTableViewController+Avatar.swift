@@ -81,15 +81,11 @@ extension ContactsTableViewController: ContactTableViewCellDelegate, UIContextMe
     @objc func updateMyAvatar(_ noti: Notification) {
         let url = noti.userInfo?["path"] as! String
         MediaLoader.shared.requestImage(urlStr: url, type: .image, cookie: manager.cookie) { [self] image, data, _ in
+            guard let data = data else { return }
             if url.hasSuffix(".gif") {
                 avatarImageView.animatedImage = FLAnimatedImage(gifData: data)
-                ContactTableViewCell.avatarCache[url] = data
             } else {
-                if let image = image {
-                    let data = compressEmojis(image)
-                    avatarImageView.image = UIImage(data: data)
-                    ContactTableViewCell.avatarCache[url] = data
-                }
+                avatarImageView.image = UIImage(data: data)
             }
             if let chatVC = navigationController?.visibleViewController as? ChatRoomViewController {
                 chatVC.tableView.reloadData()
@@ -101,7 +97,7 @@ extension ContactsTableViewController: ContactTableViewCellDelegate, UIContextMe
         let friend = noti.userInfo?["friend"] as! Friend
         if let index = self.friends.firstIndex(of: friend) {
             self.friends[index].avatarURL = friend.avatarURL
-            tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
+            tableView.reloadData()
             if let chatVC = findChatRoomVC() {
                 for message in chatVC.messages where message.senderUserID == friend.userID {
                     message.avatarUrl = friend.avatarURL

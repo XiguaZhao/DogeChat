@@ -14,7 +14,13 @@ import DogeChatNetwork
 
 extension ChatRoomViewController: MessageInputDelegate, VoiceRecordDelegate {
     
+    func messageInputBarFrameChange(_ endFrame: CGRect, shouldDown: Bool, ignore: Bool) {
+        keyboardFrameChange(endFrame, shouldDown: shouldDown)
+        self.ignoreKeyboardChange = ignore
+    }
+    
     func toolButtonTap(_ button: UIButton, type: InputViewToolButtonType) {
+        messageInputBar.textView.resignFirstResponder()
         let imagePicker = UIImagePickerController()
         imagePicker.delegate = self
         switch type {
@@ -55,7 +61,6 @@ extension ChatRoomViewController: MessageInputDelegate, VoiceRecordDelegate {
                 imagePicker.mediaTypes = ["public.movie"]
             }
             self.present(imagePicker, animated: true, completion: nil)
-            self.messageInputBar.textView.resignFirstResponder()
         case .draw:
             if #available(iOS 13, *) {
                 let drawVC = DrawViewController()

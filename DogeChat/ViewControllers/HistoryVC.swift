@@ -11,6 +11,11 @@ import DogeChatUniversal
 import DogeChatNetwork
 import MJRefresh
 
+enum HistoryVCType {
+    case history
+    case referView
+}
+
 @available(iOS 13.0, *)
 class HistoryVC: DogeChatViewController, DogeChatVCTableDataSource {
     
@@ -18,7 +23,7 @@ class HistoryVC: DogeChatViewController, DogeChatVCTableDataSource {
         case main
     }
     
-    var cache: NSCache<NSString, NSData>!
+    var type: HistoryVCType = .history
     var friend: Friend!
     var messages = [Message]()
     var uuids = Set<String>()
@@ -43,7 +48,16 @@ class HistoryVC: DogeChatViewController, DogeChatVCTableDataSource {
     var upNowPage = 1
     var downNowPage = 1
     var manager: WebSocketManager! {
+        if username.isEmpty {
+            username = (self.splitViewController as? DogeChatSplitViewController)?.findContactVC()?.username ?? ""
+        }
         return WebSocketManager.usersToSocketManager[username]
+    }
+    
+    convenience init(type: HistoryVCType, username: String) {
+        self.init()
+        self.type = type
+        self.username = username
     }
     
     override func viewDidLoad() {
@@ -52,29 +66,37 @@ class HistoryVC: DogeChatViewController, DogeChatVCTableDataSource {
         manager.needInsertWhenWrap = false
                 
         view.addSubview(tableView)
-        navigationItem.title = friend.username + "的历史记录"
         
         tableView.delegate = self
         configDataSource()        
-        let header = UIRefreshControl()
-        header.addTarget(self, action: #selector(refreshHeaderAction), for: .valueChanged)
-        tableView.refreshControl = header
         
-        NotificationCenter.default.addObserver(self, selector: #selector(receiveHistory(_:)), name: .receiveHistoryMessages, object: username)
-        
-        let leftLabel = UILabel()
-        leftLabel.text = "最新"
-        stack = UIStackView(arrangedSubviews: [leftLabel, slider, progressLabel])
-        stack.spacing = 15
-        slider.minimumValue = 1
-        slider.isContinuous = false
-        slider.addTarget(self, action: #selector(sliderAction(_:)), for: .valueChanged)
-        
-        self.navigationController?.setToolbarHidden(false, animated: true)
-        self.setToolbarItems([UIBarButtonItem(customView: stack)], animated: true)
 
-        nowPage = 1
-        requestPage(1)
+        if type == .history {
+            navigationItem.title = friend.username + "的历史记录"
+            let header = UIRefreshControl()
+            header.addTarget(self, action: #selector(refreshHeaderAction), for: .valueChanged)
+            tableView.refreshControl = header
+            
+            NotificationCenter.default.addObserver(self, selector: #selector(receiveHistory(_:)), name: .receiveHistoryMessages, object: username)
+
+            nowPage = 1
+            requestPage(1)
+                        
+            let leftLabel = UILabel()
+            leftLabel.text = "最新"
+            stack = UIStackView(arrangedSubviews: [leftLabel, slider, progressLabel])
+            stack.spacing = 15
+            slider.minimumValue = 1
+            slider.isContinuous = false
+            slider.addTarget(self, action: #selector(sliderAction(_:)), for: .valueChanged)
+
+            self.navigationController?.setToolbarHidden(false, animated: true)
+            self.setToolbarItems([UIBarButtonItem(customView: stack)], animated: true)
+
+        } else {
+            navigationItem.title = "消息详情"
+            updateSnapshot()
+        }
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -83,7 +105,7 @@ class HistoryVC: DogeChatViewController, DogeChatVCTableDataSource {
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        stack.removeFromSuperview()
+        stack?.removeFromSuperview()
     }
         
     override func viewDidLayoutSubviews() {
@@ -104,13 +126,19 @@ class HistoryVC: DogeChatViewController, DogeChatVCTableDataSource {
         tableView.register(MessageCollectionViewImageCell.self, forCellReuseIdentifier: MessageCollectionViewImageCell.cellID)
         tableView.register(MessageCollectionViewDrawCell.self, forCellReuseIdentifier: MessageCollectionViewDrawCell.cellID)
         tableView.register(MessageCollectionViewTrackCell.self, forCellReuseIdentifier: MessageCollectionViewTrackCell.cellID)
+        tableView.register(MessageCollectionViewLivePhotoCell.self, forCellReuseIdentifier: MessageCollectionViewLivePhotoCell.cellID)
+        tableView.register(MessageCollectionViewVideoCell.self, forCellReuseIdentifier: MessageCollectionViewVideoCell.cellID)
         dataSource = UITableViewDiffableDataSource<Section, Message>(tableView: tableView) { [weak self] tableView, indexPath, message in
             let id: String
             switch message.messageType {
             case .text, .join, .voice:
                 id = MessageCollectionViewTextCell.cellID
-            case .image, .livePhoto, .video:
+            case .image:
                 id = MessageCollectionViewImageCell.cellID
+            case .livePhoto:
+                id = MessageCollectionViewLivePhotoCell.cellID
+            case .video:
+                id = MessageCollectionViewVideoCell.cellID
             case .draw:
                 id = MessageCollectionViewDrawCell.cellID
             case .track:
@@ -120,7 +148,6 @@ class HistoryVC: DogeChatViewController, DogeChatVCTableDataSource {
             cell.contactDataSource = self?.contactDataSource
             cell.indexPath = indexPath
             cell.tableView = tableView
-            cell.cache = self?.cache
             cell.isHistory = true
             cell.delegate = self
             cell.username = self!.username
@@ -205,10 +232,10 @@ class HistoryVC: DogeChatViewController, DogeChatVCTableDataSource {
 @available(iOS 13.0, *)
 extension HistoryVC: UITableViewDelegate, MessageTableViewCellDelegate {
     
-    func imageViewTapped(_ cell: MessageCollectionViewBaseCell, imageView: FLAnimatedImageView, path: String, isAvatar: Bool) {
+    func mediaViewTapped(_ cell: MessageCollectionViewBaseCell, path: String, isAvatar: Bool) {
         let browser = MediaBrowserViewController()
         if !isAvatar {
-            let paths = (self.messages.filter { $0.messageType == .image }).compactMap { $0.imageLocalPath?.absoluteString ?? $0.imageURL }
+            let paths = (self.messages.filter { $0.messageType == .image || $0.messageType == .livePhoto || $0.messageType == .video }).map { $0.text }
             browser.imagePaths = paths
             if let index = paths.firstIndex(of: path) {
                 browser.targetIndex = index
@@ -248,16 +275,14 @@ extension HistoryVC: UITableViewDelegate, MessageTableViewCellDelegate {
         
     }
     
-    func downloadSuccess(message: Message) {
+    func downloadSuccess(_ cell: MessageCollectionViewBaseCell?, message: Message) {
+        guard let cell = cell, cell.message == message else {
+            return
+        }
         syncOnMainThread {
-            if let index = self.messages.firstIndex(where: { $0.uuid == message.uuid }) {
-                let indexPath = IndexPath(row: index, section: 0)
-                if let cell = self.tableView.cellForRow(at: indexPath) as? MessageCollectionViewBaseCell {
-                    cell.apply(message: message)
-                    cell.layoutIfNeeded()
-                    cell.setNeedsLayout()
-                }
-            }
+            cell.apply(message: message)
+            cell.layoutIfNeeded()
+            cell.setNeedsLayout()
         }
     }
     

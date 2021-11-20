@@ -1,6 +1,7 @@
 
 import UIKit
 import DogeChatNetwork
+import CoreGraphics
 
 extension ChatRoomViewController {
     
@@ -8,55 +9,75 @@ extension ChatRoomViewController {
         super.viewWillTransition(to: size, with: coordinator)
         self.messageInputBar.textViewResign()
     }
+    
+    @objc func keyboardFrameChangeNoti(_ noti: Notification) {
+        keyboardWillChange(notification: noti, shouldDown: false)
+    }
+    
+    @objc func keyboardWillShow(noti: Notification) {
+        keyboardWillChange(notification: noti, shouldDown: false)
+    }
+    
+    @objc func keyboardWillHide(noti: Notification) {
+        keyboardWillChange(notification: noti, shouldDown: true)
+    }
             
-    @objc func keyboardWillChange(notification: NSNotification) {
+    func keyboardWillChange(notification: Notification, shouldDown: Bool) {
         stopScrolling()
+        if ignoreKeyboardChange {
+            ignoreKeyboardChange = false
+            return
+        }
         if let userInfo = notification.userInfo {
             var endFrame = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)!.cgRectValue
             if let beginFrame = (userInfo[UIResponder.keyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue, beginFrame == endFrame {
                 return
             }
-            if isKeyboardAnimating {
-                return
-            }
-            var shouldDown = !messageInputBar.textView.isActive
-            if let up = notification.object as? Bool {
-                shouldDown = !up
-            }
-            let height = self.navigationController?.view.bounds.height ?? 0
+            let height = self.navigationController?.view.bounds.height ?? UIScreen.main.bounds.height
             if !shouldDown && endFrame.minY + endFrame.height != UIScreen.main.bounds.height {
-                endFrame = CGRect(x: 0, y: 0.62 * height, width: 0, height: height * 0.38)
+                if isPad() {
+                    endFrame = CGRect(x: 0, y: 0.62 * height, width: 0, height: height * 0.38)
+                }
             } else if shouldDown {
                 endFrame = CGRect(x: 0, y: height, width: 0, height: 100)
             }
-            let additionalOffset: CGFloat = safeArea.bottom / 2
-            let messageBarHeight = self.messageInputBar.bounds.height
-            var point = CGPoint(x: self.messageInputBar.center.x, y: endFrame.origin.y - messageBarHeight/2.0)
-            let bottomInset: CGFloat
-            let safeAreaInsetBottom = safeArea.bottom
-            if !shouldDown {
-                bottomInset = AppDelegate.shared.navigationController!.view.bounds.height - endFrame.minY - safeAreaInsetBottom + messageBarHeight - additionalOffset
-            } else {
-                bottomInset = messageBarHeight - safeAreaInsetBottom
-            }
-            let inset = UIEdgeInsets(top: 0, left: 0, bottom: bottomInset, right: 0)
-            var offsetY = point.y - messageInputBar.center.y
-            let duration = 0.25
-            point.y += shouldDown ? 0 : additionalOffset
-            offsetY += shouldDown ? 0 : additionalOffset
-            isKeyboardAnimating = true
-            UIView.animate(withDuration: duration) { [self] in
-                self.messageInputBar.center = point
-                self.emojiSelectView.alpha = (shouldDown ? 0 : 1)
-                self.emojiSelectView.center = CGPoint(x: self.emojiSelectView.center.x, y: self.emojiSelectView.center.y + offsetY)
-                self.tableView.contentInset = inset
-                let contentHeight = contentHeight()
-                if !shouldDown && contentHeight > messageInputBar.frame.minY {
-                    self.tableView.contentOffset = CGPoint(x: 0, y: contentHeight - messageInputBar.frame.minY)
+            keyboardFrameChange(endFrame, shouldDown: shouldDown)
+        }
+    }
+    
+    func keyboardFrameChange(_ endFrame: CGRect, shouldDown: Bool) {
+        let additionalOffset: CGFloat = safeArea.bottom / 2
+        let messageBarHeight = self.messageInputBar.bounds.height
+        var point = CGPoint(x: self.messageInputBar.center.x, y: endFrame.origin.y - messageBarHeight/2.0)
+        var bottomInset: CGFloat
+        let safeAreaInsetBottom = safeArea.bottom
+        if !shouldDown {
+            bottomInset = AppDelegate.shared.navigationController!.view.bounds.height - endFrame.minY - safeAreaInsetBottom + messageBarHeight - additionalOffset
+        } else {
+            bottomInset = messageBarHeight - safeAreaInsetBottom
+        }
+        if messageInputBar.referView.alpha > 0 {
+            bottomInset += ReferView.height
+        }
+        let inset = UIEdgeInsets(top: 0, left: 0, bottom: bottomInset, right: 0)
+        var offsetY = point.y - messageInputBar.center.y
+        let duration = 0.25
+        point.y += shouldDown ? 0 : additionalOffset
+        offsetY += shouldDown ? 0 : additionalOffset
+        UIView.animate(withDuration: duration) { [self] in
+            self.messageInputBar.center = point
+            self.emojiSelectView.center = CGPoint(x: self.emojiSelectView.center.x, y: self.emojiSelectView.center.y + offsetY)
+            self.tableView.contentInset = inset
+            let contentHeight = contentHeight()
+            if !shouldDown && contentHeight > messageInputBar.frame.minY {
+                let lastIndexPath = IndexPath(row: messages.count - 1, section: 0)
+                if (tableView.indexPathsForVisibleRows ?? []).contains(lastIndexPath) {
+                    self.tableView.setContentOffset(CGPoint(x: 0, y: contentHeight - messageInputBar.frame.minY - messageInputBar.topConstraint.constant), animated: false)
+                } else {
+                    self.tableView.scrollToRow(at: lastIndexPath, at: .bottom, animated: true)
                 }
-            } completion: { finished in
-                self.isKeyboardAnimating = false
             }
+        } completion: { finished in
         }
     }
     
@@ -89,6 +110,8 @@ extension ChatRoomViewController {
         tableView.register(MessageCollectionViewImageCell.self, forCellReuseIdentifier: MessageCollectionViewImageCell.cellID)
         tableView.register(MessageCollectionViewDrawCell.self, forCellReuseIdentifier: MessageCollectionViewDrawCell.cellID)
         tableView.register(MessageCollectionViewTrackCell.self, forCellReuseIdentifier: MessageCollectionViewTrackCell.cellID)
+        tableView.register(MessageCollectionViewLivePhotoCell.self, forCellReuseIdentifier: MessageCollectionViewLivePhotoCell.cellID)
+        tableView.register(MessageCollectionViewVideoCell.self, forCellReuseIdentifier: MessageCollectionViewVideoCell.cellID)
         tableView.layer.masksToBounds = true
         
         emojiSelectView.delegate = self
@@ -101,6 +124,7 @@ extension ChatRoomViewController {
         }
 
         messageInputBar.delegate = self
+        messageInputBar.referView.delegate = self
         
         pan = UIScreenEdgePanGestureRecognizer(target: self, action: #selector(panAction(_:)))
         pan?.edges = .right
@@ -117,16 +141,11 @@ extension ChatRoomViewController {
                 messages[i].syncGetMedia = true //为了让点进来的时候图片直接显示，不然下一个runloop会闪一下
             }
             tableView.reloadData()
-            let navigationBarHeight = navigationController?.navigationBar.bounds.height ?? 0
-            let statusBarHeight = UIApplication.shared.statusBarFrame.height
-            let offset = CGPoint(x: 0, y: tableView.contentSize.height - tableView.bounds.height + (isPeek ? 0 : messageInputBar.frame.height) + navigationBarHeight + (isPeek ? 0 : statusBarHeight))
-            if isPeek {
-                DispatchQueue.main.async { [self] in
-                    tableView.contentOffset = CGPoint(x: 0, y: tableView.contentSize.height - tableView.bounds.height + (isPeek ? 0 : messageInputBar.frame.height) + navigationBarHeight + (isPeek ? 0 : statusBarHeight))
-                }
-            } else {
-                tableView.contentOffset = offset
-            }
+//            let offset = CGPoint(x: 0, y: CGFloat.greatestFiniteMagnitude)
+//            tableView.contentOffset = offset
+//            DispatchQueue.main.async { [self] in
+                tableView.scrollToRow(at: IndexPath(row: messages.count - 1, section: 0), at: .bottom, animated: false)
+//            }
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
                 self.scrollViewDidEndDecelerating(self.tableView)
             }
@@ -181,32 +200,51 @@ extension ChatRoomViewController {
             return
         }
         let oldFrame = messageInputBar.frame
-        let textHeight = textView.contentSize.height
-        let lineHeight = (textView.text as NSString).size(withAttributes: textView.typingAttributes).height
-        let lineCount = Int(textHeight / lineHeight)
-        let oldLineCount = Int((oldFrame.height - (safeArea.bottom + 46)) / lineHeight)
-        let lineCountChanged = lineCount - oldLineCount
-        var heightChanged = CGFloat(lineCountChanged) * lineHeight
+        let newTextViewSize = textView.contentSize
+        var heightChanged = newTextViewSize.height - lastTextViewContentSize.height
         var tableViewInset = tableView.contentInset
         if textView.text.isEmpty {
+            heightChanged = messageBarHeight - oldFrame.height
+        }
+        let inputBarHeight = oldFrame.height+heightChanged
+        if inputBarHeight > MessageInputView.maxHeight {
+            heightChanged = MessageInputView.maxHeight - oldFrame.height
+        }
+        if inputBarHeight < messageBarHeight {
             heightChanged = messageBarHeight - oldFrame.height
         }
         let finalFrame = CGRect(x: oldFrame.origin.x, y: oldFrame.origin.y-heightChanged, width: oldFrame.width, height: oldFrame.height+heightChanged)
         tableViewInset.bottom += heightChanged
         if heightChanged != 0 || scrollByTextViewChange() {
             DispatchQueue.main.async {
-                UIView.animate(withDuration: 0.3) { [weak self] in
+                UIView.animate(withDuration: 0.3, animations: { [weak self] in
                     guard let self = self else { return }
                     self.messageInputBar.frame = finalFrame
                     self.tableView.contentInset = tableViewInset
                     self.tableView.contentOffset = CGPoint(x: 0, y: self.tableView.contentSize.height - finalFrame.minY)
+                }) { _ in
+                    self.updateTextViewOffset()
                 }
             }
+        } else {
+            updateTextViewOffset()
         }
+        lastTextViewContentSize = newTextViewSize
+    }
+    
+    func updateTextViewOffset() {
+        let textView = self.messageInputBar.textView
+        var contentOffset: CGPoint = .zero
+        if textView.contentSize.height <= textView.bounds.height {
+            contentOffset = .zero
+        } else {
+            contentOffset.y = textView.contentSize.height - textView.bounds.height
+        }
+        textView.setContentOffset(contentOffset, animated: true)
     }
     
     func scrollByTextViewChange() -> Bool {
-        return messageInputBar.textView.text.isEmpty && messageInputBar.textView.font?.pointSize != 18
+        return messageInputBar.textView.text.isEmpty && messageInputBar.textView.font?.pointSize != MessageInputView.textViewDefaultFontSize
     }
     
     func makeNavBarUI() {

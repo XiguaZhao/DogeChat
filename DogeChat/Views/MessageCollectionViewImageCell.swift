@@ -9,22 +9,12 @@
 import UIKit
 import DogeChatNetwork
 import DogeChatUniversal
-import PhotosUI
 
-class MessageCollectionViewImageCell: MessageCollectionViewBaseCell, PHLivePhotoViewDelegate {
+class MessageCollectionViewImageCell: MessageCollectionViewBaseCell {
     
     static let cellID = "MessageCollectionViewImageCell"
     
     var animatedImageView: FLAnimatedImageView!
-    var livePhotoView = PHLivePhotoView()
-    let imageDownloader = SDWebImageManager.shared
-    let livePhotoBadgeView = UIImageView()
-    let player = AVPlayer()
-    var item: AVPlayerItem!
-    var videoView = VideoView()
-    var videoEnd = false
-    var isPlaying = false
-    var playNow = false
     var isGif: Bool {
         guard let url = message.imageURL else {
             return false
@@ -38,48 +28,9 @@ class MessageCollectionViewImageCell: MessageCollectionViewBaseCell, PHLivePhoto
         animatedImageView.layer.masksToBounds = true
         animatedImageView.contentMode = .scaleAspectFit
         contentView.addSubview(animatedImageView)
-        contentView.addSubview(livePhotoView)
-        contentView.addSubview(videoView)
-        indicationNeighborView = animatedImageView
-        videoView.layer.masksToBounds = true
-        livePhotoView.layer.masksToBounds = true
-        livePhotoView.addSubview(livePhotoBadgeView)
-        livePhotoBadgeView.image = PHLivePhotoView.livePhotoBadgeImage(options: .overContent)
-        livePhotoBadgeView.mas_makeConstraints { [weak self] make in
-            make?.leading.top().equalTo()(self?.livePhotoView)?.offset()(5)
-        }
-        livePhotoView.mas_makeConstraints { [weak self] make in
-            make?.edges.equalTo()(self?.animatedImageView)
-        }
-        livePhotoView.delegate = self
-        videoView.mas_makeConstraints { [weak self] make in
-            make?.edges.equalTo()(self?.animatedImageView)
-        }
         addGestureForImageView()
-        addGestureForVideoView()
-        addGestureForLivePhotoView()
+        indicationNeighborView = animatedImageView
         
-        NotificationCenter.default.addObserver(self, selector: #selector(playToEnd(_:)), name: .AVPlayerItemDidPlayToEndTime, object: nil)
-        
-        endDisplayBlock = { [weak self] _, _ in
-            guard let self = self else { return }
-            self.livePhotoView.stopPlayback()
-            self.player.pause()
-            self.videoEnd = true
-        }
-        resignCenterBlock = { [weak self] _, _ in
-            guard let self = self else { return }
-            self.livePhotoView.stopPlayback()
-            self.player.pause()
-            self.videoEnd = true
-        }
-        centerDisplayBlock = { [weak player, weak self] _ , _ in
-            guard let self = self, let player = player else { return }
-            self.livePhotoView.startPlayback(with: .full)
-            if player.currentTime() == .zero || self.videoEnd {
-                self.playVideo()
-            }
-        }
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -90,12 +41,6 @@ class MessageCollectionViewImageCell: MessageCollectionViewBaseCell, PHLivePhoto
         super.prepareForReuse()
         animatedImageView.image = nil
         animatedImageView.animatedImage = nil
-        livePhotoView.livePhoto = nil
-        item = nil
-        player.replaceCurrentItem(with: nil)
-        videoEnd = false
-        isPlaying = false
-        playNow = false
     }
     
     override func layoutSubviews() {
@@ -107,16 +52,8 @@ class MessageCollectionViewImageCell: MessageCollectionViewBaseCell, PHLivePhoto
     
     override func apply(message: Message) {
         super.apply(message: message)
-        livePhotoView.isHidden = !(message.messageType == .livePhoto)
-        animatedImageView.isHidden = (message.messageType == .livePhoto) || (message.messageType == .video)
-        videoView.isHidden = !(message.messageType == .video)
-        if message.messageType == .livePhoto {
-            makeLivePhoto()
-        } else if message.messageType == .video {
-            makeVideo()
-        } else {
-            loadImageIfNeeded()
-        }
+        loadImageIfNeeded()
+        self.setNeedsLayout()
     }
     
     func loadImageIfNeeded() {
@@ -130,177 +67,15 @@ class MessageCollectionViewImageCell: MessageCollectionViewBaseCell, PHLivePhoto
         self.animatedImageView.image = nil
     }
     
-    func deactiveSession() {
-        if !PlayerManager.shared.isPlaying {
-            try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
-        }
-    }
-    
-    func activeSession() {
-        if !PlayerManager.shared.isPlaying {
-            try? AVAudioSession.sharedInstance().setCategory(.ambient, options: .allowBluetooth)
-        }
-    }
-    
-    func playVideo() {
-        guard let videoPath = self.message?.videoURL, let url = fileURLAt(dirName: videoDir, fileName:videoPath.components(separatedBy: "/").last!) else { return }
-        self.playVideo(url: url, playNow: true)
-    }
-    
-    func playVideo(url: URL, playNow: Bool) {
-        if self.item == nil {
-            self.item = AVPlayerItem(url: url)
-            player.replaceCurrentItem(with: self.item)
-            self.videoView.player = self.player
-        }
-        if playNow {
-            activeSession()
-            self.player.isMuted = true
-            self.player.seek(to: .zero)
-            self.player.play()
-            videoEnd = false
-            isPlaying = true
-        }
-    }
-    
-    @objc func playToEnd(_ noti: Notification) {
-        if let item = noti.object as? AVPlayerItem, item == self.item {
-            self.videoEnd = true
-            isPlaying = false
-        }
-    }
-    
-    func makeVideo() {
-        var url: URL?
-        let captured = self.message
-        let block: (Bool) -> Void = { [weak self] playNow in
-            guard let self = self, captured == self.message, let url = url else { return }
-            self.message.videoLocalPath = url
-            self.playVideo(url: url, playNow: playNow)
-        }
-        if message.videoLocalPath != nil && message.sendStatus == .fail {
-            url = message.videoLocalPath!
-            block(true)
-        } else if let _url = fileURLAt(dirName: videoDir, fileName: self.message.videoURL!.components(separatedBy: "/").last!) {
-            url = _url
-            block(playNow)
-        } else {
-            MediaLoader.shared.requestImage(urlStr: url_pre + message.videoURL!, type: .video, cookie: cookie, syncIfCan: true) { [weak self] _, _, localURL in
-                captured?.isDownloading = false
-                print("videoDone")
-                self?.delegate?.downloadSuccess(message: captured!)
-                NotificationCenter.default.post(name: .mediaDownloadFinished, object: captured?.text, userInfo: nil)
-            } progress: { [weak self] progress in
-                self?.delegate?.downloadProgressUpdate(progress: progress, message: captured!)
-            }
-        }
-    }
-    
-    func playLivePhoto() {
-        self.activeSession()
-        self.livePhotoView.isMuted = true
-        self.livePhotoView.startPlayback(with: .full)
-    }
-    
-    func makeLivePhoto() {
-        let capturedMessage = message
-        let block: (PHLivePhoto, Bool) -> Void = { [weak self] livePhoto, playNow in
-            guard let self = self else { return }
-            guard capturedMessage == self.message else { return }
-            syncOnMainThread {
-                self.livePhotoView.livePhoto = livePhoto
-                if playNow {
-                    self.playLivePhoto()
-                }
-            }
-        }
-        let size = sizeForImageOrVideo(message)
-        let livePhotoLoadBlock: (URL, URL, Bool) -> Void = { [weak self] localImageURL, localVideoURL, playNow in
-            guard let self = self else { return }
-            let width = AppDelegate.shared.widthFor(side: .right, username: self.username) * 0.5
-            PHLivePhoto.request(withResourceFileURLs: [
-                localImageURL, localVideoURL]
-                                , placeholderImage: nil, targetSize: size == nil ? .zero : CGSize(width: width, height: width / size!.width * size!.height), contentMode: .aspectFit) { live, info in
-                if let livePhoto = live, info[PHLivePhotoInfoErrorKey] == nil {
-                    if let degrade = info[PHLivePhotoInfoIsDegradedKey] as? Int, degrade == 1 {
-                        return
-                    } else if let cancel = info[PHLivePhotoInfoCancelledKey] as? Int, cancel == 1 {
-                        return
-                    } else {
-                        block(livePhoto, playNow)
-                    }
-                }
-            }
-        }
-        let imageName = message.imageURL!.components(separatedBy: "/").last!
-        let videoName = message.videoURL!.components(separatedBy: "/").last!
-        if let live = message.livePhoto as? PHLivePhoto, message.sendStatus == .fail {
-            block(live, false)
-        } else if let localImageURL = fileURLAt(dirName: livePhotoDir, fileName: imageName), let localVideoURL = fileURLAt(dirName: livePhotoDir, fileName: videoName) {
-            livePhotoLoadBlock(localImageURL, localVideoURL, false)
-        } else {
-            let imageURL = URL(string: url_pre + message.imageURL!)!
-            let videoURL = URL(string: url_pre + message.videoURL!)!
-            MediaLoader.shared.requestImage(urlStr: imageURL.absoluteString, type: .livePhoto, cookie: cookie, syncIfCan: true) { _, _, localPathImage in
-                print("liveImageDone")
-                MediaLoader.shared.requestImage(urlStr: videoURL.absoluteString, type: .livePhoto, cookie: self.cookie, syncIfCan: true) { [weak self] _, _, localPathVideo in
-                    self?.delegate?.downloadSuccess(message: capturedMessage!)
-                    NotificationCenter.default.post(name: .mediaDownloadFinished, object: capturedMessage?.text, userInfo: nil)
-                    capturedMessage?.isDownloading = false
-                } progress: { [weak self] progress in
-                    self?.delegate?.downloadProgressUpdate(progress: progress, message: capturedMessage!)
-                }
-                
-            } progress: { _ in
-                
-            }
-        }
-    }
-    
     func addGestureForImageView() {
         animatedImageView.isUserInteractionEnabled = true
         let tap = UITapGestureRecognizer(target: self, action: #selector(imageTapped))
         animatedImageView.addGestureRecognizer(tap)
     }
-    
-    func addGestureForVideoView() {
-        videoView.isUserInteractionEnabled = true
-        let videoSingleTap = UITapGestureRecognizer(target: self, action: #selector(imageTapped))
-        videoView.addGestureRecognizer(videoSingleTap)
         
-        let videoDoubleTap = UITapGestureRecognizer(target: self, action: #selector(videoDoubleTap(_:)))
-        videoDoubleTap.numberOfTapsRequired = 2
-        videoView.addGestureRecognizer(videoDoubleTap)
-        videoSingleTap.require(toFail: videoDoubleTap)
-    }
-    
-    func addGestureForLivePhotoView() {
-        livePhotoView.isUserInteractionEnabled = true
-        let tap = UITapGestureRecognizer(target: self, action: #selector(imageTapped))
-        livePhotoView.addGestureRecognizer(tap)
-    }
-    
-    @objc func videoSingleTap(_ tap: UITapGestureRecognizer) {
-        PlayerManager.shared.isMute.toggle()
-        activeSession()
-        player.isMuted.toggle()
-    }
-    
-    @objc func videoDoubleTap(_ tap: UITapGestureRecognizer) {
-        if isPlaying {
-            player.pause()
-        } else {
-            if videoEnd {
-                playVideo()
-            } else {
-                player.play()
-            }
-        }
-        isPlaying.toggle()
-    }
     
     @objc func imageTapped() {
-        delegate?.imageViewTapped(self, imageView: animatedImageView, path: message.text, isAvatar: false)
+        delegate?.mediaViewTapped(self, path: message.text, isAvatar: false)
     }
     
     func layoutImageView() {
@@ -310,24 +85,18 @@ class MessageCollectionViewImageCell: MessageCollectionViewBaseCell, PHLivePhoto
         }
         let maxSize = CGSize(width: 2*(AppDelegate.shared.widthFor(side: .right, username: username)/3), height: CGFloat.greatestFiniteMagnitude)
         let nameHeight = message.messageSender == .ourself ? 0 : (MessageCollectionViewBaseCell.height(forText: message.senderUsername, fontSize: 10, maxSize: maxSize) + 4 )
-        let height = contentView.bounds.height - 30 - nameHeight
+        let height = contentView.bounds.height - 30 - nameHeight - (message.referMessage == nil ? 0 : ReferView.height + ReferView.margin)
         let width = message.imageSize.width * height / message.imageSize.height
         animatedImageView.bounds = CGRect(x: 0, y: 0, width: width, height: height)
         animatedImageView.layer.cornerRadius = min(width, height) / 12
-        livePhotoView.layer.cornerRadius = animatedImageView.layer.cornerRadius
-        videoView.layer.cornerRadius = animatedImageView.layer.cornerRadius
     }
     
     func downloadImageIfNeeded() {
-        guard var imageUrl = message.imageURL else { return }
-        if let local = message.imageLocalPath {
-            imageUrl = local.absoluteString
-        }
+        guard let imageUrl = message.imageURL ?? message.imageLocalPath?.absoluteString else { return }
         if imageUrl.hasPrefix("file://") {
             DispatchQueue.global().async {
-                if let imageUrl = socketForUsername(self.username).messageManager.imageDict[self.message.uuid] as? URL{
+                if let imageUrl = URL(string: imageUrl) {
                     guard let data = try? Data(contentsOf: imageUrl) else { return }
-                    self.cache.setObject(data as NSData, forKey: self.message.imageURL! as NSString)
                     DispatchQueue.main.async {
                         if self.isGif {
                             self.animatedImageView.animatedImage = FLAnimatedImage(gifData: data)
@@ -341,59 +110,24 @@ class MessageCollectionViewImageCell: MessageCollectionViewBaseCell, PHLivePhoto
             return
         }
         let capturedMessage = message
-        var cacheKey = imageUrl
-        if isPad() && !isGif {
-            cacheKey.insert(contentsOf: "HD-", at: cacheKey.startIndex)
-        }
-        if let data = cache.object(forKey: cacheKey as NSString) {
-            if !isGif {
-                self.animatedImageView.image = UIImage(data: data as Data)
-                layoutIfNeeded()
-                return
-            } else {
-                let animatedImage = FLAnimatedImage(gifData: data as Data)
-                if animatedImage != nil {
-                    self.animatedImageView.animatedImage = animatedImage
-                    layoutIfNeeded()
-                    return
-                }
-            }
-        }
         // 接下来进入下载操作
-            MediaLoader.shared.requestImage(urlStr: imageUrl, type: .image, syncIfCan: message.syncGetMedia) { [self] image, data, _ in
+        MediaLoader.shared.requestImage(urlStr: imageUrl, type: .image, syncIfCan: message.syncGetMedia, imageWidth: isGif ? .original : (isPad() ? .width300 : .width100)) { [self] image, data, _ in
                 guard let capturedMessage = capturedMessage, capturedMessage.imageURL == message.imageURL, let data = data else {
                     return
                 }
-                var cacheKey = imageUrl
-                if !isGif, let image = image { // is photo
-                    var size: CGSize!
-                    if isPad() {
-                        size = CGSize(width: 300, height: 0)
-                        cacheKey.insert(contentsOf: "HD-", at: cacheKey.startIndex)
-                    }
-                    let compressed = compressEmojis(image, askedSize: size)
-                    animatedImageView.image = UIImage(data: compressed)
-                    cache.setObject(compressed as NSData, forKey: cacheKey as NSString)
+                if !isGif { // is photo
+                    animatedImageView.image = UIImage(data: data)
                 } else { // gif图处理
                     animatedImageView.animatedImage = FLAnimatedImage(gifData: data)
-                    cache.setObject(data as NSData, forKey: imageUrl as NSString)
                 }
                 layoutIfNeeded()
                 capturedMessage.sendStatus = .success
-                capturedMessage.isDownloading = false
                 NotificationCenter.default.post(name: .mediaDownloadFinished, object: capturedMessage.text, userInfo: nil)
             } progress: { progress in
                 self.delegate?.downloadProgressUpdate(progress: progress, message: capturedMessage!)
             }
         message.syncGetMedia = false
         
-    }
-
-
-    func livePhotoView(_ livePhotoView: PHLivePhotoView, willBeginPlaybackWith playbackStyle: PHLivePhotoViewPlaybackStyle) {
-    }
-    
-    func livePhotoView(_ livePhotoView: PHLivePhotoView, didEndPlaybackWith playbackStyle: PHLivePhotoViewPlaybackStyle) {
     }
     
 

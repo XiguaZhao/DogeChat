@@ -16,16 +16,23 @@ protocol MessageInputDelegate: AnyObject {
     func textViewFontSizeChange(_ textView: UITextView, oldSize: CGFloat, newSize: CGFloat)
     func textViewFontSizeChangeEnded(_ textView: UITextView)
     func toolButtonTap(_ button: UIButton, type: InputViewToolButtonType)
+    func messageInputBarFrameChange(_ endFrame: CGRect, shouldDown: Bool, ignore: Bool)
 }
 
 var messageBarHeight: CGFloat {
-    86 + safeArea.bottom
+    MessageInputView.defaultHeight + safeArea.bottom
 }
 
 class MessageInputView: DogeChatStaticBlurView {
     weak var delegate: MessageInputDelegate?
     
+    static var maxHeight: CGFloat {
+        safeArea.bottom + 186
+    }
+    static let defaultHeight: CGFloat = 86
+    static let textViewDefaultFontSize: CGFloat = 16
     static let ratioOfEmojiView: CGFloat = 0.45
+    static let offset: CGFloat = 12
     let textView = DogeChatTextView()
     let addButton = UIButton()
     let emojiButton = UIButton()
@@ -40,7 +47,9 @@ class MessageInputView: DogeChatStaticBlurView {
     let livePhotoButton = UIButton()
     let videoButton = UIButton()
     let drawButton = UIButton()
+    let referView = ReferView(type: .inputView)
     var lastInset: UIEdgeInsets = .zero
+    weak var referViewBottomContraint: NSLayoutConstraint!
     var isActive: Bool {
         return textView.isFirstResponder || self.frame.maxY < (self.superview?.bounds.height)!
     }
@@ -48,16 +57,16 @@ class MessageInputView: DogeChatStaticBlurView {
     override init(frame: CGRect) {
         super.init(frame: frame)
                 
-        let offset: CGFloat = 12
         var width: CGFloat = 30
 
         textView.translatesAutoresizingMaskIntoConstraints = false
         textView.layer.cornerRadius = 8
         textView.layer.borderColor = UIColor(red: 200/255, green: 200/255, blue: 200/255, alpha: 0.6).cgColor
         textView.layer.borderWidth = 2
-        textView.font = UIFont.systemFont(ofSize: 18)
+        textView.font = UIFont.systemFont(ofSize: MessageInputView.textViewDefaultFontSize)
         textView.returnKeyType = .send
         textView.backgroundColor = .clear
+        referView.translatesAutoresizingMaskIntoConstraints = false
         addButton.translatesAutoresizingMaskIntoConstraints = false
         emojiButton.translatesAutoresizingMaskIntoConstraints = false
         upArrowButton.translatesAutoresizingMaskIntoConstraints = false
@@ -104,6 +113,9 @@ class MessageInputView: DogeChatStaticBlurView {
         addSubview(emojiButton)
         addSubview(upArrowButton)
         addSubview(toolStack)
+        addSubview(referView)
+        
+        referView.alpha = 0
         
         if isMac() {
             livePhotoButton.isHidden = true
@@ -127,10 +139,18 @@ class MessageInputView: DogeChatStaticBlurView {
         }
         
         emojiButton.mas_makeConstraints { make in
-            make?.trailing.equalTo()(self)?.offset()(-offset)
+            make?.right.equalTo()(self.mas_safeAreaLayoutGuideRight)?.offset()(-Self.offset)
             make?.centerY.equalTo()(self.textView)
             make?.width.height().mas_equalTo()(width)
         }
+        
+        NSLayoutConstraint.activate([
+            referView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: Self.offset),
+            referView.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -Self.offset),
+            referView.heightAnchor.constraint(equalToConstant: ReferView.height)
+        ])
+        self.referViewBottomContraint = referView.bottomAnchor.constraint(equalTo: self.topAnchor, constant: ReferView.height)
+        self.referViewBottomContraint.isActive = true
         
     }
     
@@ -143,31 +163,44 @@ class MessageInputView: DogeChatStaticBlurView {
     
     override func updateConstraints() {
         
-        let offset: CGFloat = 12
         let width: CGFloat = 30
 
         toolStack.mas_updateConstraints { make in
-            make?.leading.equalTo()(self)?.offset()(offset)
-            make?.trailing.equalTo()(self)?.offset()(-offset)
-            let middle: CGFloat = safeAreaInsets.bottom == 0 ? offset - 5 : offset - 3
+            make?.left.equalTo()(self.mas_safeAreaLayoutGuideLeft)?.offset()(Self.offset)
+            make?.right.equalTo()(self.mas_safeAreaLayoutGuideRight)?.offset()(-Self.offset)
+            let middle: CGFloat = safeAreaInsets.bottom == 0 ? Self.offset - 5 : Self.offset - 3
             make?.top.equalTo()(textView.mas_bottom)?.offset()(middle)
         }
         
         textView.mas_updateConstraints { make in
-            make?.leading.equalTo()(self)?.offset()(offset)
-            make?.top.equalTo()(self)?.offset()(offset - 4)
-            make?.trailing.equalTo()(emojiButton.mas_leading)?.offset()(-offset)
+            make?.left.equalTo()(self.mas_safeAreaLayoutGuideLeft)?.offset()(Self.offset)
+            make?.top.equalTo()(self)?.offset()(Self.offset - 4)
+            make?.trailing.equalTo()(emojiButton.mas_leading)?.offset()(-Self.offset)
             let safeAreaBottom = safeAreaInsets.bottom == 0 ? -5 : safeArea.bottom - 14
-            make?.bottom.equalTo()(self)?.offset()(-(safeAreaBottom + width + offset * 2 - 6))
+            make?.bottom.equalTo()(self)?.offset()(-(safeAreaBottom + width + Self.offset * 2 - 6))
         }
         
         super.updateConstraints()
     }
     
+    override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+        let converted = self.convert(point, to: self.referView)
+        let inset: CGFloat = -20
+        let edgeInsets = UIEdgeInsets(top: inset, left: inset, bottom: inset, right: inset)
+        if self.referView.alpha > 0 {
+            if self.referView.cancleButton.bounds.inset(by: edgeInsets).contains(converted) {
+                return referView.cancleButton
+            } else if self.referView.bounds.inset(by: edgeInsets).contains(converted) {
+                return referView.stackView
+            }
+        }
+        return super.hitTest(point, with: event)
+    }
+    
     func frameDown() {
         let screenSize = UIApplication.shared.windows.first(where: { $0.isKeyWindow })?.bounds.size ?? UIScreen.main.bounds.size
-        let userInfo = [UIResponder.keyboardFrameEndUserInfoKey: NSValue(cgRect: CGRect(x: 0, y: screenSize.height, width: screenSize.width, height: screenSize.height))]
-        NotificationCenter.default.post(name: UIResponder.keyboardWillChangeFrameNotification, object: false, userInfo: userInfo)
+        let frame = CGRect(x: 0, y: screenSize.height, width: screenSize.width, height: screenSize.height)
+        delegate?.messageInputBarFrameChange(frame, shouldDown: true, ignore: false)
     }
     
     @objc func textViewResign() {
@@ -235,21 +268,20 @@ class MessageInputView: DogeChatStaticBlurView {
     }
     
     @objc func emojiButtonTapped() {
-        let block = {
+        let block: (Bool) -> Void = { ignore in
             let screenSize = AppDelegate.shared.navigationController!.view.bounds.size
             let ratio: CGFloat = MessageInputView.ratioOfEmojiView
-            let userInfo = [UIResponder.keyboardFrameEndUserInfoKey: NSValue(cgRect: CGRect(x: 0, y: (1-ratio)*screenSize.height, width: screenSize.width, height: ratio*screenSize.height))]
-            NotificationCenter.default.post(name: UIResponder.keyboardWillChangeFrameNotification, object: true, userInfo: userInfo)
+            let frame = CGRect(x: 0, y: (1-ratio)*screenSize.height, width: screenSize.width, height: ratio*screenSize.height)
+            self.delegate?.messageInputBarFrameChange(frame, shouldDown: false, ignore: ignore)
         }
         if textView.isFirstResponder {
-            DispatchQueue.main.async {
-                NotificationCenter.default.post(name: .emojiButtonTapped, object: self)
-                block()
-                self.textView.resignFirstResponder()
-            }
+            NotificationCenter.default.post(name: .emojiButtonTapped, object: self)
+            block(true)
+            
+            self.textView.resignFirstResponder()
         } else {
             NotificationCenter.default.post(name: .emojiButtonTapped, object: self)
-            block()
+            block(false)
         }
     }
     

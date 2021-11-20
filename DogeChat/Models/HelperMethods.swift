@@ -37,7 +37,7 @@ func removeSocketForUsername(_ username: String) {
 }
 
 var safeArea: UIEdgeInsets {
-    UIApplication.shared.keyWindow!.safeAreaInsets
+    UIApplication.shared.keyWindow?.safeAreaInsets ?? .zero
 }
 
 func isLandscape() -> Bool {

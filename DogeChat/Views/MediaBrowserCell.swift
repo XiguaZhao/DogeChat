@@ -12,12 +12,12 @@ import DogeChatUniversal
 protocol MediaBrowserCellDelegate: AnyObject {
     func livePhotoWillBegin(_ cell: MediaBrowserCell, livePhotoView: PHLivePhotoView)
     func livePhotoDidEnd(_ cell: MediaBrowserCell, livePhotoView: PHLivePhotoView)
+    func singleTap(_ cell: MediaBrowserCell)
 }
 
 class MediaBrowserCell: UICollectionViewCell, PHLivePhotoViewDelegate {
     
     static let cellID = "ImageBrowserCell"
-    var cache: NSCache<NSString, NSData>!
     let imageView = FLAnimatedImageView()
     let livePhotoView = PHLivePhotoView()
     let player = AVPlayer()
@@ -26,6 +26,17 @@ class MediaBrowserCell: UICollectionViewCell, PHLivePhotoViewDelegate {
     var imagePath: String!
     var scrollView: UIScrollView!
     var messageType = MessageType.image
+    var isPlaying = false {
+        didSet {
+            if isPlaying {
+                PlayerManager.shared.playerTypes.insert(.mediaBrowser)
+            } else {
+                PlayerManager.shared.playerTypes.remove(.mediaBrowser)
+            }
+        }
+    }
+    var videoEnd = false
+    var tap: UITapGestureRecognizer!
     weak var delegate: MediaBrowserCellDelegate?
     
     override init(frame: CGRect) {
@@ -44,8 +55,22 @@ class MediaBrowserCell: UICollectionViewCell, PHLivePhotoViewDelegate {
         scrollView.addSubview(livePhotoView)
         scrollView.addSubview(videoView)
         
+        tap = UITapGestureRecognizer(target: self, action: #selector(tapAction))
+        self.contentView.addGestureRecognizer(tap)
+        let doubleTap = UITapGestureRecognizer(target: self, action: #selector(doubleTapAction(_:)))
+        doubleTap.numberOfTapsRequired = 2
+        self.contentView.addGestureRecognizer(doubleTap)
+        tap.require(toFail: doubleTap)
+
         livePhotoView.delegate = self
         NotificationCenter.default.addObserver(self, selector: #selector(mediaDownloadFinishNoti(_:)), name: .mediaDownloadFinished, object: nil)
+        NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: nil, queue: .main) { [weak self] noti in
+            if noti.object as? AVPlayerItem != self?.item {
+                return
+            }
+            self?.isPlaying = false
+            self?.videoEnd = true
+        }
     }
     
     required init?(coder: NSCoder) {
@@ -88,19 +113,42 @@ class MediaBrowserCell: UICollectionViewCell, PHLivePhotoViewDelegate {
                     imageView.image = UIImage(data: data)
                 }
             }
-            if let data = cache?.object(forKey: imagePath as NSString) {
-                block(imagePath, data as Data)
-                return
-            }
-            MediaLoader.shared.requestImage(urlStr: imagePath, type: .image) { image, data, _ in
+            MediaLoader.shared.requestImage(urlStr: imagePath, type: .image, imageWidth: .original, needCache: false) { image, data, _ in
                 guard self.imagePath == imagePath, let data = data else { return }
-                self.cache?.setObject(data as NSData, forKey: imagePath as NSString)
                 block(imagePath, data)
             }
         } else if messageType == .livePhoto {
             makeLivePhoto()
         } else if messageType == .video {
             makeVideo()
+        }
+    }
+    
+    @objc func tapAction(_ ges: UITapGestureRecognizer) {
+        delegate?.singleTap(self)
+    }
+    
+    @objc func doubleTapAction(_ ges: UITapGestureRecognizer) {
+        let location = ges.location(in: self.contentView)
+        if messageType == .video {
+            if isPlaying {
+                player.pause()
+            } else {
+                if videoEnd {
+                    player.seek(to: .zero)
+                    player.play()
+                    videoEnd = false
+                } else {
+                    player.play()
+                }
+            }
+            isPlaying.toggle()
+        } else {
+            let scale: CGFloat = scrollView.zoomScale == 1 ? 2 : 1
+            scrollView.setZoomScale(scale, animated: true)
+            if scale != 1 {
+                scrollView.zoom(to: CGRect(center: location, size: .zero), animated: true)
+            }
         }
     }
     
@@ -122,6 +170,8 @@ class MediaBrowserCell: UICollectionViewCell, PHLivePhotoViewDelegate {
             self.videoView.player = self.player
             self.player.play()
             activate()
+            isPlaying = true
+            videoEnd = false
         }
     }
     
@@ -157,10 +207,12 @@ extension MediaBrowserCell: UIScrollViewDelegate {
     }
     
     func livePhotoView(_ livePhotoView: PHLivePhotoView, didEndPlaybackWith playbackStyle: PHLivePhotoViewPlaybackStyle) {
+        tap.isEnabled = true
         delegate?.livePhotoDidEnd(self, livePhotoView: livePhotoView)
     }
     
     func livePhotoView(_ livePhotoView: PHLivePhotoView, willBeginPlaybackWith playbackStyle: PHLivePhotoViewPlaybackStyle) {
+        tap.isEnabled = false
         delegate?.livePhotoWillBegin(self, livePhotoView: livePhotoView)
     }
 }

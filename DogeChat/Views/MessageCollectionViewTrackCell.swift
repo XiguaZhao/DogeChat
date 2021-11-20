@@ -12,8 +12,8 @@ import DogeChatNetwork
 
 let sharedTracksImageCache = NSCache<NSString, NSData>()
 
-func compressImage(image: UIImage, needBig: Bool, askedSize: CGSize?) -> Data {
-    return compressEmojis(image, needBig: needBig, askedSize: askedSize)
+func compressImage(image: UIImage, imageWidth: ImageWidth = .width100) -> Data {
+    return compressEmojis(image, imageWidth: imageWidth)
 }
 
 class MessageCollectionViewTrackCell: MessageCollectionViewBaseCell {
@@ -32,6 +32,7 @@ class MessageCollectionViewTrackCell: MessageCollectionViewBaseCell {
             avatarImageView.isHidden = true
             return
         }
+        contentView.addSubview(bgImageView)
         indicationNeighborView = bgImageView
         let blurView = UIVisualEffectView(effect: UIBlurEffect(style: .regular))
         bgImageView.addSubview(blurView)
@@ -66,7 +67,6 @@ class MessageCollectionViewTrackCell: MessageCollectionViewBaseCell {
             make?.leading.equalTo()(self?.bgImageView)?.offset()(20)
             make?.trailing.equalTo()(self?.playButton)?.offset()(-20)
         }
-        contentView.addSubview(bgImageView)
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -75,6 +75,7 @@ class MessageCollectionViewTrackCell: MessageCollectionViewBaseCell {
     
     override func layoutSubviews() {
         super.layoutSubviews()
+        guard message != nil else { return }
         if dontShow { return }
         layoutSharedTracksView()
         layoutIndicatorViewAndMainView()
@@ -108,41 +109,44 @@ class MessageCollectionViewTrackCell: MessageCollectionViewBaseCell {
         setButtonImage()
         let captured = message
         if !message.tracks.isEmpty {
-            let tracks = message.tracks
-            firstLineLabel.text = tracks[0].name
-            if tracks.count == 1 {
-                secondLineLabel.text = tracks[0].artist
-            } else {
-                secondLineLabel.text = "共\(tracks.count)首，点击查看"
-            }
-            if let imageData = sharedTracksImageCache.object(forKey: tracks[0].albumImageUrl as NSString) {
-                bgImageView.image = UIImage(data: imageData as Data)
-                return
-            }
-            SDWebImageManager.shared.loadImage(with: URL(string: tracks[0].albumImageUrl), options: .avoidDecodeImage, progress: nil) { [weak self] image, _, _, _, _, _ in
-                guard let image = image else { return }
-                DispatchQueue.global().async {
-                    let compressed = compressImage(image: image, needBig: false, askedSize: CGSize(width: 100, height: 100))
-                    sharedTracksImageCache.setObject(compressed as NSData, forKey: tracks[0].albumImageUrl as NSString)
-                    DispatchQueue.main.async {
-                        if self?.message == captured {
-                            self?.bgImageView.image = UIImage(data: compressed)
-                        }
-                    }
-                }
-            }
+            display()
         } else {
-            if !message.isDownloading {
-                message.isDownloading = true
-                MediaLoader.shared.requestImage(urlStr: message.text, type: .draw, cookie: manager.cookie, syncIfCan: true) { [weak self] _, _, localURL in
-                    if let data = try? Data(contentsOf: localURL),
-                       let tracks = try? JSONDecoder().decode([Track].self, from: data) {
-                        captured.tracks = tracks
-                        captured.isDownloading = false
-                        self?.delegate?.downloadSuccess(message: captured)
+            MediaLoader.shared.requestImage(urlStr: message.text, type: .draw, cookie: manager.cookie, syncIfCan: true) { [weak self] _, _, localURL in
+                if let data = try? Data(contentsOf: localURL),
+                   let tracks = try? JSONDecoder().decode([Track].self, from: data) {
+                    captured.tracks = tracks
+                    if self?.message == captured {
+                        self?.display()
+                    } 
+                }
+            } progress: { _ in
+                
+            }
+        }
+    }
+    
+    func display() {
+        let tracks = message.tracks
+        firstLineLabel.text = tracks[0].name
+        if tracks.count == 1 {
+            secondLineLabel.text = tracks[0].artist
+        } else {
+            secondLineLabel.text = "共\(tracks.count)首，点击查看"
+        }
+        if let imageData = sharedTracksImageCache.object(forKey: tracks[0].albumImageUrl as NSString) {
+            bgImageView.image = UIImage(data: imageData as Data)
+            return
+        }
+        let captured = self.message
+        SDWebImageManager.shared.loadImage(with: URL(string: tracks[0].albumImageUrl), options: .avoidDecodeImage, progress: nil) { [weak self] image, _, _, _, _, _ in
+            guard let image = image else { return }
+            DispatchQueue.global().async {
+                let compressed = compressImage(image: image, imageWidth: .width100)
+                sharedTracksImageCache.setObject(compressed as NSData, forKey: tracks[0].albumImageUrl as NSString)
+                DispatchQueue.main.async {
+                    if self?.message == captured {
+                        self?.bgImageView.image = UIImage(data: compressed)
                     }
-                } progress: { _ in
-                    
                 }
             }
         }

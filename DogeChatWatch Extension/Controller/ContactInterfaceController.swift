@@ -23,7 +23,7 @@ class ContactInterfaceController: WKInterfaceController {
     
     var friends: [Friend] = []
     var usernames: [String] {
-        friends.map { $0.username } 
+        friends.map { $0.username }
     }
     
     var loginCount = 0
@@ -53,7 +53,7 @@ class ContactInterfaceController: WKInterfaceController {
             self?.setTitle("获取联系人...")
         }
     }
-        
+    
     override func willActivate() {
         // This method is called when watch view controller is about to be visible to user
         SocketManager.shared.messageManager.messageDelegate = self
@@ -79,8 +79,8 @@ class ContactInterfaceController: WKInterfaceController {
     
     @objc func getWCSessionMessage(_ noti: Notification) {
         guard let info = noti.userInfo as? [String: String],
-        let username = info["username"],
-        let password = info["password"] else { return }
+              let username = info["username"],
+              let password = info["password"] else { return }
         if !isLogin {
             login(username: username, password: password)
         } else {
@@ -91,14 +91,23 @@ class ContactInterfaceController: WKInterfaceController {
     }
     
     func login() {
-        if let username = UserDefaults.standard.value(forKey: "username") as? String, let password = UserDefaults.standard.value(forKey: "password") as? String {
-            login(username: username, password: password)
-        } else {
-            if WKExtension.shared().visibleInterfaceController is LoginInterfaceController {
-                return
+        if needRelogin() {
+            if let username = UserDefaults.standard.value(forKey: "username") as? String, let password = UserDefaults.standard.value(forKey: "password") as? String {
+                login(username: username, password: password)
+            } else {
+                if WKExtension.shared().visibleInterfaceController is LoginInterfaceController {
+                    return
+                }
+                self.pushController(withName: "login", context: nil)
             }
-            self.pushController(withName: "login", context: nil)
+        } else {
+            SocketManager.shared.commonSocket.connect()
         }
+    }
+    
+    func needRelogin() -> Bool {
+        let nowTime = Date().timeIntervalSince1970
+        return nowTime - SocketManager.shared.commonSocket.httpRequestsManager.cookieTime >= 2 * 24 * 60 * 60 // 2天
     }
     
     func login(username: String, password: String) {
@@ -146,20 +155,9 @@ class ContactInterfaceController: WKInterfaceController {
         let urlStr = friend.avatarURL
         row.usernameLabel.setText(friend.username)
         row.latestMessageLabel.setText(contentForSpecialType(friend.latestMessage));
-        if let imageData = imageCahce.object(forKey: urlStr as NSString), let image = UIImage(data: imageData as Data) {
-            row.avatarImageView.setImage(image)
-        } else {
-            MediaLoader.shared.requestImage(urlStr: urlStr, type: .image, syncIfCan: false, completion: { image, data, _ in
-                guard let image = image else { return }
-                DispatchQueue.global(qos: .userInteractive).async {
-                    let compressedData = compressEmojis(image)
-                    syncOnMain {
-                        row.avatarImageView?.setImageData(compressedData)
-                    }
-                    imageCahce.setObject(compressedData as NSData, forKey: urlStr as NSString)
-                }
-            }, progress: nil)
-        }
+        MediaLoader.shared.requestImage(urlStr: urlStr, type: .image, syncIfCan: false, imageWidth: .width40, needStaticGif: true, completion: { image, data, _ in
+            row.avatarImageView?.setImageData(data)
+        }, progress: nil)
     }
     
     func showContacts(_ usersInfos: [Friend]) {
@@ -175,8 +173,8 @@ class ContactInterfaceController: WKInterfaceController {
         let friend = friends[rowIndex]
         var messages = friend.messages
         var messagesUUIDs: Set<String> = friend.messageUUIDs
-        if messages.count > 10 {
-            messages.removeSubrange(0..<messages.count-10)
+        if messages.count > 20 {
+            messages.removeSubrange(0..<messages.count-20)
             messagesUUIDs = Set(messages.map { $0.uuid })
         }
         let context = ["friend": friend, "messages": messages, "messagesUUIDs": messagesUUIDs] as [String : Any]
@@ -185,7 +183,7 @@ class ContactInterfaceController: WKInterfaceController {
             row.usernameLabel.setText(usernames[rowIndex])
         }
     }
-
+    
 }
 
 extension ContactInterfaceController: MessageDelegate {
@@ -233,20 +231,20 @@ extension ContactInterfaceController: MessageDelegate {
             let friendID = message.friend.userID
             friendDict.add(message, for: friendID)
         }
-        var reloadIndexPaths = [IndexPath]()
         for (friendID, newMessages) in friendDict {
             if let index = self.friends.firstIndex(where: { $0.userID == friendID }) {
-                reloadIndexPaths.append(IndexPath(row: index, section: 0))
+                if let row = table.rowController(at: index) as? ContactsRowController {
+                    row.usernameLabel.setText(friends[index].username + "[未读\(newMessages.count)]")
+                }
             }
             if let chatroom = WKExtension.shared().visibleInterfaceController as? ChatRoomInterfaceController, chatroom.friend.userID == friendID {
                 chatroom.insertMessages(newMessages)
             }
         }
-        
         if messages.contains(where: { $0.messageSender == .someoneElse }) {
             WKInterfaceDevice.current().play(.click)
         }
-
+        
     }
     
     

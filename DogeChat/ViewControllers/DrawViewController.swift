@@ -17,7 +17,17 @@ class DrawViewController: UIViewController, PKViewAutoOffsetDelegate {
     var pkView = PKCanvasView()
     let pkViewDelegate = PKViewDelegate()
     var message: Message!
-    var toolPicker: PKToolPicker!
+    lazy var toolPicker: PKToolPicker? = {
+        if #available(iOS 14.0, *) {
+            return PKToolPicker()
+        } else {
+            if let window = self.view.window {
+                return PKToolPicker.shared(for: window)
+            } else {
+                return nil
+            }
+        }
+    }()
     var toolBar = UIToolbar()
     var didSendNeedRealTime = false
     var cachedOffset: CGPoint = .zero
@@ -26,11 +36,6 @@ class DrawViewController: UIViewController, PKViewAutoOffsetDelegate {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        if #available(iOS 14.0, *) {
-            toolPicker = PKToolPicker()
-        } else {
-            toolPicker = PKToolPicker.shared(for: self.view.window!)
-        }
         if isPhone() && (UIDevice.current.orientation != .landscapeLeft && UIDevice.current.orientation != .landscapeRight) {
             UIDevice.current.setValue(NSNumber(integerLiteral: UIInterfaceOrientation.landscapeRight.rawValue), forKey: "orientation")
         }
@@ -70,8 +75,6 @@ class DrawViewController: UIViewController, PKViewAutoOffsetDelegate {
         pkView.backgroundColor = .gray
         pkView.delegate = pkViewDelegate
         pkView.contentSize = CGSize(width: 2000, height: 2000)
-        toolPicker.setVisible(true, forFirstResponder: pkView)
-        toolPicker.addObserver(pkViewDelegate)
         pkView.becomeFirstResponder()
         pkViewDelegate.pkView = pkView
         pkViewDelegate.autoOffsetDelegate = self
@@ -99,6 +102,12 @@ class DrawViewController: UIViewController, PKViewAutoOffsetDelegate {
         forwardButton.center = CGPoint(x: view.bounds.width - forwardButton.bounds.width - view.safeAreaInsets.right, y: view.center.y)
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        toolPicker?.setVisible(true, forFirstResponder: pkView)
+        toolPicker?.addObserver(pkViewDelegate)
+    }
+    
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         if isPhone() {
@@ -117,7 +126,7 @@ class DrawViewController: UIViewController, PKViewAutoOffsetDelegate {
     }
     
     @objc func pickerSwitchAction(_ pickerSwitcher: UISwitch) {
-        toolPicker.setVisible(pickerSwitcher.isOn, forFirstResponder: pkView)
+        toolPicker?.setVisible(pickerSwitcher.isOn, forFirstResponder: pkView)
     }
     
     
@@ -158,7 +167,7 @@ class DrawViewController: UIViewController, PKViewAutoOffsetDelegate {
         } else {
             pkView.setContentOffset(cachedOffset, animated: true)
         }
-        toolPicker.setVisible(!isPreview, forFirstResponder: pkView)
+        toolPicker?.setVisible(!isPreview, forFirstResponder: pkView)
         sender.title = isPreview ? "继续" : "预览"
     }
     

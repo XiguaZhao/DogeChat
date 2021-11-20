@@ -63,7 +63,8 @@ class NotificationService: UNNotificationServiceExtension {
                     manager.login(username: username, password: password) { res in
                         guard res == "登录成功", !manager.cookie.isEmpty else { return }
                         MediaLoader.shared.cookie = manager.cookie
-                        MediaLoader.shared.requestImage(urlStr: path, type: .voice, syncIfCan: false, completion: { _, data, localURL in
+                        MediaLoader.shared.type = .defaultSession
+                        MediaLoader.shared.requestImage(urlStr: path, type: .voice, syncIfCan: false, needCache: false, completion: { _, data, localURL in
                             var localURL = localURL
 #if !targetEnvironment(macCatalyst)
                             if type == "draw" {

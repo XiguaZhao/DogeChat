@@ -21,7 +21,6 @@ class EmojiCollectionViewCell: DogeChatBaseCollectionViewCell {
     let emojiView = UIImageView()
     let imageDownloader = SDWebImageManager.shared
     var url: URL?
-    var cache: NSCache<NSString, NSData>?
     weak var delegate: EmojiSelectCellLongPressDelegate?
     var indexPath: IndexPath!
     var path: String!
@@ -63,30 +62,22 @@ class EmojiCollectionViewCell: DogeChatBaseCollectionViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
         emojiView.image = nil
-        progress.setProgress(0, animated: false)
+        progress.isHidden = true
     }
     
     @objc func longPressAction(_ ges: UILongPressGestureRecognizer) {
         delegate?.didLongPressEmojiCell(self)
     }
     
-        
+    
     func displayEmoji(urlString: String) {
         guard let url = URL(string: urlString) else { return }
         self.url = url
         let capturedUrl = url
-        if let cache = cache, let data = cache.object(forKey: urlString as NSString) {
-            self.emojiView.image = UIImage(data: data as Data)
-            return
-        }
-        MediaLoader.shared.requestImage(urlStr: urlString, type: .image, completion: { image, data, _ in
-            guard capturedUrl == self.url else { return }
-            self.layoutIfNeeded()
-            if let image = image {
-                let compressed = compressEmojis(image)
-                self.emojiView.image = UIImage(data: compressed)
-                self.cache?.setObject(compressed as NSData, forKey: urlString as NSString
-                )
+        MediaLoader.shared.requestImage(urlStr: urlString, type: .image, needStaticGif: true, completion: { [weak self] image, data, _ in
+            guard let self = self, capturedUrl == self.url else { return }
+            if let data = data {
+                self.emojiView.image = UIImage(data: data)
             }
         }) { progress in
             if self.url == capturedUrl {

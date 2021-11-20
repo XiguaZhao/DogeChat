@@ -56,15 +56,22 @@ extension ChatRoomViewController {
         }
     }
     
+    func checkReferMessage(_ message: Message) {
+        if message.referMessage != nil { return }
+        if let referUUID = message.referMessageUUID {
+            manager.httpsManager.getMessagesWith(friendID: message.friend.userID, uuid: referUUID, pageNum: nil, pageSize: nil)
+        }
+    }
+    
     // TODO: 发送文件的也需要加到未发送数组中（比如别的app拖过来这时候还没连接上）
     
     @objc func confirmSendPhoto() {
         let infos = self.latestPickedImageInfos
         var newMessages = [Message]()
         for (_, imageURL, size) in infos {
-            let message = processMessageString(for: "", type: .image, imageURL: imageURL.absoluteString, videoURL: nil)
+            let message = processMessageString(for: "", type: .image, imageURL: nil, videoURL: nil)
+            message.imageLocalPath = imageURL
             message.imageSize = size
-            manager.messageManager.imageDict[message.uuid] = imageURL
             newMessages.append(message)
             manager.uploadPhoto(imageUrl: imageURL, message: message, size: size) { [weak self] progress in
                 self?.downloadProgressUpdate(progress: progress.fractionCompleted, message: message)
@@ -75,7 +82,13 @@ extension ChatRoomViewController {
                 filePath = socketForUsername(self.username).messageManager.encrypt.decryptMessage(filePath)
                 message.imageURL = filePath
                 message.text = message.imageURL ?? ""
-                message.imageLocalPath = imageURL
+                let dir = createDir(name: photoDir)
+                let newImageLocalUrl = dir.appendingPathComponent(filePath.components(separatedBy: "/").last!)
+                do {
+                    try FileManager.default.moveItem(at: imageURL, to: newImageLocalUrl)
+                    message.imageLocalPath = newImageLocalUrl
+                } catch {
+                }
                 NotificationCenter.default.post(name: .uploadSuccess, object: self.username, userInfo: ["message": message])
             } fail: {
             }

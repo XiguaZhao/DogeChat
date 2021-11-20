@@ -86,6 +86,28 @@ extension String {
         return url
     }
     
+    var fileName: String {
+        return self.components(separatedBy: "/").last?.replacingOccurrences(of: "%2B", with: "+") ?? ""
+    }
+    
+    func fileNameWithWidth(_ width: ImageWidth) -> String {
+        let fileName = self.fileName
+        return "\(width.rawValue)-" + fileName
+    }
+    
+    var isGif: Bool {
+        self.hasSuffix(".gif")
+    }
+}
+
+enum ImageWidth: CGFloat {
+    case width40  = 40
+    case width80  = 80
+    case width100 = 100
+    case width200 = 200
+    case width300 = 300
+    case width400 = 400
+    case original
 }
 
 extension URL {
@@ -116,7 +138,7 @@ extension CGRect {
 
 extension Dictionary where Key == String {
     
-    mutating func remove(key: String) -> Value? {
+    @discardableResult mutating func remove(key: String) -> Value? {
         if let index = self.index(forKey: key) {
             return self.remove(at: index).value
         } else {
@@ -126,27 +148,20 @@ extension Dictionary where Key == String {
     
 }
 
-func compressEmojis(_ image: UIImage, needBig: Bool = false, askedSize: CGSize? = nil) -> Data {
-    if needBig {
-        return image.pngData()!
+func compressEmojis(_ image: UIImage, imageWidth: ImageWidth = .width100) -> Data {
+    if imageWidth == .original {
+        return image.jpegData(compressionQuality: 0.5)!
     }
-    var width: CGFloat = 100
-    var size: CGSize?
-    if let askedSize = askedSize {
-        if image.size.width > askedSize.width && image.size.height > askedSize.height {
-            width = askedSize.width
-        } else {
-            size = image.size
-        }
+    let width = imageWidth.rawValue
+    var size = CGSize(width: width, height: floor(image.size.height * (width / image.size.width)))
+    if image.size.width < width {
+        size = image.size
     }
-    if size == nil {
-        size = CGSize(width: width, height: floor(image.size.height * (width / image.size.width)))
-    }
-    UIGraphicsBeginImageContextWithOptions(size!, false, 0.0)
-    image.draw(in: CGRect(x: 0, y: 0, width: size!.width, height: size!.height))
+    UIGraphicsBeginImageContextWithOptions(size, false, 0.0)
+    image.draw(in: CGRect(x: 0, y: 0, width: size.width, height: size.height))
     let image = UIGraphicsGetImageFromCurrentImageContext()
     UIGraphicsEndImageContext()
-    return image!.pngData()!
+    return image?.jpegData(compressionQuality: 0.5) ?? Data()
 }
 
 func boundsForDraw(_ message: Message) -> CGRect? {

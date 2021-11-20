@@ -13,14 +13,14 @@ let avatarMargin: CGFloat = 5
 var hapticIndex = 0
 
 protocol MessageTableViewCellDelegate: AnyObject {
-    func imageViewTapped(_ cell: MessageCollectionViewBaseCell, imageView: FLAnimatedImageView, path: String, isAvatar: Bool)
+    func mediaViewTapped(_ cell: MessageCollectionViewBaseCell, path: String, isAvatar: Bool)
     func emojiOutBounds(from cell: MessageCollectionViewBaseCell, gesture: UIGestureRecognizer)
     func emojiInfoDidChange(from oldInfo: EmojiInfo?, to newInfo: EmojiInfo?, cell: MessageCollectionViewBaseCell)
     func pkViewTapped(_ cell: MessageCollectionViewBaseCell, pkView: UIView!)
     func avatarDoubleTap(_ cell: MessageCollectionViewBaseCell)
     func sharedTracksTap(_ cell: MessageCollectionViewBaseCell, tracks: [Track])
     func downloadProgressUpdate(progress: Double, message: Message)
-    func downloadSuccess(message: Message)
+    func downloadSuccess(_ cell: MessageCollectionViewBaseCell?, message: Message)
     func longPressCell(_ cell: MessageCollectionViewBaseCell, ges: UILongPressGestureRecognizer!)
 }
 
@@ -42,6 +42,7 @@ class MessageCollectionViewBaseCell: DogeChatTableViewCell {
     var message: Message!
     var indexPath: IndexPath!
     let nameLabel = UILabel()
+    let referView = ReferView(type: .chatRoomCell)
     var isHistory = true
     var tapContentView: UITapGestureRecognizer!
     let indicator = UIActivityIndicatorView()
@@ -53,11 +54,14 @@ class MessageCollectionViewBaseCell: DogeChatTableViewCell {
     var activeEmojiView: UIView?
     static let emojiWidth: CGFloat = 80
     static let pkViewHeight: CGFloat = 100
-    var cache: NSCache<NSString, NSData>!
+    lazy var longPressGes: UILongPressGestureRecognizer = {
+        return UILongPressGestureRecognizer(target: self, action: #selector(onLongPress(_:)))
+    }()
     var indicationNeighborView: UIView? {
         didSet {
             indicationNeighborView?.isUserInteractionEnabled = true
-            indicationNeighborView?.addGestureRecognizer(UILongPressGestureRecognizer(target: self, action: #selector(onLongPress(_:))))
+            indicationNeighborView?.addGestureRecognizer(longPressGes)
+            addConstraintForReferView()
         }
     }
     var pinchGes: UIPinchGestureRecognizer?
@@ -65,6 +69,9 @@ class MessageCollectionViewBaseCell: DogeChatTableViewCell {
     let avatarDoubleTapGes = UITapGestureRecognizer()
     let avatapSingleTapGes = UITapGestureRecognizer()
     let timeLabel = UILabel()
+    var referViewLeading: NSLayoutConstraint?
+    var referViewTrailing: NSLayoutConstraint?
+    var referViewWidth: NSLayoutConstraint?
     weak var contactDataSource: ContactDataSource?
     let progress = DACircularProgressView()
     
@@ -96,12 +103,16 @@ class MessageCollectionViewBaseCell: DogeChatTableViewCell {
         contentView.addSubview(indicator)
         contentView.addSubview(timeLabel)
         contentView.addSubview(progress)
+        contentView.addSubview(referView)
         
         indicator.startAnimating()
+        indicator.isHidden = true
         progress.isHidden = true
         progress.thicknessRatio = 0.3
         progress.progressTintColor = UIColor(named: "progressCircle")
         progress.bounds = CGRect(x: 0, y: 0, width: 25, height: 25)
+        
+        referView.cancleButton.setImage(UIImage(named: "reply"), for: .normal)
     }
         
     override func prepareForReuse() {
@@ -111,6 +122,7 @@ class MessageCollectionViewBaseCell: DogeChatTableViewCell {
         avatarImageView.image = nil
         avatarImageView.animatedImage = nil
         progress.isHidden = true
+        referView.prepareForReuse()
     }
     
     override var canBecomeFirstResponder: Bool {
@@ -125,7 +137,6 @@ class MessageCollectionViewBaseCell: DogeChatTableViewCell {
             nameLabel.isHidden = false
             nameLabel.sizeToFit()
             nameLabel.frame = CGRect(x: nameLabelStartX, y: nameLabelStartY, width: nameLabel.bounds.width, height: nameLabel.bounds.height)
-            avatarImageView.frame = CGRect(x: avatarMargin, y: avatarMargin, width: avatarWidth, height: avatarWidth)
             indicator.isHidden = true
         } else {
             nameLabel.isHidden = true
@@ -133,9 +144,8 @@ class MessageCollectionViewBaseCell: DogeChatTableViewCell {
             if message.sendStatus == .fail {
                 indicator.startAnimating()
             }
-            avatarImageView.frame = CGRect(x: 0, y: 0, width: avatarWidth, height: avatarWidth)
-            avatarImageView.center = CGPoint(x: contentView.bounds.width - avatarImageView.bounds.width / 2 - avatarMargin, y: contentView.center.y)
         }
+        avatarImageView.bounds = CGRect(x: 0, y: 0, width: avatarWidth, height: avatarWidth)
         if message.messageType == .join {
             nameLabel.isHidden = true
         }
@@ -144,6 +154,19 @@ class MessageCollectionViewBaseCell: DogeChatTableViewCell {
         var timeLabelCenter = contentView.center
         timeLabelCenter.x += (contentView.bounds.width / 2 + 5 + timeLabel.bounds.width / 2)
         timeLabel.center = timeLabelCenter
+    }
+    
+    func addConstraintForReferView() {
+        guard let indicationNeighborView = indicationNeighborView else {
+            return
+        }
+        referView.translatesAutoresizingMaskIntoConstraints = false
+        referView.topAnchor.constraint(equalTo: indicationNeighborView.bottomAnchor, constant: ReferView.margin).isActive = true
+        referView.heightAnchor.constraint(equalToConstant: ReferView.height).isActive = true
+        self.referViewWidth = referView.widthAnchor.constraint(equalToConstant: 50)
+        self.referViewWidth?.isActive = true
+        self.referViewLeading = referView.leadingAnchor.constraint(equalTo: indicationNeighborView.leadingAnchor)
+        self.referViewTrailing = referView.trailingAnchor.constraint(equalTo: indicationNeighborView.trailingAnchor)
     }
     
     @objc func onLongPress(_ ges: UILongPressGestureRecognizer) {
@@ -169,18 +192,24 @@ class MessageCollectionViewBaseCell: DogeChatTableViewCell {
     
     func apply(message: Message) {
         self.message = message
+        avatarImageView.isHidden = message.messageType == .join
+        referView.isHidden = message.referMessage == nil
+        if let refer = message.referMessage {
+            referView.apply(message: refer)
+        } 
         var name = message.senderUsername
-        if let nickname = manager.friendsDict[message.senderUserID]?.nickName, !nickname.isEmpty {
-            name = nickname
-        }
-        if let group = message.friend as? Group, let nameInGroup = group.membersDict?[message.senderUserID]?.nameInGroup {
-            name = nameInGroup
+        if !message.friend.isGroup {
+            if let nickname = manager.friendsDict[message.senderUserID]?.nickName, !nickname.isEmpty {
+                name = nickname
+            }
         }
         if isHistory {
             name += "   " + (message.date).replacingOccurrences(of: "\n", with: "  ")
         }
         nameLabel.text = name
         avatarDoubleTapGes.isEnabled = message.messageSender == .someoneElse
+        referViewLeading?.isActive = message.messageSender == .someoneElse
+        referViewTrailing?.isActive = message.messageSender == .ourself
         timeLabel.text = message.date
         loadAvatar()
         addEmojis()
@@ -219,7 +248,7 @@ class MessageCollectionViewBaseCell: DogeChatTableViewCell {
             }
         }
         if let url = message.imageLocalPath?.absoluteString ?? url {
-            delegate?.imageViewTapped(self, imageView: avatarImageView, path: url, isAvatar: true)
+            delegate?.mediaViewTapped(self, path: url, isAvatar: true)
         }
     }
     
@@ -228,26 +257,15 @@ class MessageCollectionViewBaseCell: DogeChatTableViewCell {
     private func _loadAvatar() {
         let block: (String) -> Void = { [self] url in
             let isGif = url.hasSuffix(".gif")
-            if let data = ContactTableViewCell.avatarCache[url] {
-                if isGif {
-                    avatarImageView.animatedImage = FLAnimatedImage(gifData: data)
-                } else {
-                    avatarImageView.image = UIImage(data: data)
+            let captured = message
+            MediaLoader.shared.requestImage(urlStr: url, type: .image, cookie: nil, syncIfCan: false) { image, data, _ in
+                guard captured?.uuid == self.message.uuid, let data = data else { return }
+                if !isGif { // is photo
+                    self.avatarImageView.image = UIImage(data: data)
+                } else { // gif图处理
+                    self.avatarImageView.animatedImage = FLAnimatedImage(gifData: data)
                 }
-            } else {
-                let captured = message
-                MediaLoader.shared.requestImage(urlStr: url, type: .image, cookie: nil, syncIfCan: false) { image, data, _ in
-                    guard captured?.uuid == self.message.uuid else { return }
-                    if !isGif, let image = image { // is photo
-                        let compressed = compressEmojis(image)
-                        self.avatarImageView.image = UIImage(data: compressed)
-                        ContactTableViewCell.avatarCache[url] = compressed
-                    } else { // gif图处理
-                        self.avatarImageView.animatedImage = FLAnimatedImage(gifData: data)
-                        ContactTableViewCell.avatarCache[url] = data
-                    }
-                } progress: { _ in
-                }
+            } progress: { _ in
             }
         }
         if message.messageSender == .ourself {
@@ -260,17 +278,33 @@ class MessageCollectionViewBaseCell: DogeChatTableViewCell {
     }
     
     func layoutIndicatorViewAndMainView() {
-        guard let targetView = indicationNeighborView else { return }
+        guard let targetView = indicationNeighborView, message != nil else { return }
+        let hasRefer = message.referMessage != nil
+        var referWidth = referView.nameLabel.intrinsicContentSize.width + ReferView.margin + MessageInputView.offset + ReferView.height / 2 + 2 * referView.stackView.spacing
+        if !referView.messageLabel.isHidden {
+            referWidth += referView.messageLabel.intrinsicContentSize.width
+        } else {
+            referWidth += ReferView.height
+        }
+        let contentViewWidth = contentView.bounds.width
         switch message.messageSender {
         case .ourself:
-            targetView.center = CGPoint(x: contentView.bounds.width - (targetView.bounds.width / 2) - nameLabelStartX - safeAreaInsets.right, y: contentView.center.y)
+            let y: CGFloat = contentView.center.y - (hasRefer ? ReferView.height + ReferView.margin : 0) / 2
+            targetView.center = CGPoint(x: contentView.bounds.width - (targetView.bounds.width / 2) - nameLabelStartX - safeAreaInsets.right, y: y)
             indicator.center = CGPoint(x: targetView.frame.minX - 30, y: targetView.center.y)
+            var avatarCenter = targetView.center
+            avatarCenter.x = targetView.frame.maxX + avatarMargin + avatarWidth / 2
+            avatarImageView.center = avatarCenter
         case .someoneElse:
-            targetView.center = CGPoint(x: targetView.bounds.width / 2 + nameLabelStartX, y: contentView.center.y + (nameLabel.bounds.height + nameLabelStartY) / 2)
+            let spaceForReferView = hasRefer ? ReferView.height + ReferView.margin : 0
+            targetView.center = CGPoint(x: targetView.bounds.width / 2 + nameLabelStartX, y: contentView.center.y + (nameLabel.bounds.height + nameLabelStartY - spaceForReferView) / 2)
             avatarImageView.center = CGPoint(x: avatarMargin + avatarWidth / 2, y: targetView.center.y)
             indicator.center = CGPoint(x: targetView.frame.maxX + 30, y: targetView.center.y)
         }
         progress.center = indicator.center
+        if hasRefer {
+            referViewWidth?.constant = (referWidth > contentViewWidth * 0.7) ? contentViewWidth * 0.7 : referWidth
+        }
     }
     
     
@@ -329,13 +363,17 @@ class MessageCollectionViewBaseCell: DogeChatTableViewCell {
         }
         var wholeFrame = CGRect(x: 0, y: 0, width: screenWidth, height: max(0, height))
         for emojiInfo in message.emojisInfo {
-            let size = CGSize(width: emojiWidth * emojiInfo.scale, height: emojiWidth * emojiInfo.scale)
+            var emojiHeight = emojiWidth
+            if let size = sizeFromStr(emojiInfo.imageLink) {
+                emojiHeight = size.height * emojiWidth / size.width
+            }
+            let size = CGSize(width: emojiWidth * emojiInfo.scale, height: emojiHeight * emojiInfo.scale)
             let point = CGPoint(x: screenWidth * emojiInfo.x - size.width / 2, y: height * emojiInfo.y - size.height / 2)
             let frame = CGRect(origin: point, size: size)
             wholeFrame = wholeFrame.union(frame)
         }
         message.cellHeight = wholeFrame.height
-        return wholeFrame.height
+        return wholeFrame.height + ((message.referMessage == nil && message.referMessageUUID == nil) ? 0 : ReferView.height + ReferView.margin)
     }
         
     class func height(forText text: String, fontSize: CGFloat, maxSize: CGSize) -> CGFloat {
@@ -355,9 +393,9 @@ class MessageCollectionViewBaseCell: DogeChatTableViewCell {
 
 // drop
 extension MessageCollectionViewBaseCell {
-    func didDrop(imageLink: String, image: UIImage, point: CGPoint, cache: NSCache<NSString, NSData>) {
+    func didDrop(imageLink: String, image: UIImage, point: CGPoint) {
         playHaptic()
-        let emojiInfo = EmojiInfo(x: max(0, point.x/self.contentSize.width), y: max(0, point.y/self.contentSize.height), rotation: 0, scale: 1, imageLink: imageLink, lastModifiedBy: manager.messageManager.myName)
+        let emojiInfo = EmojiInfo(x: max(0, point.x/self.contentSize.width), y: max(0, point.y/self.contentSize.height), rotation: 0, scale: 1, imageLink: imageLink, lastModifiedBy: manager.myInfo.username, lastModifiedUserId: manager.myInfo.userID)
         message.emojisInfo.append(emojiInfo)
         delegate?.emojiInfoDidChange(from: nil, to: emojiInfo, cell: self)
     }
@@ -383,24 +421,10 @@ extension MessageCollectionViewBaseCell {
                     imageView.image = UIImage(data: data)
                 }
             }
-            if let data = cache.object(forKey: path as NSString) {
-                displayBlock(data as Data)
-            } else {
-                MediaLoader.shared.requestImage(urlStr: path, type: .image, syncIfCan: false, completion: { image, data, _ in
-                    guard self.message == capturedMessage, let data = data else { return }
-                    if path.hasPrefix(".gif") {
-                        displayBlock(data)
-                    } else {
-                        if let image = image {
-                            let compressed = compressEmojis(image)
-                            displayBlock(compressed)
-                            self.cache.setObject(data as NSData, forKey: emojiInfo.imageLink as NSString)
-                        } else {
-                            displayBlock(data)
-                        }
-                    }
-                }, progress: nil)
-            }
+            MediaLoader.shared.requestImage(urlStr: path, type: .image, syncIfCan: false, completion: { image, data, _ in
+                guard self.message == capturedMessage, let data = data else { return }
+                displayBlock(data)
+            }, progress: nil)
             imageView.isUserInteractionEnabled = true
             let beginReceiveGes = UITapGestureRecognizer(target: self, action: #selector(beginReceiveGes(_:)))
             beginReceiveGes.numberOfTapsRequired = 1

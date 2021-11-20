@@ -9,8 +9,6 @@
 import WatchKit
 import DogeChatUniversal
 
-let imageCahce = NSCache<NSString, NSData>()
-
 func syncOnMain(_ block: () -> Void) {
     if Thread.isMainThread {
         block()
@@ -178,22 +176,15 @@ class ChatRoomInterfaceController: WKInterfaceController {
                 messageRow.image.setHidden(false)
                 let width = WKInterfaceDevice.current().screenBounds.width - 20
                 messageRow.image.setWidth(width)
-                if let imageData = imageCahce.object(forKey: url), let image = UIImage(data: imageData as Data) {
-                    messageRow.image.setImage(image)
-                    messageRow.image.setHeight(width / image.size.width * image.size.height)
-                } else {
-                    if let size = sizeForImageOrVideo(message) {
-                        let height = width/size.width * size.height
-                        messageRow.image.setHeight(height)
-                    }
-                    MediaLoader.shared.requestImage(urlStr: url_pre + (url as String), type: .image, syncIfCan: false, completion: { image, data, _ in
-                        guard let image = image else { return }
-                        let compressedData = compressEmojis(image)
-                        messageRow.image?.setHeight(width/image.size.width * image.size.height)
-                        messageRow.image?.setImageData(compressedData)
-                        imageCahce.setObject(compressedData as NSData, forKey: url)
-                    }, progress: nil)
+                if let size = sizeForImageOrVideo(message) {
+                    let height = width/size.width * size.height
+                    messageRow.image.setHeight(height)
                 }
+                MediaLoader.shared.requestImage(urlStr: url_pre + (url as String), type: .image, syncIfCan: false, imageWidth: .width200, needStaticGif: true, completion: { image, data, _ in
+                    if let data = data {
+                        messageRow.image?.setImageData(data)
+                    }
+                }, progress: nil)
             } else {
                 messageRow.messageLabel.setHidden(false)
                 messageRow.image.setHidden(true)

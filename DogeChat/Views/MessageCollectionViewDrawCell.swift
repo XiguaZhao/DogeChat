@@ -54,10 +54,12 @@ class MessageCollectionViewDrawCell: MessageCollectionViewBaseCell {
         super.layoutSubviews()
         guard message != nil else { return }
         layoutForDrawMessage()
+        layoutIndicatorViewAndMainView()
         if #available(iOS 13.0, *) {
             self.getPKView()?.setContentOffset(.zero, animated: false)
+        } else {
+            contentView.subviews.forEach({ $0.isHidden = true })
         }
-        layoutIndicatorViewAndMainView()
     }
         
     override func apply(message: Message) {
@@ -71,7 +73,7 @@ class MessageCollectionViewDrawCell: MessageCollectionViewBaseCell {
         guard #available(iOS 13.0, *) else { return }
         guard let pkView = self.getPKView() else { return }
         let rightMargin:CGFloat = 0
-        pkView.frame = CGRect(x: 0, y: 0, width: 0.8 * contentView.bounds.width + 20 - rightMargin, height: contentView.bounds.height - 30)
+        pkView.frame = CGRect(x: 0, y: 0, width: 0.8 * contentView.bounds.width + 20 - rightMargin, height: contentView.bounds.height - 30 - (message.referMessage == nil ? 0 : ReferView.height))
         pkView.contentSize = CGSize(width: pkView.frame.width, height: 2000)
         if let pkDrawing = getPKDrawing(message: message) as? PKDrawing {
             let maxWidth = contentView.bounds.width * 0.8
@@ -131,8 +133,7 @@ class MessageCollectionViewDrawCell: MessageCollectionViewBaseCell {
         } else if let path = message.pkDataURL {
             MediaLoader.shared.requestImage(urlStr: path, type: .draw, cookie: manager.cookie, syncIfCan: true, completion: { [weak self] _, _, localPath in
                 capturedMessage.pkLocalURL = localPath
-                self?.delegate?.downloadSuccess(message: capturedMessage)
-                capturedMessage.isDownloading = false
+                self?.delegate?.downloadSuccess(self, message: capturedMessage)
             }, progress: nil)
         }
     }

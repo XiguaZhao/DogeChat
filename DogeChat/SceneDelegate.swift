@@ -87,6 +87,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         AppDelegate.shared.callWindow = callWindow
         AppDelegate.shared.pushWindow = pushWindow
         AppDelegate.shared.switcherWindow = switcherWindow
+        
+        if #available(iOS 14, *) {} else {
+            tabbarController.viewControllers![1].tabBarItem.image = UIImage(named: "music")
+        }
     }
     
     func setupNoti() {
@@ -199,6 +203,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
     func sceneDidEnterBackground(_ scene: UIScene) {
         launchedByPushAction = false
+        AppDelegate.shared.checkIfShouldRemoveCache()
         print("enter background")
         UserDefaults(suiteName: "group.demo.zhaoxiguang")?.set(false, forKey: "hostActive")
         lastAppEnterBackgroundTime = NSDate().timeIntervalSince1970
@@ -270,12 +275,17 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         if AppDelegate.shared.callManager.hasCall() {
             return
         }
-        self.contactVC?.loginAndConnect()
+        if needRelogin() {
+            self.contactVC?.loginAndConnect()
+        } else {
+            socketManager.commonWebSocket.connect()
+        }
     }
     
     func needRelogin() -> Bool {
+        guard let socketManager = self.socketManager else { return true }
         let nowTime = Date().timeIntervalSince1970
-        return nowTime - lastAppEnterBackgroundTime >= 20 * 60
+        return nowTime - socketManager.httpsManager.cookieTime >= 2 * 24 * 60 * 60 // 2天
     }
     
     func setUsernameAndPassword(_ username: String, _ password: String) {

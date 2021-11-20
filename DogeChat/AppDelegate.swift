@@ -45,7 +45,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var splitViewController: UISplitViewController!
     var providerDelegate: ProviderDelegate!
     let callManager = CallManager()
-    var isLoginInProgress = false
     let voipRegistry = PKPushRegistry(queue: DispatchQueue.main)
     var lastAppEnterBackgroundTime = NSDate().timeIntervalSince1970
     weak var contactVC: ContactsTableViewController?
@@ -94,7 +93,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             callWindow = FloatWindow(type: .alwaysDisplay, alwayDisplayType: .shouldDismiss, delegate: self)
             switcherWindow = FloatWindow(type: .alwaysDisplay, alwayDisplayType: .shouldNotDimiss, delegate: self)
         }
-        if #available(iOS 14, *) {} else {
+        if #available(iOS 13, *) {} else {
             tabBarController.viewControllers![1].tabBarItem.image = UIImage(named: "music")
         }
         let notificationOptions = launchOptions?[.remoteNotification]
@@ -113,23 +112,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         #endif
         DispatchQueue.global().async {
             SelectShortcutTVC.updateShortcuts()
-            guard let files = try? FileManager.default.contentsOfDirectory(atPath: NSTemporaryDirectory()) else { return }
-            for fileName in files {
-                if fileName.isImageOrVideoOrVoice() {
-                    try? FileManager.default.removeItem(atPath: NSTemporaryDirectory() + fileName)
-                }
-            }
         }
+        providerDelegate = ProviderDelegate(callManager: callManager, username: username)
         if #available(iOS 13.0, *) {
         } else {
             login()
         }
-        providerDelegate = ProviderDelegate(callManager: callManager, username: username)
         if UserDefaults.standard.value(forKey: "immersive") == nil {
             UserDefaults.standard.setValue(true, forKey: "immersive")
-        }
-        if #available(iOS 13, *) {} else {
-            setupReachability()
         }
         WCSession.default.delegate = SessionDelegate.shared
         WCSession.default.activate()
@@ -139,21 +129,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return true
     }
     
-    func setupReachability() {
-        reachability.whenReachable = { reach in
-            if !self.socketManager.messageManager.isLogin {
-                if let username = UserDefaults.standard.value(forKey: "lastUsername") as? String,
-                   let password = UserDefaults.standard.value(forKey: "lastPassword") as? String {
-                    self.socketManager.commonWebSocket.httpRequestsManager.login(username: username, password: password) { res in
-                        if res == "登录成功", let contactVC = self.getContactVC() {
-                            contactVC.refreshContacts {
-                                self.socketManager.connect()
-                            }
-                        }
+    func checkIfShouldRemoveCache() {
+        DispatchQueue.main.async {
+            let size = MediaLoader.shared.cacheSize.values.reduce(0, +)
+            if size / 1024 / 1024 > 50 {
+                let average = size / MediaLoader.shared.cache.count
+                for (cacheKey, size) in MediaLoader.shared.cacheSize {
+                    if size > average {
+                        MediaLoader.shared.cache.removeValue(forKey: cacheKey)
+                        MediaLoader.shared.cacheSize.removeValue(forKey: cacheKey)
                     }
                 }
-            } else {
-                self.socketManager.connect()
             }
         }
     }
@@ -173,30 +159,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                      options: UIScene.ConnectionOptions) -> UISceneConfiguration {
         return UISceneConfiguration(name: "Default Configuration", sessionRole: connectingSceneSession.role)
     }
-    
-//    func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {
-//        if isPad() {
-//            return .all
-//        } else {
-//            if #available(iOS 14.0, *) {
-//                if ChatRoomViewController.needRotate {
-//                    return .landscape
-//                } else {
-//                    if let browser =  navigationController?.visibleViewController as? ImageBrowserViewController {
-//                        return browser.canRotate ? .all : .portrait
-//                    }
-//                    return .portrait
-//                }
-//            } else {
-//                return .portrait
-//            }
-//        }
-//    }
-    
-    private func sizeFor(side: SplitVCSide, username: String?) -> CGSize {
+        
+    private func sizeFor(side: SplitVCSide, username: String?, view: UIView? = nil) -> CGSize {
         let splitViewController: UISplitViewController
         if #available(iOS 13.0, *) {
-            splitViewController = (SceneDelegate.usernameToDelegate[username!]?.splitVC)!
+            if let username = username, !username.isEmpty {
+                splitViewController = (SceneDelegate.usernameToDelegate[username]?.splitVC)!
+            } else if let splitVC = view?.window?.rootViewController as? DogeChatSplitViewController {
+                splitViewController = splitVC
+            } else {
+                return UIScreen.main.bounds.size
+            }
         } else {
             splitViewController = self.splitViewController
         }
@@ -223,32 +196,24 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func login() {
-        guard !isLoginInProgress else { return }
         self.navigationController = self.tabBarController.viewControllers?.first as? UINavigationController
         if let username = UserDefaults.standard.value(forKey: "lastUsername") as? String,
            let password = UserDefaults.standard.value(forKey: "lastPassword") as? String {
+            self.username = username
+            let socket = WebSocketManager()
+            let adapter = WebSocketManagerAdapter(manager: socket, username: username)
+            NotificationManager.shared.username = username
+            WebSocketManager.usersToSocketManager[username] = socket
+            WebSocketManagerAdapter.usernameToAdapter[username] = adapter
+            socket.myInfo.username = username
+            socket.messageManager.encrypt = EncryptMessage()
             let contactVC = ContactsTableViewController()
             contactVC.navigationItem.title = username
             contactVC.username = username
             contactVC.password = password
             self.contactVC = contactVC
             self.navigationController?.viewControllers = [contactVC]
-            isLoginInProgress = true
-            socketManager.commonWebSocket.httpRequestsManager.login(username: username, password: password) { [self]
-                (loginResult) in
-                try? self.reachability.startNotifier()
-                self.isLoginInProgress = false
-                guard loginResult == "登录成功" else {
-                    return
-                }
-                let manager = WebSocketManager()
-                let adapter = WebSocketManagerAdapter(manager: manager, username: username)
-                WebSocketManager.usersToSocketManager[username] = manager
-                WebSocketManagerAdapter.usernameToAdapter[username] = adapter
-                self.username = username
-                socketManager.messageManager.encrypt = EncryptMessage()
-                contactVC.loginSuccess = true
-            }
+            contactVC.loginAndConnect()
         } else {
             self.navigationController?.viewControllers = [JoinChatViewController()]
         }
@@ -259,8 +224,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func needRelogin() -> Bool {
+        guard let socketManager = self.socketManager else { return true }
         let nowTime = Date().timeIntervalSince1970
-        return nowTime - lastAppEnterBackgroundTime >= 20 * 60
+        return nowTime - socketManager.httpsManager.cookieTime >= 2 * 24 * 60 * 60 // 2天
     }
     
     func application(_ application: UIApplication, handleEventsForBackgroundURLSession identifier: String, completionHandler: @escaping () -> Void) {
@@ -278,48 +244,27 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationDidBecomeActive(_ application: UIApplication) {
         print("become active")
         application.applicationIconBadgeNumber = 0
-        guard let socketManager = socketManager else { return }
+        guard let socketManager = self.socketManager else { return }
         DispatchQueue.global().async {
-            self.socketManager.sortMessages()
+            socketManager.commonWebSocket.sortMessages()
         }
-        let shouldReLogin = self.needRelogin()
-        var reloginCount = 0
-        if !callManager.hasCall() {
-            if socketManager.connected {
-                socketManager.disconnect()
-            }
-            socketManager.connected = false
-        }
-        func reloginFunc() {
-            reloginCount += 1
-            if reloginCount < 5, let password = UserDefaults.standard.value(forKey: "lastPassword") as? String {
-                socketManager.commonWebSocket.httpRequestsManager.login(username: socketManager.messageManager.myName, password: password) { (result) in
-                    if result == "登录成功" {
-                        self.socketManager.connect()
-                    } else {
-                        reloginFunc()
-                    }
-                }
-            }
-        }
-        if shouldReLogin {
-            reloginFunc()
-        }
-        if self.navigationController?.topViewController?.title == "JoinChatVC" { return }
-        guard !socketManager.messageManager.cookie.isEmpty else {
+        if AppDelegate.shared.callManager.hasCall() {
             return
         }
-        if !shouldReLogin {
-            socketManager.connect()
+        if needRelogin() {
+            self.contactVC?.loginAndConnect()
+        } else {
+            socketManager.commonWebSocket.connect()
         }
     }
     
     func applicationDidEnterBackground(_ application: UIApplication) {
         launchedByPushAction = false
+        checkIfShouldRemoveCache()
         print("enter background")
         lastAppEnterBackgroundTime = NSDate().timeIntervalSince1970
         guard !callManager.hasCall() else { return }
-        socketManager.disconnect()
+        socketManager?.disconnect()
     }
     
     func application(_ application: UIApplication, performActionFor shortcutItem: UIApplicationShortcutItem, completionHandler: @escaping (Bool) -> Void) {
@@ -505,9 +450,9 @@ extension AppDelegate: UNUserNotificationCenterDelegate {
     
     private func registerPushAction() {
         let replyAction = UNTextInputNotificationAction(identifier: "REPLY_ACTION", title: "回复", options: UNNotificationActionOptions(rawValue: 0), textInputButtonTitle: "回复", textInputPlaceholder: "")
-        let doNotDisturbAction = UNNotificationAction(identifier: "DO_NOT_DISTURT_ACTION", title: "勿扰4小时", options: .init(rawValue: 0))
+//        let doNotDisturbAction = UNNotificationAction(identifier: "DO_NOT_DISTURT_ACTION", title: "勿扰4小时", options: .init(rawValue: 0))
         let categoryForPersonal = UNNotificationCategory(identifier: "MESSAGE", actions: [replyAction], intentIdentifiers: [], hiddenPreviewsBodyPlaceholder: "", options: .customDismissAction)
-        let categoryForPublic = UNNotificationCategory(identifier: "MESSAGE_PUBLICPINO", actions: [replyAction, doNotDisturbAction], intentIdentifiers: [], hiddenPreviewsBodyPlaceholder: "", options: .customDismissAction)
+        let categoryForPublic = UNNotificationCategory(identifier: "MESSAGE_PUBLICPINO", actions: [replyAction], intentIdentifiers: [], hiddenPreviewsBodyPlaceholder: "", options: .customDismissAction)
         let notificationCenter = UNUserNotificationCenter.current()
         notificationCenter.setNotificationCategories([categoryForPublic, categoryForPersonal])
         notificationCenter.delegate = self

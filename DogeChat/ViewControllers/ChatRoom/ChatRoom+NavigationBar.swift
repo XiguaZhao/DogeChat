@@ -12,6 +12,23 @@ import DogeChatUniversal
 
 extension ChatRoomViewController {
     
+    func setupToolBar() {
+        let cancle = UIBarButtonItem(title: "取消", style: .plain, target: self, action: #selector(self.cancelItemAction))
+        let share = UIBarButtonItem(title: "转发", style: .plain, target: self, action: #selector(self.didFinishMultiSelection(_:)))
+        self.toolbarItems = [cancle, share]
+        if #available(iOS 14.0, *) {
+            let flex = UIBarButtonItem.flexibleSpace()
+            self.toolbarItems = [flex, cancle, share, flex]
+        }
+        messageInputBar.isHidden = true
+        navigationController?.setToolbarHidden(false, animated: true)
+    }
+    
+    func recoverInputBar() {
+        self.navigationController?.setToolbarHidden(true, animated: true)
+        messageInputBar.isHidden = false
+    }
+    
     func makeTitleView() -> UIStackView {
         titleAvatar.contentMode = .scaleAspectFill
         titleAvatar.mas_makeConstraints { make in
@@ -33,15 +50,11 @@ extension ChatRoomViewController {
                 titleAvatar.image = UIImage(data: data)
             }
         }
-        if let cached = ContactTableViewCell.avatarCache[friend.avatarURL] {
-            block(cached)
-        } else {
-            MediaLoader.shared.requestImage(urlStr: friend.avatarURL, type: .image, cookie: self.manager.cookie, syncIfCan: true, completion: { _, data, _ in
-                if let data = data {
-                    block(data)
-                }
-            }, progress: nil)
-        }
+        MediaLoader.shared.requestImage(urlStr: friend.avatarURL, type: .image, cookie: self.manager.cookie, syncIfCan: true, completion: { _, data, _ in
+            if let data = data {
+                block(data)
+            }
+        }, progress: nil)
     }
     
     func makeDetailRightBarButton() {

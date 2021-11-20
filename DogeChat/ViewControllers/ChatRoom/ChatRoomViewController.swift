@@ -35,7 +35,6 @@ class ChatRoomViewController: DogeChatViewController, DogeChatVCTableDataSource 
             }
         }
     }
-    var isKeyboardAnimating = false
     var heightCache = [Int : CGFloat]()
     let titleLabel = UILabel()
     let titleAvatar = FLAnimatedImageView()
@@ -55,11 +54,13 @@ class ChatRoomViewController: DogeChatViewController, DogeChatVCTableDataSource 
         friend.avatarURL
     }
     var lastViewSize = CGSize.zero
+    lazy var lastTextViewContentSize: CGSize = CGSize(width: 0, height: 36)
     weak var contactVC: ContactsTableViewController?
     weak var activeMenuCell: MessageCollectionViewBaseCell?
     var hapticInputIndex = 0
     var pan: UIScreenEdgePanGestureRecognizer?
     var isPeek = false
+    var ignoreKeyboardChange = false
     var needScrollToBottom = false {
         didSet {
             if needScrollToBottom {
@@ -71,8 +72,6 @@ class ChatRoomViewController: DogeChatViewController, DogeChatVCTableDataSource 
     var lastIndexPath: IndexPath {
         return IndexPath(row: messages.count-1, section: 0)
     }
-    
-    weak var cache: NSCache<NSString, NSData>!
     
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
@@ -86,7 +85,12 @@ class ChatRoomViewController: DogeChatViewController, DogeChatVCTableDataSource 
     override func viewDidLoad() {
         super.viewDidLoad()
         makeDetailRightBarButton()
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillChange(notification:)), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
+        if isPad() {
+            NotificationCenter.default.addObserver(self, selector: #selector(keyboardFrameChangeNoti(_:)), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
+        } else {
+            NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(noti:)), name: UIWindow.keyboardWillShowNotification, object: nil)
+            NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(noti:)), name: UIWindow.keyboardWillHideNotification, object: nil)
+        }
         NotificationCenter.default.addObserver(self, selector: #selector(sendSuccess(notification:)), name: .sendSuccess, object: username)
         NotificationCenter.default.addObserver(self, selector: #selector(uploadSuccess(notification:)), name: .uploadSuccess, object: username)
         NotificationCenter.default.addObserver(self, selector: #selector(receiveNewMessageNotification(_:)), name: .receiveNewMessage, object: username)
@@ -106,21 +110,20 @@ class ChatRoomViewController: DogeChatViewController, DogeChatVCTableDataSource 
         navigationItem.largeTitleDisplayMode = .never
         addRefreshController()
         loadViews()
-        if !friend.isGroup {
-            displayHistoryIfNeeded()
-        } else {
-            customTitle = "正在拉取群成员信息"
-            manager.httpsManager.getGroupMembers(group: friend as! Group) { _ in
-                self.customTitle = self.friend.nickName ?? self.friendName
-                self.displayHistoryIfNeeded()
-            }
-        }
+        displayHistoryIfNeeded()
+        checkMyNameInGroup()
     }
-    
+        
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         navigationController?.setToolbarHidden(true, animated: true)
         messageInputBar.textView.delegate = self
+        if isMac() {
+            messageInputBar.textView.becomeFirstResponder()
+        }
+        for cell in tableView.visibleCells {
+            cell.setNeedsLayout()
+        }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -151,9 +154,8 @@ class ChatRoomViewController: DogeChatViewController, DogeChatVCTableDataSource 
     deinit {
         print("chat room VC deinit")
         MessageCollectionViewTextCell.voicePlayer.replaceCurrentItem(with: nil)
-        if !PlayerManager.shared.isPlaying && !AppDelegate.shared.callManager.hasCall() {
-            try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
-        }
+        PlayerManager.shared.playerTypes.remove(.chatroomImageCell)
+        PlayerManager.shared.playerTypes.remove(.chatroomVoiceCell)
     }
     
     func contentHeight() -> CGFloat {
@@ -164,6 +166,19 @@ class ChatRoomViewController: DogeChatViewController, DogeChatVCTableDataSource 
         if self.needScrollToBottom {
             if !messages.isEmpty {
                 tableView.scrollToRow(at: IndexPath(row: messages.count - 1, section: 0), at: .bottom, animated: true)
+            }
+        }
+    }
+    
+    func checkMyNameInGroup() {
+        guard friend is Group else { return }
+        if manager.myInfo.nameInGroupsDict[friend.userID] == nil {
+            manager.httpsManager.getGroupMembers(group: friend as! Group) { [self] members in
+                for member in members {
+                    if member.userID == manager.myInfo.userID, let myNameInGroup = member.nameInGroup {
+                        manager.myInfo.nameInGroupsDict[friend.userID] = myNameInGroup
+                    }
+                }
             }
         }
     }
@@ -220,7 +235,7 @@ extension ChatRoomViewController: UIImagePickerControllerDelegate, UINavigationC
     }
     
     func processMessageString(for string: String, type: MessageType, imageURL: String?, videoURL: String?) -> Message {
-        return Message(message: string,
+        let message = Message(message: string,
                        friend: friend,
                        imageURL: imageURL,
                        videoURL: videoURL,
@@ -233,6 +248,11 @@ extension ChatRoomViewController: UIImagePickerControllerDelegate, UINavigationC
                        id: manager.messageManager.maxId + 1,
                        sendStatus: .fail,
                        fontSize: messageInputBar.textView.font!.pointSize)
+        if messageInputBar.referView.alpha > 0, let referMessage = messageInputBar.referView.message {
+            message.referMessage = referMessage
+            cancleAction(messageInputBar.referView)
+        }
+        return message
     }
     
     @objc func emojiButtonTapped() {
@@ -287,12 +307,6 @@ extension ChatRoomViewController: PKViewChangedDelegate {
             let originalURL = dir.appendingPathComponent(fileName)
             saveFileToDisk(dirName: drawDir, fileName: fileName, data: data)
             message.pkLocalURL = originalURL
-            if let index = self.messages.firstIndex(where: { $0.uuid == message.uuid }) {
-                tableView.reloadRows(at: [IndexPath(item: index, section: 0)], with: .none)
-            }
-            insertNewMessageCell([message], forceScrollBottom: true) { [weak self] in
-                self?.drawDone()
-            }
             if #available(iOS 14.0, *) {
                 guard !pkView.drawing.strokes.isEmpty else { return }
             }
@@ -303,6 +317,12 @@ extension ChatRoomViewController: PKViewChangedDelegate {
             let width = Int(bounds.size.width)
             let height = Int(bounds.size.height)
             message.drawBounds = bounds
+            if let index = self.messages.firstIndex(where: { $0.uuid == message.uuid }) {
+                tableView.reloadRows(at: [IndexPath(item: index, section: 0)], with: .none)
+            }
+            insertNewMessageCell([message], forceScrollBottom: true) { [weak self] in
+                self?.drawDone()
+            }
             manager.uploadData(drawData, path: "message/uploadImg", name: "upload", fileName: "+\(x)+\(y)+\(width)+\(height)", needCookie: true, contentType: "application/octet-stream", params: nil) { [weak self] task, data in
                 guard let self = self, let data = data else { return }
                 let json = JSON(data)
@@ -351,10 +371,6 @@ extension ChatRoomViewController {
     }
     
     @objc func displayHistory() {
-        guard pagesAndCurNum.curNum <= pagesAndCurNum.pages else {
-            self.tableView.refreshControl?.endRefreshing()
-            return
-        }
         customTitle = "正在加载..."
         pagesAndCurNum.curNum = (self.messages.count / ChatRoomViewController.numberOfHistory) + 1
         manager.historyMessages(for: friend, pageNum: pagesAndCurNum.curNum)
@@ -362,12 +378,12 @@ extension ChatRoomViewController {
     }
     
     @objc func receiveHistoryMessages(_ noti: Notification) {
-        guard self.navigationController?.visibleViewController == self else { return }
+        if !self.isPeek && self.navigationController?.visibleViewController != self { return }
         var empty = true
         var tempHeight: CGFloat = 0
         for message in self.messages.reversed() {
             tempHeight += MessageCollectionViewBaseCell.height(for: message, username: username)
-            if tempHeight >= tableView.bounds.height {
+            if tempHeight >= tableView.bounds.height * 0.7 {
                 empty = false
                 break
             }
@@ -386,7 +402,6 @@ extension ChatRoomViewController {
         if filtered.isEmpty {
             tableView.refreshControl?.endRefreshing()
         }
-        let _ = IndexPath(item: min(self.messages.count, filtered.count), section: 0)
         
         self.messages.insert(contentsOf: filtered, at: 0)
         for message in filtered {
@@ -432,6 +447,8 @@ extension ChatRoomViewController {
         let message = self.messages[index]
         message.text = "\(message.senderUsername)撤回了一条消息"
         message.messageType = .join
+        message.referMessage = nil
+        message.referMessageUUID = nil
         let indexPath = IndexPath(row: index, section: 0)
         tableView.reloadRows(at: [indexPath], with: .none)
     }

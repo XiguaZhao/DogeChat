@@ -15,12 +15,26 @@ enum BlurImageSource {
     case albumImage
 }
 
+enum PlayerType {
+    case track
+    case chatroomImageCell
+    case chatroomVoiceCell
+    case mediaBrowser
+}
+
 class PlayerManager: NSObject {
     
     static let shared = PlayerManager()
     var isMute = false
     var player = AVPlayer()
     var playMode: PlayMode = .normal
+    var playerTypes = Set<PlayerType>() {
+        didSet {
+            if playerTypes.isEmpty {
+                try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+            }
+        }
+    }
     var interruptTime = Date().timeIntervalSince1970
     var playingMessage: Message? {
         willSet {
@@ -72,9 +86,10 @@ class PlayerManager: NSObject {
     }
     var isPlaying = false {
         didSet {
-            DispatchQueue.main.async {
-//                miniPlayerView.toggle(begin: self.isPlaying)
-//                miniPlayerView.changePlayPauseButton()
+            if isPlaying {
+                playerTypes.insert(.track)
+            } else {
+                playerTypes.remove(.track)
             }
         }
     }
@@ -147,7 +162,7 @@ class PlayerManager: NSObject {
                 if image.size.width <= 400 {
                     self.nowAlbumImage = image
                 } else {
-                    let compressed = compressEmojis(image, needBig: false, askedSize: CGSize(width: 400, height: 400))
+                    let compressed = compressEmojis(image, imageWidth: .width400)
                     self.blurSource = .albumImage
                     self.nowAlbumImage = UIImage(data: compressed)
                 }
@@ -177,7 +192,6 @@ class PlayerManager: NSObject {
                     try AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
                     self.hasActiveSession = false
                 } catch _ {
-                    self.deactivateSession()
                 }
             }
         }
@@ -253,7 +267,7 @@ class PlayerManager: NSObject {
             MPMediaItemPropertyTitle: nowPlayingTrack.name,
             MPMediaItemPropertyArtist: nowPlayingTrack.artist,
             MPMediaItemPropertyArtwork: MPMediaItemArtwork(boundsSize: nowAlbumImage.size, requestHandler: { [self] (size) -> UIImage in
-                let imageData = compressEmojis(nowAlbumImage, needBig: false, askedSize: size)
+                let imageData = compressEmojis(nowAlbumImage, imageWidth: .width200)
                 return UIImage(data: imageData)!
             }),
             MPMediaItemPropertyPlaybackDuration: CMTimeGetSeconds(player.currentItem?.duration ?? CMTime(seconds: 99, preferredTimescale: 1)),

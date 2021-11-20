@@ -21,8 +21,17 @@ class MessageCollectionViewTextCell: MessageCollectionViewBaseCell {
     
     let messageLabel = Label()
     let tapGes = UITapGestureRecognizer()
-    var isPlaying = false
+    var isPlaying = false {
+        didSet {
+            if isPlaying {
+                PlayerManager.shared.playerTypes.insert(.chatroomVoiceCell)
+            } else {
+                PlayerManager.shared.playerTypes.remove(.chatroomVoiceCell)
+            }
+        }
+    }
     var isEnd = false
+    weak var item: AVPlayerItem!
     var voiceURL: URL? {
         if let name = message?.voiceURL?.components(separatedBy: "/").last {
             return fileURLAt(dirName: voiceDir, fileName: name)
@@ -40,6 +49,7 @@ class MessageCollectionViewTextCell: MessageCollectionViewBaseCell {
         contentView.addSubview(messageLabel)
         indicationNeighborView = messageLabel
         
+        
         tapGes.addTarget(self, action: #selector(tapAction))
         messageLabel.addGestureRecognizer(tapGes)
         
@@ -54,6 +64,7 @@ class MessageCollectionViewTextCell: MessageCollectionViewBaseCell {
         super.prepareForReuse()
         tapGes.isEnabled = false
         isPlaying = false
+        messageLabel.textAlignment = .left
     }
     
     override func layoutSubviews() {
@@ -89,9 +100,11 @@ class MessageCollectionViewTextCell: MessageCollectionViewBaseCell {
     }
     
     @objc func playToEnd(_ noti: Notification) {
+        if noti.object as? AVPlayerItem != self.item {
+            return
+        }
         isPlaying = false
         isEnd = true
-        try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
     }
     
     func playVoice() {
@@ -100,7 +113,9 @@ class MessageCollectionViewTextCell: MessageCollectionViewBaseCell {
         }
         if let path = message.voiceURL, let url = fileURLAt(dirName: voiceDir, fileName: path.components(separatedBy: "/").last!) {
             let player = MessageCollectionViewTextCell.voicePlayer
-            player.replaceCurrentItem(with: AVPlayerItem(url: url))
+            let item = AVPlayerItem(url: url)
+            self.item = item
+            player.replaceCurrentItem(with: item)
             player.seek(to: .zero)
             player.play()
             MessageCollectionViewTextCell.voiceURL = url
@@ -145,14 +160,10 @@ class MessageCollectionViewTextCell: MessageCollectionViewBaseCell {
             url = _url
             block()
         } else {
-            if !message.isDownloading {
-                message.isDownloading = true
-                MediaLoader.shared.requestImage(urlStr: message.voiceURL!, type: .voice, cookie: manager.cookie, syncIfCan: true) { [weak self] _, _, localURL in
-                    captured.isDownloading = false
-                    self?.delegate?.downloadSuccess(message: captured)
-                } progress: { progress in
-                    self.delegate?.downloadProgressUpdate(progress: progress, message: captured)
-                }
+            MediaLoader.shared.requestImage(urlStr: message.voiceURL!, type: .voice, cookie: manager.cookie, syncIfCan: true) { [weak self] _, _, localURL in
+                self?.delegate?.downloadSuccess(self, message: captured)
+            } progress: { progress in
+                self.delegate?.downloadProgressUpdate(progress: progress, message: captured)
             }
         }
     }

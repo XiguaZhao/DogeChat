@@ -15,7 +15,12 @@ import WatchConnectivity
 
 class ContactsTableViewController: DogeChatViewController, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UITableViewDelegate, UITableViewDataSource, DogeChatVCTableDataSource {
     
-    var unreadMessage = [String: Int]()
+    var unreadMessage = [String: Int]() {
+        didSet {
+            let total = unreadMessage.values.reduce(0, +)
+            self.navigationItem.title = total > 0 ? "(\(total)未读)" : username
+        }
+    }
     var friends: [Friend] = []
     var usernames: [String] {
         friends.map { $0.username }
@@ -38,7 +43,6 @@ class ContactsTableViewController: DogeChatViewController, UIImagePickerControll
     var selectedIndexPath: IndexPath?
     var tableView = DogeChatTableView()
     var titleView: UIView?
-    let cache = NSCache<NSString, NSData>()
     static let pkDataWriteQueue = DispatchQueue(label: "com.zhaoxiguang.dogeChat.pkDataWrite")
     var appDelegate: AppDelegate {
         return UIApplication.shared.delegate as! AppDelegate
@@ -98,11 +102,17 @@ class ContactsTableViewController: DogeChatViewController, UIImagePickerControll
         super.viewDidAppear(animated)
         manager.messageManager.messageDelegate = self
         loadAllTracks(username: username)
+        if let visibleIndexPaths = tableView.indexPathsForSelectedRows {
+            for indexPath in visibleIndexPaths {
+                tableView.deselectRow(at: indexPath, animated: true)
+            }
+        }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         navigationItem.rightBarButtonItem = nil
+        tableView.refreshControl?.endRefreshing()
     }
     
     func processUserActivity() {
@@ -161,6 +171,10 @@ class ContactsTableViewController: DogeChatViewController, UIImagePickerControll
         setupMyAvatar()
         navigationItem.title = username
         processUserActivity()
+        if manager.commonWebSocket.connectTime - manager.httpsManager.fetchFriendTime > 20 {
+            refreshContacts(completion: nil)
+        }
+        checkGroupInfos()
     }
     
     @objc func loginingNoti(_ noti: Notification) {
@@ -182,9 +196,6 @@ class ContactsTableViewController: DogeChatViewController, UIImagePickerControll
         self.friends = friends
         tableView.reloadData()
         tableView.refreshControl?.endRefreshing()
-//        manager.httpsManager.getGroupList { groups in
-//            self.processGroup(groups)
-//        }
     }
     
     func processGroup(_ groups: [Group]) {
@@ -204,6 +215,13 @@ class ContactsTableViewController: DogeChatViewController, UIImagePickerControll
         self.present(vc, animated: true)
     }
     
+    func checkGroupInfos() {
+        if let group = self.friends.first(where: { $0.isGroup }) as? Group, group.ownerUsername.isEmpty {
+            manager.httpsManager.getGroupList { _ in
+            }
+        }
+    }
+    
     func jumpToFriend(_ friend: Friend) {
         if let index = self.friends.firstIndex(of: friend) {
             tableView(self.tableView, didSelectRowAt: IndexPath(row: index, section: 0))
@@ -218,8 +236,12 @@ class ContactsTableViewController: DogeChatViewController, UIImagePickerControll
     }
     
     @objc func refreshContacts(completion: (()->Void)? = nil) {
-        manager.commonWebSocket.httpRequestsManager.getContacts {  _, _  in
+        manager.commonWebSocket.httpRequestsManager.getContacts {  friends, _  in
             completion?()
+            if #available(iOS 13, *) {
+                let diffs = self.friends.difference(from: friends, by: { $0.userID == $1.userID })
+                let insertions = diffs.insertions
+            }
         }
     }
     
@@ -232,7 +254,7 @@ class ContactsTableViewController: DogeChatViewController, UIImagePickerControll
     }
     
     @objc func hasUnknownFriendNoti(_ noti: Notification) {
-        loginAndConnect()
+        refreshContacts(completion: nil)
     }
     
     func removeAllMessage() {
@@ -346,22 +368,11 @@ class ContactsTableViewController: DogeChatViewController, UIImagePickerControll
         syncOnMainThread {
             let friend = self.friends[indexPath.row]
             cell = tableView.dequeueReusableCell(withIdentifier: ContactTableViewCell.cellID, for: indexPath) as? ContactTableViewCell
-            cell.apply(friend, titleMore: (friend.isGroup && (friend as? Group)?.memberSize ?? 0 > 0) ? "（\((friend as! Group).memberSize)人）" : nil)
+            cell.manager = self.manager
+            cell.apply(friend)
             cell.delegate = self
-            let height = self.tableView(tableView, heightForRowAt: indexPath)
-            let offset: CGFloat = 10
-            let adjustedWidth = height - 30
-            let origin = offset / 2
-            let label = UILabel(frame: CGRect(x: origin, y: origin, width: adjustedWidth, height: adjustedWidth))
-            label.layer.cornerRadius = label.frame.height / 2
-            label.layer.masksToBounds = true
-            label.backgroundColor = .red
-            label.textAlignment = .center
-            if let number = unreadMessage[self.friends[indexPath.row].userID], number > 0 {
-                label.text = String(number)
-                cell.accessoryView = label
-            }  else {
-                cell.accessoryView = nil
+            if let number = unreadMessage[self.friends[indexPath.row].userID] {
+                cell.unreadCount = number
             }
         }
         return cell
@@ -371,10 +382,9 @@ class ContactsTableViewController: DogeChatViewController, UIImagePickerControll
         
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         unreadMessage[self.friends[indexPath.row].userID] = 0
-        tableView.deselectRow(at: indexPath, animated: true)
         let chatRoomVC = chatroomVC(for: indexPath)
         selectedIndexPath = indexPath
-        tableView.cellForRow(at: indexPath)?.accessoryView = nil
+        tableView.cellForRow(at: indexPath)?.accessoryView?.isHidden = true
         if let splitVC = self.splitViewController, !splitVC.isCollapsed {
             let nav = DogeChatNavigationController(rootViewController: chatRoomVC)
             nav.modalPresentationStyle = .fullScreen
@@ -413,19 +423,13 @@ class ContactsTableViewController: DogeChatViewController, UIImagePickerControll
             self.tableView(tableView, didSelectRowAt: IndexPath(row: index, section: 0))
         }
     }
-    
-    @available(iOS 13.0, *)
-    func tableView(_ tableView: UITableView, willEndContextMenuInteraction configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionAnimating?) {
-        tableView.reloadData()
-    }
-    
+        
     private func chatroomVC(for indexPath: IndexPath) -> ChatRoomViewController {
         let chatRoomVC = ChatRoomViewController()
         let friend = self.friends[indexPath.row]
         chatRoomVC.username = username
         chatRoomVC.friend = friend
         chatRoomVC.contactVC = self
-        chatRoomVC.cache = self.cache
         return chatRoomVC
     }
     
@@ -438,6 +442,7 @@ class ContactsTableViewController: DogeChatViewController, UIImagePickerControll
             // 刷新对应的，把最新的移动到前面
             UIView.performWithoutAnimation {
                 self.tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
+                reselectFriend(friend)
             }
             if index != 0 {
                 tableView.performBatchUpdates {
@@ -445,8 +450,15 @@ class ContactsTableViewController: DogeChatViewController, UIImagePickerControll
                     self.friends.insert(removed, at: 0)
                     tableView.moveRow(at: IndexPath(row: index, section: 0), to: IndexPath(row: 0, section: 0))
                 } completion: { _ in
+                    self.reselectFriend(friend)
                 }
             }
+        }
+    }
+    
+    func reselectFriend(_ friend: Friend) {
+        if findChatRoomVC()?.friend == friend, let index = friends.firstIndex(of: friend) {
+            tableView.selectRow(at: IndexPath(row: index, section: 0), animated: false, scrollPosition: .none)
         }
     }
     

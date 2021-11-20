@@ -123,11 +123,13 @@ func makeBlurViewForViewController(_ vc: UIViewController, blurView: inout UIIma
         vc.view.backgroundColor = .clear
     }
     vc.view.backgroundColor = .clear
-    var style: UIBlurEffect.Style
-    if UserDefaults.standard.bool(forKey: "forceDarkMode") {
-        style = .dark
-    } else {
-        style = .regular
+    var style: UIBlurEffect.Style = .regular
+    if #available(iOS 13.0, *) {
+        if UserDefaults.standard.bool(forKey: "forceDarkMode") {
+            style = .dark
+        } else {
+            style = .regular
+        }
     }
     if style == .regular && UIScreen.main.traitCollection.userInterfaceStyle == .light {
         if #available(iOS 13.0, *) {

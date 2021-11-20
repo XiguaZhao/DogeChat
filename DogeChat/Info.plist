@@ -6,13 +6,13 @@
 	<dict>
 		<key>CFBundleAlternateIcons</key>
 		<dict>
-            <key>__海贼王</key>
-            <dict>
-                <key>CFBundleIconFiles</key>
-                <array>
-                    <string>__海贼王</string>
-                </array>
-            </dict>
+			<key>__海贼王</key>
+			<dict>
+				<key>CFBundleIconFiles</key>
+				<array>
+					<string>__海贼王</string>
+				</array>
+			</dict>
 			<key>_海贼王2</key>
 			<dict>
 				<key>CFBundleIconFiles</key>
@@ -89,7 +89,7 @@
 		<true/>
 	</dict>
 	<key>NSCameraUsageDescription</key>
-	<string>曹惟乾你这个大傻逼！</string>
+	<string>拍美美的照片</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>语音通话</string>
 	<key>NSPhotoLibraryUsageDescription</key>

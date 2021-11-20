@@ -13,14 +13,13 @@ extension ChatRoomViewController: UITableViewDropDelegate {
     func tableView(_ tableView: UITableView, performDropWith coordinator: UITableViewDropCoordinator) {
         if let item = coordinator.items.first,
               let passedObject = item.dragItem.localObject as? [Any?],
-              let imageLink = passedObject[0] as? String,
-           let cache = passedObject[1] as? NSCache<NSString, NSData> { // 这是拖拽表情包
+              let imageLink = passedObject[0] as? String { // 这是拖拽表情包
             if let destinationIndexPath = coordinator.destinationIndexPath {
                 coordinator.session.loadObjects(ofClass: UIImage.self) { (images) in
                     for _image in images {
                         let image = _image as! UIImage
                         if let cell = tableView.cellForRow(at: destinationIndexPath) as? MessageCollectionViewBaseCell {
-                            cell.didDrop(imageLink: imageLink, image: image, point: coordinator.session.location(in: cell.contentView), cache: cache)
+                            cell.didDrop(imageLink: imageLink, image: image, point: coordinator.session.location(in: cell.contentView))
                         }
                     }
                 }

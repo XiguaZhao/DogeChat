@@ -54,6 +54,15 @@ class ExtensionDelegate: NSObject, WKExtensionDelegate, UNUserNotificationCenter
         // Use this method to pause ongoing tasks, disable timers, etc.
         lastEnterBackgroundTime = Date().timeIntervalSince1970
         SocketManager.shared.disconnect()
+        checkIfShouldRemoveCache()
+    }
+    
+    func checkIfShouldRemoveCache() {
+        let size = MediaLoader.shared.cacheSize.values.reduce(0, +) / 1024 / 1024
+        if size > 40 {
+            MediaLoader.shared.cache.removeAll()
+            MediaLoader.shared.cacheSize.removeAll()
+        }
     }
     
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {

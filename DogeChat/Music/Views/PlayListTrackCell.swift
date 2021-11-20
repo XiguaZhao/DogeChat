@@ -75,7 +75,7 @@ class PlayListTrackCell: UITableViewCell {
         } else {
             SDWebImageManager.shared.loadImage(with: URL(string: track.albumImageUrl), options: .avoidDecodeImage, progress: nil) { image, data, _, _, _, _ in
                 guard self.track == track, let image = image else { return }
-                let imageData = compressEmojis(image, askedSize: CGSize(width: 40, height: 40))
+                let imageData = compressEmojis(image, imageWidth: .width40)
                 self.albumImageView.image = UIImage(data: imageData)
                 trackThumbCache.setObject(imageData as NSData, forKey: track.albumImageUrl as NSString)
             }
