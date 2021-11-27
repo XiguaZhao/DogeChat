@@ -31,11 +31,13 @@ class WebSocketManagerAdapter: NSObject {
         didSet {
             guard readyToSendVideoData == true else { return }
             DispatchQueue.main.async {
-                #if !targetEnvironment(macCatalyst)
-                let vc = VideoChatViewController()
-                vc.username = self.username
-                self.navigationController?.present(vc, animated: true, completion: nil)
-                #endif
+                if #available(iOS 13.0, *) {
+#if !targetEnvironment(macCatalyst)
+                    let vc = VideoChatViewController()
+                    vc.username = self.username
+                    self.navigationController?.present(vc, animated: true, completion: nil)
+#endif
+                }
             }
         }
     }
@@ -138,11 +140,13 @@ class WebSocketManagerAdapter: NSObject {
         let userinfo = noti.userInfo!
         let uuid = userinfo["uuid"] as! String
         Recorder.sharedInstance().stopRecordAndPlay()
-        #if !targetEnvironment(macCatalyst)
-        if let videoVC = navigationController?.visibleViewController as? VideoChatViewController {
-            videoVC.dismiss()
+        if #available(iOS 13.0, *) {
+#if !targetEnvironment(macCatalyst)
+            if let videoVC = navigationController?.visibleViewController as? VideoChatViewController {
+                videoVC.dismiss(animated: true, completion: nil)
+            }
+#endif
         }
-        #endif
         guard let _uuid = UUID(uuidString: uuid),
               let call = AppDelegate.shared.callManager.callWithUUID(_uuid) else { return }
         AppDelegate.shared.callManager.end(call: call)
@@ -208,11 +212,13 @@ extension WebSocketManagerAdapter: VoiceDelegate, WebSocketDataDelegate {
         let lengthData = (data as NSData).subdata(with: NSRange(location: 8, length: 4))
         let length = Recorder.int(with: lengthData)
         if type == 1 { // 视频
-            #if !targetEnvironment(macCatalyst)
-            if let vc = navigationController?.visibleViewController as? VideoChatViewController {
-                vc.didReceiveVideoData(data)
+            if #available(iOS 13.0, *) {
+#if !targetEnvironment(macCatalyst)
+                if let vc = navigationController?.visibleViewController as? VideoChatViewController {
+                    vc.didReceiveVideoData(data)
+                }
+#endif
             }
-            #endif
         } else if type == 2 { // 音频
             let voiceData = (data as NSData).subdata(with: NSRange(location: 16, length: Int(length)))
             if Recorder.sharedInstance().receivedData == nil {
@@ -222,12 +228,14 @@ extension WebSocketManagerAdapter: VoiceDelegate, WebSocketDataDelegate {
             let videoInfoData = (data as NSData).subdata(with: NSRange(location: 4, length: 4))
             let videoInfo = Recorder.int(with: videoInfoData)
             if videoInfo == 1 { // 说明想要视频
-                #if !targetEnvironment(macCatalyst)
-                if UIApplication.shared.applicationState == .active && !navigationController!.visibleViewController!.isKind(of: VideoChatViewController.self) {
-                    readyToSendVideoData = true
-                    Recorder.sharedInstance().needSendVideo = true
-                }
-                #endif
+                if #available(iOS 13.0, *) {
+#if !targetEnvironment(macCatalyst)
+                    if UIApplication.shared.applicationState == .active && !navigationController!.visibleViewController!.isKind(of: VideoChatViewController.self) {
+                        readyToSendVideoData = true
+                        Recorder.sharedInstance().needSendVideo = true
+                    }
+#endif
+                } 
             }
         }
     }
