@@ -66,7 +66,7 @@ extension ChatRoomViewController {
         offsetY += shouldDown ? 0 : additionalOffset
         UIView.animate(withDuration: duration) { [self] in
             self.messageInputBar.center = point
-            self.emojiSelectView.center = CGPoint(x: self.emojiSelectView.center.x, y: self.emojiSelectView.center.y + offsetY)
+            self.emojiSelectView.frame = CGRect(x: 0, y: messageInputBar.frame.maxY, width: messageInputBar.frame.width, height: self.view.bounds.height - messageInputBar.frame.maxY)
             self.tableView.contentInset = inset
             let contentHeight = contentHeight()
             if !shouldDown && contentHeight > messageInputBar.frame.minY {
@@ -104,6 +104,12 @@ extension ChatRoomViewController {
         tableView.estimatedRowHeight = 0
         tableView.estimatedSectionHeaderHeight = 0
         tableView.estimatedSectionFooterHeight = 0
+        view.addSubview(tableView)
+        if !isPeek {
+            view.addSubview(messageInputBar)
+            view.addSubview(emojiSelectView)
+        }
+
         layoutViews(size: view.bounds.size)
         scrollToBottomWithoutAnimation()
         tableView.register(MessageCollectionViewTextCell.self, forCellReuseIdentifier: MessageCollectionViewTextCell.cellID)
@@ -117,17 +123,12 @@ extension ChatRoomViewController {
         emojiSelectView.delegate = self
         emojiSelectView.username = username
         
-        view.addSubview(tableView)
-        if !isPeek {
-            view.addSubview(messageInputBar)
-            view.addSubview(emojiSelectView)
-        }
-
         messageInputBar.delegate = self
         messageInputBar.referView.delegate = self
         
         pan = UIScreenEdgePanGestureRecognizer(target: self, action: #selector(panAction(_:)))
         pan?.edges = .right
+        pan?.isEnabled = false
         view.addGestureRecognizer(pan!)
 
     }
@@ -141,11 +142,8 @@ extension ChatRoomViewController {
                 messages[i].syncGetMedia = true //为了让点进来的时候图片直接显示，不然下一个runloop会闪一下
             }
             tableView.reloadData()
-//            let offset = CGPoint(x: 0, y: CGFloat.greatestFiniteMagnitude)
-//            tableView.contentOffset = offset
-//            DispatchQueue.main.async { [self] in
-                tableView.scrollToRow(at: IndexPath(row: messages.count - 1, section: 0), at: .bottom, animated: false)
-//            }
+            let offset = CGPoint(x: 0, y: CGFloat.greatestFiniteMagnitude)
+            tableView.contentOffset = offset
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
                 self.scrollViewDidEndDecelerating(self.tableView)
             }

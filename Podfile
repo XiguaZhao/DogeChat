@@ -17,6 +17,8 @@ pod 'DogeChatUniversal', :path => '/Users/zhaoxiguang/Library/Mobile Documents/c
 pod 'LookinServer'
 pod 'ReachabilitySwift'
 pod 'RSAiOSWatchOS', :path => '/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/RSAiOSWatchOS'
+pod 'GzipSwift'
+pod 'DataCompression'
 end
 
 
@@ -30,4 +32,10 @@ end
 
 target 'mynotification' do
   pod 'DogeChatUniversal', :path => '/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/DogeChatUniversal'
+end
+
+target 'DogeChatSiri' do
+  pod 'DogeChatUniversal', :path => '/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/DogeChatUniversal'
+  pod 'DogeChatNetwork', :path => '/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/DogeChatNetwork'
+  pod 'RSAiOSWatchOS', :path => '/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/RSAiOSWatchOS'
 end

@@ -113,16 +113,23 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
             self.makeMultiSelection(indexPath)
         }
         multiSelection.backgroundColor = #colorLiteral(red: 0.2392156869, green: 0.6745098233, blue: 0.9686274529, alpha: 1)
+        let referAction = UIContextualAction(style: .normal, title: "引用") { [weak self, weak tableView] action, view, handler in
+            guard let self = self else { return }
+            handler(true)
+            if let cell = tableView?.cellForRow(at: indexPath) as? MessageCollectionViewBaseCell {
+                self.activeMenuCell = cell
+                self.referAction(sender: nil)
+            }
+        }
+        referAction.backgroundColor = #colorLiteral(red: 0.2392156869, green: 0.6745098233, blue: 0.9686274529, alpha: 1)
         var actions = [multiSelection]
         if messages[indexPath.row].messageType == .image {
             actions.append(saveEmoji)
         }
-        if actions.isEmpty {
-            return nil
-        }
+        actions = [referAction]
         let config = UISwipeActionsConfiguration(actions: actions)
         config.performsFirstActionWithFullSwipe = true
-        return nil
+        return config
     }
         
     //MARK: ContextMune

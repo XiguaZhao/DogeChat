@@ -198,6 +198,7 @@ func recoverVC(_ vc: UIViewController, blurView: inout UIImageView!) {
         vc.overrideUserInterfaceStyle = .unspecified
         vc.view.backgroundColor = .systemBackground
         vc.splitViewController?.view.backgroundColor = .systemBackground
+        vc.view.window?.overrideUserInterfaceStyle = .unspecified
     }
     UIView.animate(withDuration: 0.5) { [weak blurView] in
         blurView?.alpha = 0

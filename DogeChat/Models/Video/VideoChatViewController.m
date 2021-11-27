@@ -114,14 +114,14 @@ static CGFloat overlayWidth = 0;
                 [mData appendData:recordedAudioData];
                 [recordedAudioData replaceBytesInRange:NSMakeRange(0, recordedAudioData.length) withBytes:NULL length:0];
             }
-            [[self manager] sendVideoData:[mData copy]];
+            [[self manager] timeToSendData:[mData copy]];
         }];
 
     }
 }
 
-- (WebSocketManager *)manager {
-    return WebSocketManager.usersToSocketManager[self.username];
+- (WebSocketManagerAdapter *)manager {
+    return WebSocketManagerAdapter.usernameToAdapter[self.username];
 }
 
 - (void)didReceiveVideoData:(NSData *)videoData {

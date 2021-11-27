@@ -524,26 +524,33 @@
             filePath = "../DogeChatUniversal/DogeChatUniversal/Classes/MessageManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "185"
-            endingLineNumber = "185"
+            startingLineNumber = "186"
+            endingLineNumber = "186"
             landmarkName = "wrapMessage(messageJSON:insertPosition:needEncrypt:needInsert:updateMaxID:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         BreakpointExtensionID = "Xcode.Breakpoint.SymbolicBreakpoint">
          <BreakpointContent
-            uuid = "931A900B-099D-4829-B8C3-62C0EBDB9520"
-            shouldBeEnabled = "Yes"
+            uuid = "FE934919-4CB5-493D-A695-260620F65531"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "DogeChat/Models/WebSocketManagerAdapter.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "172"
-            endingLineNumber = "172"
-            landmarkName = "receiveRealTimeDrawData(noti:)"
-            landmarkType = "7">
+            symbolName = "-[UITableView setContentOffset:]"
+            moduleName = "">
+            <Locations>
+               <Location
+                  uuid = "FE934919-4CB5-493D-A695-260620F65531 - b4ff4b81f0686544"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[UITableView setContentOffset:]"
+                  moduleName = "UIKitCore"
+                  usesParentBreakpointCondition = "Yes"
+                  offsetFromSymbolStart = "0">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

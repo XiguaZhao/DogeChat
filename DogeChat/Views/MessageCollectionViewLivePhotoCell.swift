@@ -60,7 +60,7 @@ class MessageCollectionViewLivePhotoCell: MessageCollectionViewBaseCell, PHLiveP
     override func layoutSubviews() {
         super.layoutSubviews()
         guard message != nil else { return }
-        let maxSize = CGSize(width: 2*(AppDelegate.shared.widthFor(side: .right, username: username)/3), height: CGFloat.greatestFiniteMagnitude)
+        let maxSize = CGSize(width: 2*(AppDelegate.shared.widthFor(side: .right, username: username, view: self)/3), height: CGFloat.greatestFiniteMagnitude)
         let nameHeight = message.messageSender == .ourself ? 0 : (MessageCollectionViewBaseCell.height(forText: message.senderUsername, fontSize: 10, maxSize: maxSize) + 4 )
         let height = contentView.bounds.height - 30 - nameHeight - (message.referMessage == nil ? 0 : ReferView.height + ReferView.margin)
         let width = message.imageSize.width * height / message.imageSize.height
@@ -94,7 +94,7 @@ class MessageCollectionViewLivePhotoCell: MessageCollectionViewBaseCell, PHLiveP
         let size = sizeForImageOrVideo(message)
         let livePhotoLoadBlock: (URL, URL, Bool) -> Void = { [weak self] localImageURL, localVideoURL, playNow in
             guard let self = self else { return }
-            let width = AppDelegate.shared.widthFor(side: .right, username: self.username) * 0.5
+            let width = AppDelegate.shared.widthFor(side: .right, username: self.username, view: self) * 0.5
             PHLivePhoto.request(withResourceFileURLs: [
                 localImageURL, localVideoURL]
                                 , placeholderImage: nil, targetSize: size == nil ? .zero : CGSize(width: width, height: width / size!.width * size!.height), contentMode: .aspectFit) { live, info in

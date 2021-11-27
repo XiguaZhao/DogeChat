@@ -10,6 +10,8 @@ import Foundation
 import DogeChatNetwork
 import SwiftyJSON
 import DogeChatUniversal
+import Gzip
+import DataCompression
 
 func playSound(needSound: Bool = true) {
     if UIApplication.shared.applicationState == .active {
@@ -180,6 +182,7 @@ class WebSocketManagerAdapter: NSObject {
                     if let cell = self.getDrawCell(for: targetMessage), let drawing = cell.getPKView()?.drawing {
                         let wholeNewDrawing = drawing.appending(newStroke)
                         cell.getPKView()!.drawing = wholeNewDrawing
+                        cell.getPKView()?.isScrollEnabled = true
                         let newBounds = wholeNewDrawing.bounds
                         let widthLack = newBounds.maxX > cell.getPKView()!.bounds.maxX
                         let _ = newBounds.maxY > cell.getPKView()!.bounds.maxY
@@ -198,6 +201,7 @@ class WebSocketManagerAdapter: NSObject {
 
 extension WebSocketManagerAdapter: VoiceDelegate, WebSocketDataDelegate {
     func didReceiveData(_ data: Data!) {
+        guard let data = data.decompress(withAlgorithm: .lzfse) else { return }
         let range = NSRange(location: 12, length: 4)
         let typeData: NSData = (data as NSData).subdata(with: range) as NSData
         let type = Recorder.int(with: typeData as Data)
@@ -229,7 +233,10 @@ extension WebSocketManagerAdapter: VoiceDelegate, WebSocketDataDelegate {
     }
     
     func time(toSend data: Data) {
-        manager.sendVoiceData(data)
+        print("压缩前\(data)")
+        if let compressed = data.compress(withAlgorithm: .lzfse) {
+            manager.sendVoiceData(compressed)
+        }
     }
     
     

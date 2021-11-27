@@ -135,6 +135,7 @@ class SocketManager: NSObject, URLSessionDelegate, URLSessionWebSocketDelegate, 
     func urlSession(_ session: URLSession, webSocketTask: URLSessionWebSocketTask, didCloseWith closeCode: URLSessionWebSocketTask.CloseCode, reason: Data?) {
         print("手表websocket已关闭")
         self.connected = false
+        ContactInterfaceController.shared.asyncReconnect()
     }
     
     func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {

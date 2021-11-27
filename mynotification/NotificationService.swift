@@ -60,8 +60,8 @@ class NotificationService: UNNotificationServiceExtension {
                     }
                     guard let username = UserDefaults(suiteName: "group.demo.zhaoxiguang")?.value(forKey: "sharedUsername") as? String,
                           let password = UserDefaults(suiteName: "group.demo.zhaoxiguang")?.value(forKey: "sharedPassword") as? String else { return }
-                    manager.login(username: username, password: password) { res in
-                        guard res == "登录成功", !manager.cookie.isEmpty else { return }
+                    manager.login(username: username, password: password) { success in
+                        guard success, !manager.cookie.isEmpty else { return }
                         MediaLoader.shared.cookie = manager.cookie
                         MediaLoader.shared.type = .defaultSession
                         MediaLoader.shared.requestImage(urlStr: path, type: .voice, syncIfCan: false, needCache: false, completion: { _, data, localURL in

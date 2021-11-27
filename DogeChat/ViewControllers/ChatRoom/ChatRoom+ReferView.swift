@@ -42,30 +42,29 @@ extension ChatRoomViewController: ReferViewDelegate {
         guard let message = message else {
             return
         }
-        if let index = self.messages.firstIndex(of: message) {
+        if message.messageType == .image || message.messageType == .livePhoto || message.messageType == .video {
+            let browser = MediaBrowserViewController()
+            browser.imagePaths = [message.text]
+            present(browser, animated: true, completion: nil)
+        } else if let index = self.messages.firstIndex(of: message) {
             let indexPath = IndexPath(row: index, section: 0)
             tableView.selectRow(at: indexPath, animated: true, scrollPosition: .middle)
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [self] in
                 tableView.deselectRow(at: indexPath, animated: true)
             }
         } else {
-            if message.messageType == .image || message.messageType == .livePhoto || message.messageType == .video {
-                let browser = MediaBrowserViewController()
-                browser.imagePaths = [message.text]
-                present(browser, animated: true, completion: nil)
-            } else {
-                if #available(iOS 13.0, *) {
-                    let vc = HistoryVC(type: .referView, username: username)
-                    let message = message.copied()
-                    vc.messages = [message]
-                    vc.friend = friend
-                    navigationController?.pushViewController(vc, animated: true)
-                }
+            if #available(iOS 13.0, *) {
+                let vc = HistoryVC(type: .referView, username: username)
+                let message = message.copied()
+                vc.messages = [message]
+                vc.friend = friend
+                navigationController?.pushViewController(vc, animated: true)
             }
         }
     }
     
     func cancleAction(_ referView: ReferView) {
+        guard referView.type == .inputView else { return }
         messageInputBar.layoutIfNeeded()
         var inset = tableView.contentInset
         inset.bottom -= ReferView.height

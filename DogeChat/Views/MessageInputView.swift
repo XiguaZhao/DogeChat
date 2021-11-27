@@ -198,8 +198,8 @@ class MessageInputView: DogeChatStaticBlurView {
     }
     
     func frameDown() {
-        let screenSize = UIApplication.shared.windows.first(where: { $0.isKeyWindow })?.bounds.size ?? UIScreen.main.bounds.size
-        let frame = CGRect(x: 0, y: screenSize.height, width: screenSize.width, height: screenSize.height)
+        let height = self.window?.bounds.height ?? UIScreen.main.bounds.height
+        let frame = CGRect(x: 0, y: height, width: 0, height: 100)
         delegate?.messageInputBarFrameChange(frame, shouldDown: true, ignore: false)
     }
     
@@ -269,7 +269,7 @@ class MessageInputView: DogeChatStaticBlurView {
     
     @objc func emojiButtonTapped() {
         let block: (Bool) -> Void = { ignore in
-            let screenSize = AppDelegate.shared.navigationController!.view.bounds.size
+            let screenSize = (self.window?.rootViewController)?.view.bounds.size ?? UIScreen.main.bounds.size
             let ratio: CGFloat = MessageInputView.ratioOfEmojiView
             let frame = CGRect(x: 0, y: (1-ratio)*screenSize.height, width: screenSize.width, height: ratio*screenSize.height)
             self.delegate?.messageInputBarFrameChange(frame, shouldDown: false, ignore: ignore)

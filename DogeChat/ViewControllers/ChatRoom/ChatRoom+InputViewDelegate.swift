@@ -160,7 +160,7 @@ extension ChatRoomViewController: MessageInputDelegate, VoiceRecordDelegate {
                     result.itemProvider.loadObject(ofClass: PHLivePhoto.self) {[self] livePhoto, error in
                         if let live = livePhoto as? PHLivePhoto {
                             alert.title = "正在压缩" + "0/\(results.count)"
-                            LivePhotoGenerator().generate(for: live, windowWidth: AppDelegate.shared.widthFor(side: .right, username: self.username)) { livePhoto in
+                            LivePhotoGenerator().generate(for: live, windowWidth: AppDelegate.shared.widthFor(side: .right, username: self.username, view: self.view)) { livePhoto in
                                 let imageURL = livePhoto.value(forKey: "imageURL") as! URL
                                 let videoURL = livePhoto.value(forKey: "videoURL") as! URL
                                 self.pickedLivePhotos.append((imageURL, videoURL, livePhoto.size, livePhoto))

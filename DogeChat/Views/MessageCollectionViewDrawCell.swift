@@ -94,6 +94,7 @@ class MessageCollectionViewDrawCell: MessageCollectionViewBaseCell {
             if #available(iOS 14.0, *) {
                 pkView.drawingPolicy = .anyInput
             }
+            pkView.isScrollEnabled = false
             pkView.drawingGestureRecognizer.isEnabled = false
             self.contentView.addSubview(pkView)
             tapGes = UITapGestureRecognizer(target: self, action: #selector(pkViewTapAction(_:)))

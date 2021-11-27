@@ -477,13 +477,20 @@ extension ContactsTableViewController: UIViewControllerPreviewingDelegate {
     }
     
     func previewingContext(_ previewingContext: UIViewControllerPreviewing, commit viewControllerToCommit: UIViewController) {
-        (previewingContext.sourceView as? UITableViewCell)?.accessoryView = nil
+        (previewingContext.sourceView as? ContactTableViewCell)?.unreadLabel.isHidden = true
         navigationController?.pushViewController(viewControllerToCommit, animated: true)
     }
 }
 
 extension ContactsTableViewController: MessageDelegate, AddContactDelegate {
     
+    func asyncReconnect() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
+            guard UIApplication.shared.applicationState == .active else { return }
+            self?.manager.commonWebSocket.loginAndConnect(username: nil, password: nil)
+        }
+    }
+
     func updateOnlineNumber(to newNumber: Int) {
         
     }

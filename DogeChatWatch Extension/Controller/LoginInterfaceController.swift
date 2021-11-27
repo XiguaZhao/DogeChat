@@ -35,8 +35,8 @@ class LoginInterfaceController: WKInterfaceController {
         guard !username.isEmpty && !password.isEmpty else {
             return
         }
-        SocketManager.shared.httpManager.login(username: username, password: password) { result in
-            if result == "登录成功" {
+        SocketManager.shared.httpManager.login(username: username, password: password) { success in
+            if success {
                 isLogin = true
                 NotificationCenter.default.post(name: NSNotification.Name("canGetContacts"), object: nil)
                 UserDefaults.standard.setValue(self.username, forKey: "username")

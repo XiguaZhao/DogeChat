@@ -18,6 +18,8 @@ var url_pre: String {
 
 class ContactInterfaceController: WKInterfaceController {
     
+    static var shared: ContactInterfaceController!
+    
     @IBOutlet weak var table: WKInterfaceTable!
     let manager = SocketManager.shared
     
@@ -29,6 +31,7 @@ class ContactInterfaceController: WKInterfaceController {
     var loginCount = 0
     
     override func awake(withContext context: Any?) {
+        Self.shared = self
         NotificationCenter.default.addObserver(self, selector: #selector(canGetContacts), name: NSNotification.Name("canGetContacts"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(getWCSessionMessage(_:)), name: .wcSessionMessage, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(willEnterForeground), name: .becomeActive, object: nil)
@@ -187,6 +190,17 @@ class ContactInterfaceController: WKInterfaceController {
 }
 
 extension ContactInterfaceController: MessageDelegate {
+    func asyncReconnect() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) { [weak self] in
+            guard let self = self, WKExtension.shared().applicationState == .active else { return }
+            if self.needRelogin() {
+                SocketManager.shared.commonSocket.loginAndConnect(username: nil, password: nil)
+            } else {
+                SocketManager.shared.commonSocket.connect()
+            }
+        }
+    }
+    
     func updateOnlineNumber(to newNumber: Int) {
         
     }

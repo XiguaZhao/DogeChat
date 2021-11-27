@@ -2,6 +2,12 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>ch</string>
+	<key>CFBundleDisplayName</key>
+	<string>漂流瓶</string>
+	<key>CFBundleExecutable</key>
+	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIcons</key>
 	<dict>
 		<key>CFBundleAlternateIcons</key>
@@ -13,18 +19,11 @@
 					<string>__海贼王</string>
 				</array>
 			</dict>
-			<key>_海贼王2</key>
+			<key>_哆啦A梦</key>
 			<dict>
 				<key>CFBundleIconFiles</key>
 				<array>
-					<string>_海贼王2</string>
-				</array>
-			</dict>
-			<key>_蜡笔小新</key>
-			<dict>
-				<key>CFBundleIconFiles</key>
-				<array>
-					<string>_蜡笔小新</string>
+					<string>_哆啦A梦</string>
 				</array>
 			</dict>
 			<key>_小黄人</key>
@@ -41,6 +40,20 @@
 					<string>_小黄人2</string>
 				</array>
 			</dict>
+			<key>_海贼王2</key>
+			<dict>
+				<key>CFBundleIconFiles</key>
+				<array>
+					<string>_海贼王2</string>
+				</array>
+			</dict>
+			<key>_蜡笔小新</key>
+			<dict>
+				<key>CFBundleIconFiles</key>
+				<array>
+					<string>_蜡笔小新</string>
+				</array>
+			</dict>
 			<key>猫咪2</key>
 			<dict>
 				<key>CFBundleIconFiles</key>
@@ -48,21 +61,8 @@
 					<string>猫咪2</string>
 				</array>
 			</dict>
-			<key>_哆啦A梦</key>
-			<dict>
-				<key>CFBundleIconFiles</key>
-				<array>
-					<string>_哆啦A梦</string>
-				</array>
-			</dict>
 		</dict>
 	</dict>
-	<key>CFBundleDevelopmentRegion</key>
-	<string>en</string>
-	<key>CFBundleDisplayName</key>
-	<string>DogeChat</string>
-	<key>CFBundleExecutable</key>
-	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
 	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 	<key>CFBundleInfoDictionaryVersion</key>
@@ -76,13 +76,9 @@
 	<key>CFBundleVersion</key>
 	<string>1</string>
 	<key>LSApplicationCategoryType</key>
-	<string></string>
+	<string>public.app-category.social-networking</string>
 	<key>LSRequiresIPhoneOS</key>
-	<true/>
-	<key>NSUserActivityTypes</key>
-	<array>
-		<string>com.zhaoxiguang.dogechat</string>
-	</array>
+	<false/>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>
@@ -96,6 +92,10 @@
 	<string>发送照片</string>
 	<key>NSSiriUsageDescription</key>
 	<string>发送消息</string>
+	<key>NSUserActivityTypes</key>
+	<array>
+		<string>com.zhaoxiguang.dogechat</string>
+	</array>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Inconsolata-Regular</string>
@@ -103,22 +103,22 @@
 	</array>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
+		<key>UIApplicationSupportsMultipleScenes</key>
+		<true/>
 		<key>UISceneConfigurations</key>
 		<dict>
 			<key>UIWindowSceneSessionRoleApplication</key>
 			<array>
 				<dict>
-					<key>UISceneDelegateClassName</key>
-					<string>$(PRODUCT_MODULE_NAME).SceneDelegate</string>
 					<key>UISceneConfigurationName</key>
 					<string>Default Configuration</string>
+					<key>UISceneDelegateClassName</key>
+					<string>$(PRODUCT_MODULE_NAME).SceneDelegate</string>
 					<key>UISceneStoryboardFile</key>
 					<string>main</string>
 				</dict>
 			</array>
 		</dict>
-		<key>UIApplicationSupportsMultipleScenes</key>
-		<true/>
 	</dict>
 	<key>UIBackgroundModes</key>
 	<array>

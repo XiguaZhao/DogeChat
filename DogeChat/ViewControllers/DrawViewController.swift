@@ -75,7 +75,6 @@ class DrawViewController: UIViewController, PKViewAutoOffsetDelegate {
         pkView.backgroundColor = .gray
         pkView.delegate = pkViewDelegate
         pkView.contentSize = CGSize(width: 2000, height: 2000)
-        pkView.becomeFirstResponder()
         pkViewDelegate.pkView = pkView
         pkViewDelegate.autoOffsetDelegate = self
         pkViewDelegate.message = message as Any
@@ -106,6 +105,7 @@ class DrawViewController: UIViewController, PKViewAutoOffsetDelegate {
         super.viewDidAppear(animated)
         toolPicker?.setVisible(true, forFirstResponder: pkView)
         toolPicker?.addObserver(pkViewDelegate)
+        pkView.becomeFirstResponder()
     }
     
     override func viewDidDisappear(_ animated: Bool) {

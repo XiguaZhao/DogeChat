@@ -1,9 +1,9 @@
 //
 //  IntentViewController.swift
-//  SiriMessageUI
+//  DogeChatSiriUI
 //
-//  Created by 赵锡光 on 2021/4/24.
-//  Copyright © 2021 Xiguang Zhao. All rights reserved.
+//  Created by 赵锡光 on 2021/11/20.
+//  Copyright © 2021 Luke Parham. All rights reserved.
 //
 
 import IntentsUI

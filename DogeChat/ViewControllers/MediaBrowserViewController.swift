@@ -72,7 +72,8 @@ class MediaBrowserViewController: UIViewController {
     
     override var keyCommands: [UIKeyCommand]? {
         if #available(iOS 13.0, *) {
-            return [UIKeyCommand(action: #selector(escapeAction(_:)), input: UIKeyCommand.inputEscape)]
+            return [UIKeyCommand(action: #selector(escapeAction(_:)), input: UIKeyCommand.inputEscape),
+                    UIKeyCommand(action: #selector(escapeAction(_:)), input: "\u{20}")]
         } else {
             return nil
         }

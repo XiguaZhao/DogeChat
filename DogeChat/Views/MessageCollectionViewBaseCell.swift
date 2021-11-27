@@ -123,6 +123,8 @@ class MessageCollectionViewBaseCell: DogeChatTableViewCell {
         avatarImageView.animatedImage = nil
         progress.isHidden = true
         referView.prepareForReuse()
+        referViewLeading?.isActive = false
+        referViewTrailing?.isActive = false
     }
     
     override var canBecomeFirstResponder: Bool {
@@ -290,7 +292,7 @@ class MessageCollectionViewBaseCell: DogeChatTableViewCell {
         switch message.messageSender {
         case .ourself:
             let y: CGFloat = contentView.center.y - (hasRefer ? ReferView.height + ReferView.margin : 0) / 2
-            targetView.center = CGPoint(x: contentView.bounds.width - (targetView.bounds.width / 2) - nameLabelStartX - safeAreaInsets.right, y: y)
+            targetView.center = CGPoint(x: contentView.bounds.width - (targetView.bounds.width / 2) - nameLabelStartX, y: y)
             indicator.center = CGPoint(x: targetView.frame.minX - 30, y: targetView.center.y)
             var avatarCenter = targetView.center
             avatarCenter.x = targetView.frame.maxX + avatarMargin + avatarWidth / 2

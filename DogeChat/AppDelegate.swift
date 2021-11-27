@@ -126,6 +126,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         NotificationCenter.default.addObserver(forName: .backgroundSessionFinish, object: nil, queue: .main) { [weak self] _ in
             self?.backgroundSessionCompletionHandler?()
         }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            if UserDefaults.standard.value(forKey: "lastUsername") != nil {
+                INPreferences.requestSiriAuthorization { status in
+                    print("授权状态")
+                    print(status)
+                }
+            }
+        }
+        
         return true
     }
     
@@ -163,8 +172,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     private func sizeFor(side: SplitVCSide, username: String?, view: UIView? = nil) -> CGSize {
         let splitViewController: UISplitViewController
         if #available(iOS 13.0, *) {
-            if let username = username, !username.isEmpty {
-                splitViewController = (SceneDelegate.usernameToDelegate[username]?.splitVC)!
+            if let username = username, !username.isEmpty, let sceneDelegate = SceneDelegate.usernameToDelegate[username] {
+                splitViewController = sceneDelegate.splitVC
             } else if let splitVC = view?.window?.rootViewController as? DogeChatSplitViewController {
                 splitViewController = splitVC
             } else {
@@ -187,12 +196,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
     }
     
-    @objc func widthFor(side: SplitVCSide, username: String?) -> CGFloat {
-        return sizeFor(side: side, username: username).width
+    @objc func widthFor(side: SplitVCSide, username: String?, view: UIView? = nil) -> CGFloat {
+        return sizeFor(side: side, username: username, view: view).width
     }
     
-    @objc func heightFor(side: SplitVCSide, username: String?) -> CGFloat {
-        return sizeFor(side: side, username: username).height
+    @objc func heightFor(side: SplitVCSide, username: String?, view: UIView? = nil) -> CGFloat {
+        return sizeFor(side: side, username: username, view: view).height
     }
     
     func login() {
@@ -343,8 +352,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         case "DO_NOT_DISTURT_ACTION":
             if let username = UserDefaults.standard.value(forKey: "lastUsername") as? String,
                let password = UserDefaults.standard.value(forKey: "lastPassword") as? String {
-                socketManager.commonWebSocket.httpRequestsManager.login(username: username, password: password) { res in
-                    if res == "登录成功" {
+                socketManager.commonWebSocket.httpRequestsManager.login(username: username, password: password) { success in
+                    if success {
                         self.socketManager.doNotDisturb(for: "", hour: 4) {
                             completionHandler()
                             print("已经调用completionHandler")
@@ -424,7 +433,7 @@ extension AppDelegate: FloatWindowTouchDelegate {
         if window.alwayDisplayType == .shouldDismiss {
             adapterFor(username: username).readyToSendVideoData = false
             Recorder.sharedInstance().needSendVideo = false
-            guard let call = callManager.callWithUUID(socketManager.nowCallUUID) else { return }
+            guard let call = callManager.callWithUUID(socketManager.nowCallUUID ?? UUID()) else { return }
             call.end()
             callManager.end(call: call)
             #if !targetEnvironment(macCatalyst)

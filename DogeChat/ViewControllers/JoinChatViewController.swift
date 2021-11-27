@@ -129,8 +129,8 @@ extension JoinChatViewController: UITextFieldDelegate {
         manager = socketManager
         socketManager.commonWebSocket.httpRequestsManager.encrypt = EncryptMessage()
         manager.myInfo.username = username
-        manager.commonWebSocket.httpRequestsManager.login(username: username, password: password) { [weak self] loginResult in
-            if loginResult == "登录成功" {
+        manager.commonWebSocket.httpRequestsManager.login(username: username, password: password) { [weak self] res in
+            if res {
                 let contactsTVC = ContactsTableViewController()
                 WebSocketManager.usersToSocketManager[username] = manager
                 WebSocketManagerAdapter.usernameToAdapter[username] = adapter
@@ -151,17 +151,10 @@ extension JoinChatViewController: UITextFieldDelegate {
                 contactsTVC.navigationItem.title = username
                 self?.navigationController?.setViewControllers([contactsTVC], animated: true)
                 contactsTVC.loginAndConnect()
-//                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-//                    contactsTVC.refreshContacts {
-//                        socketForUsername(username).connect()
-//                    }
-//                    NotificationCenter.default.post(name: .logined, object: username, userInfo: nil)
-//                    NotificationCenter.default.post(name: .updateMyAvatar, object: username, userInfo: ["path": socketForUsername(username).messageManager.myAvatarUrl])
-//                }
                 UserDefaults.standard.setValue(username, forKey: "lastUsername")
                 UserDefaults.standard.setValue(password, forKey: "lastPassword")
             } else {
-                let alert = UIAlertController(title: loginResult, message: "请重新检查输入", preferredStyle: .alert)
+                let alert = UIAlertController(title: "登录失败", message: "请重新检查输入", preferredStyle: .alert)
                 alert.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
                 self?.present(alert, animated: true)
             }

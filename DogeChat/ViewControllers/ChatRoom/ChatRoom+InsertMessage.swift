@@ -20,14 +20,9 @@ extension ChatRoomViewController {
         filtered = filtered.filter { message in
             if message.option != self.messageOption {
                 return false
-            } else if message.option == .toOne {
-                if message.messageSender == .ourself {
-                    return message.receiver == friendName
-                } else {
-                    return message.senderUsername == friendName
-                }
             } else {
-                return true
+                let friendID = message.friend.isGroup ? message.receiverUserID : (message.messageSender == .ourself ? message.receiverUserID : message.senderUserID)
+                return friendID == self.friend.userID
             }
         }
         guard !filtered.isEmpty else {

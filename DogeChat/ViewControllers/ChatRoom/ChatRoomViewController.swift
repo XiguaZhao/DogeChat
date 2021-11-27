@@ -86,8 +86,11 @@ class ChatRoomViewController: DogeChatViewController, DogeChatVCTableDataSource 
         super.viewDidLoad()
         makeDetailRightBarButton()
         if isPad() {
-            NotificationCenter.default.addObserver(self, selector: #selector(keyboardFrameChangeNoti(_:)), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
-        } else {
+            if #available(iOS 14.0, *), ProcessInfo.processInfo.isiOSAppOnMac {
+            } else {
+                NotificationCenter.default.addObserver(self, selector: #selector(keyboardFrameChangeNoti(_:)), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
+            }
+        } else if isPhone() {
             NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(noti:)), name: UIWindow.keyboardWillShowNotification, object: nil)
             NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(noti:)), name: UIWindow.keyboardWillHideNotification, object: nil)
         }
@@ -120,9 +123,6 @@ class ChatRoomViewController: DogeChatViewController, DogeChatVCTableDataSource 
         messageInputBar.textView.delegate = self
         if isMac() {
             messageInputBar.textView.becomeFirstResponder()
-        }
-        for cell in tableView.visibleCells {
-            cell.setNeedsLayout()
         }
     }
     
@@ -199,10 +199,16 @@ class ChatRoomViewController: DogeChatViewController, DogeChatVCTableDataSource 
         guard let index = messages.firstIndex(of: message) else {
             return
         }
+        messages[index].sendStatus = .success
+        messages[index].id = message.id
         let indexPath = IndexPath(row: index, section: 0)
-        if let cell = tableView.cellForRow(at: indexPath) {
+        if let cell = tableView.cellForRow(at: indexPath) as? MessageCollectionViewBaseCell {
             cell.layoutIfNeeded()
             cell.setNeedsLayout()
+        } else {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
+                self?.tableView.reloadRows(at: [indexPath], with: .none)
+            }
         }
     }
     
@@ -217,15 +223,7 @@ class ChatRoomViewController: DogeChatViewController, DogeChatVCTableDataSource 
 
 //MARK - Message Input Bar
 extension ChatRoomViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate, PHPickerViewControllerDelegate {
-    
-    func sendCallRequest() {
-        manager.sendCallRequst(to: friendName, uuid: UUID().uuidString)
-        DispatchQueue.global().asyncAfter(deadline: .now() + 2) {
-            let data = "hello world".data(using: .utf8)
-            self.manager.sendVoiceData(data)
-        }
-    }
-    
+        
     func updateUploadProgress(_ progress: Progress, message: Message) {
         let targetCell = tableView.visibleCells.filter { cell in
             guard let cell = cell as? MessageCollectionViewBaseCell else { return false }
@@ -344,6 +342,15 @@ extension ChatRoomViewController: PKViewChangedDelegate {
     
     func pkViewDidCancelDrawing(_ pkView: PKCanvasView, message: Any?) {
         drawingIndexPath = nil
+        if let message = message as? Message {
+            if #available(iOS 14.0, *) {
+                if (message.pkLocalURL == nil && message.pkDataURL == nil) {
+                    revoke(message: message)
+                } else {
+                    manager.commonWebSocket.sendWrappedMessage(message)
+                }
+            }
+        }
     }
 }
 

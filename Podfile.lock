@@ -15,6 +15,7 @@ PODS:
   - AFNetworking/UIKit (4.0.1):
     - AFNetworking/NSURLSession
   - DACircularProgress (2.3.1)
+  - DataCompression (3.6.0)
   - DogeChatNetwork (0.1.0):
     - AFNetworking
     - DogeChatUniversal
@@ -25,6 +26,7 @@ PODS:
     - AFNetworking
     - SwiftyJSON
   - FLAnimatedImage (1.0.16)
+  - GzipSwift (5.1.1)
   - LookinServer (1.0.2)
   - Masonry (1.1.0)
   - MJRefresh (3.7.2)
@@ -43,9 +45,11 @@ PODS:
 DEPENDENCIES:
   - AFNetworking
   - DACircularProgress
+  - DataCompression
   - DogeChatNetwork (from `/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/DogeChatNetwork`)
   - DogeChatUniversal (from `/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/DogeChatUniversal`)
   - FLAnimatedImage (from `/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/FLAnimatedImage`)
+  - GzipSwift
   - LookinServer
   - Masonry
   - MJRefresh
@@ -65,6 +69,8 @@ SPEC REPOS:
     - SDWebImage
     - Starscream
   trunk:
+    - DataCompression
+    - GzipSwift
     - MJRefresh
 
 EXTERNAL SOURCES:
@@ -90,9 +96,11 @@ CHECKOUT OPTIONS:
 SPEC CHECKSUMS:
   AFNetworking: 7864c38297c79aaca1500c33288e429c3451fdce
   DACircularProgress: 4dd437c0fc3da5161cb289e07ac449493d41db71
+  DataCompression: 06628f9c807b6f152e0da37635633f62fc51dc77
   DogeChatNetwork: 27f770e7f08cb0cff614e5658506aba2d4aa4bfb
   DogeChatUniversal: 3901d42c8cc1108179a4986679e23f323f528e8a
   FLAnimatedImage: 8f3e854ebf9680b71f0b6e700939687fc4d82b4b
+  GzipSwift: 893f3e48e597a1a4f62fafcb6514220fcf8287fa
   LookinServer: d6874df8b58096c8d463817b6baaa3abc21d31f7
   Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
   MJRefresh: 30997d30b347c8e9508a4db11e3a690da0c9b85a
@@ -103,6 +111,6 @@ SPEC CHECKSUMS:
   SwiftyJSON: 4e107719275086d9d9111e1a7ca6c484b6664574
   SwiftyRSA: 3b9c9179744217951facc6a3e9ae8d8c97061ffa
 
-PODFILE CHECKSUM: b71129597584f29894d37c3fe6aec06f9195eba6
+PODFILE CHECKSUM: f8973dbe5f8bc14950890a10e2a7d4d78b4d7fbb
 
 COCOAPODS: 1.11.0

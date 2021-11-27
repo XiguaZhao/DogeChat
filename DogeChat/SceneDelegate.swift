@@ -20,6 +20,7 @@ enum SceneState {
     case autoLoginWhenOneScene
     case handoff
     case shortcut
+    case siri
 }
 
 @available(iOS 13.0, *)
@@ -69,7 +70,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         print("willConnect")
         setupWindows()
         setupNoti()
-        loginWithSession(session, options: connectionOptions)
+        loginWithSession(session, scene: scene, options: connectionOptions)
     }
     
     func stateRestorationActivity(for scene: UIScene) -> NSUserActivity? {
@@ -104,9 +105,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
     }
     
-    func loginWithSession(_ session: UISceneSession, options: UIScene.ConnectionOptions) {
+    func loginWithSession(_ session: UISceneSession, scene: UIScene, options: UIScene.ConnectionOptions) {
         if let handOff = options.handoffUserActivityType, handOff == "com.zhaoxiguang.dogechat" {
             state = .handoff
+            return
+        } else if let siriActivity = options.userActivities.first, siriActivity.activityType == "INSendMessageIntent" {
+            state = .siri
+            self.scene(scene, continue: siriActivity)
             return
         } else if let userActivity = options.userActivities.first { // 支持多窗口的设备打开的
             if let username = userActivity.userInfo?["username"] as? String,
@@ -308,9 +313,10 @@ extension SceneDelegate: FloatWindowTouchDelegate {
     
     func tapAlwaysDisplay(_ window: FloatWindow!, name: String) {
         if window.alwayDisplayType == .shouldDismiss {
+            switcherWindow.isHidden = true
             adapterFor(username: username).readyToSendVideoData = false
             Recorder.sharedInstance().needSendVideo = false
-            guard let call = AppDelegate.shared.callManager.callWithUUID(socketManager.nowCallUUID) else { return }
+            guard let nowCallUUID = socketManager.nowCallUUID, let call = AppDelegate.shared.callManager.callWithUUID(nowCallUUID) else { return }
             call.end()
             AppDelegate.shared.callManager.end(call: call)
             #if !targetEnvironment(macCatalyst)
@@ -319,7 +325,6 @@ extension SceneDelegate: FloatWindowTouchDelegate {
             }
             #endif
             socketManager.nowCallUUID = nil
-            switcherWindow.isHidden = true
         } else {
             if Recorder.sharedInstance().nowRoute == .headphone {
                 Recorder.sharedInstance().setRouteToOption(.speaker)
