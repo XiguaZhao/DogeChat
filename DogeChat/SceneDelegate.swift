@@ -321,7 +321,7 @@ extension SceneDelegate: FloatWindowTouchDelegate {
             AppDelegate.shared.callManager.end(call: call)
             #if !targetEnvironment(macCatalyst)
             if let videoVC = self.navigationController.visibleViewController as? VideoChatViewController {
-                videoVC.dismiss()
+                videoVC.dismiss(animated: true)
             }
             #endif
             socketManager.nowCallUUID = nil

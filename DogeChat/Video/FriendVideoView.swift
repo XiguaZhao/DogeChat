@@ -17,8 +17,8 @@ import MetalKit
     var lastWidthAndHeight: (width: CGFloat, height: CGFloat) = (0, 0)
     
     override init(frame: CGRect, device: MTLDevice?) {
-        let width = AppDelegate.shared.navigationController.view.bounds.width
-        let center = AppDelegate.shared.navigationController.view.center
+        let width = UIScreen.main.bounds.width
+        let center = UIScreen.main.bounds.center
         let height = 640 * width / 360
         super.init(frame: CGRect(center: center, size: CGSize(width: width, height: height)), device: nil)
     }
@@ -69,7 +69,7 @@ import MetalKit
             return
         }
         lastWidthAndHeight = (width, height)
-        let screenWidth = AppDelegate.shared.navigationController.view.bounds.width
+        let screenWidth = UIScreen.main.bounds.width
         self.frame = CGRect(x: 0, y: 0, width: screenWidth, height: screenWidth * height / width)
         self.center = view.center
     }

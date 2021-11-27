@@ -7,7 +7,6 @@
 
 
 #import "LFAssetExportSession.h"
-#import "HJOpenGLView.h"
 
 @implementation AVAsset (LFAssetDegress)
 

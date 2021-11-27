@@ -436,11 +436,13 @@ extension AppDelegate: FloatWindowTouchDelegate {
             guard let call = callManager.callWithUUID(socketManager.nowCallUUID ?? UUID()) else { return }
             call.end()
             callManager.end(call: call)
-            #if !targetEnvironment(macCatalyst)
-            if let videoVC = self.navigationController?.visibleViewController as? VideoChatViewController {
-                videoVC.dismiss()
-            }
-            #endif
+            if #available(iOS 13.0, *) {
+#if !targetEnvironment(macCatalyst)
+                if let videoVC = self.navigationController?.visibleViewController as? VideoChatViewController {
+                    videoVC.dismiss(animated: true)
+                }
+#endif
+            } 
             socketManager.nowCallUUID = nil
             switcherWindow.isHidden = true
         } else {
