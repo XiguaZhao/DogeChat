@@ -38,11 +38,7 @@ class SearchViewController: DogeChatViewController, DogeChatVCTableDataSource {
     }
     
     override var keyCommands: [UIKeyCommand]? {
-        if #available(iOS 13.0, *) {
-            return [UIKeyCommand(action: #selector(escapeAction(_:)), input: UIKeyCommand.inputEscape)]
-        } else {
-            return nil
-        }
+        return [UIKeyCommand(action: #selector(escapeAction(_:)), input: UIKeyCommand.inputEscape)]
     }
     
     @objc func escapeAction(_ sender: Any) {

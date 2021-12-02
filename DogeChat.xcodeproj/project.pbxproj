@@ -22,7 +22,7 @@
 		070C41742489204F0035314A /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 070C41732489204F0035314A /* SearchViewController.swift */; };
 		07110DEE27295A7800D9323E /* MediaLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 075293A82715629400D10D65 /* MediaLoader.swift */; };
 		071299BF2736302000C52D45 /* FileBrowerVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 071299BE2736302000C52D45 /* FileBrowerVC.swift */; };
-		071379A426898E2E007EF6D6 /* MessageCollectionViewTrackCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 071379A326898E2E007EF6D6 /* MessageCollectionViewTrackCell.swift */; };
+		071379A426898E2E007EF6D6 /* MessageTrackCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 071379A326898E2E007EF6D6 /* MessageTrackCell.swift */; };
 		071379A62689B636007EF6D6 /* SelectContactsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 071379A52689B636007EF6D6 /* SelectContactsViewController.swift */; };
 		071379A82689DCBD007EF6D6 /* ChatRoom+CellDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 071379A72689DCBD007EF6D6 /* ChatRoom+CellDelegate.swift */; };
 		0715EA7C2673ACCB0042F4F0 /* Encrypt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0715EA7B2673ACCB0042F4F0 /* Encrypt.swift */; };
@@ -43,9 +43,9 @@
 		0718AC2826878E8900E27B28 /* DogeChatNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0718AC2726878E8900E27B28 /* DogeChatNavigationController.swift */; };
 		0718AC2A2688025C00E27B28 /* CommonTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0718AC292688025C00E27B28 /* CommonTableCell.swift */; };
 		0718AC2C268816B700E27B28 /* DogeChatBlurView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0718AC2B268816B700E27B28 /* DogeChatBlurView.swift */; };
-		071CF7B426609F6900897B01 /* MessageCollectionViewTextCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 071CF7B326609F6900897B01 /* MessageCollectionViewTextCell.swift */; };
-		071CF7B626609F7C00897B01 /* MessageCollectionViewImageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 071CF7B526609F7C00897B01 /* MessageCollectionViewImageCell.swift */; };
-		071CF7B826609F8900897B01 /* MessageCollectionViewDrawCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 071CF7B726609F8900897B01 /* MessageCollectionViewDrawCell.swift */; };
+		071CF7B426609F6900897B01 /* MessageTextCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 071CF7B326609F6900897B01 /* MessageTextCell.swift */; };
+		071CF7B626609F7C00897B01 /* MessageImageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 071CF7B526609F7C00897B01 /* MessageImageCell.swift */; };
+		071CF7B826609F8900897B01 /* MessageDrawCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 071CF7B726609F8900897B01 /* MessageDrawCell.swift */; };
 		071CF7D2266383BD00897B01 /* ContactTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 071CF7D0266383BC00897B01 /* ContactTableViewCell.swift */; };
 		07201DDE26DF67FA007D2EDB /* HistoryVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07201DDD26DF67FA007D2EDB /* HistoryVC.swift */; };
 		0726D96C267E2E5B005B89DC /* MediaBrowserCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0726D96B267E2E5B005B89DC /* MediaBrowserCell.swift */; };
@@ -78,7 +78,7 @@
 		0761F58326835D8800E27B07 /* TrackSearchResultCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0761F58226835D8800E27B07 /* TrackSearchResultCell.swift */; };
 		0761F5852683671900E27B07 /* TrackDownloadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0761F5842683671900E27B07 /* TrackDownloadManager.swift */; };
 		0761F5872684AC2B00E27B07 /* PlayListTrackCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0761F5862684AC2A00E27B07 /* PlayListTrackCell.swift */; };
-		0761FAAC266CC98600AE0171 /* MessageColletionViewBaseCell+Emitter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0761FAAB266CC98600AE0171 /* MessageColletionViewBaseCell+Emitter.swift */; };
+		0761FAAC266CC98600AE0171 /* MessageBaseCell+Emitter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0761FAAB266CC98600AE0171 /* MessageBaseCell+Emitter.swift */; };
 		0761FAAE266CE87400AE0171 /* EmojiEmitterLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0761FAAD266CE87400AE0171 /* EmojiEmitterLayer.swift */; };
 		0761FAF4266E342E00AE0171 /* HelperMethods.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0761FAF3266E342E00AE0171 /* HelperMethods.swift */; };
 		0761FAFE266E484C00AE0171 /* Interface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0761FAFC266E484C00AE0171 /* Interface.storyboard */; };
@@ -119,8 +119,8 @@
 		07C9632F25E3B53900C2BF4C /* ImageConfirmViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07C9632D25E3B53900C2BF4C /* ImageConfirmViewController.swift */; };
 		07C9633025E3B53900C2BF4C /* ImageConfirmViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 07C9632E25E3B53900C2BF4C /* ImageConfirmViewController.xib */; };
 		07D0FB6727453EF500B34FE4 /* ReferView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07D0FB6627453EF500B34FE4 /* ReferView.swift */; };
-		07D0FB6D2746B18300B34FE4 /* MessageCollectionViewLivePhotoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07D0FB6C2746B18300B34FE4 /* MessageCollectionViewLivePhotoCell.swift */; };
-		07D0FB6F2746B19100B34FE4 /* MessageCollectionViewVideoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07D0FB6E2746B19100B34FE4 /* MessageCollectionViewVideoCell.swift */; };
+		07D0FB6D2746B18300B34FE4 /* MessageLivePhotoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07D0FB6C2746B18300B34FE4 /* MessageLivePhotoCell.swift */; };
+		07D0FB6F2746B19100B34FE4 /* MessageVideoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07D0FB6E2746B19100B34FE4 /* MessageVideoCell.swift */; };
 		07D0FB732747DB6A00B34FE4 /* ChatRoom+ReferView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07D0FB722747DB6900B34FE4 /* ChatRoom+ReferView.swift */; };
 		07D0FB7D2749403F00B34FE4 /* Intents.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 07866D1826340541007E049C /* Intents.framework */; };
 		07D0FB802749403F00B34FE4 /* IntentHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07D0FB7F2749403F00B34FE4 /* IntentHandler.swift */; };
@@ -148,7 +148,7 @@
 		07FEB845266F898800255F8F /* LoginInterfaceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07FEB844266F898800255F8F /* LoginInterfaceController.swift */; };
 		58D994877399E352111AE8D0 /* libPods-mynotification.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FA628731B3D7AE983BA8C753 /* libPods-mynotification.a */; };
 		924E50340220B9EE9CD5CB47 /* libPods-DogeChatSiri.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DD4B42E6E732B3FC5D0DA8A /* libPods-DogeChatSiri.a */; };
-		AE909BEB1EB54099009D9D95 /* MessageCollectionViewBaseCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE909BEA1EB54099009D9D95 /* MessageCollectionViewBaseCell.swift */; };
+		AE909BEB1EB54099009D9D95 /* MessageBaseCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE909BEA1EB54099009D9D95 /* MessageBaseCell.swift */; };
 		AE909BEF1EB54C4B009D9D95 /* Label.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE909BEE1EB54C4B009D9D95 /* Label.swift */; };
 		AE909BF11EB63FDB009D9D95 /* MessageInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE909BF01EB63FDB009D9D95 /* MessageInputView.swift */; };
 		AEA5A1771EC3618C0041C7B4 /* ChatRoom+Layout.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEA5A1761EC3618C0041C7B4 /* ChatRoom+Layout.swift */; };
@@ -261,7 +261,7 @@
 		0709ECB92719626C007F229F /* SessionDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionDelegate.swift; sourceTree = "<group>"; };
 		070C41732489204F0035314A /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
 		071299BE2736302000C52D45 /* FileBrowerVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileBrowerVC.swift; sourceTree = "<group>"; };
-		071379A326898E2E007EF6D6 /* MessageCollectionViewTrackCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageCollectionViewTrackCell.swift; sourceTree = "<group>"; };
+		071379A326898E2E007EF6D6 /* MessageTrackCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageTrackCell.swift; sourceTree = "<group>"; };
 		071379A52689B636007EF6D6 /* SelectContactsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectContactsViewController.swift; sourceTree = "<group>"; };
 		071379A72689DCBD007EF6D6 /* ChatRoom+CellDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChatRoom+CellDelegate.swift"; sourceTree = "<group>"; };
 		0715EA7B2673ACCB0042F4F0 /* Encrypt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Encrypt.swift; sourceTree = "<group>"; };
@@ -280,9 +280,9 @@
 		0718AC2726878E8900E27B28 /* DogeChatNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DogeChatNavigationController.swift; sourceTree = "<group>"; };
 		0718AC292688025C00E27B28 /* CommonTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonTableCell.swift; sourceTree = "<group>"; };
 		0718AC2B268816B700E27B28 /* DogeChatBlurView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DogeChatBlurView.swift; sourceTree = "<group>"; };
-		071CF7B326609F6900897B01 /* MessageCollectionViewTextCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageCollectionViewTextCell.swift; sourceTree = "<group>"; };
-		071CF7B526609F7C00897B01 /* MessageCollectionViewImageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageCollectionViewImageCell.swift; sourceTree = "<group>"; };
-		071CF7B726609F8900897B01 /* MessageCollectionViewDrawCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageCollectionViewDrawCell.swift; sourceTree = "<group>"; };
+		071CF7B326609F6900897B01 /* MessageTextCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageTextCell.swift; sourceTree = "<group>"; };
+		071CF7B526609F7C00897B01 /* MessageImageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageImageCell.swift; sourceTree = "<group>"; };
+		071CF7B726609F8900897B01 /* MessageDrawCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageDrawCell.swift; sourceTree = "<group>"; };
 		071CF7D0266383BC00897B01 /* ContactTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactTableViewCell.swift; sourceTree = "<group>"; };
 		07201DDD26DF67FA007D2EDB /* HistoryVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryVC.swift; sourceTree = "<group>"; };
 		0726D96B267E2E5B005B89DC /* MediaBrowserCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaBrowserCell.swift; sourceTree = "<group>"; };
@@ -328,7 +328,7 @@
 		0761F58226835D8800E27B07 /* TrackSearchResultCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackSearchResultCell.swift; sourceTree = "<group>"; };
 		0761F5842683671900E27B07 /* TrackDownloadManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackDownloadManager.swift; sourceTree = "<group>"; };
 		0761F5862684AC2A00E27B07 /* PlayListTrackCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayListTrackCell.swift; sourceTree = "<group>"; };
-		0761FAAB266CC98600AE0171 /* MessageColletionViewBaseCell+Emitter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MessageColletionViewBaseCell+Emitter.swift"; sourceTree = "<group>"; };
+		0761FAAB266CC98600AE0171 /* MessageBaseCell+Emitter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MessageBaseCell+Emitter.swift"; sourceTree = "<group>"; };
 		0761FAAD266CE87400AE0171 /* EmojiEmitterLayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiEmitterLayer.swift; sourceTree = "<group>"; };
 		0761FAF3266E342E00AE0171 /* HelperMethods.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelperMethods.swift; sourceTree = "<group>"; };
 		0761FAFA266E484C00AE0171 /* DogeChatWatch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DogeChatWatch.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -385,8 +385,8 @@
 		07C9632D25E3B53900C2BF4C /* ImageConfirmViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageConfirmViewController.swift; sourceTree = "<group>"; };
 		07C9632E25E3B53900C2BF4C /* ImageConfirmViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ImageConfirmViewController.xib; sourceTree = "<group>"; };
 		07D0FB6627453EF500B34FE4 /* ReferView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferView.swift; sourceTree = "<group>"; };
-		07D0FB6C2746B18300B34FE4 /* MessageCollectionViewLivePhotoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageCollectionViewLivePhotoCell.swift; sourceTree = "<group>"; };
-		07D0FB6E2746B19100B34FE4 /* MessageCollectionViewVideoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageCollectionViewVideoCell.swift; sourceTree = "<group>"; };
+		07D0FB6C2746B18300B34FE4 /* MessageLivePhotoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageLivePhotoCell.swift; sourceTree = "<group>"; };
+		07D0FB6E2746B19100B34FE4 /* MessageVideoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageVideoCell.swift; sourceTree = "<group>"; };
 		07D0FB722747DB6900B34FE4 /* ChatRoom+ReferView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChatRoom+ReferView.swift"; sourceTree = "<group>"; };
 		07D0FB7C2749403F00B34FE4 /* DogeChatSiri.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = DogeChatSiri.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		07D0FB7F2749403F00B34FE4 /* IntentHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntentHandler.swift; sourceTree = "<group>"; };
@@ -430,7 +430,7 @@
 		68AD0BCEC76ECC0EDB995E15 /* Pods-mynotification.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-mynotification.release.xcconfig"; path = "Target Support Files/Pods-mynotification/Pods-mynotification.release.xcconfig"; sourceTree = "<group>"; };
 		9BE932888DEA4AE98C7FEC3A /* libPods-SiriMessage.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SiriMessage.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A8314936592D9B8008FA8F43 /* Pods-SiriMessage.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SiriMessage.debug.xcconfig"; path = "Target Support Files/Pods-SiriMessage/Pods-SiriMessage.debug.xcconfig"; sourceTree = "<group>"; };
-		AE909BEA1EB54099009D9D95 /* MessageCollectionViewBaseCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageCollectionViewBaseCell.swift; sourceTree = "<group>"; };
+		AE909BEA1EB54099009D9D95 /* MessageBaseCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageBaseCell.swift; sourceTree = "<group>"; };
 		AE909BEE1EB54C4B009D9D95 /* Label.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Label.swift; sourceTree = "<group>"; };
 		AE909BF01EB63FDB009D9D95 /* MessageInputView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageInputView.swift; sourceTree = "<group>"; };
 		AEA5A1761EC3618C0041C7B4 /* ChatRoom+Layout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ChatRoom+Layout.swift"; sourceTree = "<group>"; };
@@ -551,6 +551,8 @@
 		0754886F2740CEA70025D908 /* 可选图标 */ = {
 			isa = PBXGroup;
 			children = (
+				0706B4742740F20C00E4563F /* ChangeIconVC.swift */,
+				0706B4752740F20C00E4563F /* ChangeIconVC.xib */,
 				0706B46A2740F02400E4563F /* __海贼王.png */,
 				0706B4662740EEF300E4563F /* _哆啦A梦.png */,
 				0706B46C2740F09500E4563F /* _海贼王2.png */,
@@ -665,17 +667,17 @@
 		077F4B8226DE0E5C00C50D0D /* ChatRoom */ = {
 			isa = PBXGroup;
 			children = (
-				AEC6BF501EAF345A007CA6E5 /* ChatRoomViewController.swift */,
-				07BB552D272C31E100AE60A6 /* ChatRoom+NavigationBar.swift */,
-				077F4B8026DE0C5000C50D0D /* ChatRoom+InsertMessage.swift */,
-				07E1BAFB267F86B000559A3B /* ChatRoom+InputViewDelegate.swift */,
 				071379A72689DCBD007EF6D6 /* ChatRoom+CellDelegate.swift */,
-				AEA5A1781EC362150041C7B4 /* ChatRoom+TableDelegate.swift */,
-				AEA5A1761EC3618C0041C7B4 /* ChatRoom+Layout.swift */,
-				076B209326E466A800BCD003 /* ChatRoom+Emitter.swift */,
 				07F858C526E4C27A00F370F8 /* ChatRoom+Drag.swift */,
 				07B3F5D3262470D70016B5C9 /* ChatRoom+Drop.swift */,
+				076B209326E466A800BCD003 /* ChatRoom+Emitter.swift */,
+				07E1BAFB267F86B000559A3B /* ChatRoom+InputViewDelegate.swift */,
+				077F4B8026DE0C5000C50D0D /* ChatRoom+InsertMessage.swift */,
+				AEA5A1761EC3618C0041C7B4 /* ChatRoom+Layout.swift */,
+				07BB552D272C31E100AE60A6 /* ChatRoom+NavigationBar.swift */,
 				07D0FB722747DB6900B34FE4 /* ChatRoom+ReferView.swift */,
+				AEA5A1781EC362150041C7B4 /* ChatRoom+TableDelegate.swift */,
+				AEC6BF501EAF345A007CA6E5 /* ChatRoomViewController.swift */,
 			);
 			path = ChatRoom;
 			sourceTree = "<group>";
@@ -693,27 +695,25 @@
 			isa = PBXGroup;
 			children = (
 				077F4B8226DE0E5C00C50D0D /* ChatRoom */,
-				07ED6B73268D7BCE00F86DC0 /* SplitViewControllerDelegate.swift */,
 				0702F7E5247E62B200B22846 /* ContactsTableViewController.swift */,
 				0755575C266B3D9E00F63F55 /* ContactsTableViewController+Avatar.swift */,
-				0739FA3D25B9557900B6A7AB /* MediaBrowserViewController.swift */,
+				075557352666529B00F63F55 /* DatePickerViewController.swift */,
+				078E66A5265A310F00E5277E /* DrawViewController.swift */,
+				071299BE2736302000C52D45 /* FileBrowerVC.swift */,
+				07BB5525272C2A9300AE60A6 /* FriendDetailViewController.swift */,
+				07201DDD26DF67FA007D2EDB /* HistoryVC.swift */,
 				07C9632D25E3B53900C2BF4C /* ImageConfirmViewController.swift */,
 				07C9632E25E3B53900C2BF4C /* ImageConfirmViewController.xib */,
 				AEC6BF401EAF320E007CA6E5 /* JoinChatViewController.swift */,
+				0739FA3D25B9557900B6A7AB /* MediaBrowserViewController.swift */,
 				070C41732489204F0035314A /* SearchViewController.swift */,
+				071379A52689B636007EF6D6 /* SelectContactsViewController.swift */,
 				07E001D9248CA56800D4A287 /* SelectShortcutTVC.swift */,
+				075557332666317000F63F55 /* SettingViewController.swift */,
 				07AB7B09248F2A7A005306A1 /* SignUpViewController.swift */,
 				07AB7B0A248F2A7A005306A1 /* SignUpViewController.xib */,
-				078E66A5265A310F00E5277E /* DrawViewController.swift */,
-				075557332666317000F63F55 /* SettingViewController.swift */,
-				0706B4742740F20C00E4563F /* ChangeIconVC.swift */,
-				0706B4752740F20C00E4563F /* ChangeIconVC.xib */,
-				075557352666529B00F63F55 /* DatePickerViewController.swift */,
+				07ED6B73268D7BCE00F86DC0 /* SplitViewControllerDelegate.swift */,
 				07E1BAFD267F8CBA00559A3B /* VoiceViewController.swift */,
-				071379A52689B636007EF6D6 /* SelectContactsViewController.swift */,
-				07201DDD26DF67FA007D2EDB /* HistoryVC.swift */,
-				07BB5525272C2A9300AE60A6 /* FriendDetailViewController.swift */,
-				071299BE2736302000C52D45 /* FileBrowerVC.swift */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -721,29 +721,17 @@
 		078D413E248DF71700E78605 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				071CF7D0266383BC00897B01 /* ContactTableViewCell.swift */,
-				0749E66125E601690058EC30 /* EmojiCollectionViewCell.swift */,
+				07A03CE827520A7300BC66CE /* Cells */,
 				0761FAAD266CE87400AE0171 /* EmojiEmitterLayer.swift */,
 				0749E65E25E521420058EC30 /* EmojiSelectView.swift */,
 				0739FABB25BEEF6B00B6A7AB /* FloatWindow.swift */,
-				0726D96B267E2E5B005B89DC /* MediaBrowserCell.swift */,
 				AE909BEE1EB54C4B009D9D95 /* Label.swift */,
-				AE909BEA1EB54099009D9D95 /* MessageCollectionViewBaseCell.swift */,
-				071CF7B726609F8900897B01 /* MessageCollectionViewDrawCell.swift */,
-				071CF7B526609F7C00897B01 /* MessageCollectionViewImageCell.swift */,
-				07D0FB6C2746B18300B34FE4 /* MessageCollectionViewLivePhotoCell.swift */,
-				07D0FB6E2746B19100B34FE4 /* MessageCollectionViewVideoCell.swift */,
-				071CF7B326609F6900897B01 /* MessageCollectionViewTextCell.swift */,
-				071379A326898E2E007EF6D6 /* MessageCollectionViewTrackCell.swift */,
-				0761FAAB266CC98600AE0171 /* MessageColletionViewBaseCell+Emitter.swift */,
 				AE909BF01EB63FDB009D9D95 /* MessageInputView.swift */,
-				07D0FB6627453EF500B34FE4 /* ReferView.swift */,
 				078E66A02658C0D600E5277E /* PKView.h */,
 				078E66A12658C0D600E5277E /* PKView.m */,
-				0718AC292688025C00E27B28 /* CommonTableCell.swift */,
-				079BA83726D7A15500E2C8BB /* VideoView.swift */,
+				07D0FB6627453EF500B34FE4 /* ReferView.swift */,
 				07BB552F272C449200AE60A6 /* SelectContactTableView.swift */,
-				07BB5531272C4D3200AE60A6 /* DetailContactsCell.swift */,
+				079BA83726D7A15500E2C8BB /* VideoView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -782,19 +770,47 @@
 				0718AC1D2687683800E27B28 /* DogeChatBaseCollectionView.swift */,
 				0718AC192687671500E27B28 /* DogeChatBaseCollectionViewCell.swift */,
 				0718AC172687650800E27B28 /* DogeChatBaseView.swift */,
+				0718AC2B268816B700E27B28 /* DogeChatBlurView.swift */,
+				0718AC2726878E8900E27B28 /* DogeChatNavigationController.swift */,
+				07DDE8CC26E8BFE800573D0A /* DogeChatSplitViewController.swift */,
+				079BA83326D76DC100E2C8BB /* DogeChatStaticBlurView.swift */,
+				07ED6B6F268C53DF00F86DC0 /* DogeChatTabBarController.swift */,
+				0718AC252687766D00E27B28 /* DogeChatTableView.swift */,
 				0718AC1B2687672200E27B28 /* DogeChatTableViewCell.swift */,
 				0718AC1F268769A900E27B28 /* DogeChatTextView.swift */,
 				0718AC2126876DFB00E27B28 /* DogeChatViewController.swift */,
 				0715EA7B2673ACCB0042F4F0 /* Encrypt.swift */,
-				0718AC252687766D00E27B28 /* DogeChatTableView.swift */,
-				0718AC2726878E8900E27B28 /* DogeChatNavigationController.swift */,
-				0718AC2B268816B700E27B28 /* DogeChatBlurView.swift */,
-				07ED6B6F268C53DF00F86DC0 /* DogeChatTabBarController.swift */,
-				079BA83326D76DC100E2C8BB /* DogeChatStaticBlurView.swift */,
-				07DDE8CC26E8BFE800573D0A /* DogeChatSplitViewController.swift */,
 				0709ECB92719626C007F229F /* SessionDelegate.swift */,
 			);
 			path = Shared;
+			sourceTree = "<group>";
+		};
+		07A03CE727520A6000BC66CE /* MessageCells */ = {
+			isa = PBXGroup;
+			children = (
+				AE909BEA1EB54099009D9D95 /* MessageBaseCell.swift */,
+				071CF7B726609F8900897B01 /* MessageDrawCell.swift */,
+				071CF7B526609F7C00897B01 /* MessageImageCell.swift */,
+				07D0FB6C2746B18300B34FE4 /* MessageLivePhotoCell.swift */,
+				07D0FB6E2746B19100B34FE4 /* MessageVideoCell.swift */,
+				071CF7B326609F6900897B01 /* MessageTextCell.swift */,
+				071379A326898E2E007EF6D6 /* MessageTrackCell.swift */,
+				0761FAAB266CC98600AE0171 /* MessageBaseCell+Emitter.swift */,
+			);
+			path = MessageCells;
+			sourceTree = "<group>";
+		};
+		07A03CE827520A7300BC66CE /* Cells */ = {
+			isa = PBXGroup;
+			children = (
+				0718AC292688025C00E27B28 /* CommonTableCell.swift */,
+				07BB5531272C4D3200AE60A6 /* DetailContactsCell.swift */,
+				071CF7D0266383BC00897B01 /* ContactTableViewCell.swift */,
+				0749E66125E601690058EC30 /* EmojiCollectionViewCell.swift */,
+				0726D96B267E2E5B005B89DC /* MediaBrowserCell.swift */,
+				07A03CE727520A6000BC66CE /* MessageCells */,
+			);
+			path = Cells;
 			sourceTree = "<group>";
 		};
 		07A740A92514E5E90014880E /* Products */ = {
@@ -1057,14 +1073,10 @@
 				TargetAttributes = {
 					0761FAF9266E484C00AE0171 = {
 						CreatedOnToolsVersion = 12.5;
-						DevelopmentTeam = HA4ZY58KNJ;
-						ProvisioningStyle = Manual;
 					};
 					0761FB05266E484E00AE0171 = {
 						CreatedOnToolsVersion = 12.5;
-						DevelopmentTeam = HA4ZY58KNJ;
 						LastSwiftMigration = 1250;
-						ProvisioningStyle = Manual;
 					};
 					07D0FB7B2749403F00B34FE4 = {
 						CreatedOnToolsVersion = 13.1;
@@ -1074,9 +1086,7 @@
 					};
 					AEC6BF3A1EAF320E007CA6E5 = {
 						CreatedOnToolsVersion = 8.3.1;
-						DevelopmentTeam = HA4ZY58KNJ;
 						LastSwiftMigration = 1230;
-						ProvisioningStyle = Manual;
 					};
 				};
 			};
@@ -1355,7 +1365,7 @@
 				075557322665D4B000F63F55 /* Recorder.m in Sources */,
 				07C9632F25E3B53900C2BF4C /* ImageConfirmViewController.swift in Sources */,
 				07D0FB6727453EF500B34FE4 /* ReferView.swift in Sources */,
-				07D0FB6F2746B19100B34FE4 /* MessageCollectionViewVideoCell.swift in Sources */,
+				07D0FB6F2746B19100B34FE4 /* MessageVideoCell.swift in Sources */,
 				0760E10225E74BD30030337E /* HJH264Encoder.m in Sources */,
 				0755575D266B3D9F00F63F55 /* ContactsTableViewController+Avatar.swift in Sources */,
 				0706B4762740F20C00E4563F /* ChangeIconVC.swift in Sources */,
@@ -1374,7 +1384,7 @@
 				070C41742489204F0035314A /* SearchViewController.swift in Sources */,
 				0718AC142686FFE700E27B28 /* SelectPlayListCell.swift in Sources */,
 				07B3F5D4262470D70016B5C9 /* ChatRoom+Drop.swift in Sources */,
-				AE909BEB1EB54099009D9D95 /* MessageCollectionViewBaseCell.swift in Sources */,
+				AE909BEB1EB54099009D9D95 /* MessageBaseCell.swift in Sources */,
 				07BB5527272C2A9500AE60A6 /* FriendDetailViewController.swift in Sources */,
 				07D298DE266CBD3800C09F6C /* HapticManager.swift in Sources */,
 				0761FAAE266CE87400AE0171 /* EmojiEmitterLayer.swift in Sources */,
@@ -1385,7 +1395,7 @@
 				0718AC102685DE9F00E27B28 /* PlayerManager.swift in Sources */,
 				07F858C626E4C27A00F370F8 /* ChatRoom+Drag.swift in Sources */,
 				07ED6B6C268C2C2500F86DC0 /* MiniPlayerCell.swift in Sources */,
-				071CF7B826609F8900897B01 /* MessageCollectionViewDrawCell.swift in Sources */,
+				071CF7B826609F8900897B01 /* MessageDrawCell.swift in Sources */,
 				076B209626E466A800BCD003 /* ChatRoom+Emitter.swift in Sources */,
 				073FDF6A25B2A35000FE01CD /* NotificationManager.swift in Sources */,
 				0709ECBA2719626C007F229F /* SessionDelegate.swift in Sources */,
@@ -1394,7 +1404,7 @@
 				07471A4526501B200042EC2D /* VideoChatViewController.m in Sources */,
 				0739FA3E25B9557A00B6A7AB /* MediaBrowserViewController.swift in Sources */,
 				075293AE2715A0AC00D10D65 /* UIViewController+Hook.m in Sources */,
-				071CF7B426609F6900897B01 /* MessageCollectionViewTextCell.swift in Sources */,
+				071CF7B426609F6900897B01 /* MessageTextCell.swift in Sources */,
 				0749E66225E601690058EC30 /* EmojiCollectionViewCell.swift in Sources */,
 				AE909BEF1EB54C4B009D9D95 /* Label.swift in Sources */,
 				0718AC2826878E8900E27B28 /* DogeChatNavigationController.swift in Sources */,
@@ -1406,10 +1416,10 @@
 				0739FA5825BAB00300B6A7AB /* Audio.swift in Sources */,
 				07ED6B72268D740F00F86DC0 /* LyricViewController.swift in Sources */,
 				07E1BAFC267F86B000559A3B /* ChatRoom+InputViewDelegate.swift in Sources */,
-				071CF7B626609F7C00897B01 /* MessageCollectionViewImageCell.swift in Sources */,
+				071CF7B626609F7C00897B01 /* MessageImageCell.swift in Sources */,
 				0718AC16268700BD00E27B28 /* TrackStore.swift in Sources */,
 				07201DDE26DF67FA007D2EDB /* HistoryVC.swift in Sources */,
-				0761FAAC266CC98600AE0171 /* MessageColletionViewBaseCell+Emitter.swift in Sources */,
+				0761FAAC266CC98600AE0171 /* MessageBaseCell+Emitter.swift in Sources */,
 				075557362666529B00F63F55 /* DatePickerViewController.swift in Sources */,
 				079BA83F26D8961000E2C8BB /* QuickTimeMov.swift in Sources */,
 				0739FA5225BAAAD300B6A7AB /* CallManager.swift in Sources */,
@@ -1428,14 +1438,14 @@
 				0735ABCA26CCF90D007B4ADE /* SDWebImageManager+TempModifyURLPre.m in Sources */,
 				0718AC1C2687672200E27B28 /* DogeChatTableViewCell.swift in Sources */,
 				077F4B8126DE0C5000C50D0D /* ChatRoom+InsertMessage.swift in Sources */,
-				071379A426898E2E007EF6D6 /* MessageCollectionViewTrackCell.swift in Sources */,
+				071379A426898E2E007EF6D6 /* MessageTrackCell.swift in Sources */,
 				07B8321626820A54009434AC /* SearchMusicViewController.swift in Sources */,
 				079BA83D26D892E600E2C8BB /* LivePhotoGenerator.m in Sources */,
 				07BB552C272C2D2300AE60A6 /* Conform.swift in Sources */,
 				07BB5530272C449200AE60A6 /* SelectContactTableView.swift in Sources */,
 				075557342666317000F63F55 /* SettingViewController.swift in Sources */,
 				0718AC1A2687671500E27B28 /* DogeChatBaseCollectionViewCell.swift in Sources */,
-				07D0FB6D2746B18300B34FE4 /* MessageCollectionViewLivePhotoCell.swift in Sources */,
+				07D0FB6D2746B18300B34FE4 /* MessageLivePhotoCell.swift in Sources */,
 				0760E10625E74C410030337E /* HJH264Decoder.m in Sources */,
 				078E66A6265A310F00E5277E /* DrawViewController.swift in Sources */,
 				0749E65F25E521420058EC30 /* EmojiSelectView.swift in Sources */,
@@ -1509,9 +1519,9 @@
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CODE_SIGN_ENTITLEMENTS = "DogeChatWatch Extension/DogeChatWatch Extension.entitlements";
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CODE_SIGN_STYLE = Manual;
-				DEVELOPMENT_TEAM = HA4ZY58KNJ;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = ABSGGSAFHU;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = "DogeChatWatch Extension/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1521,9 +1531,9 @@
 				);
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.demo.watchkitapp2.watchkitextension2;
+				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.dogechat.watchkitapp.watchkitextension;
 				PRODUCT_NAME = "${TARGET_NAME}";
-				PROVISIONING_PROFILE_SPECIFIER = zhaoxiguangdemowatchkitextension;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "DogeChatWatch Extension/DogeChatWatch Extension-Bridging-Header.h";
@@ -1544,9 +1554,9 @@
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CODE_SIGN_ENTITLEMENTS = "DogeChatWatch Extension/DogeChatWatch Extension.entitlements";
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				CODE_SIGN_STYLE = Manual;
-				DEVELOPMENT_TEAM = HA4ZY58KNJ;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = ABSGGSAFHU;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = "DogeChatWatch Extension/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -1555,9 +1565,9 @@
 					"@executable_path/../../Frameworks",
 				);
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.demo.watchkitapp2.watchkitextension2;
+				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.dogechat.watchkitapp.watchkitextension2;
 				PRODUCT_NAME = "${TARGET_NAME}";
-				PROVISIONING_PROFILE_SPECIFIER = zhaoxiguangdemowatchkitextension;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "DogeChatWatch Extension/DogeChatWatch Extension-Bridging-Header.h";
@@ -1577,18 +1587,18 @@
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CODE_SIGN_ENTITLEMENTS = DogeChatWatch/DogeChatWatch.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CODE_SIGN_STYLE = Manual;
-				DEVELOPMENT_TEAM = HA4ZY58KNJ;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = ABSGGSAFHU;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				IBSC_MODULE = DogeChatWatch_Extension;
 				INFOPLIST_FILE = DogeChatWatch/Info.plist;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.demo.watchkitapp2;
+				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.dogechat.watchkitapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = zhaoxiguangdemowatchkit;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -1608,17 +1618,17 @@
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
 				CODE_SIGN_ENTITLEMENTS = DogeChatWatch/DogeChatWatch.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
+				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CODE_SIGN_STYLE = Manual;
-				DEVELOPMENT_TEAM = HA4ZY58KNJ;
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = ABSGGSAFHU;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				IBSC_MODULE = DogeChatWatch_Extension;
 				INFOPLIST_FILE = DogeChatWatch/Info.plist;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.demo.watchkitapp2;
+				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.dogechat.watchkitapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = zhaoxiguangdemowatchkit;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
 				SWIFT_VERSION = 5.0;
@@ -1640,7 +1650,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = HA4ZY58KNJ;
+				DEVELOPMENT_TEAM = ABSGGSAFHU;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = DogeChatSiri/Info.plist;
@@ -1655,8 +1665,10 @@
 				MARKETING_VERSION = 1.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.demo.DogeChatSiri;
+				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.dogechat.DogeChatSiri;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]" = "";
 				SKIP_INSTALL = YES;
 				SUPPORTS_MACCATALYST = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -1679,7 +1691,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = HA4ZY58KNJ;
+				DEVELOPMENT_TEAM = ABSGGSAFHU;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = DogeChatSiri/Info.plist;
@@ -1693,8 +1705,10 @@
 				);
 				MARKETING_VERSION = 1.0;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.demo.DogeChatSiri;
+				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.dogechat.DogeChatSiri;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]" = "";
 				SKIP_INSTALL = YES;
 				SUPPORTS_MACCATALYST = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -1716,7 +1730,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = HA4ZY58KNJ;
+				DEVELOPMENT_TEAM = ABSGGSAFHU;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = mynotification/Info.plist;
@@ -1731,7 +1745,7 @@
 				MARKETING_VERSION = 1.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.demo.mynotification;
+				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.dogechat.mynotification;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SUPPORTS_MACCATALYST = YES;
@@ -1755,7 +1769,7 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = HA4ZY58KNJ;
+				DEVELOPMENT_TEAM = ABSGGSAFHU;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = mynotification/Info.plist;
@@ -1769,7 +1783,7 @@
 				);
 				MARKETING_VERSION = 1.0;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.demo.mynotification;
+				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.dogechat.mynotification;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SUPPORTS_MACCATALYST = YES;
@@ -1901,25 +1915,26 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = DogeChat/DogeChat.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_STYLE = Automatic;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEFINES_MODULE = NO;
-				DEVELOPMENT_TEAM = HA4ZY58KNJ;
+				DEVELOPMENT_TEAM = ABSGGSAFHU;
 				INFOPLIST_FILE = DogeChat/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.demo;
+				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.dogechat;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = zhaoxiguangdemo;
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]" = demo2;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]" = "";
 				SUPPORTS_MACCATALYST = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OBJC_BRIDGING_HEADER = "DogeChat/DogeChat-Bridging-Header.h";
@@ -1937,24 +1952,25 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = DogeChat/DogeChat.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_STYLE = Automatic;
 				DEFINES_MODULE = NO;
-				DEVELOPMENT_TEAM = HA4ZY58KNJ;
+				DEVELOPMENT_TEAM = ABSGGSAFHU;
 				INFOPLIST_FILE = DogeChat/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.demo;
+				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.dogechat;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = zhaoxiguangdemo;
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]" = demo2;
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]" = "";
 				SUPPORTS_MACCATALYST = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OBJC_BRIDGING_HEADER = "DogeChat/DogeChat-Bridging-Header.h";

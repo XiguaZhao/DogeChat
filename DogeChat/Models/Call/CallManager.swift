@@ -51,14 +51,9 @@ class CallManager: NSObject {
         startCallAction.isVideo = false
         var callWindow: FloatWindow?
         var switcherWindow: FloatWindow?
-        if #available(iOS 13, *) {
-            if let username = UserDefaults.standard.value(forKey: "lastUsername") as? String {
-                callWindow = SceneDelegate.usernameToDelegate[username]?.callWindow
-                switcherWindow = SceneDelegate.usernameToDelegate[username]?.switcherWindow
-            }
-        } else {
-            callWindow = AppDelegate.shared.callWindow
-            switcherWindow = AppDelegate.shared.switcherWindow
+        if let username = UserDefaults.standard.value(forKey: "lastUsername") as? String {
+            callWindow = SceneDelegate.usernameToDelegate[username]?.callWindow
+            switcherWindow = SceneDelegate.usernameToDelegate[username]?.switcherWindow
         }
         callWindow?.assignValueForAlwaysDisplay(name: handle.value)
         switcherWindow?.assignValueForAlwaysDisplay(name: "内/外放")

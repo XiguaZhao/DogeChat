@@ -46,11 +46,9 @@
     [alert addAction:[UIAlertAction actionWithTitle:@"后置广角" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
         [wself switchCameraWithFront:NO type:AVCaptureDeviceTypeBuiltInWideAngleCamera];
     }]];
-    if (@available(iOS 13.0, *)) {
-        [alert addAction:[UIAlertAction actionWithTitle:@"后置超广角" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-            [wself switchCameraWithFront:NO type:AVCaptureDeviceTypeBuiltInUltraWideCamera];
-        }]];
-    }
+    [alert addAction:[UIAlertAction actionWithTitle:@"后置超广角" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        [wself switchCameraWithFront:NO type:AVCaptureDeviceTypeBuiltInUltraWideCamera];
+    }]];
     [alert addAction:[UIAlertAction actionWithTitle:@"后置倍镜" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
         [wself switchCameraWithFront:NO type:AVCaptureDeviceTypeBuiltInTelephotoCamera];
     }]];

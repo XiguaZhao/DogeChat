@@ -52,7 +52,7 @@ extension ChatRoomViewController {
         var bottomInset: CGFloat
         let safeAreaInsetBottom = safeArea.bottom
         if !shouldDown {
-            bottomInset = AppDelegate.shared.navigationController!.view.bounds.height - endFrame.minY - safeAreaInsetBottom + messageBarHeight - additionalOffset
+            bottomInset = (self.navigationController?.view.bounds.height ?? UIScreen.main.bounds.height) - endFrame.minY - safeAreaInsetBottom + messageBarHeight - additionalOffset
         } else {
             bottomInset = messageBarHeight - safeAreaInsetBottom
         }
@@ -112,12 +112,12 @@ extension ChatRoomViewController {
 
         layoutViews(size: view.bounds.size)
         scrollToBottomWithoutAnimation()
-        tableView.register(MessageCollectionViewTextCell.self, forCellReuseIdentifier: MessageCollectionViewTextCell.cellID)
-        tableView.register(MessageCollectionViewImageCell.self, forCellReuseIdentifier: MessageCollectionViewImageCell.cellID)
-        tableView.register(MessageCollectionViewDrawCell.self, forCellReuseIdentifier: MessageCollectionViewDrawCell.cellID)
-        tableView.register(MessageCollectionViewTrackCell.self, forCellReuseIdentifier: MessageCollectionViewTrackCell.cellID)
-        tableView.register(MessageCollectionViewLivePhotoCell.self, forCellReuseIdentifier: MessageCollectionViewLivePhotoCell.cellID)
-        tableView.register(MessageCollectionViewVideoCell.self, forCellReuseIdentifier: MessageCollectionViewVideoCell.cellID)
+        tableView.register(MessageTextCell.self, forCellReuseIdentifier: MessageTextCell.cellID)
+        tableView.register(MessageImageCell.self, forCellReuseIdentifier: MessageImageCell.cellID)
+        tableView.register(MessageDrawCell.self, forCellReuseIdentifier: MessageDrawCell.cellID)
+        tableView.register(MessageTrackCell.self, forCellReuseIdentifier: MessageTrackCell.cellID)
+        tableView.register(MessageLivePhotoCell.self, forCellReuseIdentifier: MessageLivePhotoCell.cellID)
+        tableView.register(MessageVideoCell.self, forCellReuseIdentifier: MessageVideoCell.cellID)
         tableView.layer.masksToBounds = true
         
         emojiSelectView.delegate = self
@@ -168,7 +168,7 @@ extension ChatRoomViewController {
         switch pan.state {
         case .began:
             tableView.layer.masksToBounds = false
-            tableView.visibleCells.forEach { ($0 as? MessageCollectionViewBaseCell)?.timeLabel.isHidden = false }
+            tableView.visibleCells.forEach { ($0 as? MessageBaseCell)?.timeLabel.isHidden = false }
         case .changed:
             let startX = view.bounds.width
             let endX = pan.location(in: view).x
@@ -186,7 +186,7 @@ extension ChatRoomViewController {
             self.tableView.layer.transform = CATransform3DIdentity
         }, completion: { _ in
             self.tableView.layer.masksToBounds = true
-            self.tableView.visibleCells.forEach { ($0 as? MessageCollectionViewBaseCell)?.timeLabel.isHidden = true }
+            self.tableView.visibleCells.forEach { ($0 as? MessageBaseCell)?.timeLabel.isHidden = true }
         })
     }
     
@@ -248,7 +248,7 @@ extension ChatRoomViewController {
     func makeNavBarUI() {
         var total: CGFloat = 0
         for message in messages.reversed() {
-            total += MessageCollectionViewBaseCell.height(for: message, username: username)
+            total += MessageBaseCell.height(for: message, username: username)
             if total > tableView.bounds.height - tableView.contentInset.top {
                 if let bar = self.navigationController?.navigationBar,
                    let blurView = bar.subviews.first?.subviews.first as? UIVisualEffectView {

@@ -30,7 +30,7 @@ class NotificationService: UNNotificationServiceExtension {
         UNUserNotificationCenter.current().getDeliveredNotifications { [self] delivered in
             bestAttemptContent?.badge = NSNumber(value: delivered.count + 1)
             
-            if UserDefaults(suiteName: "group.demo.zhaoxiguang")?.bool(forKey: "hostActive") == true {
+            if UserDefaults(suiteName: "group.dogechat.zhaoxiguang")?.bool(forKey: "hostActive") == true {
                 complete()
                 return
             }
@@ -58,8 +58,8 @@ class NotificationService: UNNotificationServiceExtension {
                     if type == "livePhoto" {
                         self.bestAttemptContent?.body = "[Live Photo]"
                     }
-                    guard let username = UserDefaults(suiteName: "group.demo.zhaoxiguang")?.value(forKey: "sharedUsername") as? String,
-                          let password = UserDefaults(suiteName: "group.demo.zhaoxiguang")?.value(forKey: "sharedPassword") as? String else { return }
+                    guard let username = UserDefaults(suiteName: "group.dogechat.zhaoxiguang")?.value(forKey: "sharedUsername") as? String,
+                          let password = UserDefaults(suiteName: "group.dogechat.zhaoxiguang")?.value(forKey: "sharedPassword") as? String else { return }
                     manager.login(username: username, password: password) { success in
                         guard success, !manager.cookie.isEmpty else { return }
                         MediaLoader.shared.cookie = manager.cookie

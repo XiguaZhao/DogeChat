@@ -47,9 +47,6 @@ class TrackDownloadManager: NSObject {
             url = URL(string: track.musicLinkUrl)
         }
         guard let url = url else {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: {
-                PlayerManager.shared.playFail(track: track)
-            })
             return
         }
         let request = URLRequest(url: url)
@@ -65,13 +62,6 @@ class TrackDownloadManager: NSObject {
                 self.delegate?.downloadComplete(track, localPath: localPath)
             }
             print(localPath.absoluteString)
-            if let url = response.url?.absoluteString {
-                if url.hasSuffix("404") {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 1, execute: {
-                        PlayerManager.shared.playFail(track: track)
-                    })
-                }
-            }
             return localPath
         } completionHandler: { response, url, error in
             guard error == nil else { return }

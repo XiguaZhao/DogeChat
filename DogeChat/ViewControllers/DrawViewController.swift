@@ -10,7 +10,6 @@ import UIKit
 import DogeChatNetwork
 import DogeChatUniversal
 
-@available(iOS 13.0, *)
 class DrawViewController: UIViewController, PKViewAutoOffsetDelegate {
     
     var username = ""

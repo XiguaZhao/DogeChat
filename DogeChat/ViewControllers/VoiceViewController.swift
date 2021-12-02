@@ -41,12 +41,10 @@ class VoiceViewController: DogeChatViewController, AVAudioRecorderDelegate {
         stack.alignment = .center
         view.addSubview(stack)
         
-        if #available(iOS 13.0, *) {
-            let largeConfig = UIImage.SymbolConfiguration(pointSize: 150, weight: .bold, scale: .large)
-            stopButton.setImage(UIImage(systemName: "stop.circle.fill", withConfiguration: largeConfig), for: .normal)
-            playButton.setImage(UIImage(systemName: "play.circle.fill", withConfiguration: largeConfig), for: .normal)
-            sendButton.setImage(UIImage(systemName: "paperplane.circle.fill", withConfiguration: largeConfig), for: .normal)
-        }
+        let largeConfig = UIImage.SymbolConfiguration(pointSize: 150, weight: .bold, scale: .large)
+        stopButton.setImage(UIImage(systemName: "stop.circle.fill", withConfiguration: largeConfig), for: .normal)
+        playButton.setImage(UIImage(systemName: "play.circle.fill", withConfiguration: largeConfig), for: .normal)
+        sendButton.setImage(UIImage(systemName: "paperplane.circle.fill", withConfiguration: largeConfig), for: .normal)
 
         stopButton.addTarget(self, action: #selector(stopAction(_:)), for: .touchUpInside)
         playButton.addTarget(self, action: #selector(playAction(_:)), for: .touchUpInside)

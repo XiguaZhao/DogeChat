@@ -66,7 +66,6 @@ extension ContactsTableViewController: ContactTableViewCellDelegate, UIContextMe
         playHaptic()
     }
     
-    @available(iOS 13.0, *)
     func contextMenuInteraction(_ interaction: UIContextMenuInteraction, configurationForMenuAtLocation location: CGPoint) -> UIContextMenuConfiguration? {
         return .init(identifier: nil) { [weak self] in
             guard let self = self else { return nil }

@@ -62,17 +62,15 @@ extension ChatRoomViewController: MessageInputDelegate, VoiceRecordDelegate {
             }
             self.present(imagePicker, animated: true, completion: nil)
         case .draw:
-            if #available(iOS 13, *) {
-                let drawVC = DrawViewController()
-                drawVC.username = username
-                drawVC.pkViewDelegate.dataChangedDelegate = self
-                let newMessage = processMessageString(for: "", type: .draw, imageURL: nil, videoURL: nil)
-                drawVC.message = newMessage
-                drawVC.modalPresentationStyle = .fullScreen
-                drawVC.chatRoomVC = self
-                self.drawingIndexPath = IndexPath(item: self.messages.count, section: 0)
-                self.navigationController?.present(drawVC, animated: true, completion: nil)
-            }
+            let drawVC = DrawViewController()
+            drawVC.username = username
+            drawVC.pkViewDelegate.dataChangedDelegate = self
+            let newMessage = processMessageString(for: "", type: .draw, imageURL: nil, videoURL: nil)
+            drawVC.message = newMessage
+            drawVC.modalPresentationStyle = .fullScreen
+            drawVC.chatRoomVC = self
+            self.drawingIndexPath = IndexPath(item: self.messages.count, section: 0)
+            self.navigationController?.present(drawVC, animated: true, completion: nil)
         case .add:
             addButtonTapped()
         }
@@ -88,7 +86,7 @@ extension ChatRoomViewController: MessageInputDelegate, VoiceRecordDelegate {
             guard let self = self else { return }
             let uuid = UUID().uuidString
             self.manager.sendCallRequst(to: self.friendName, uuid: uuid)
-            AppDelegate.shared.callManager.startCall(handle: self.friendName, uuid: uuid)
+            SceneDelegate.usernameToDelegate[self.username]?.callManager.startCall(handle: self.friendName, uuid: uuid)
         }
         if !isMac() {
             actionSheet.addAction(UIAlertAction(title: "语音通话", style: .default, handler: {  (action) in

@@ -86,12 +86,7 @@ extension EmojiSelectView: UICollectionViewDataSource, UICollectionViewDelegateF
         controller.menuItems = items
         cell.becomeFirstResponder()
         let rect = CGRect(x: cell.bounds.width/2, y: 10, width: 0, height: 0)
-        if #available(iOS 13.0, *) {
-            controller.showMenu(from: cell, rect: rect)
-        } else {
-            controller.setTargetRect(rect, in: cell)
-            controller.setMenuVisible(true, animated: true)
-        }
+        controller.showMenu(from: cell, rect: rect)
     }
     
     func updateDownloadProgress(_ cell: EmojiCollectionViewCell, progress: Double, path: String) {
@@ -115,7 +110,7 @@ extension EmojiSelectView: UICollectionViewDataSource, UICollectionViewDelegateF
             self.deleteEmoji(cell: cell)
         }))
         confirmAlert.addAction(UIAlertAction(title: "取消", style: .cancel, handler: nil))
-        AppDelegate.shared.navigationController?.present(confirmAlert, animated: true, completion: nil)
+        SceneDelegate.usernameToDelegate[username]?.navigationController.present(confirmAlert, animated: true, completion: nil)
     }
 
     func deleteEmoji(cell: EmojiCollectionViewCell) {

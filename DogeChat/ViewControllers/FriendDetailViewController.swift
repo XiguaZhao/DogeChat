@@ -64,9 +64,7 @@ class FriendDetailViewController: DogeChatViewController, UITableViewDataSource,
         } else {
             rows = [.username, .nickName, .createGroup]
         }
-        if #available(iOS 13, *) {
-            rows.insert(.history, at: 2)
-        }
+        rows.insert(.history, at: 2)
         sections = [rows]
     }
 
@@ -115,11 +113,7 @@ class FriendDetailViewController: DogeChatViewController, UITableViewDataSource,
     
     func getNavHeight() -> CGFloat {
         if let navBar = navigationController?.navigationBar {
-            if #available(iOS 13.0, *) {
-                return navBar.bounds.height + (self.view.window?.windowScene?.statusBarManager?.statusBarFrame.height ?? 0)
-            } else {
-                return navBar.bounds.height + UIApplication.shared.statusBarFrame.height
-            }
+            return navBar.bounds.height + (self.view.window?.windowScene?.statusBarManager?.statusBarFrame.height ?? 0)
         }
         return 0
     }
@@ -212,11 +206,9 @@ class FriendDetailViewController: DogeChatViewController, UITableViewDataSource,
             case .addMember:
                 self.addMember()
             case .history:
-                if #available(iOS 13, *) {
-                    let vc = HistoryVC(type: .history, username: username)
-                    vc.friend = self.friend
-                    self.navigationController?.pushViewController(vc, animated: true)
-                }
+                let vc = HistoryVC(type: .history, username: username)
+                vc.friend = self.friend
+                self.navigationController?.pushViewController(vc, animated: true)
             case .createGroup:
                 let alert = UIAlertController(title: "群聊名称", message: nil, preferredStyle: .alert)
                 alert.addTextField(configurationHandler: nil)

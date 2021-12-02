@@ -10,7 +10,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-API_AVAILABLE(ios(13.0))
 @protocol PKViewChangedDelegate <NSObject>
 
 - (void)pkView:(PKCanvasView *)pkView message:(id __nullable)message addNewStroke:(id)newStroke;
@@ -26,7 +25,6 @@ API_AVAILABLE(ios(13.0))
 
 @end
 
-API_AVAILABLE(ios(13.0))
 @interface PKViewDelegate : NSObject <PKCanvasViewDelegate, PKToolPickerObserver>
 
 @property (nonatomic, weak) PKCanvasView *pkView;

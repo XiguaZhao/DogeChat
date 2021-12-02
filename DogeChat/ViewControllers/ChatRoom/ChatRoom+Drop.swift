@@ -18,7 +18,7 @@ extension ChatRoomViewController: UITableViewDropDelegate {
                 coordinator.session.loadObjects(ofClass: UIImage.self) { (images) in
                     for _image in images {
                         let image = _image as! UIImage
-                        if let cell = tableView.cellForRow(at: destinationIndexPath) as? MessageCollectionViewBaseCell {
+                        if let cell = tableView.cellForRow(at: destinationIndexPath) as? MessageBaseCell {
                             cell.didDrop(imageLink: imageLink, image: image, point: coordinator.session.location(in: cell.contentView))
                         }
                     }

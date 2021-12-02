@@ -14,20 +14,20 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
         var cellID: String?
         switch message.messageType {
         case .join, .text, .voice:
-            cellID = MessageCollectionViewTextCell.cellID
+            cellID = MessageTextCell.cellID
         case .image:
-            cellID = MessageCollectionViewImageCell.cellID
+            cellID = MessageImageCell.cellID
         case .livePhoto:
-            cellID = MessageCollectionViewLivePhotoCell.cellID
+            cellID = MessageLivePhotoCell.cellID
         case .video:
-            cellID = MessageCollectionViewVideoCell.cellID
+            cellID = MessageVideoCell.cellID
         case .draw:
-            cellID = MessageCollectionViewDrawCell.cellID
+            cellID = MessageDrawCell.cellID
         case .track:
-            cellID = MessageCollectionViewTrackCell.cellID
+            cellID = MessageTrackCell.cellID
         }
         guard let cellID = cellID,
-              let cell = tableView.dequeueReusableCell(withIdentifier: cellID, for: indexPath) as? MessageCollectionViewBaseCell else {
+              let cell = tableView.dequeueReusableCell(withIdentifier: cellID, for: indexPath) as? MessageBaseCell else {
             return UITableViewCell()
         }
         cell.referView.delegate = self
@@ -50,7 +50,7 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        let height = MessageCollectionViewBaseCell.height(for: messages[indexPath.item], username: username)
+        let height = MessageBaseCell.height(for: messages[indexPath.item], username: username)
         heightCache[indexPath.row] = height
         return height
     }
@@ -99,7 +99,7 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
         let saveEmoji = UIContextualAction(style: .normal, title: "收藏表情") { [weak tableView, weak self] action, view, handler in
             guard let self = self else { return }
             handler(true)
-            if let cell = tableView?.cellForRow(at: indexPath) as? MessageCollectionViewImageCell {
+            if let cell = tableView?.cellForRow(at: indexPath) as? MessageImageCell {
                 if let imageUrl = cell.message.imageURL, cell.message.sendStatus == .success {
                     let isGif = imageUrl.hasSuffix(".gif")
                     self.manager.starAndUploadEmoji(filePath: imageUrl, isGif: isGif)
@@ -116,7 +116,7 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
         let referAction = UIContextualAction(style: .normal, title: "引用") { [weak self, weak tableView] action, view, handler in
             guard let self = self else { return }
             handler(true)
-            if let cell = tableView?.cellForRow(at: indexPath) as? MessageCollectionViewBaseCell {
+            if let cell = tableView?.cellForRow(at: indexPath) as? MessageBaseCell {
                 self.activeMenuCell = cell
                 self.referAction(sender: nil)
             }
@@ -134,11 +134,10 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
         
     //MARK: ContextMune
 #if targetEnvironment(macCatalyst)
-    @available(iOS 13.0, *)
     func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
-        let cell = tableView.cellForRow(at: indexPath) as! MessageCollectionViewBaseCell
+        let cell = tableView.cellForRow(at: indexPath) as! MessageBaseCell
         let identifier = "\(indexPath.row)" as NSString
-        if let cell = cell as? MessageCollectionViewLivePhotoCell {
+        if let cell = cell as? MessageLivePhotoCell {
             let convert = tableView.convert(point, to: cell.livePhotoView)
             if cell.livePhotoView.bounds.contains(convert) {
                 return nil
@@ -149,7 +148,7 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
             guard let self = self, let cell = cell else { return nil }
             self.activeMenuCell = cell
             let copyAction = UIAction(title: "复制") { (_) in
-                if let textCell = cell as? MessageCollectionViewTextCell {
+                if let textCell = cell as? MessageTextCell {
                     let text = textCell.messageLabel.text
                     UIPasteboard.general.string = text
                 }
@@ -170,11 +169,9 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
                     self?.manager.starAndUploadEmoji(filePath: imageUrl, isGif: isGif)
                 }
             }
-            if #available(iOS 13.0, *) {
-                if cell.message.messageType == .draw, let pkView = (cell as? MessageCollectionViewDrawCell)?.getPKView() {
-                    addBackgroundColorAction = UIAction(title: "添加背景颜色") { _ in
-                        pkView.backgroundColor = .lightGray
-                    }
+            if cell.message.messageType == .draw, let pkView = (cell as? MessageDrawCell)?.getPKView() {
+                addBackgroundColorAction = UIAction(title: "添加背景颜色") { _ in
+                    pkView.backgroundColor = .lightGray
                 }
             }
             if cell.message.messageType != .join {
@@ -326,9 +323,7 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
         if messageInputBar.textView.isFirstResponder {
             messageInputBar.textViewResign()
         }
-        if #available(iOS 13.0, *) {
-            UIMenuController.shared.hideMenu()
-        } 
+        UIMenuController.shared.hideMenu()
     }
     
     func needReload(indexPath: [IndexPath]) {

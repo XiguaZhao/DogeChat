@@ -25,23 +25,14 @@ class MiniPlayerView: UIView, UICollectionViewDataSource, UICollectionViewDelega
         configureCollectionView()
         self.layer.masksToBounds = true
         let blurView: UIVisualEffectView
-        if #available(iOS 13.0, *) {
-            blurView = UIVisualEffectView(effect: UIBlurEffect(style: .systemChromeMaterial))
-        } else {
-            blurView = UIVisualEffectView(effect: UIBlurEffect(style: .regular))
-        }
+        blurView = UIVisualEffectView(effect: UIBlurEffect(style: .systemChromeMaterial))
         self.addSubview(blurView)
         self.sendSubviewToBack(blurView)
         blurView.mas_makeConstraints { [weak self] make in
             make?.edges.equalTo()(self)
         }
-        if #available(iOS 13.0, *) {
-            toggleButton.setImage(UIImage(systemName: "pause.circle.fill"), for: .normal)
-            playListButton.setImage(UIImage(systemName: "list.bullet"), for: .normal)
-        } else {
-            toggleButton.setTitle("⏸", for: .normal)
-            playListButton.setTitle("列表", for: .normal)
-        }
+        toggleButton.setImage(UIImage(systemName: "pause.circle.fill"), for: .normal)
+        playListButton.setImage(UIImage(systemName: "list.bullet"), for: .normal)
         toggleButton.addTarget(self, action: #selector(toggleButtonAction(_:)), for: .touchUpInside)
         playListButton.addTarget(self, action: #selector(playListButtonAction(_:)), for: .touchUpInside)
         let buttonStack = UIStackView(arrangedSubviews: [toggleButton, playListButton])
@@ -63,7 +54,6 @@ class MiniPlayerView: UIView, UICollectionViewDataSource, UICollectionViewDelega
         let vc = LyricViewController()
         vc.modalPresentationStyle = .fullScreen
         vc.track = PlayerManager.shared.nowPlayingTrack
-        AppDelegate.shared.splitViewController.present(vc, animated: true, completion: nil)
     }
     
     func reloadData(justScroll: Bool = false) {
@@ -83,11 +73,7 @@ class MiniPlayerView: UIView, UICollectionViewDataSource, UICollectionViewDelega
     }
     
     func changePlayPauseButton() {
-        if #available(iOS 13.0, *) {
-            toggleButton.setImage(UIImage(systemName: PlayerManager.shared.isPlaying ? "pause.circle.fill" : "play.circle.fill"), for: .normal)
-        } else {
-            toggleButton.setTitle(!PlayerManager.shared.isPlaying ? "⏸" : "▶️", for: .normal)
-        }
+        toggleButton.setImage(UIImage(systemName: PlayerManager.shared.isPlaying ? "pause.circle.fill" : "play.circle.fill"), for: .normal)
     }
     
     func processHidden(for vc: UIViewController) {
@@ -107,7 +93,6 @@ class MiniPlayerView: UIView, UICollectionViewDataSource, UICollectionViewDelega
         let popover = vc.popoverPresentationController
         popover?.sourceView = sender
         popover?.delegate = self
-        AppDelegate.shared.tabBarController.present(vc, animated: true, completion: nil)
     }
 
     func toggle(begin: Bool) {

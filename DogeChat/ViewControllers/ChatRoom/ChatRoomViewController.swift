@@ -56,7 +56,7 @@ class ChatRoomViewController: DogeChatViewController, DogeChatVCTableDataSource 
     var lastViewSize = CGSize.zero
     lazy var lastTextViewContentSize: CGSize = CGSize(width: 0, height: 36)
     weak var contactVC: ContactsTableViewController?
-    weak var activeMenuCell: MessageCollectionViewBaseCell?
+    weak var activeMenuCell: MessageBaseCell?
     var hapticInputIndex = 0
     var pan: UIScreenEdgePanGestureRecognizer?
     var isPeek = false
@@ -137,10 +137,7 @@ class ChatRoomViewController: DogeChatViewController, DogeChatVCTableDataSource 
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        AppDelegate.shared.navigationController = self.navigationController
-        if #available(iOS 13.0, *) {
-            (self.view.window?.windowScene?.delegate as? SceneDelegate)?.navigationController = self.navigationController
-        }
+        (self.view.window?.windowScene?.delegate as? SceneDelegate)?.navigationController = self.navigationController
         let userActivity = NSUserActivity(activityType: "com.zhaoxiguang.dogechat")
         userActivity.title = "ChatRoom"
         userActivity.userInfo = ["username": manager.messageManager.myName,
@@ -153,7 +150,7 @@ class ChatRoomViewController: DogeChatViewController, DogeChatVCTableDataSource 
         
     deinit {
         print("chat room VC deinit")
-        MessageCollectionViewTextCell.voicePlayer.replaceCurrentItem(with: nil)
+        MessageTextCell.voicePlayer.replaceCurrentItem(with: nil)
         PlayerManager.shared.playerTypes.remove(.chatroomImageCell)
         PlayerManager.shared.playerTypes.remove(.chatroomVoiceCell)
     }
@@ -202,7 +199,7 @@ class ChatRoomViewController: DogeChatViewController, DogeChatVCTableDataSource 
         messages[index].sendStatus = .success
         messages[index].id = message.id
         let indexPath = IndexPath(row: index, section: 0)
-        if let cell = tableView.cellForRow(at: indexPath) as? MessageCollectionViewBaseCell {
+        if let cell = tableView.cellForRow(at: indexPath) as? MessageBaseCell {
             cell.layoutIfNeeded()
             cell.setNeedsLayout()
         } else {
@@ -226,10 +223,10 @@ extension ChatRoomViewController: UIImagePickerControllerDelegate, UINavigationC
         
     func updateUploadProgress(_ progress: Progress, message: Message) {
         let targetCell = tableView.visibleCells.filter { cell in
-            guard let cell = cell as? MessageCollectionViewBaseCell else { return false }
+            guard let cell = cell as? MessageBaseCell else { return false }
             return cell.message.uuid == message.uuid
         }.first
-        guard let _ = targetCell as? MessageCollectionViewBaseCell else { return }
+        guard let _ = targetCell as? MessageBaseCell else { return }
     }
     
     func processMessageString(for string: String, type: MessageType, imageURL: String?, videoURL: String?) -> Message {
@@ -275,7 +272,6 @@ extension ChatRoomViewController {
     
 }
 
-@available(iOS 13.0, *)
 extension ChatRoomViewController: PKViewChangedDelegate {
     func pkView(_ pkView: PKCanvasView, message: Any?, addNewStroke newStroke: Any) {
         guard #available(iOS 14.0, *), let newStroke = newStroke as? PKStroke else { return }
@@ -389,7 +385,7 @@ extension ChatRoomViewController {
         var empty = true
         var tempHeight: CGFloat = 0
         for message in self.messages.reversed() {
-            tempHeight += MessageCollectionViewBaseCell.height(for: message, username: username)
+            tempHeight += MessageBaseCell.height(for: message, username: username)
             if tempHeight >= tableView.bounds.height * 0.7 {
                 empty = false
                 break

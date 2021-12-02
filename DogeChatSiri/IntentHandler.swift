@@ -66,8 +66,8 @@ class IntentHandler: INExtension, INSendMessageIntentHandling, INSearchForMessag
     
     func handle(intent: INSendMessageIntent, completion: @escaping (INSendMessageIntentResponse) -> Void) {
         // Implement your application logic to send a message here.
-        if let username = UserDefaults(suiteName: "group.demo.zhaoxiguang")?.value(forKey: "sharedUsername") as? String,
-           let password = UserDefaults(suiteName: "group.demo.zhaoxiguang")?.value(forKey: "sharedPassword") as? String,
+        if let username = UserDefaults(suiteName: "group.dogechat.zhaoxiguang")?.value(forKey: "sharedUsername") as? String,
+           let password = UserDefaults(suiteName: "group.dogechat.zhaoxiguang")?.value(forKey: "sharedPassword") as? String,
            let text = self.text,
            let receiver = self.receiver {
             let httpManager = self.httpManager

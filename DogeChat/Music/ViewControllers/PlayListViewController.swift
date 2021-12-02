@@ -17,11 +17,7 @@ let dirName = "trackInfos"
 var userID: String {
     var userID: String! = ""
     if let dict = (UserDefaults.standard.value(forKey: usernameToIdKey) as? [String: String]) {
-        if #available(iOS 13, *) {
-            userID = dict[(UIApplication.shared.windows.first(where: { $0.isKeyWindow })?.windowScene?.delegate as? SceneDelegate)?.username ?? ""] ?? UserDefaults.standard.value(forKey: "userID") as? String ?? ""
-        } else {
-            userID = UserDefaults.standard.value(forKey: "userID") as? String ?? ""
-        }
+        userID = dict[(UIApplication.shared.windows.first(where: { $0.isKeyWindow })?.windowScene?.delegate as? SceneDelegate)?.username ?? ""] ?? UserDefaults.standard.value(forKey: "userID") as? String ?? ""
     }
     return userID
 }
@@ -95,7 +91,7 @@ class PlayListViewController: DogeChatViewController, SelectContactsDelegate, Do
                 make?.edges.equalTo()(self?.view)
             }
         case .share:
-            AppDelegate.shared.navigationController?.interactivePopGestureRecognizer?.isEnabled = false
+            self.navigationController?.interactivePopGestureRecognizer?.isEnabled = false
             tableView.allowsMultipleSelection = true
             tableView.allowsMultipleSelectionDuringEditing = true
             let toolBar = UIToolbar()
@@ -136,7 +132,7 @@ class PlayListViewController: DogeChatViewController, SelectContactsDelegate, Do
     }
     
     deinit {
-        AppDelegate.shared.navigationController?.interactivePopGestureRecognizer?.isEnabled = true
+        SceneDelegate.usernameToDelegate[self.username]?.navigationController?.interactivePopGestureRecognizer?.isEnabled = true
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -498,7 +494,6 @@ extension PlayListViewController: UITableViewDelegate, UITableViewDataSource {
         }
     }
     
-    @available(iOS 13.0, *)
     func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
         guard type == .normal else { return nil }
         return .init(identifier: ("\(indexPath.row)" as NSString), previewProvider: nil) { [weak self] elements -> UIMenu? in

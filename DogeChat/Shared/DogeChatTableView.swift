@@ -9,12 +9,12 @@
 import UIKit
 
 class DogeChatTableView: UITableView {
-
+    
     override init(frame: CGRect, style: UITableView.Style) {
         super.init(frame: frame, style: style)
         self.separatorStyle = .none
         updateBgColor()
-//        NotificationCenter.default.addObserver(self, selector: #selector(forceDarkMode(noti:)), name: .immersive, object: nil)
+        //        NotificationCenter.default.addObserver(self, selector: #selector(forceDarkMode(noti:)), name: .immersive, object: nil)
     }
     
     required init?(coder: NSCoder) {
@@ -29,11 +29,7 @@ class DogeChatTableView: UITableView {
         if AppDelegate.shared.immersive && UserDefaults.standard.bool(forKey: "immersive") {
             self.backgroundColor = .clear
         } else {
-            if #available(iOS 13.0, *) {
-                self.backgroundColor = nil
-            } else {
-                // Fallback on earlier versions
-            }
+            self.backgroundColor = nil
         }
     }
     

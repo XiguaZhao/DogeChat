@@ -57,7 +57,7 @@ class MessageInputView: DogeChatStaticBlurView {
     override init(frame: CGRect) {
         super.init(frame: frame)
                 
-        var width: CGFloat = 30
+        let width: CGFloat = 30
 
         textView.translatesAutoresizingMaskIntoConstraints = false
         textView.layer.cornerRadius = 8
@@ -71,28 +71,16 @@ class MessageInputView: DogeChatStaticBlurView {
         emojiButton.translatesAutoresizingMaskIntoConstraints = false
         upArrowButton.translatesAutoresizingMaskIntoConstraints = false
         voiceButton.translatesAutoresizingMaskIntoConstraints = false
-        if #available(iOS 13.0, *) {
-            let largeConfig = UIImage.SymbolConfiguration(pointSize: 150, weight: .bold, scale: .large)
-            addButton.setImage(UIImage(systemName: "plus.circle.fill", withConfiguration: largeConfig), for: .normal)
-            emojiButton.setImage(UIImage(systemName: "smiley.fill", withConfiguration: largeConfig), for: .normal)
-            upArrowButton.setImage(UIImage(systemName: "arrow.up", withConfiguration: largeConfig), for: .normal)
-            voiceButton.setImage(UIImage(systemName: "mic.circle.fill", withConfiguration: largeConfig), for: .normal)
-            cameraButton.setImage(UIImage(systemName: "camera.circle.fill", withConfiguration: largeConfig), for: .normal)
-            photoButton.setImage(UIImage(named: "xiangce"), for: .normal)
-            livePhotoButton.setImage(UIImage(systemName: "livephoto", withConfiguration: largeConfig), for: .normal)
-            videoButton.setImage(UIImage(systemName: "video.circle.fill", withConfiguration: largeConfig), for: .normal)
-            drawButton.setImage(UIImage(systemName: "pencil.circle.fill", withConfiguration: largeConfig), for: .normal)
-        } else {
-            addButton.setImage(UIImage(named: "add"), for: .normal)
-            emojiButton.setImage(UIImage(named: "emoji"), for: .normal)
-            upArrowButton.setImage(UIImage(named: "arrowUp"), for: .normal)
-            voiceButton.setImage(UIImage(named: "voice"), for: .normal)
-            cameraButton.setImage(UIImage(named: "camera"), for: .normal)
-            photoButton.setImage(UIImage(named: "album"), for: .normal)
-            livePhotoButton.setImage(UIImage(named: "live"), for: .normal)
-            videoButton.setImage(UIImage(named: "video"), for: .normal)
-            drawButton.setImage(UIImage(named: "pencil"), for: .normal)
-        }
+        let largeConfig = UIImage.SymbolConfiguration(pointSize: 150, weight: .bold, scale: .large)
+        addButton.setImage(UIImage(systemName: "plus.circle.fill", withConfiguration: largeConfig), for: .normal)
+        emojiButton.setImage(UIImage(systemName: "smiley.fill", withConfiguration: largeConfig), for: .normal)
+        upArrowButton.setImage(UIImage(systemName: "arrow.up", withConfiguration: largeConfig), for: .normal)
+        voiceButton.setImage(UIImage(systemName: "mic.circle.fill", withConfiguration: largeConfig), for: .normal)
+        cameraButton.setImage(UIImage(systemName: "camera.circle.fill", withConfiguration: largeConfig), for: .normal)
+        photoButton.setImage(UIImage(named: "xiangce"), for: .normal)
+        livePhotoButton.setImage(UIImage(systemName: "livephoto", withConfiguration: largeConfig), for: .normal)
+        videoButton.setImage(UIImage(systemName: "video.circle.fill", withConfiguration: largeConfig), for: .normal)
+        drawButton.setImage(UIImage(systemName: "pencil.circle.fill", withConfiguration: largeConfig), for: .normal)
                 
         addButton.addTarget(self, action: #selector(addButtonTapped), for: .touchUpInside)
         emojiButton.addTarget(self, action: #selector(emojiButtonTapped), for: .touchUpInside)
@@ -117,16 +105,12 @@ class MessageInputView: DogeChatStaticBlurView {
         
         referView.alpha = 0
         
-        if isMac() {
+        if isCatalyst() {
             livePhotoButton.isHidden = true
             videoButton.isHidden = true
             drawButton.isHidden = true
         }
         
-        if #available(iOS 13, *) {} else {
-            width = 25
-        }
-             
         toolStack.arrangedSubviews.forEach { button in
             button.mas_makeConstraints { make in
                 make?.width.height().mas_lessThanOrEqualTo()(button == photoButton ? width - 3 : width)

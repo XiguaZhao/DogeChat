@@ -41,9 +41,6 @@ class SettingViewController: DogeChatViewController, DatePickerChangeDelegate, U
         if isMac() {
             settingTypes.remove(at: 1)
         }
-        if #available(iOS 13, *) {} else {
-            settingTypes.remove(at: 2)
-        }
         view.addSubview(tableView)
         tableView.mas_makeConstraints { [weak self] make in
             make?.edges.equalTo()(self?.view)
@@ -66,16 +63,8 @@ class SettingViewController: DogeChatViewController, DatePickerChangeDelegate, U
 
     @objc func logout() {
         NotificationCenter.default.post(name: .logout, object: username)
-        if #available(iOS 13, *) {
-            if let sceneDelegate = self.view.window?.windowScene?.delegate as? SceneDelegate {
-                if let contactVCNav = sceneDelegate.contactVC?.navigationController {
-                    contactVCNav.setViewControllers([JoinChatViewController()], animated: true)
-                }
-            }
-        } else {
-            guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
-            manager.disconnect()
-            if let contactVCNav = appDelegate.contactVC?.navigationController {
+        if let sceneDelegate = self.view.window?.windowScene?.delegate as? SceneDelegate {
+            if let contactVCNav = sceneDelegate.contactVC?.navigationController {
                 contactVCNav.setViewControllers([JoinChatViewController()], animated: true)
             }
         }

@@ -118,7 +118,6 @@ class LyricViewController: DogeChatViewController {
     }
     
     @objc func switchTapAction(_ tap: UITapGestureRecognizer) {
-        guard AppDelegate.shared.splitViewController.isCollapsed else { return }
         UIView.transition(from: containerView, to: lyricContainerView, duration: 0.5, options: .transitionFlipFromLeft, completion: nil)
     }
     
@@ -136,11 +135,6 @@ class LyricViewController: DogeChatViewController {
     
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
-        if AppDelegate.shared.splitViewController.isCollapsed {
-            layoutForCollapse()
-        } else {
-            layoutForFull()
-        }
     }
     
     @objc func swipeDownAction(_ ges: UISwipeGestureRecognizer) {

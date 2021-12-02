@@ -88,9 +88,7 @@ class SelectShortcutTVC: UITableViewController {
         let cell = tableView.dequeueReusableCell(withIdentifier: cellIdentifier, for: indexPath)
         switch indexPath.row {
         case Self.namesAndPasswords.count:
-            if #available(iOS 13.0, *) {
-                cell.imageView?.image = UIImage(systemName: "plus")
-            }
+            cell.imageView?.image = UIImage(systemName: "plus")
             cell.textLabel?.text = "添加新捷径"
         default:
             cell.textLabel?.text = Self.namesAndPasswords[indexPath.row].username
