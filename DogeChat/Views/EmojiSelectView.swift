@@ -33,7 +33,7 @@ class EmojiSelectView: DogeChatStaticBlurView {
     static var emojiPathToId: [String: String] = [:]
     var username = ""
     var friend: Friend!
-    var manager: WebSocketManager {
+    var manager: WebSocketManager? {
         socketForUsername(username)
     }
     
@@ -114,8 +114,8 @@ extension EmojiSelectView: UICollectionViewDataSource, UICollectionViewDelegateF
     }
 
     func deleteEmoji(cell: EmojiCollectionViewCell) {
-        if let indexPath = cell.indexPath, let id = EmojiSelectView.emojiPathToId[emojis[indexPath.item]] {
-            manager.deleteEmoji(emojis[indexPath.item], id: id) { [self] in
+        if let manager = manager, let indexPath = cell.indexPath, let id = EmojiSelectView.emojiPathToId[emojis[indexPath.item]] {
+            manager.deleteEmoji(emojis[indexPath.item], id: id) { 
                 manager.getEmojis { _ in
                     
                 }
@@ -124,7 +124,7 @@ extension EmojiSelectView: UICollectionViewDataSource, UICollectionViewDelegateF
     }
     
     func useAsSelfAvatar(cell: EmojiCollectionViewCell, append: String? = nil) {
-        if let index = cell.indexPath?.item {
+        if let manager = manager, let index = cell.indexPath?.item {
             var path = (emojis[index] as NSString).replacingOccurrences(of: url_pre, with: "")
             if let append = append {
                 path += append
@@ -135,12 +135,12 @@ extension EmojiSelectView: UICollectionViewDataSource, UICollectionViewDelegateF
                 if json["status"].stringValue == "success" {
                     let avatarURL = json["avatarUrl"].stringValue
                     if append != nil {
-                        if let friend = socketForUsername(username).httpsManager.friends.first(where: { $0.userID == self.friend.userID } ) {
+                        if let friend = manager.httpsManager.friends.first(where: { $0.userID == self.friend.userID } ) {
                             friend.avatarURL = avatarURL
                             NotificationCenter.default.post(name: .friendChangeAvatar, object: username, userInfo: ["friend": friend])
                         }
                     } else {
-                        self.manager.messageManager.myAvatarUrl = url_pre + JSON(data)["avatarUrl"].stringValue
+                        manager.messageManager.myAvatarUrl = url_pre + JSON(data)["avatarUrl"].stringValue
                     }
                 }
             }

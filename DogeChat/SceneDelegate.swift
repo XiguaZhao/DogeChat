@@ -160,16 +160,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         self.socketAdapter = adapter
         socket.messageManager.encrypt = EncryptMessage()
         let contactVC = self.makeContactVC(for: username)
-        contactVC.password = password
-        if let playListVC = (tabbarController.viewControllers![1] as? UINavigationController)?.viewControllers.first as? PlayListViewController {
-            playListVC.username = username
-        }
-        if let setting = (tabbarController.viewControllers![2] as? UINavigationController)?.viewControllers.first as? SettingViewController {
-            setting.username = username
-        }
-        if !splitVC.isCollapsed {
-            (splitVC.viewControllers[1] as? DogeChatNavigationController)?.username = username
-        }
+        contactVC.setUsername(username, andPassword: password)
+        updateUsernames(username)
     }
     
     func makeContactVC(for username: String) -> ContactsTableViewController {
@@ -220,7 +212,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     //4
     func scene(_ scene: UIScene, continue userActivity: NSUserActivity) {
         if callManager.hasCall() { return }
-        if let intent = userActivity.interaction?.intent as? INStartAudioCallIntent,
+        if let intent = userActivity.interaction?.intent as? INStartCallIntent,
               let name = intent.contacts?.first?.personHandle?.value {
             let uuid = UUID().uuidString
             tapFromSystemPhoneInfo = (name, uuid)

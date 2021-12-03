@@ -32,6 +32,7 @@ class MediaLoader: NSObject, URLSessionDownloadDelegate {
     var cache = [String : Data]()
     var cacheSize = [String : Int]()
     let lock = NSLock()
+    let dictLock = NSLock()
     lazy var session: URLSession = {
         let config: URLSessionConfiguration
         if self.type == .background {
@@ -147,10 +148,13 @@ class MediaLoader: NSObject, URLSessionDownloadDelegate {
     func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
         guard let sourceURL = downloadTask.originalRequest?.url else { return }
         let fileName = sourceURL.lastPathComponent.replacingOccurrences(of: "%2B", with: "+")
+        dictLock.lock()
         guard (downloadTask.response as? HTTPURLResponse)?.statusCode ?? 0 == 200, let type = downloadingInfos[fileName]?.first?.type else  {
             downloadingInfos.removeValue(forKey: fileName)
+            dictLock.unlock()
             return
         }
+        dictLock.unlock()
         var data: Data!
         var image: UIImage?
         if type == .image {

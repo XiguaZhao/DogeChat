@@ -78,7 +78,7 @@ extension ChatRoomViewController: MessageTableViewCellDelegate {
 
     func emojiOutBounds(from cell: MessageBaseCell, gesture: UIGestureRecognizer) {
         let point = gesture.location(in: tableView)
-        guard let oldIndexPath = cell.indexPath else { return }
+        guard let manager = manager, let oldIndexPath = cell.indexPath else { return }
         guard let newIndexPath = tableView.indexPathForRow(at: point) else {
             needReload(indexPath: [oldIndexPath])
             return
@@ -99,7 +99,7 @@ extension ChatRoomViewController: MessageTableViewCellDelegate {
     }
     
     func emojiInfoDidChange(from oldInfo: EmojiInfo?, to newInfo: EmojiInfo?, cell: MessageBaseCell) {
-        if let indexPahth = tableView.indexPath(for: cell) {
+        if let manager = manager, let indexPahth = tableView.indexPath(for: cell) {
             needReload(indexPath: [indexPahth])
             newInfo?.lastModifiedBy = manager.myName
             newInfo?.lastModifiedUserId = manager.myInfo.userID
@@ -190,7 +190,7 @@ extension ChatRoomViewController: MessageTableViewCellDelegate {
         guard let cell = activeMenuCell else { return }
         if let imageUrl = cell.message.imageURL, cell.message.sendStatus == .success {
             let isGif = imageUrl.hasSuffix(".gif")
-            self.manager.starAndUploadEmoji(filePath: imageUrl, isGif: isGif)
+            self.manager?.starAndUploadEmoji(filePath: imageUrl, isGif: isGif)
         }
     }
     

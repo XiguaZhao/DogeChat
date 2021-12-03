@@ -152,6 +152,22 @@ class SelectShortcutTVC: UITableViewController {
         present(alert, animated: true)
     }
     
+    override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        guard indexPath.row != 0 else { return nil }
+        let mainAccount = UIContextualAction(style: .normal, title: "设为主账号") { action, view, completion in
+            let mainUsername = Self.namesAndPasswords[indexPath.row].username
+            let mainPassword = Self.namesAndPasswords[indexPath.row].password
+            UserDefaults(suiteName: "group.dogechat.zhaoxiguang")?.set(mainUsername, forKey: "mainUsername")
+            UserDefaults(suiteName: "group.dogechat.zhaoxiguang")?.set(mainPassword, forKey: "mainPassword")
+            completion(true)
+        }
+        mainAccount.backgroundColor = #colorLiteral(red: 0.2392156869, green: 0.6745098233, blue: 0.9686274529, alpha: 1)
+        let config = UISwipeActionsConfiguration(actions: [mainAccount])
+        config.performsFirstActionWithFullSwipe = true
+        return config
+    }
+    
+    
     static func updateShortcuts() {
         var items = [UIApplicationShortcutItem]()
         for item in Self.namesAndPasswords {

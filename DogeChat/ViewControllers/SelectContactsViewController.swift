@@ -48,7 +48,7 @@ class SelectContactsViewController: DogeChatViewController, DogeChatVCTableDataS
         super.viewDidLoad()
         
         if dataSourcea == nil {
-            dataSourcea = socketForUsername(username).messageManager
+            dataSourcea = socketForUsername(username)?.messageManager
         }
         
         excludeSomeFriend()

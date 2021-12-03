@@ -201,7 +201,7 @@ class HistoryVC: DogeChatViewController, DogeChatVCTableDataSource {
     
     
     func requestPage(_ page: Int) {
-        socketForUsername(username).historyMessages(for: friend, pageNum: page)
+        socketForUsername(username)?.historyMessages(for: friend, pageNum: page)
     }
     
     @objc func refreshFooterAction() {

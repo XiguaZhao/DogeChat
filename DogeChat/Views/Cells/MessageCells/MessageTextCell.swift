@@ -160,7 +160,7 @@ class MessageTextCell: MessageBaseCell {
             url = _url
             block()
         } else {
-            MediaLoader.shared.requestImage(urlStr: message.voiceURL!, type: .voice, cookie: manager.cookie, syncIfCan: true) { [weak self] _, _, localURL in
+            MediaLoader.shared.requestImage(urlStr: message.voiceURL!, type: .voice, cookie: manager?.cookie, syncIfCan: true) { [weak self] _, _, localURL in
                 self?.delegate?.downloadSuccess(self, message: captured)
             } progress: { progress in
                 self.delegate?.downloadProgressUpdate(progress: progress, message: captured)

@@ -1657,6 +1657,7 @@
 				INFOPLIST_KEY_CFBundleDisplayName = DogeChatSiri;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2021 Luke Parham. All rights reserved.";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
+				"IPHONEOS_DEPLOYMENT_TARGET[sdk=macosx*]" = 14.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1698,6 +1699,7 @@
 				INFOPLIST_KEY_CFBundleDisplayName = DogeChatSiri;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2021 Luke Parham. All rights reserved.";
 				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
+				"IPHONEOS_DEPLOYMENT_TARGET[sdk=macosx*]" = 14.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

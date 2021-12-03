@@ -57,7 +57,7 @@ extension ContactsTableViewController: ContactTableViewCellDelegate, UIContextMe
         if sender.state == .began {
             playHaptic()
         }
-        guard sender.state == .ended else {
+        guard let manager = manager, sender.state == .ended else {
             return
         }
         let browser = MediaBrowserViewController()
@@ -68,9 +68,9 @@ extension ContactsTableViewController: ContactTableViewCellDelegate, UIContextMe
     
     func contextMenuInteraction(_ interaction: UIContextMenuInteraction, configurationForMenuAtLocation location: CGPoint) -> UIContextMenuConfiguration? {
         return .init(identifier: nil) { [weak self] in
-            guard let self = self else { return nil }
+            guard let self = self, let manager = self.manager else { return nil }
             let browser = MediaBrowserViewController()
-            browser.imagePaths = [self.manager.messageManager.myAvatarUrl]
+            browser.imagePaths = [manager.messageManager.myAvatarUrl]
             return browser
         } actionProvider: { _ in
             return nil
@@ -78,7 +78,11 @@ extension ContactsTableViewController: ContactTableViewCellDelegate, UIContextMe
     }
         
     @objc func updateMyAvatar(_ noti: Notification) {
-        let url = noti.userInfo?["path"] as! String
+        guard let manager = manager,
+              let url = noti.userInfo?["path"] as? String,
+              url != lastAvatarURL
+        else { return }
+        self.lastAvatarURL = url
         MediaLoader.shared.requestImage(urlStr: url, type: .image, cookie: manager.cookie) { [self] image, data, _ in
             guard let data = data else { return }
             if url.hasSuffix(".gif") {
@@ -115,13 +119,13 @@ extension ContactsTableViewController: ContactTableViewCellDelegate, UIContextMe
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         picker.dismiss(animated: true, completion: nil)
-        guard let image = info[.editedImage] as? UIImage else { return }
+        guard let manager = manager, let image = info[.editedImage] as? UIImage else { return }
         if let compressedImageData = compressImage(image, needSave: false).image.jpegData(compressionQuality: 0.3) {
             manager.uploadData(compressedImageData, path: "user/changeAvatar", name: "avatar", fileName: UUID().uuidString + ".jpeg", needCookie: true, contentType: "multipart/form-data", params: nil) { [weak self] task, data in
-                guard let self = self, let data = data else { return }
+                guard let data = data else { return }
                 let json = JSON(data)
                 if json["status"].stringValue == "success" {
-                    self.manager.messageManager.myAvatarUrl = WebSocketManager.url_pre + json["avatarUrl"].stringValue
+                    manager.messageManager.myAvatarUrl = WebSocketManager.url_pre + json["avatarUrl"].stringValue
                 }
             }
         }

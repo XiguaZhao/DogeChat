@@ -94,6 +94,11 @@ class WebSocketManagerAdapter: NSObject {
     }
     
     @objc func sendToken(noti: Notification) {
+        if UIApplication.shared.supportsMultipleScenes,
+            let mainUsername = UserDefaults(suiteName: "group.dogechat.zhaoxiguang")?.value(forKey: "mainUsername") as? String,
+            mainUsername != self.username {
+            return
+        }
         manager.commonWebSocket.sendToken((UIApplication.shared.delegate as! AppDelegate).deviceToken)
         manager.commonWebSocket.sendVoipToken(AppDelegate.shared.pushKitToken)
     }
@@ -102,7 +107,7 @@ class WebSocketManagerAdapter: NSObject {
         let userInfo = noti.userInfo!
         let name = userInfo["name"] as! String
         let uuid = userInfo["uuid"] as! String
-        (sceneDelegate as? SceneDelegate)?.callManager.startCall(handle: name, uuid: uuid)
+        sceneDelegate?.callManager.startCall(handle: name, uuid: uuid)
     }
     
     @objc func preloadEmojiPaths(noti: Notification) {

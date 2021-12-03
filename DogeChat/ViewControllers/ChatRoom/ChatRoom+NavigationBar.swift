@@ -50,7 +50,7 @@ extension ChatRoomViewController {
                 titleAvatar.image = UIImage(data: data)
             }
         }
-        MediaLoader.shared.requestImage(urlStr: friend.avatarURL, type: .image, cookie: self.manager.cookie, syncIfCan: true, completion: { _, data, _ in
+        MediaLoader.shared.requestImage(urlStr: friend.avatarURL, type: .image, cookie: self.manager?.cookie, syncIfCan: true, completion: { _, data, _ in
             if let data = data {
                 block(data)
             }

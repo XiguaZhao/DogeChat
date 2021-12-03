@@ -106,7 +106,7 @@ class MessageDrawCell: MessageBaseCell {
         return nil
     }
     func downloadPKDataIfNeeded() {
-        guard let capturedMessage = message else { return }
+        guard let manager = manager, let capturedMessage = message else { return }
         let displayBlock: () -> Void = { [weak self] in
             guard let self = self, capturedMessage == self.message else { return }
             self.setNeedsLayout()

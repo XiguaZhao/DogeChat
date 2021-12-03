@@ -85,7 +85,7 @@ extension ChatRoomViewController: MessageInputDelegate, VoiceRecordDelegate {
         let startCallAction = { [weak self] in
             guard let self = self else { return }
             let uuid = UUID().uuidString
-            self.manager.sendCallRequst(to: self.friendName, uuid: uuid)
+            self.manager?.sendCallRequst(to: self.friendName, uuid: uuid)
             SceneDelegate.usernameToDelegate[self.username]?.callManager.startCall(handle: self.friendName, uuid: uuid)
         }
         if !isMac() {

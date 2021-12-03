@@ -103,7 +103,7 @@ class MessageTrackCell: MessageBaseCell {
         if !message.tracks.isEmpty {
             display()
         } else {
-            MediaLoader.shared.requestImage(urlStr: message.text, type: .draw, cookie: manager.cookie, syncIfCan: true) { [weak self] _, _, localURL in
+            MediaLoader.shared.requestImage(urlStr: message.text, type: .draw, cookie: manager?.cookie, syncIfCan: true) { [weak self] _, _, localURL in
                 if let data = try? Data(contentsOf: localURL),
                    let tracks = try? JSONDecoder().decode([Track].self, from: data) {
                     captured.tracks = tracks

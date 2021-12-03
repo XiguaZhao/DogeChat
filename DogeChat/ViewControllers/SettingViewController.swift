@@ -11,7 +11,7 @@ import DogeChatNetwork
 import DogeChatUniversal
 
 enum SettingType: String {
-    case shortcut = "快捷操作"
+    case shortcut = "多账号管理"
     case changeIcon = "修改图标"
     case doNotDisturb = "勿扰模式"
     case selectHost = "自定义host"
@@ -31,7 +31,7 @@ class SettingViewController: DogeChatViewController, DatePickerChangeDelegate, U
     var settingTypes: [SettingType] = [.shortcut, .changeIcon, .forceDarkMode, .switchImmersive, .customBlur, .doNotDisturb, .browseFiles, .logout]
     var tableView = DogeChatTableView()
     var customBlurSwitcher: UISwitch!
-    var manager: WebSocketManager {
+    var manager: WebSocketManager? {
         socketForUsername(username)
     }
 
@@ -208,7 +208,7 @@ class SettingViewController: DogeChatViewController, DatePickerChangeDelegate, U
     
     @objc func doNotDisturbSwitched(_ switcher: UISwitch) {
         if !switcher.isOn {
-            manager.doNotDisturb(for: "", hour: 0) {
+            manager?.doNotDisturb(for: "", hour: 0) {
             }
         } else {
             let pickerVC = DatePickerViewController()
@@ -219,7 +219,7 @@ class SettingViewController: DogeChatViewController, DatePickerChangeDelegate, U
 
     func datePickerConfirmed(_ picker: UIDatePicker) {
         let hour = Int(picker.countDownDuration / 60 / 60)
-        manager.doNotDisturb(for: "", hour: hour) {
+        manager?.doNotDisturb(for: "", hour: hour) {
         }
     }
     

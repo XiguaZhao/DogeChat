@@ -118,7 +118,7 @@ class DrawViewController: UIViewController, PKViewAutoOffsetDelegate {
         message.needRealTimeDraw = switcher.isOn
         if switcher.isOn && !didSendNeedRealTime {
             if let message = self.message {
-                socketForUsername(username).sendDrawMessage(message)
+                socketForUsername(username)?.sendDrawMessage(message)
             }
             didSendNeedRealTime = true
         }

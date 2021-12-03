@@ -102,7 +102,7 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
             if let cell = tableView?.cellForRow(at: indexPath) as? MessageImageCell {
                 if let imageUrl = cell.message.imageURL, cell.message.sendStatus == .success {
                     let isGif = imageUrl.hasSuffix(".gif")
-                    self.manager.starAndUploadEmoji(filePath: imageUrl, isGif: isGif)
+                    self.manager?.starAndUploadEmoji(filePath: imageUrl, isGif: isGif)
                 }
             }
         }
@@ -166,7 +166,7 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
             if let imageUrl = cell.message.imageURL, cell.message.sendStatus == .success {
                 starEmojiAction = UIAction(title: "收藏表情") { [weak self] (_) in
                     let isGif = imageUrl.hasSuffix(".gif")
-                    self?.manager.starAndUploadEmoji(filePath: imageUrl, isGif: isGif)
+                    self?.manager?.starAndUploadEmoji(filePath: imageUrl, isGif: isGif)
                 }
             }
             if cell.message.messageType == .draw, let pkView = (cell as? MessageDrawCell)?.getPKView() {
@@ -236,7 +236,7 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
         } else if let _selectedIndexPath = activeSwipeIndexPath {
             selectedIndexPaths = [_selectedIndexPath]
         }
-        guard let selectedIndexPaths = selectedIndexPaths else {
+        guard let manager = manager, let selectedIndexPaths = selectedIndexPaths else {
             return
         }
         let selectedMessages = selectedIndexPaths.map { self.messages[$0.row].copied() }

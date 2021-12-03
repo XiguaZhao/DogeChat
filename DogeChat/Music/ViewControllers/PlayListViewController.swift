@@ -49,7 +49,7 @@ class PlayListViewController: DogeChatViewController, SelectContactsDelegate, Do
             
         }
     }
-    var manager: WebSocketManager {
+    var manager: WebSocketManager? {
         return socketForUsername(username)
     }
     var type: PlayListVCType = .normal
@@ -282,15 +282,15 @@ class PlayListViewController: DogeChatViewController, SelectContactsDelegate, Do
     }
     
     func shareTracksToFriends(_ friends: [Friend], tracks: [Track]) {
-        if let tracksData = try? JSONEncoder().encode(selectedTracks) {
-            socketForUsername(username).uploadData(tracksData, path: "message/uploadImg", name: "upload", fileName: "", needCookie: true, contentType: "application/octet-stream", params: nil) { [weak self] task, data in
+        if let manager = manager, let tracksData = try? JSONEncoder().encode(selectedTracks) {
+            socketForUsername(username)?.uploadData(tracksData, path: "message/uploadImg", name: "upload", fileName: "", needCookie: true, contentType: "application/octet-stream", params: nil) { [weak self] task, data in
                 guard let self = self, let data = data else { return }
                 let json = JSON(data)
                 guard json["status"].stringValue == "success" else {
                     print("上传失败")
                     return
                 }
-                let filePath = socketForUsername(self.username).messageManager.encrypt.decryptMessage(json["filePath"].stringValue)
+                let filePath = manager.messageManager.encrypt.decryptMessage(json["filePath"].stringValue)
                 for friend in friends {
                     let message = Message(message: filePath,
                                           friend: friend,
@@ -298,10 +298,10 @@ class PlayListViewController: DogeChatViewController, SelectContactsDelegate, Do
                                           receiver: friend.username,
                                           receiverUserID: friend.userID,
                                           sender: self.username,
-                                          senderUserID: self.manager.messageManager.myId,
+                                          senderUserID: manager.messageManager.myId,
                                           messageType: .track,
                                           tracks: tracks)
-                    socketForUsername(self.username).commonWebSocket.sendWrappedMessage(message)
+                    manager.commonWebSocket.sendWrappedMessage(message)
                     (self.splitViewController as? DogeChatSplitViewController)?.findContactVC()?.receiveNewMessages([message], isGroup: message.option == .toGroup)
                 }
                 self.makeAutoAlert(message: "发送成功", detail: nil, showTime: 0.2) {

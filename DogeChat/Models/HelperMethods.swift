@@ -18,8 +18,8 @@ var url_pre: String {
     WebSocketManager.url_pre
 }
 
-func socketForUsername(_ username: String) -> WebSocketManager {
-    return WebSocketManager.usersToSocketManager[username]!
+func socketForUsername(_ username: String) -> WebSocketManager? {
+    return WebSocketManager.usersToSocketManager[username]
 }
 
 func removeSocketForUsername(_ username: String) {
@@ -107,4 +107,26 @@ func userIDFor(username: String) -> String? {
 
 func adapterFor(username: String) -> WebSocketManagerAdapter {
     return WebSocketManagerAdapter.usernameToAdapter[username]!
+}
+
+func updateUsernames(_ username: String) {
+    if let sceneDelegate = SceneDelegate.usernameToDelegate[username], let splitVC = sceneDelegate.splitVC {
+        for vc in splitVC.viewControllers {
+            updateUsernameForVC(vc, username: username)
+        }
+    }
+}
+
+func updateUsernameForVC(_ vc: UIViewController, username: String) {
+    if let dogeChatVC = vc as? DogeChatViewController {
+        dogeChatVC.username = username
+    } else if let nav = vc as? UINavigationController {
+        for vc in nav.viewControllers {
+            updateUsernameForVC(vc, username: username)
+        }
+    } else if let tab = vc as? UITabBarController {
+        for vc in tab.viewControllers ?? [] {
+            updateUsernameForVC(vc, username: username)
+        }
+    }
 }

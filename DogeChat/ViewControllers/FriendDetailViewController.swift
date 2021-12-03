@@ -28,7 +28,7 @@ class FriendDetailViewController: DogeChatViewController, UITableViewDataSource,
         case changeGroupAvatar = "修改群聊头像"
     }
     
-    var manager: WebSocketManager {
+    var manager: WebSocketManager? {
         socketForUsername(username)
     }
     
@@ -57,7 +57,7 @@ class FriendDetailViewController: DogeChatViewController, UITableViewDataSource,
         self.navigationItem.title = friend.nickName ?? friend.username
         if friend.isGroup, let group = friend as? Group {
             rows = [.nickName, .nameInGroup, .groupOwner, .changeGroupAvatar, .addMember, .removeMember]
-            if group.ownerID == manager.httpsManager.myId {
+            if group.ownerID == manager?.httpsManager.myId {
                 rows.append(.deleteGroup)
             }
             getMembers()
@@ -94,7 +94,7 @@ class FriendDetailViewController: DogeChatViewController, UITableViewDataSource,
     }
         
     func getMembers() {
-        guard let group = self.friend as? Group else { return }
+        guard let manager = manager, let group = self.friend as? Group else { return }
         manager.httpsManager.getGroupMembers(group: group) { [self] members in
             self.members = members
             if let myNameInGroup = members.first(where: { $0.userID == manager.myInfo.userID })?.nameInGroup {
@@ -162,7 +162,7 @@ class FriendDetailViewController: DogeChatViewController, UITableViewDataSource,
                 trailingText = friend.username
             case .nameInGroup:
                 type = .textField
-                trailingText = myNameInGroup ?? manager.myInfo.username
+                trailingText = myNameInGroup ?? manager?.myInfo.username
             default:
                 break
             }
@@ -195,7 +195,7 @@ class FriendDetailViewController: DogeChatViewController, UITableViewDataSource,
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if tableView.isEditing {
             let type = sections[indexPath.section][indexPath.row]
-            if type is RowType || (type as? Friend)?.userID == manager.messageManager.myId {
+            if type is RowType || (type as? Friend)?.userID == manager?.messageManager.myId {
                 tableView.deselectRow(at: indexPath, animated: true)
             }
             return
@@ -242,7 +242,7 @@ class FriendDetailViewController: DogeChatViewController, UITableViewDataSource,
     
     func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
         if let friends = sections[indexPath.section] as? [Friend] {
-            if friends[indexPath.row].userID != manager.messageManager.myId {
+            if friends[indexPath.row].userID != manager?.messageManager.myId {
                 return true
             }
         }
@@ -257,12 +257,12 @@ class FriendDetailViewController: DogeChatViewController, UITableViewDataSource,
     }
     
     func createGroup(named name: String) {
-        manager.httpsManager.createGroup(named: name) { [weak self] group in
+        manager?.httpsManager.createGroup(named: name) { [weak self] group in
             self?.makeAutoAlert(message: group != nil ? "创建成功" : "创建失败", detail: name, showTime: 1, completion: {
                 if group != nil {
                     self?.newlyCreatedGroup = group
                     self?.group.enter()
-                    self?.manager.httpsManager.getContacts(completion: { (friends, _) in
+                    self?.manager?.httpsManager.getContacts(completion: { (friends, _) in
                         self?.group.leave()
                     })
                     self?.group.enter()
@@ -279,7 +279,7 @@ class FriendDetailViewController: DogeChatViewController, UITableViewDataSource,
     
     func deleteGroup() {
         guard let group = self.friend as? Group else { return }
-        manager.httpsManager.deleteGroup(group) { [weak self] success in
+        manager?.httpsManager.deleteGroup(group) { [weak self] success in
             self?.makeAutoAlert(message: success ? "删除成功" : "删除失败", detail: self?.friend.username, showTime: 1, completion: {
                 if success {
                     self?.backToContactVC()
@@ -302,7 +302,7 @@ class FriendDetailViewController: DogeChatViewController, UITableViewDataSource,
         navigationItem.setRightBarButtonItems(nil, animated: true)
         if let indexPaths = tableView.indexPathsForSelectedRows {
             let ids = indexPaths.map { self.members[$0.row].userID }
-            manager.httpsManager.removeGroupMembers(in: self.friend as! Group, memberIDs: ids) { success in
+            manager?.httpsManager.removeGroupMembers(in: self.friend as! Group, memberIDs: ids) { success in
                 self.tableView.setEditing(false, animated: true)
                 self.makeAutoAlert(message: success ? "成功删除" : "遇到错误，请重试", detail: nil, showTime: 1, completion: {
                 })
@@ -327,6 +327,9 @@ class FriendDetailViewController: DogeChatViewController, UITableViewDataSource,
     }
     
     func addMember() {
+        guard let manager = manager else {
+            return
+        }
         let excluded = manager.friends.filter( { $0.isGroup })
         let selectVC = SelectContactsViewController(username: username, selectedFriends: self.friend.isGroup ? members : [self.friend], excluded: excluded)
         selectVC.delegate = self
@@ -342,7 +345,7 @@ extension FriendDetailViewController: SelectContactsDelegate, UIImagePickerContr
         let filtered = contacts.filter( { !members.contains($0) })
         let ids = filtered.map { $0.userID }
         let groupID = newlyCreatedGroup?.userID ?? self.friend.userID
-        manager.httpsManager.addMembers(to: groupID, memberIDs: ids) { success in
+        manager?.httpsManager.addMembers(to: groupID, memberIDs: ids) { success in
             self.makeAutoAlert(message: success ? "已发送请求" : "遇到错误，请重试", detail: nil, showTime: 1, completion: {
                 if self.newlyCreatedGroup != nil {
                     self.group.leave()
@@ -365,12 +368,12 @@ extension FriendDetailViewController: SelectContactsDelegate, UIImagePickerContr
         picker.dismiss(animated: true, completion: nil)
         guard let image = info[.editedImage] as? UIImage else { return }
         if let compressedImageData = compressImage(image, needSave: false).image.jpegData(compressionQuality: 0.3) {
-            manager.uploadData(compressedImageData, path: "user/changeAvatar?groupId=\(self.friend.userID)", name: "avatar", fileName: UUID().uuidString + ".jpeg", needCookie: true, contentType: "multipart/form-data", params: nil) { [self] task, data in
+            manager?.uploadData(compressedImageData, path: "user/changeAvatar?groupId=\(self.friend.userID)", name: "avatar", fileName: UUID().uuidString + ".jpeg", needCookie: true, contentType: "multipart/form-data", params: nil) { [self] task, data in
                 guard let data = data else { return }
                 let json = JSON(data)
                 if json["status"].stringValue == "success" {
                     let avatarURL = json["avatarUrl"].stringValue
-                    if let friend = manager.httpsManager.friends.first(where: { $0.userID == self.friend.userID } ) {
+                    if let friend = manager?.httpsManager.friends.first(where: { $0.userID == self.friend.userID } ) {
                         friend.avatarURL = avatarURL
                         NotificationCenter.default.post(name: .friendChangeAvatar, object: username, userInfo: ["friend": friend])
                     }
@@ -392,14 +395,13 @@ extension FriendDetailViewController: SelectContactsDelegate, UIImagePickerContr
                 personal = true
             }
             let targetID = friend.userID
-            manager.httpsManager.changeNickName(targetID: targetID, nickName: text, personal: personal, isGroup: friend.isGroup) { [weak manager] success in
-                guard let manager = manager else { return }
+            manager?.httpsManager.changeNickName(targetID: targetID, nickName: text, personal: personal, isGroup: friend.isGroup) { [weak manager] success in
                 if success {
                     if personal ?? false {
                         self.updateMyNameInGroup(text: text)
                     }
                     self.makeAutoAlert(message: "更换成功", detail: text, showTime: 1, completion: nil)
-                    self.manager.httpsManager.getContacts(completion: nil)
+                    self.manager?.httpsManager.getContacts(completion: nil)
                     if !self.friend.isGroup {
                         self.navigationItem.title = text
                         (self.splitViewController as? DogeChatSplitViewController)?.findChatRoomVC()?.navigationItem.title = text
@@ -410,9 +412,9 @@ extension FriendDetailViewController: SelectContactsDelegate, UIImagePickerContr
     }
     
     func updateMyNameInGroup(text: String) {
-        manager.myInfo.nameInGroupsDict[friend.userID] = text
+        manager?.myInfo.nameInGroupsDict[friend.userID] = text
         self.myNameInGroup = text
-        if let myself = self.members.first(where: { $0.userID == manager.myInfo.userID} ) {
+        if let myself = self.members.first(where: { $0.userID == manager?.myInfo.userID} ) {
             myself.nameInGroup = text
             self.tableView.reloadData()
         }

@@ -30,13 +30,13 @@ protocol ContactDataSource: AnyObject {
 
 class MessageBaseCell: DogeChatTableViewCell {
     var cookie: String {
-        socketForUsername(username).cookie
+        socketForUsername(username)?.cookie ?? ""
     }
-    var manager: WebSocketManager {
+    var manager: WebSocketManager? {
         return socketForUsername(username)
     }
-    var session: AFHTTPSessionManager {
-        return manager.commonWebSocket.httpRequestsManager.session
+    var session: AFHTTPSessionManager? {
+        return manager?.commonWebSocket.httpRequestsManager.session
     }
     weak var delegate: MessageTableViewCellDelegate?
     var message: Message!
@@ -201,7 +201,7 @@ class MessageBaseCell: DogeChatTableViewCell {
         } 
         var name = message.senderUsername
         if !message.friend.isGroup {
-            if let nickname = manager.friendsDict[message.senderUserID]?.nickName, !nickname.isEmpty {
+            if let nickname = manager?.friendsDict[message.senderUserID]?.nickName, !nickname.isEmpty {
                 name = nickname
             }
         }
@@ -234,6 +234,9 @@ class MessageBaseCell: DogeChatTableViewCell {
     }
     
     @objc func tapAvatarAction(_ ges: UITapGestureRecognizer) {
+        guard let manager = manager else {
+            return
+        }
         let userID = message.senderUserID
         var url: String?
         if message.messageSender == .ourself {
@@ -257,6 +260,9 @@ class MessageBaseCell: DogeChatTableViewCell {
     
     
     private func _loadAvatar() {
+        guard let manager = manager else {
+            return
+        }
         let block: (String) -> Void = { [self] url in
             let isGif = url.hasSuffix(".gif")
             let captured = message
@@ -393,6 +399,9 @@ class MessageBaseCell: DogeChatTableViewCell {
 extension MessageBaseCell {
     func didDrop(imageLink: String, image: UIImage, point: CGPoint) {
         playHaptic()
+        guard let manager = manager else {
+            return
+        }
         let emojiInfo = EmojiInfo(x: max(0, point.x/self.contentSize.width), y: max(0, point.y/self.contentSize.height), rotation: 0, scale: 1, imageLink: imageLink, lastModifiedBy: manager.myInfo.username, lastModifiedUserId: manager.myInfo.userID)
         message.emojisInfo.append(emojiInfo)
         delegate?.emojiInfoDidChange(from: nil, to: emojiInfo, cell: self)

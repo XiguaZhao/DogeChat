@@ -25,11 +25,16 @@ class ContactsTableViewController: DogeChatViewController, UIImagePickerControll
     var usernames: [String] {
         friends.map { $0.username }
     }
-    var password = ""
+    private var password = ""
     var loginCount = 0
     let avatarImageView = FLAnimatedImageView()
-    var manager: WebSocketManager {
+    var manager: WebSocketManager? {
         return socketForUsername(username)
+    }
+    override var username: String {
+        didSet {
+            self.navigationItem.title = username
+        }
     }
     var nav: UINavigationController? {
         return (self.view.window?.windowScene?.delegate as? SceneDelegate)?.navigationController
@@ -43,6 +48,7 @@ class ContactsTableViewController: DogeChatViewController, UIImagePickerControll
     var appDelegate: AppDelegate {
         return UIApplication.shared.delegate as! AppDelegate
     }
+    var lastAvatarURL: String?
     var loginSuccess = false {
         didSet {
             if loginSuccess {
@@ -92,7 +98,7 @@ class ContactsTableViewController: DogeChatViewController, UIImagePickerControll
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        manager.messageManager.messageDelegate = self
+        manager?.messageManager.messageDelegate = self
         loadAllTracks(username: username)
         if let visibleIndexPaths = tableView.indexPathsForSelectedRows {
             for indexPath in visibleIndexPaths {
@@ -107,11 +113,16 @@ class ContactsTableViewController: DogeChatViewController, UIImagePickerControll
         tableView.refreshControl?.endRefreshing()
     }
     
+    func setUsername(_ username: String, andPassword password: String) {
+        self.username = username
+        self.password = password
+    }
+    
     func processUserActivity() {
         if let userActivity = SceneDelegate.activeUserActivity {
             let userInfo = userActivity.userInfo as! [String : String]
             let username = userInfo["username"]!
-            if username == manager.httpsManager.myName {
+            if let manager = manager, username == manager.httpsManager.myName {
                 let friendID = userInfo["friendID"]!
                 if let index = friends.firstIndex(where: { $0.userID == friendID }) {
                     tableView(tableView, didSelectRowAt: IndexPath(row: index, section: 0))
@@ -161,7 +172,7 @@ class ContactsTableViewController: DogeChatViewController, UIImagePickerControll
         setupMyAvatar()
         navigationItem.title = username
         processUserActivity()
-        if manager.commonWebSocket.connectTime - manager.httpsManager.fetchFriendTime > 20 {
+        if let manager = manager, manager.commonWebSocket.connectTime - manager.httpsManager.fetchFriendTime > 20 {
             refreshContacts(completion: nil)
         }
         checkGroupInfos()
@@ -175,7 +186,7 @@ class ContactsTableViewController: DogeChatViewController, UIImagePickerControll
     
     @objc func loginedNoti(_ noti: Notification) {
         WCSession.default.sendMessage(["username": username, "password": password], replyHandler: nil, errorHandler: nil)
-        MediaLoader.shared.cookie = manager.cookie
+        MediaLoader.shared.cookie = manager?.cookie
         self.view.window?.windowScene?.title = username
     }
     
@@ -205,7 +216,7 @@ class ContactsTableViewController: DogeChatViewController, UIImagePickerControll
     
     func checkGroupInfos() {
         if let group = self.friends.first(where: { $0.isGroup }) as? Group, group.ownerUsername.isEmpty {
-            manager.httpsManager.getGroupList { _ in
+            manager?.httpsManager.getGroupList { _ in
             }
         }
     }
@@ -224,14 +235,14 @@ class ContactsTableViewController: DogeChatViewController, UIImagePickerControll
     }
     
     @objc func refreshContacts(completion: (()->Void)? = nil) {
-        manager.commonWebSocket.httpRequestsManager.getContacts {  _, _  in
+        manager?.commonWebSocket.httpRequestsManager.getContacts {  _, _  in
             completion?()
         }
     }
     
     @objc func downRefreshAction(_ refreshControl: UIRefreshControl) {
         removeAllMessage()
-        manager.disconnect()
+        manager?.disconnect()
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             self.loginAndConnect()
         }
@@ -242,12 +253,12 @@ class ContactsTableViewController: DogeChatViewController, UIImagePickerControll
     }
     
     func removeAllMessage() {
-        manager.commonWebSocket.httpRequestsManager.friends.removeAll()
-        manager.commonWebSocket.httpRequestsManager.friendDict.removeAll()
+        manager?.commonWebSocket.httpRequestsManager.friends.removeAll()
+        manager?.commonWebSocket.httpRequestsManager.friendDict.removeAll()
     }
     
     @objc func loginAndConnect() {
-        manager.loginAndConnect(username: username, password: password) 
+        manager?.loginAndConnect(username: username, password: password)
     }
         
     func setupRefreshControl() {
@@ -317,7 +328,8 @@ class ContactsTableViewController: DogeChatViewController, UIImagePickerControll
     }
             
     @objc func uploadSuccess(notification: Notification) {
-        guard let message = notification.userInfo?["message"] as? Message,
+        guard let manager = manager,
+              let message = notification.userInfo?["message"] as? Message,
               let data = notification.userInfo?["data"] else { return }
         var remoteFilePath = JSON(data)["filePath"].stringValue
         remoteFilePath = manager.messageManager.encrypt.decryptMessage(remoteFilePath)
@@ -442,30 +454,12 @@ class ContactsTableViewController: DogeChatViewController, UIImagePickerControll
     
 }
 
-//MARK: 3D TOUCH
-extension ContactsTableViewController: UIViewControllerPreviewingDelegate {
-    
-    func previewingContext(_ previewingContext: UIViewControllerPreviewing, viewControllerForLocation location: CGPoint) -> UIViewController? {
-        guard let cell = previewingContext.sourceView as? UITableViewCell,
-              let indexPath = tableView.indexPath(for: cell) else { return nil }
-        let vc = chatroomVC(for: indexPath)
-        let needGetHistory = friends[indexPath.row].messages.isEmpty
-        if needGetHistory { vc.displayHistory() }
-        return vc
-    }
-    
-    func previewingContext(_ previewingContext: UIViewControllerPreviewing, commit viewControllerToCommit: UIViewController) {
-        (previewingContext.sourceView as? ContactTableViewCell)?.unreadLabel.isHidden = true
-        navigationController?.pushViewController(viewControllerToCommit, animated: true)
-    }
-}
-
 extension ContactsTableViewController: MessageDelegate, AddContactDelegate {
     
     func asyncReconnect() {
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
             guard UIApplication.shared.applicationState == .active else { return }
-            self?.manager.commonWebSocket.loginAndConnect(username: nil, password: nil)
+            self?.manager?.commonWebSocket.loginAndConnect(username: nil, password: nil)
         }
     }
 
