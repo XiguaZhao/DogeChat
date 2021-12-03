@@ -9,17 +9,13 @@
 import UIKit
 
 class DogeChatBaseView: UIView {
-
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         if AppDelegate.shared.immersive {
             self.backgroundColor = .clear
         } else {
-            if #available(iOS 13.0, *) {
-                self.backgroundColor = .systemBackground
-            } else {
-                // Fallback on earlier versions
-            }
+            self.backgroundColor = .systemBackground
         }
         NotificationCenter.default.addObserver(self, selector: #selector(forceDarkMode(noti:)), name: .immersive, object: nil)
     }
@@ -30,12 +26,10 @@ class DogeChatBaseView: UIView {
     
     @objc func forceDarkMode(noti: Notification) {
         let force = noti.object as! Bool
-        if #available(iOS 13.0, *) {
-            if force {
-                self.backgroundColor = .clear
-            } else {
-                self.backgroundColor = .systemBackground
-            }
+        if force {
+            self.backgroundColor = .clear
+        } else {
+            self.backgroundColor = .systemBackground
         }
     }
     

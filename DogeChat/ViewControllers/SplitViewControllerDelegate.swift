@@ -13,11 +13,7 @@ class SplitViewControllerDelegate: UISplitViewControllerDelegate {
     weak var splitVC: UISplitViewController?
     
     var tabBarController: UITabBarController? {
-        if #available(iOS 13.0, *) {
-            return (self.splitVC?.view.window?.windowScene?.delegate as? SceneDelegate)?.tabbarController
-        } else {
-            return AppDelegate.shared.tabBarController
-        }
+        return (self.splitVC?.view.window?.windowScene?.delegate as? SceneDelegate)?.tabbarController
     }
     
     func splitViewController(_ splitViewController: UISplitViewController, collapseSecondary secondaryViewController: UIViewController, onto primaryViewController: UIViewController) -> Bool {

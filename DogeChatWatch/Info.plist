@@ -9,7 +9,7 @@
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.zhaoxiguang.demo.watchkitapp2</string>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
@@ -18,19 +18,19 @@
 	<string>$(PRODUCT_BUNDLE_PACKAGE_TYPE)</string>
 	<key>CFBundleShortVersionString</key>
 	<string>1.0</string>
-    <key>NSUserActivityTypes</key>
-    <array>
-        <string>com.zhaoxiguang.dogechat</string>
-    </array>
 	<key>CFBundleVersion</key>
 	<string>1</string>
+	<key>NSUserActivityTypes</key>
+	<array>
+		<string>com.zhaoxiguang.dogechat</string>
+	</array>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
 		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 	</array>
 	<key>WKCompanionAppBundleIdentifier</key>
-	<string>com.zhaoxiguang.demo</string>
+	<string>com.zhaoxiguang.dogechat</string>
 	<key>WKWatchKitApp</key>
 	<true/>
 </dict>

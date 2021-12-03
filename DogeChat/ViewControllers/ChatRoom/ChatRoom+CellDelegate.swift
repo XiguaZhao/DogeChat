@@ -15,14 +15,14 @@ extension ChatRoomViewController: MessageTableViewCellDelegate {
     func downloadProgressUpdate(progress: Double, message: Message) {
         syncOnMainThread {
             if let index = self.messages.firstIndex(where: { $0.uuid == message.uuid }) {
-                let hud = (self.tableView.cellForRow(at: IndexPath(row: index, section: 0)) as? MessageCollectionViewBaseCell)?.progress
+                let hud = (self.tableView.cellForRow(at: IndexPath(row: index, section: 0)) as? MessageBaseCell)?.progress
                 hud?.isHidden = progress >= 1
                 hud?.setProgress(CGFloat(progress), animated: false)
             }
         }
     }
     
-    func downloadSuccess(_ cell: MessageCollectionViewBaseCell?, message: Message) {
+    func downloadSuccess(_ cell: MessageBaseCell?, message: Message) {
         guard let cell = cell, cell.message == message else {
             return
         }
@@ -33,7 +33,7 @@ extension ChatRoomViewController: MessageTableViewCellDelegate {
         }
     }
         
-    func mediaViewTapped(_ cell: MessageCollectionViewBaseCell, path: String, isAvatar: Bool) {
+    func mediaViewTapped(_ cell: MessageBaseCell, path: String, isAvatar: Bool) {
         messageInputBar.textViewResign()
         let browser = MediaBrowserViewController()
         if !isAvatar {
@@ -46,11 +46,11 @@ extension ChatRoomViewController: MessageTableViewCellDelegate {
             browser.imagePaths = [path]
         }
         browser.modalPresentationStyle = .fullScreen
-        AppDelegate.shared.navigationController?.present(browser, animated: true, completion: nil)
+        self.navigationController?.present(browser, animated: true, completion: nil)
     }
 
     //MARK: PKView手写
-    func pkViewTapped(_ cell: MessageCollectionViewBaseCell, pkView: UIView!) {
+    func pkViewTapped(_ cell: MessageBaseCell, pkView: UIView!) {
         if messageInputBar.isActive {
             messageInputBar.textViewResign()
             return
@@ -63,24 +63,22 @@ extension ChatRoomViewController: MessageTableViewCellDelegate {
         if let indexPath = tableView.indexPath(for: cell) {
             drawingIndexPath = indexPath
         }
-        if #available(iOS 13.0, *) {
 
-            let drawVC = DrawViewController()
-            drawVC.username = username
-            guard let pkView = pkView as? PKCanvasView else { return }
-            let message = messages[drawingIndexPath.item]
-            drawVC.message = message
-            drawVC.pkView.drawing = pkView.drawing.transformed(using: CGAffineTransform(scaleX: 1/message.drawScale, y: 1/message.drawScale))
-            drawVC.pkViewDelegate.dataChangedDelegate = self
-            drawVC.modalPresentationStyle = .fullScreen
-            drawVC.chatRoomVC = self
-            self.navigationController?.present(drawVC, animated: true, completion: nil)
-        }
+        let drawVC = DrawViewController()
+        drawVC.username = username
+        guard let pkView = pkView as? PKCanvasView else { return }
+        let message = messages[drawingIndexPath.item]
+        drawVC.message = message
+        drawVC.pkView.drawing = pkView.drawing.transformed(using: CGAffineTransform(scaleX: 1/message.drawScale, y: 1/message.drawScale))
+        drawVC.pkViewDelegate.dataChangedDelegate = self
+        drawVC.modalPresentationStyle = .fullScreen
+        drawVC.chatRoomVC = self
+        self.navigationController?.present(drawVC, animated: true, completion: nil)
     }
 
-    func emojiOutBounds(from cell: MessageCollectionViewBaseCell, gesture: UIGestureRecognizer) {
+    func emojiOutBounds(from cell: MessageBaseCell, gesture: UIGestureRecognizer) {
         let point = gesture.location(in: tableView)
-        guard let oldIndexPath = cell.indexPath else { return }
+        guard let manager = manager, let oldIndexPath = cell.indexPath else { return }
         guard let newIndexPath = tableView.indexPathForRow(at: point) else {
             needReload(indexPath: [oldIndexPath])
             return
@@ -91,7 +89,7 @@ extension ChatRoomViewController: MessageTableViewCellDelegate {
             messages[oldIndexPath.item].emojisInfo.remove(at: messageIndex)
             let newPoint = gesture.location(in: tableView.cellForRow(at: newIndexPath)?.contentView)
             emojiInfo.x = newPoint.x / UIScreen.main.bounds.width
-            emojiInfo.y = newPoint.y / MessageCollectionViewBaseCell.height(for: messages[newIndexPath.item], username: username)
+            emojiInfo.y = newPoint.y / MessageBaseCell.height(for: messages[newIndexPath.item], username: username)
             emojiInfo.lastModifiedBy = manager.messageManager.myName
             emojiInfo.lastModifiedUserId = manager.myInfo.userID
             messages[newIndexPath.item].emojisInfo.append(emojiInfo)
@@ -100,8 +98,8 @@ extension ChatRoomViewController: MessageTableViewCellDelegate {
         }
     }
     
-    func emojiInfoDidChange(from oldInfo: EmojiInfo?, to newInfo: EmojiInfo?, cell: MessageCollectionViewBaseCell) {
-        if let indexPahth = tableView.indexPath(for: cell) {
+    func emojiInfoDidChange(from oldInfo: EmojiInfo?, to newInfo: EmojiInfo?, cell: MessageBaseCell) {
+        if let manager = manager, let indexPahth = tableView.indexPath(for: cell) {
             needReload(indexPath: [indexPahth])
             newInfo?.lastModifiedBy = manager.myName
             newInfo?.lastModifiedUserId = manager.myInfo.userID
@@ -109,7 +107,7 @@ extension ChatRoomViewController: MessageTableViewCellDelegate {
         }
     }
     
-    func sharedTracksTap(_ cell: MessageCollectionViewBaseCell, tracks: [Track]) {
+    func sharedTracksTap(_ cell: MessageBaseCell, tracks: [Track]) {
         let vc = PlayListViewController()
         vc.username = username
         vc.tracks = tracks
@@ -119,12 +117,12 @@ extension ChatRoomViewController: MessageTableViewCellDelegate {
         let popover = vc.popoverPresentationController
         popover?.permittedArrowDirections = [.left, .down, .right]
         popover?.delegate = self
-        popover?.sourceView = (cell as! MessageCollectionViewTrackCell).playButton
+        popover?.sourceView = (cell as! MessageTrackCell).playButton
         vc.preferredContentSize = CGSize(width: 350, height: min(400, tracks.count * 60 + 100))
         present(vc, animated: true, completion: nil)
     }
     
-    func longPressCell(_ cell: MessageCollectionViewBaseCell, ges: UILongPressGestureRecognizer!) {
+    func longPressCell(_ cell: MessageBaseCell, ges: UILongPressGestureRecognizer!) {
         guard ges.state == .ended, cell.message.messageType != .join else { return }
         let controller = UIMenuController.shared
         guard let targetView = cell.indicationNeighborView else { return }
@@ -152,12 +150,7 @@ extension ChatRoomViewController: MessageTableViewCellDelegate {
         controller.menuItems = items
         let rect = CGRect(x: targetView.bounds.width/2, y: 5, width: 0, height: 0)
         messageInputBar.textView.ignoreActions = true
-        if #available(iOS 13.0, *) {
-            controller.showMenu(from: targetView, rect: rect)
-        } else {
-            controller.setTargetRect(rect, in: targetView)
-            controller.setMenuVisible(true, animated: true)
-        }
+        controller.showMenu(from: targetView, rect: rect)
         messageInputBar.textView.ignoreActions = false
     }
     
@@ -197,7 +190,7 @@ extension ChatRoomViewController: MessageTableViewCellDelegate {
         guard let cell = activeMenuCell else { return }
         if let imageUrl = cell.message.imageURL, cell.message.sendStatus == .success {
             let isGif = imageUrl.hasSuffix(".gif")
-            self.manager.starAndUploadEmoji(filePath: imageUrl, isGif: isGif)
+            self.manager?.starAndUploadEmoji(filePath: imageUrl, isGif: isGif)
         }
     }
     

@@ -11,17 +11,15 @@ import DogeChatNetwork
 import DogeChatUniversal
 
 func playHaptic(_ intensity: CGFloat = 1) {
-    if #available(iOS 13.0, *) {
-        HapticManager.shared.playHapticTransient(time: 0, intensity: Float(intensity), sharpness: 1)
-    }
+    HapticManager.shared.playHapticTransient(time: 0, intensity: Float(intensity), sharpness: 1)
 }
 
 var url_pre: String {
     WebSocketManager.url_pre
 }
 
-func socketForUsername(_ username: String) -> WebSocketManager {
-    return WebSocketManager.usersToSocketManager[username]!
+func socketForUsername(_ username: String) -> WebSocketManager? {
+    return WebSocketManager.usersToSocketManager[username]
 }
 
 func removeSocketForUsername(_ username: String) {
@@ -31,17 +29,16 @@ func removeSocketForUsername(_ username: String) {
     if let index = WebSocketManagerAdapter.usernameToAdapter.firstIndex(where: { $0.key == username }) {
         WebSocketManagerAdapter.usernameToAdapter.remove(at: index)
     }
-    if #available(iOS 13.0, *) {
-        _ = SceneDelegate.usernameToDelegate.remove(key: username)
-    }
+    _ = SceneDelegate.usernameToDelegate.remove(key: username)
 }
 
 var safeArea: UIEdgeInsets {
-#if targetEnvironment(macCatalyst)
-    return .zero
-#else
+    if ProcessInfo.processInfo.isMacCatalystApp {
+        return .zero
+    } else if #available(iOS 14, *), ProcessInfo.processInfo.isiOSAppOnMac {
+        return .zero
+    }
     return UIApplication.shared.keyWindow?.safeAreaInsets ?? .zero
-#endif
 }
 
 func isLandscape() -> Bool {
@@ -57,7 +54,14 @@ func isPhone() -> Bool {
 }
 
 func isMac() -> Bool {
-    return !AppDelegate.shared.isIOS
+    if #available(iOS 14, *), ProcessInfo.processInfo.isiOSAppOnMac {
+        return true
+    }
+    return ProcessInfo.processInfo.isMacCatalystApp
+}
+
+func isCatalyst() -> Bool {
+    return ProcessInfo.processInfo.isMacCatalystApp
 }
 
 public extension UIViewController {
@@ -90,19 +94,11 @@ public extension String {
 }
 
 func windowForView(_ view: UIView) -> UIWindow? {
-    if #available(iOS 13.0, *) {
-        return (view.window?.windowScene?.delegate as? SceneDelegate)?.window
-    } else {
-        return AppDelegate.shared.window
-    }
+    return (view.window?.windowScene?.delegate as? SceneDelegate)?.window
 }
 
 func sceneDelegate() -> Any? {
-    if #available(iOS 13.0, *) {
-        return UIApplication.shared.windows.first(where: { $0.isKeyWindow })?.windowScene?.delegate
-    } else {
-        return nil
-    }
+    return UIApplication.shared.windows.first(where: { $0.isKeyWindow })?.windowScene?.delegate
 }
 
 func userIDFor(username: String) -> String? {
@@ -111,4 +107,26 @@ func userIDFor(username: String) -> String? {
 
 func adapterFor(username: String) -> WebSocketManagerAdapter {
     return WebSocketManagerAdapter.usernameToAdapter[username]!
+}
+
+func updateUsernames(_ username: String) {
+    if let sceneDelegate = SceneDelegate.usernameToDelegate[username], let splitVC = sceneDelegate.splitVC {
+        for vc in splitVC.viewControllers {
+            updateUsernameForVC(vc, username: username)
+        }
+    }
+}
+
+func updateUsernameForVC(_ vc: UIViewController, username: String) {
+    if let dogeChatVC = vc as? DogeChatViewController {
+        dogeChatVC.username = username
+    } else if let nav = vc as? UINavigationController {
+        for vc in nav.viewControllers {
+            updateUsernameForVC(vc, username: username)
+        }
+    } else if let tab = vc as? UITabBarController {
+        for vc in tab.viewControllers ?? [] {
+            updateUsernameForVC(vc, username: username)
+        }
+    }
 }

@@ -53,13 +53,11 @@ extension ChatRoomViewController: ReferViewDelegate {
                 tableView.deselectRow(at: indexPath, animated: true)
             }
         } else {
-            if #available(iOS 13.0, *) {
-                let vc = HistoryVC(type: .referView, username: username)
-                let message = message.copied()
-                vc.messages = [message]
-                vc.friend = friend
-                navigationController?.pushViewController(vc, animated: true)
-            }
+            let vc = HistoryVC(type: .referView, username: username)
+            let message = message.copied()
+            vc.messages = [message]
+            vc.friend = friend
+            navigationController?.pushViewController(vc, animated: true)
         }
     }
     

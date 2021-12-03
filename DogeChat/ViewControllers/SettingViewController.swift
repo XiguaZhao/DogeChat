@@ -11,7 +11,7 @@ import DogeChatNetwork
 import DogeChatUniversal
 
 enum SettingType: String {
-    case shortcut = "快捷操作"
+    case shortcut = "多账号管理"
     case changeIcon = "修改图标"
     case doNotDisturb = "勿扰模式"
     case selectHost = "自定义host"
@@ -31,7 +31,7 @@ class SettingViewController: DogeChatViewController, DatePickerChangeDelegate, U
     var settingTypes: [SettingType] = [.shortcut, .changeIcon, .forceDarkMode, .switchImmersive, .customBlur, .doNotDisturb, .browseFiles, .logout]
     var tableView = DogeChatTableView()
     var customBlurSwitcher: UISwitch!
-    var manager: WebSocketManager {
+    var manager: WebSocketManager? {
         socketForUsername(username)
     }
 
@@ -40,9 +40,6 @@ class SettingViewController: DogeChatViewController, DatePickerChangeDelegate, U
         self.navigationItem.title = "设置"
         if isMac() {
             settingTypes.remove(at: 1)
-        }
-        if #available(iOS 13, *) {} else {
-            settingTypes.remove(at: 2)
         }
         view.addSubview(tableView)
         tableView.mas_makeConstraints { [weak self] make in
@@ -66,16 +63,8 @@ class SettingViewController: DogeChatViewController, DatePickerChangeDelegate, U
 
     @objc func logout() {
         NotificationCenter.default.post(name: .logout, object: username)
-        if #available(iOS 13, *) {
-            if let sceneDelegate = self.view.window?.windowScene?.delegate as? SceneDelegate {
-                if let contactVCNav = sceneDelegate.contactVC?.navigationController {
-                    contactVCNav.setViewControllers([JoinChatViewController()], animated: true)
-                }
-            }
-        } else {
-            guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
-            manager.disconnect()
-            if let contactVCNav = appDelegate.contactVC?.navigationController {
+        if let sceneDelegate = self.view.window?.windowScene?.delegate as? SceneDelegate {
+            if let contactVCNav = sceneDelegate.contactVC?.navigationController {
                 contactVCNav.setViewControllers([JoinChatViewController()], animated: true)
             }
         }
@@ -219,7 +208,7 @@ class SettingViewController: DogeChatViewController, DatePickerChangeDelegate, U
     
     @objc func doNotDisturbSwitched(_ switcher: UISwitch) {
         if !switcher.isOn {
-            manager.doNotDisturb(for: "", hour: 0) {
+            manager?.doNotDisturb(for: "", hour: 0) {
             }
         } else {
             let pickerVC = DatePickerViewController()
@@ -230,7 +219,7 @@ class SettingViewController: DogeChatViewController, DatePickerChangeDelegate, U
 
     func datePickerConfirmed(_ picker: UIDatePicker) {
         let hour = Int(picker.countDownDuration / 60 / 60)
-        manager.doNotDisturb(for: "", hour: hour) {
+        manager?.doNotDisturb(for: "", hour: hour) {
         }
     }
     

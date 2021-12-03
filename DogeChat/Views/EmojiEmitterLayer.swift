@@ -66,12 +66,10 @@ class EmojiEmitterLayer: CAEmitterLayer {
         }
         self.emitterPosition = fromCenter
         self.emitterCells = cells
-        if #available(iOS 13.0, *) {
-            let manager = HapticManager.shared
-            self.timer = Timer.scheduledTimer(withTimeInterval: 1/Double(rate), repeats: true, block: { _ in
-                manager.playHapticTransient(time: 0, intensity: 1, sharpness: 1)
-            })
-        }
+        let manager = HapticManager.shared
+        self.timer = Timer.scheduledTimer(withTimeInterval: 1/Double(rate), repeats: true, block: { _ in
+            manager.playHapticTransient(time: 0, intensity: 1, sharpness: 1)
+        })
         DispatchQueue.main.asyncAfter(deadline: .now() + emitDuration) {
             self.timer?.invalidate()
             self.timer = nil

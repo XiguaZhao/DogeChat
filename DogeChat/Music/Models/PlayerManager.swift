@@ -25,6 +25,7 @@ enum PlayerType {
 class PlayerManager: NSObject {
     
     static let shared = PlayerManager()
+    weak var activeSceneDelegate: SceneDelegate?
     var isMute = false
     var player = AVPlayer()
     var playMode: PlayMode = .normal
@@ -40,11 +41,6 @@ class PlayerManager: NSObject {
         willSet {
             guard newValue != playingMessage else { return }
             playingMessage?.isPlaying = false
-            if let chatVC = AppDelegate.shared.navigationController?.visibleViewController as? ChatRoomViewController {
-                DispatchQueue.main.async {
-                    chatVC.tableView.reloadData()
-                }
-            }
         }
         didSet {
             guard oldValue != playingMessage else {
@@ -343,21 +339,11 @@ class PlayerManager: NSObject {
                         self.updateNowPlayingCenter()
                     }
                 default:
-                    playFail(track: nowPlayingTrack)
+                    break
                 }
             }
     }
     
-    func playFail(track: Track) {
-        let alert = UIAlertController(title: "播放失败", message: "可能没有音乐源，是否删除", preferredStyle: .alert)
-        let confirm = UIAlertAction(title: "确定删除", style: .default) {  _ in
-            NotificationCenter.default.post(name: .deleteTrack, object: track)
-        }
-        let cancel = UIAlertAction(title: "取消", style: .cancel, handler: nil)
-        alert.addAction(confirm)
-        alert.addAction(cancel)
-        AppDelegate.shared.splitViewController.present(alert, animated: true, completion: nil)
-    }
     
 }
 

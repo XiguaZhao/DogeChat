@@ -82,16 +82,14 @@ class PlayListTrackCell: UITableViewCell {
         }
         downloadProgress.isHidden = !(track.state == .downloading)
         artistLabel.isHidden = track.state == .downloading
-        if #available(iOS 13.0, *) {
-            var image: UIImage?
-            if track.isPlaying {
-                image = UIImage(systemName: "speaker.zzz.fill")
-            } else if track.isPaused {
-                image = UIImage(systemName: "pause.circle.fill")
-            }
-            if let image = image {
-                self.accessoryView = UIImageView(image: image)
-            }
+        var image: UIImage?
+        if track.isPlaying {
+            image = UIImage(systemName: "speaker.zzz.fill")
+        } else if track.isPaused {
+            image = UIImage(systemName: "pause.circle.fill")
+        }
+        if let image = image {
+            self.accessoryView = UIImageView(image: image)
         }
     }
     

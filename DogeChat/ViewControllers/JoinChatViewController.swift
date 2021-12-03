@@ -132,24 +132,18 @@ extension JoinChatViewController: UITextFieldDelegate {
         manager.commonWebSocket.httpRequestsManager.login(username: username, password: password) { [weak self] res in
             if res {
                 let contactsTVC = ContactsTableViewController()
+                contactsTVC.setUsername(username, andPassword: password)
                 WebSocketManager.usersToSocketManager[username] = manager
                 WebSocketManagerAdapter.usernameToAdapter[username] = adapter
-                if #available(iOS 13, *) {
-                    SceneDelegate.usernameToDelegate[username] = (self?.view.window?.windowScene?.delegate as? SceneDelegate)
-                    ((((self?.view.window?.windowScene?.delegate as? SceneDelegate)?.tabbarController.viewControllers?[1] as? UINavigationController))?.viewControllers.first as? PlayListViewController)?.username = username
-                    ((((self?.view.window?.windowScene?.delegate as? SceneDelegate)?.tabbarController.viewControllers?[2] as? UINavigationController))?.viewControllers.first as? SettingViewController)?.username = username
-                    (self?.view.window?.windowScene?.delegate as? SceneDelegate)?.socketManager = manager
-                    (self?.view.window?.windowScene?.delegate as? SceneDelegate)?.socketAdapter = adapter
-                    (self?.view.window?.windowScene?.delegate as? SceneDelegate)?.setUsernameAndPassword(username, password)
-                    (self?.view.window?.windowScene?.delegate as? SceneDelegate)?.contactVC = contactsTVC
+                SceneDelegate.usernameToDelegate[username] = (self?.view.window?.windowScene?.delegate as? SceneDelegate)
+                if let sceneDelegate = self?.view.window?.windowScene?.delegate as? SceneDelegate {
+                    sceneDelegate.socketManager = manager
+                    sceneDelegate.socketAdapter = adapter
+                    sceneDelegate.setUsernameAndPassword(username, password)
+                    sceneDelegate.contactVC = contactsTVC
                 }
-                NotificationManager.shared.username = username
-                AppDelegate.shared.username = username
-                AppDelegate.shared.contactVC = contactsTVC
-                contactsTVC.username = username
-                contactsTVC.password = password
-                contactsTVC.navigationItem.title = username
-                self?.navigationController?.setViewControllers([contactsTVC], animated: true)
+                updateUsernames(username)
+                self?.navigationController?.setViewControllers([contactsTVC], animated: false)
                 contactsTVC.loginAndConnect()
                 UserDefaults.standard.setValue(username, forKey: "lastUsername")
                 UserDefaults.standard.setValue(password, forKey: "lastPassword")
@@ -160,7 +154,7 @@ extension JoinChatViewController: UITextFieldDelegate {
             }
         }
     }
-    
+        
 }
 
 class TextField: UITextField {

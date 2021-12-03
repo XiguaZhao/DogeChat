@@ -33,11 +33,7 @@ class MediaBrowserViewController: UIViewController {
             scrollToIndex(targetIndex)
         }
         
-        if #available(iOS 13.0, *) {
-            view.backgroundColor = .systemBackground
-        } else {
-            view.backgroundColor = .white
-        }
+        view.backgroundColor = .systemBackground
         
         let swipeDownGesture = UISwipeGestureRecognizer(target: self, action: #selector(swipeDown))
         swipeDownGesture.direction = .down
@@ -71,12 +67,8 @@ class MediaBrowserViewController: UIViewController {
     }
     
     override var keyCommands: [UIKeyCommand]? {
-        if #available(iOS 13.0, *) {
-            return [UIKeyCommand(action: #selector(escapeAction(_:)), input: UIKeyCommand.inputEscape),
+        return [UIKeyCommand(action: #selector(escapeAction(_:)), input: UIKeyCommand.inputEscape),
                     UIKeyCommand(action: #selector(escapeAction(_:)), input: "\u{20}")]
-        } else {
-            return nil
-        }
     }
     
     deinit {

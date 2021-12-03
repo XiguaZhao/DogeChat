@@ -25,18 +25,19 @@ class ContactsTableViewController: DogeChatViewController, UIImagePickerControll
     var usernames: [String] {
         friends.map { $0.username }
     }
-    var password = ""
+    private var password = ""
     var loginCount = 0
     let avatarImageView = FLAnimatedImageView()
-    var manager: WebSocketManager {
+    var manager: WebSocketManager? {
         return socketForUsername(username)
     }
-    var nav: UINavigationController? {
-        if #available(iOS 13.0, *) {
-            return (self.view.window?.windowScene?.delegate as? SceneDelegate)?.navigationController
-        } else {
-            return AppDelegate.shared.navigationController
+    override var username: String {
+        didSet {
+            self.navigationItem.title = username
         }
+    }
+    var nav: UINavigationController? {
+        return (self.view.window?.windowScene?.delegate as? SceneDelegate)?.navigationController
     }
     var barItem = UIBarButtonItem()
     var itemRequest = UIBarButtonItem()
@@ -47,6 +48,7 @@ class ContactsTableViewController: DogeChatViewController, UIImagePickerControll
     var appDelegate: AppDelegate {
         return UIApplication.shared.delegate as! AppDelegate
     }
+    var lastAvatarURL: String?
     var loginSuccess = false {
         didSet {
             if loginSuccess {
@@ -81,11 +83,7 @@ class ContactsTableViewController: DogeChatViewController, UIImagePickerControll
         NotificationCenter.default.addObserver(self, selector: #selector(hasUnknownFriendNoti(_:)), name: .hasUnknownFriend, object: username)
         setupRefreshControl()
         barItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(presentSearchVC))
-        if #available(iOS 13.0, *) {
-            itemRequest = UIBarButtonItem(image: UIImage(systemName: "person.badge.plus"), style: .plain, target: self, action: #selector(presentSearchVC))
-        } else {
-            itemRequest = UIBarButtonItem(title: "新", style: .plain, target: self, action: #selector(presentSearchVC))
-        }
+        itemRequest = UIBarButtonItem(image: UIImage(systemName: "person.badge.plus"), style: .plain, target: self, action: #selector(presentSearchVC))
         setupMyAvatar()
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
             NotificationCenter.default.post(name: .immersive, object: AppDelegate.shared.immersive)
@@ -100,7 +98,7 @@ class ContactsTableViewController: DogeChatViewController, UIImagePickerControll
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        manager.messageManager.messageDelegate = self
+        manager?.messageManager.messageDelegate = self
         loadAllTracks(username: username)
         if let visibleIndexPaths = tableView.indexPathsForSelectedRows {
             for indexPath in visibleIndexPaths {
@@ -115,34 +113,37 @@ class ContactsTableViewController: DogeChatViewController, UIImagePickerControll
         tableView.refreshControl?.endRefreshing()
     }
     
+    func setUsername(_ username: String, andPassword password: String) {
+        self.username = username
+        self.password = password
+    }
+    
     func processUserActivity() {
-        if #available(iOS 13.0, *) {
-            if let userActivity = SceneDelegate.activeUserActivity {
-                let userInfo = userActivity.userInfo as! [String : String]
-                let username = userInfo["username"]!
-                if username == manager.httpsManager.myName {
-                    let friendID = userInfo["friendID"]!
-                    if let index = friends.firstIndex(where: { $0.userID == friendID }) {
-                        tableView(tableView, didSelectRowAt: IndexPath(row: index, section: 0))
-                        SceneDelegate.activeUserActivity = nil
-                    }
-                } else {
-                    if let sceneDelegate = SceneDelegate.usernameToDelegate[username] {
-                        UIApplication.shared.requestSceneSessionActivation(sceneDelegate.window?.windowScene?.session, userActivity: userActivity, options: nil, errorHandler: nil)
-                    } else {
-                        UIApplication.shared.requestSceneSessionActivation(nil, userActivity: userActivity, options: nil, errorHandler: nil)
-                    }
+        if let userActivity = SceneDelegate.activeUserActivity {
+            let userInfo = userActivity.userInfo as! [String : String]
+            let username = userInfo["username"]!
+            if let manager = manager, username == manager.httpsManager.myName {
+                let friendID = userInfo["friendID"]!
+                if let index = friends.firstIndex(where: { $0.userID == friendID }) {
+                    tableView(tableView, didSelectRowAt: IndexPath(row: index, section: 0))
                     SceneDelegate.activeUserActivity = nil
                 }
+            } else {
+                if let sceneDelegate = SceneDelegate.usernameToDelegate[username] {
+                    UIApplication.shared.requestSceneSessionActivation(sceneDelegate.window?.windowScene?.session, userActivity: userActivity, options: nil, errorHandler: nil)
+                } else {
+                    UIApplication.shared.requestSceneSessionActivation(nil, userActivity: userActivity, options: nil, errorHandler: nil)
+                }
+                SceneDelegate.activeUserActivity = nil
             }
-            
-            let userActivity = NSUserActivity(activityType: "com.zhaoxiguang.dogechat")
-            userActivity.title = "dogechat"
-            userActivity.userInfo = ["username": username, "password": password]
-            userActivity.needsSave = true
-            self.view.window?.windowScene?.userActivity = userActivity
-            self.view.window?.windowScene?.updateUserActivityState(userActivity)
         }
+        
+        let userActivity = NSUserActivity(activityType: "com.zhaoxiguang.dogechat")
+        userActivity.title = "dogechat"
+        userActivity.userInfo = ["username": username, "password": password]
+        userActivity.needsSave = true
+        self.view.window?.windowScene?.userActivity = userActivity
+        self.view.window?.windowScene?.updateUserActivityState(userActivity)
     }
             
     func saveTitleView() {
@@ -171,7 +172,7 @@ class ContactsTableViewController: DogeChatViewController, UIImagePickerControll
         setupMyAvatar()
         navigationItem.title = username
         processUserActivity()
-        if manager.commonWebSocket.connectTime - manager.httpsManager.fetchFriendTime > 20 {
+        if let manager = manager, manager.commonWebSocket.connectTime - manager.httpsManager.fetchFriendTime > 20 {
             refreshContacts(completion: nil)
         }
         checkGroupInfos()
@@ -185,10 +186,8 @@ class ContactsTableViewController: DogeChatViewController, UIImagePickerControll
     
     @objc func loginedNoti(_ noti: Notification) {
         WCSession.default.sendMessage(["username": username, "password": password], replyHandler: nil, errorHandler: nil)
-        MediaLoader.shared.cookie = manager.cookie
-        if #available(iOS 13, *) {
-            self.view.window?.windowScene?.title = username
-        }
+        MediaLoader.shared.cookie = manager?.cookie
+        self.view.window?.windowScene?.title = username
     }
     
     @objc func refreshContactsNoti(_ noti: Notification) {
@@ -217,7 +216,7 @@ class ContactsTableViewController: DogeChatViewController, UIImagePickerControll
     
     func checkGroupInfos() {
         if let group = self.friends.first(where: { $0.isGroup }) as? Group, group.ownerUsername.isEmpty {
-            manager.httpsManager.getGroupList { _ in
+            manager?.httpsManager.getGroupList { _ in
             }
         }
     }
@@ -236,18 +235,14 @@ class ContactsTableViewController: DogeChatViewController, UIImagePickerControll
     }
     
     @objc func refreshContacts(completion: (()->Void)? = nil) {
-        manager.commonWebSocket.httpRequestsManager.getContacts {  friends, _  in
+        manager?.commonWebSocket.httpRequestsManager.getContacts {  _, _  in
             completion?()
-            if #available(iOS 13, *) {
-                let diffs = self.friends.difference(from: friends, by: { $0.userID == $1.userID })
-                let insertions = diffs.insertions
-            }
         }
     }
     
     @objc func downRefreshAction(_ refreshControl: UIRefreshControl) {
         removeAllMessage()
-        manager.disconnect()
+        manager?.disconnect()
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             self.loginAndConnect()
         }
@@ -258,12 +253,12 @@ class ContactsTableViewController: DogeChatViewController, UIImagePickerControll
     }
     
     func removeAllMessage() {
-        manager.commonWebSocket.httpRequestsManager.friends.removeAll()
-        manager.commonWebSocket.httpRequestsManager.friendDict.removeAll()
+        manager?.commonWebSocket.httpRequestsManager.friends.removeAll()
+        manager?.commonWebSocket.httpRequestsManager.friendDict.removeAll()
     }
     
     @objc func loginAndConnect() {
-        manager.loginAndConnect(username: username, password: password) 
+        manager?.loginAndConnect(username: username, password: password)
     }
         
     func setupRefreshControl() {
@@ -328,16 +323,13 @@ class ContactsTableViewController: DogeChatViewController, UIImagePickerControll
             case .voice:
                 content += "[语音]"
             }
-            if #available(iOS 13, *) {
-                SceneDelegate.usernameToDelegate[username]?.pushWindow.assignValueForPush(sender: message.friend.username, content: content)
-            } else {
-                AppDelegate.shared.pushWindow.assignValueForPush(sender: message.friend.username, content: content)
-            }
+            SceneDelegate.usernameToDelegate[username]?.pushWindow.assignValueForPush(sender: message.friend.username, content: content)
         }
     }
             
     @objc func uploadSuccess(notification: Notification) {
-        guard let message = notification.userInfo?["message"] as? Message,
+        guard let manager = manager,
+              let message = notification.userInfo?["message"] as? Message,
               let data = notification.userInfo?["data"] else { return }
         var remoteFilePath = JSON(data)["filePath"].stringValue
         remoteFilePath = manager.messageManager.encrypt.decryptMessage(remoteFilePath)
@@ -397,7 +389,6 @@ class ContactsTableViewController: DogeChatViewController, UIImagePickerControll
         self.navigationController?.tabBarItem.badgeValue = total > 0 ? String(total) : nil
     }
     
-    @available(iOS 13.0, *)
     func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
         let path = self.friends[indexPath.row].avatarURL
         let config =  UIContextMenuConfiguration(identifier: (self.friends[indexPath.row].username as NSString)) {
@@ -416,7 +407,6 @@ class ContactsTableViewController: DogeChatViewController, UIImagePickerControll
         return config
     }
     
-    @available(iOS 13.0, *)
     func tableView(_ tableView: UITableView, willPerformPreviewActionForMenuWith configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionCommitAnimating) {
         let username = configuration.identifier as! String
         if let index = self.usernames.firstIndex(of: username) {
@@ -464,30 +454,12 @@ class ContactsTableViewController: DogeChatViewController, UIImagePickerControll
     
 }
 
-//MARK: 3D TOUCH
-extension ContactsTableViewController: UIViewControllerPreviewingDelegate {
-    
-    func previewingContext(_ previewingContext: UIViewControllerPreviewing, viewControllerForLocation location: CGPoint) -> UIViewController? {
-        guard let cell = previewingContext.sourceView as? UITableViewCell,
-              let indexPath = tableView.indexPath(for: cell) else { return nil }
-        let vc = chatroomVC(for: indexPath)
-        let needGetHistory = friends[indexPath.row].messages.isEmpty
-        if needGetHistory { vc.displayHistory() }
-        return vc
-    }
-    
-    func previewingContext(_ previewingContext: UIViewControllerPreviewing, commit viewControllerToCommit: UIViewController) {
-        (previewingContext.sourceView as? ContactTableViewCell)?.unreadLabel.isHidden = true
-        navigationController?.pushViewController(viewControllerToCommit, animated: true)
-    }
-}
-
 extension ContactsTableViewController: MessageDelegate, AddContactDelegate {
     
     func asyncReconnect() {
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
             guard UIApplication.shared.applicationState == .active else { return }
-            self?.manager.commonWebSocket.loginAndConnect(username: nil, password: nil)
+            self?.manager?.commonWebSocket.loginAndConnect(username: nil, password: nil)
         }
     }
 
@@ -509,9 +481,7 @@ extension ContactsTableViewController: MessageDelegate, AddContactDelegate {
     
     func newFriendRequest() {
         playSound()
-        if #available(iOS 13.0, *) {
-            navigationItem.rightBarButtonItem = itemRequest
-        }
+        navigationItem.rightBarButtonItem = itemRequest
     }
     
     func revokeSuccess(id: Int, senderID: String, receiverID: String) {

@@ -46,11 +46,7 @@ class DogeChatViewController: UIViewController, UIPopoverPresentationControllerD
     }
         
     func recoverBackgroundColor() {
-        if #available(iOS 13.0, *) {
             self.view.backgroundColor = .systemBackground
-        } else {
-            self.view.backgroundColor = .white
-        }
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -107,34 +103,27 @@ func makeBlurViewForViewController(_ vc: UIViewController, blurView: inout UIIma
         targetImage = PlayerManager.shared.customImage
     }
     guard let targetImage = targetImage else { return }
-    if #available(iOS 13.0, *) {
-        let interfaceStyle: UIUserInterfaceStyle
-        if UserDefaults.standard.bool(forKey: "forceDarkMode") {
-            interfaceStyle = .dark
-        } else {
-            interfaceStyle = .unspecified
-        }
-        AppDelegate.shared.window?.overrideUserInterfaceStyle = interfaceStyle
-        vc.navigationController?.overrideUserInterfaceStyle = interfaceStyle
-        vc.splitViewController?.overrideUserInterfaceStyle = interfaceStyle
-        vc.tabBarController?.overrideUserInterfaceStyle = interfaceStyle
-        vc.overrideUserInterfaceStyle = interfaceStyle
-        SceneDelegate.usernameToDelegate[username ?? ""]?.window?.overrideUserInterfaceStyle = interfaceStyle
-        vc.view.backgroundColor = .clear
+    let interfaceStyle: UIUserInterfaceStyle
+    if UserDefaults.standard.bool(forKey: "forceDarkMode") {
+        interfaceStyle = .dark
+    } else {
+        interfaceStyle = .unspecified
     }
+    vc.navigationController?.overrideUserInterfaceStyle = interfaceStyle
+    vc.splitViewController?.overrideUserInterfaceStyle = interfaceStyle
+    vc.tabBarController?.overrideUserInterfaceStyle = interfaceStyle
+    vc.overrideUserInterfaceStyle = interfaceStyle
+    SceneDelegate.usernameToDelegate[username ?? ""]?.window?.overrideUserInterfaceStyle = interfaceStyle
+    vc.view.backgroundColor = .clear
     vc.view.backgroundColor = .clear
     var style: UIBlurEffect.Style = .regular
-    if #available(iOS 13.0, *) {
-        if UserDefaults.standard.bool(forKey: "forceDarkMode") {
-            style = .dark
-        } else {
-            style = .regular
-        }
+    if UserDefaults.standard.bool(forKey: "forceDarkMode") {
+        style = .dark
+    } else {
+        style = .regular
     }
     if style == .regular && UIScreen.main.traitCollection.userInterfaceStyle == .light {
-        if #available(iOS 13.0, *) {
-            style = .extraLight
-        }
+        style = .extraLight
     }
     if blurView == nil {
         blurView = UIImageView(image: targetImage)
@@ -189,17 +178,14 @@ func makeBlurViewForViewController(_ vc: UIViewController, blurView: inout UIIma
 }
 
 func recoverVC(_ vc: UIViewController, blurView: inout UIImageView!) {
-    if #available(iOS 13.0, *) {
-        vc.view.backgroundColor = .systemBackground
-        AppDelegate.shared.window?.overrideUserInterfaceStyle = .unspecified
-        vc.navigationController?.overrideUserInterfaceStyle = .unspecified
-        vc.splitViewController?.overrideUserInterfaceStyle = .unspecified
-        vc.tabBarController?.overrideUserInterfaceStyle = .unspecified
-        vc.overrideUserInterfaceStyle = .unspecified
-        vc.view.backgroundColor = .systemBackground
-        vc.splitViewController?.view.backgroundColor = .systemBackground
-        vc.view.window?.overrideUserInterfaceStyle = .unspecified
-    }
+    vc.view.backgroundColor = .systemBackground
+    vc.navigationController?.overrideUserInterfaceStyle = .unspecified
+    vc.splitViewController?.overrideUserInterfaceStyle = .unspecified
+    vc.tabBarController?.overrideUserInterfaceStyle = .unspecified
+    vc.overrideUserInterfaceStyle = .unspecified
+    vc.view.backgroundColor = .systemBackground
+    vc.splitViewController?.view.backgroundColor = .systemBackground
+    vc.view.window?.overrideUserInterfaceStyle = .unspecified
     UIView.animate(withDuration: 0.5) { [weak blurView] in
         blurView?.alpha = 0
     } completion: { [weak blurView] _ in

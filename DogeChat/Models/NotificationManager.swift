@@ -12,39 +12,17 @@ import DogeChatUniversal
 
 class NotificationManager: NSObject {
     
-    var username = ""
-    var manager: WebSocketManager! {
-        return WebSocketManager.usersToSocketManager[username]
+    weak var sceneDelegate: SceneDelegate?
+    var manager: WebSocketManager? {
+        sceneDelegate?.socketManager
     }
-    static let shared = NotificationManager()
+    
     var nowPushInfo: (sender: String, content: String, senderID: String) = ("", "", "")
     var actionCompletionHandler: (() -> Void)?
     var quickReplyMessage: Message?
-    var remoteNotificationUsername = "" {
-        didSet {
-            if remoteNotificationUsername != "" {
-                var contactVC: ContactsTableViewController?
-                guard let appDelegate = UIApplication.shared.delegate as? AppDelegate,
-                      let nav = appDelegate.navigationController else { return }
-                for vc in nav.viewControllers {
-                    if vc.isKind(of: ContactsTableViewController.self) {
-                        contactVC = (vc as! ContactsTableViewController)
-                        break
-                    }
-                }
-                guard let contactViewController = contactVC else { return }
-                let success = contactViewController.loginSuccess
-                contactViewController.loginSuccess = success
-            }
-        }
-    }
-    
-    convenience init(username: String) {
-        self.init()
-        self.username = username
-    }
-    
-    private override init() {
+    var remoteNotificationUsername = ""
+        
+    override init() {
         super.init()
         registerNoti()
     }
@@ -54,15 +32,11 @@ class NotificationManager: NSObject {
     }
     
     func nav() -> UINavigationController? {
-        if #available(iOS 13, *) {
-            return SceneDelegate.usernameToDelegate[username]?.navigationController
-        } else {
-            return AppDelegate.shared.navigationController
-        }
+        return sceneDelegate?.navigationController
     }
     
     @objc func quickReplyDone(_ noti: Notification) {
-        manager.disconnect()
+        sceneDelegate?.socketManager.disconnect()
         if let vc = nav()?.visibleViewController as? ChatRoomViewController {
             if let message = quickReplyMessage {
                 vc.insertNewMessageCell([message])
@@ -86,9 +60,9 @@ class NotificationManager: NSObject {
     }
     
     private func login(success: @escaping (()->Void), fail: @escaping (()->Void)) {
-        guard let info = UserDefaults.standard.value(forKey: usernameToPswKey) as? [String : String],
+        guard let username = sceneDelegate?.username, let info = UserDefaults.standard.value(forKey: usernameToPswKey) as? [String : String],
               let password = info[username] else { return }
-        manager.loginAndConnect(username: username, password: password) { _success in
+        sceneDelegate?.socketManager?.loginAndConnect(username: username, password: password) { _success in
             if _success {
                 success()
             } else {
@@ -98,13 +72,13 @@ class NotificationManager: NSObject {
     }
     
     func prepareVoiceChat(caller: String, uuid: UUID) {
-        manager.commonWebSocket.pingWithResult { [self] success in
+        sceneDelegate?.socketManager?.commonWebSocket.pingWithResult { [self] success in
             if !success {
                 login {
-                    self.manager.connect()
+                    self.sceneDelegate?.socketManager?.connect()
                 } fail: {
-                    if let call = AppDelegate.shared.callManager.callWithUUID(uuid) {
-                        AppDelegate.shared.callManager.end(call: call)
+                    if let call = sceneDelegate?.callManager.callWithUUID(uuid) {
+                        sceneDelegate!.callManager.end(call: call)
                     }
                 }
             }
@@ -114,14 +88,14 @@ class NotificationManager: NSObject {
     
     func processReplyAction(replyContent: String) {
         login { [self] in
-            guard self.nowPushInfo.sender.count != 0 else { return }
+            guard self.nowPushInfo.sender.count != 0, let manager = self.manager else { return }
             guard let friend = manager.messageManager.friends.first(where: { $0.userID == self.nowPushInfo.senderID }) else { return }
-            let message = Message(message: replyContent, friend: friend, imageURL: nil, videoURL: nil, messageSender: .ourself, receiver: self.nowPushInfo.sender, receiverUserID: nowPushInfo.senderID, uuid: UUID().uuidString, sender: self.manager.messageManager.myName, senderUserID: manager.messageManager.myId, messageType: .text, sendStatus: .fail, emojisInfo: [])
+            let message = Message(message: replyContent, friend: friend, imageURL: nil, videoURL: nil, messageSender: .ourself, receiver: self.nowPushInfo.sender, receiverUserID: nowPushInfo.senderID, uuid: UUID().uuidString, sender: manager.messageManager.myName, senderUserID: manager.messageManager.myId, messageType: .text, sendStatus: .fail, emojisInfo: [])
             self.quickReplyMessage = message
-            self.manager.quickReplyUUID = message.uuid
-            self.manager.commonWebSocket.sendWrappedMessage(message)
+            manager.quickReplyUUID = message.uuid
+            manager.commonWebSocket.sendWrappedMessage(message)
             DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
-                if !self.manager.quickReplyUUID.isEmpty {
+                if !manager.quickReplyUUID.isEmpty {
                     self.actionCompletionHandler?()
                     self.actionCompletionHandler = nil
                 }

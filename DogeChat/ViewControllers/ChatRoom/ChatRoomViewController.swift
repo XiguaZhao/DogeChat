@@ -9,7 +9,7 @@ import FLAnimatedImage
 class ChatRoomViewController: DogeChatViewController, DogeChatVCTableDataSource {
     
     static let numberOfHistory = 10
-    var manager: WebSocketManager {
+    var manager: WebSocketManager? {
         return socketForUsername(username)
     }
     var tableView = DogeChatTableView()
@@ -56,7 +56,7 @@ class ChatRoomViewController: DogeChatViewController, DogeChatVCTableDataSource 
     var lastViewSize = CGSize.zero
     lazy var lastTextViewContentSize: CGSize = CGSize(width: 0, height: 36)
     weak var contactVC: ContactsTableViewController?
-    weak var activeMenuCell: MessageCollectionViewBaseCell?
+    weak var activeMenuCell: MessageBaseCell?
     var hapticInputIndex = 0
     var pan: UIScreenEdgePanGestureRecognizer?
     var isPeek = false
@@ -137,9 +137,9 @@ class ChatRoomViewController: DogeChatViewController, DogeChatVCTableDataSource 
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        AppDelegate.shared.navigationController = self.navigationController
-        if #available(iOS 13.0, *) {
-            (self.view.window?.windowScene?.delegate as? SceneDelegate)?.navigationController = self.navigationController
+        (self.view.window?.windowScene?.delegate as? SceneDelegate)?.navigationController = self.navigationController
+        guard let manager = manager else {
+            return
         }
         let userActivity = NSUserActivity(activityType: "com.zhaoxiguang.dogechat")
         userActivity.title = "ChatRoom"
@@ -153,7 +153,7 @@ class ChatRoomViewController: DogeChatViewController, DogeChatVCTableDataSource 
         
     deinit {
         print("chat room VC deinit")
-        MessageCollectionViewTextCell.voicePlayer.replaceCurrentItem(with: nil)
+        MessageTextCell.voicePlayer.replaceCurrentItem(with: nil)
         PlayerManager.shared.playerTypes.remove(.chatroomImageCell)
         PlayerManager.shared.playerTypes.remove(.chatroomVoiceCell)
     }
@@ -171,7 +171,7 @@ class ChatRoomViewController: DogeChatViewController, DogeChatVCTableDataSource 
     }
     
     func checkMyNameInGroup() {
-        guard friend is Group else { return }
+        guard let manager = manager, friend is Group else { return }
         if manager.myInfo.nameInGroupsDict[friend.userID] == nil {
             manager.httpsManager.getGroupMembers(group: friend as! Group) { [self] members in
                 for member in members {
@@ -185,7 +185,7 @@ class ChatRoomViewController: DogeChatViewController, DogeChatVCTableDataSource 
     
     @objc func displayHistoryIfNeeded() {
         if tableView.contentSize.height < view.bounds.height * 0.8 {
-            if manager.commonWebSocket.canSend {
+            if let manager = manager, manager.commonWebSocket.canSend {
                 displayHistory()
             }
         }
@@ -202,7 +202,7 @@ class ChatRoomViewController: DogeChatViewController, DogeChatVCTableDataSource 
         messages[index].sendStatus = .success
         messages[index].id = message.id
         let indexPath = IndexPath(row: index, section: 0)
-        if let cell = tableView.cellForRow(at: indexPath) as? MessageCollectionViewBaseCell {
+        if let cell = tableView.cellForRow(at: indexPath) as? MessageBaseCell {
             cell.layoutIfNeeded()
             cell.setNeedsLayout()
         } else {
@@ -216,7 +216,7 @@ class ChatRoomViewController: DogeChatViewController, DogeChatVCTableDataSource 
         guard let message = notification.userInfo?["message"] as? Message else { return }
         guard let index = messages.firstIndex(of: message) else { return }
         messages[index].sendStatus = .success
-        manager.commonWebSocket.sendWrappedMessage(message)
+        manager?.commonWebSocket.sendWrappedMessage(message)
     }
     
 }
@@ -226,13 +226,16 @@ extension ChatRoomViewController: UIImagePickerControllerDelegate, UINavigationC
         
     func updateUploadProgress(_ progress: Progress, message: Message) {
         let targetCell = tableView.visibleCells.filter { cell in
-            guard let cell = cell as? MessageCollectionViewBaseCell else { return false }
+            guard let cell = cell as? MessageBaseCell else { return false }
             return cell.message.uuid == message.uuid
         }.first
-        guard let _ = targetCell as? MessageCollectionViewBaseCell else { return }
+        guard let _ = targetCell as? MessageBaseCell else { return }
     }
     
     func processMessageString(for string: String, type: MessageType, imageURL: String?, videoURL: String?) -> Message {
+        guard let manager = manager else {
+            return Message(message: "", friend: self.friend, messageSender: .ourself, receiver: friendName, receiverUserID: friend.userID, sender: username, senderUserID: "", messageType: type)
+        }
         let message = Message(message: string,
                        friend: friend,
                        imageURL: imageURL,
@@ -255,7 +258,7 @@ extension ChatRoomViewController: UIImagePickerControllerDelegate, UINavigationC
     
     @objc func emojiButtonTapped() {
         emojiSelectView.collectionView.reloadData()
-        manager.getEmojis { _ in
+        manager?.getEmojis { _ in
         }
     }
 }
@@ -275,7 +278,6 @@ extension ChatRoomViewController {
     
 }
 
-@available(iOS 13.0, *)
 extension ChatRoomViewController: PKViewChangedDelegate {
     func pkView(_ pkView: PKCanvasView, message: Any?, addNewStroke newStroke: Any) {
         guard #available(iOS 14.0, *), let newStroke = newStroke as? PKStroke else { return }
@@ -284,7 +286,7 @@ extension ChatRoomViewController: PKViewChangedDelegate {
         guard message.needRealTimeDraw else { return }
         let data = PKDrawing(strokes: [newStroke]).dataRepresentation()
         let base64String = data.base64EncodedString()
-        manager.sendRealTimeDrawData(base64String, sender: username, receiver: friendName, uuid: message.uuid, senderID: message.senderUserID, receiverID: message.receiverUserID)
+        manager?.sendRealTimeDrawData(base64String, sender: username, receiver: friendName, uuid: message.uuid, senderID: message.senderUserID, receiverID: message.receiverUserID)
     }
     
     func pkView(_ pkView: PKCanvasView, message: Any?, deleteStrokesIndex: [NSNumber]) {
@@ -292,12 +294,12 @@ extension ChatRoomViewController: PKViewChangedDelegate {
         guard let message = message as? Message else { return }
         if message.needRealTimeDraw {
             let indexes = deleteStrokesIndex.map { $0.intValue }
-            manager.sendRealTimeDrawData(indexes, sender: username, receiver: friendName, uuid: message.uuid, senderID: message.senderUserID, receiverID: message.receiverUserID)
+            manager?.sendRealTimeDrawData(indexes, sender: username, receiver: friendName, uuid: message.uuid, senderID: message.senderUserID, receiverID: message.receiverUserID)
         }
     }
     
     func pkViewDidFinishDrawing(_ pkView: PKCanvasView, message: Any?) {
-        if let message = message as? Message {
+        if let manager = manager, let message = message as? Message {
             message.sendStatus = .fail
             let data = pkView.drawing.dataRepresentation()
             let fileName = UUID().uuidString
@@ -328,10 +330,10 @@ extension ChatRoomViewController: PKViewChangedDelegate {
                     print("上传失败")
                     return
                 }
-                let filePath = self.manager.messageManager.encrypt.decryptMessage(json["filePath"].stringValue)
+                let filePath = manager.messageManager.encrypt.decryptMessage(json["filePath"].stringValue)
                 message.pkDataURL = filePath
                 message.text = message.pkDataURL ?? ""
-                self.manager.sendDrawMessage(message)
+                manager.sendDrawMessage(message)
                 DispatchQueue.global().async {
                     let newURL = dir.appendingPathComponent(filePath.components(separatedBy: "/").last!)
                     try? FileManager.default.moveItem(at: originalURL, to: newURL)
@@ -347,7 +349,7 @@ extension ChatRoomViewController: PKViewChangedDelegate {
                 if (message.pkLocalURL == nil && message.pkDataURL == nil) {
                     revoke(message: message)
                 } else {
-                    manager.commonWebSocket.sendWrappedMessage(message)
+                    manager?.commonWebSocket.sendWrappedMessage(message)
                 }
             }
         }
@@ -380,7 +382,7 @@ extension ChatRoomViewController {
     @objc func displayHistory() {
         customTitle = "正在加载..."
         pagesAndCurNum.curNum = (self.messages.count / ChatRoomViewController.numberOfHistory) + 1
-        manager.historyMessages(for: friend, pageNum: pagesAndCurNum.curNum)
+        manager?.historyMessages(for: friend, pageNum: pagesAndCurNum.curNum)
         pagesAndCurNum.curNum += 1
     }
     
@@ -389,7 +391,7 @@ extension ChatRoomViewController {
         var empty = true
         var tempHeight: CGFloat = 0
         for message in self.messages.reversed() {
-            tempHeight += MessageCollectionViewBaseCell.height(for: message, username: username)
+            tempHeight += MessageBaseCell.height(for: message, username: username)
             if tempHeight >= tableView.bounds.height * 0.7 {
                 empty = false
                 break
@@ -442,7 +444,7 @@ extension ChatRoomViewController {
     
     
     func revoke(message: Message) {
-        manager.revokeMessage(message)
+        manager?.revokeMessage(message)
     }
     
     func revokeSuccess(id: Int, senderID: String, receiverID: String) {

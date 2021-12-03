@@ -7,7 +7,6 @@ import Intents
 import DogeChatNetwork
 import RSAiOSWatchOS
 import DogeChatUniversal
-import Reachability
 import WatchConnectivity
 
 @objc enum SplitVCSide: Int {
@@ -22,34 +21,13 @@ enum PushAction: String {
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
     
-    var window: UIWindow?
-    let reachability = try! Reachability()
-    var pushWindow: FloatWindow!
-    var callWindow: FloatWindow!
-    var switcherWindow: FloatWindow!
     var deviceToken: String?
     var pushKitToken: String?
+    var nowCallUUID: UUID?
     var launchedByPushAction = false
     var backgroundSessionCompletionHandler: (() -> Void)?
-    var notificationManager = NotificationManager.shared
-    var socketManager: WebSocketManager! {
-        return WebSocketManager.usersToSocketManager[username]
-    }
-    var username = "" {
-        didSet {
-            providerDelegate.username = username
-        }
-    }
-    weak var navigationController: UINavigationController?
-    var tabBarController: UITabBarController!
-    var splitViewController: UISplitViewController!
-    var providerDelegate: ProviderDelegate!
-    let callManager = CallManager()
     let voipRegistry = PKPushRegistry(queue: DispatchQueue.main)
     var lastAppEnterBackgroundTime = NSDate().timeIntervalSince1970
-    weak var contactVC: ContactsTableViewController?
-    var isIOS = true
-    let splitVCDelegate = SplitViewControllerDelegate()
     var lastUserInterfaceStyle: UIUserInterfaceStyle = .unspecified
     var immersive: Bool {
         fileURLAt(dirName: "customBlur", fileName: userID) != nil || (PlayerManager.shared.isPlaying && UserDefaults.standard.bool(forKey: "immersive"))
@@ -62,44 +40,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        UserDefaults(suiteName: "group.demo.zhaoxiguang")?.set(true, forKey: "hostActive")
+        UserDefaults(suiteName: "group.dogechat.zhaoxiguang")?.set(true, forKey: "hostActive")
         registerPushAction()
-        window = UIWindow(frame: UIScreen.main.bounds)
-        if #available(iOS 13.0, *) {
-            window?.backgroundColor = .systemBackground
-        } else {
-            window?.backgroundColor = .white
-        }
         if UserDefaults.standard.value(forKey: "forceDarkMode") == nil {
             UserDefaults.standard.setValue(true, forKey: "forceDarkMode")
         }
-        if #available(iOS 13, *) {
-            for session in UIApplication.shared.openSessions {
-                if session.stateRestorationActivity == nil {
-                    UIApplication.shared.requestSceneSessionDestruction(session, options: nil, errorHandler: nil)
-                }
+        for session in UIApplication.shared.openSessions {
+            if session.stateRestorationActivity == nil {
+                UIApplication.shared.requestSceneSessionDestruction(session, options: nil, errorHandler: nil)
             }
-        } else {
-            window?.rootViewController = UIStoryboard(name: "main", bundle: .main).instantiateInitialViewController() as? UISplitViewController
-            splitViewController = window?.rootViewController as? UISplitViewController
-            splitViewController.delegate = splitVCDelegate
-            splitViewController.preferredDisplayMode = .allVisible
-            tabBarController = splitViewController.viewControllers[0] as? UITabBarController
-            window?.rootViewController = splitViewController
-            splitViewController.preferredPrimaryColumnWidthFraction = 0.35
-            splitViewController.view.backgroundColor = .clear
-            window?.makeKeyAndVisible()
-            pushWindow = FloatWindow(type: .push, alwayDisplayType: .shouldDismiss, delegate: self)
-            callWindow = FloatWindow(type: .alwaysDisplay, alwayDisplayType: .shouldDismiss, delegate: self)
-            switcherWindow = FloatWindow(type: .alwaysDisplay, alwayDisplayType: .shouldNotDimiss, delegate: self)
-        }
-        if #available(iOS 13, *) {} else {
-            tabBarController.viewControllers![1].tabBarItem.image = UIImage(named: "music")
         }
         let notificationOptions = launchOptions?[.remoteNotification]
         if let notification = notificationOptions as? [String: AnyObject],
            let aps = notification["aps"] as? [String: AnyObject] {
-            notificationManager.processRemoteNotification(aps)
+            SceneDelegate.usernameToDelegate.first?.value.notificationManager.processRemoteNotification(aps)
         }
         
         registerNotification()
@@ -107,16 +61,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         if #available(macCatalyst 14.0, iOS 12.0, *) {
             voipRegistry.desiredPushTypes = [.voIP]
         }
-        #if targetEnvironment(macCatalyst)
-        isIOS = false
-        #endif
         DispatchQueue.global().async {
             SelectShortcutTVC.updateShortcuts()
-        }
-        providerDelegate = ProviderDelegate(callManager: callManager, username: username)
-        if #available(iOS 13.0, *) {
-        } else {
-            login()
         }
         if UserDefaults.standard.value(forKey: "immersive") == nil {
             UserDefaults.standard.setValue(true, forKey: "immersive")
@@ -153,16 +99,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
     }
     
-    @available(iOS 13.0, *)
     func application(_ application: UIApplication, didDiscardSceneSessions sceneSessions: Set<UISceneSession>) {
         
     }
     
     func applicationWillTerminate(_ application: UIApplication) {
-        UserDefaults(suiteName: "group.demo.zhaoxiguang")?.set(false, forKey: "hostActive")
+        UserDefaults(suiteName: "group.dogechat.zhaoxiguang")?.set(false, forKey: "hostActive")
     }
     
-    @available(iOS 13.0, *)
     func application(_ application: UIApplication,
                      configurationForConnecting connectingSceneSession: UISceneSession,
                      options: UIScene.ConnectionOptions) -> UISceneConfiguration {
@@ -171,16 +115,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
     private func sizeFor(side: SplitVCSide, username: String?, view: UIView? = nil) -> CGSize {
         let splitViewController: UISplitViewController
-        if #available(iOS 13.0, *) {
-            if let username = username, !username.isEmpty, let sceneDelegate = SceneDelegate.usernameToDelegate[username] {
-                splitViewController = sceneDelegate.splitVC
-            } else if let splitVC = view?.window?.rootViewController as? DogeChatSplitViewController {
-                splitViewController = splitVC
-            } else {
-                return UIScreen.main.bounds.size
-            }
+        if let username = username, !username.isEmpty, let sceneDelegate = SceneDelegate.usernameToDelegate[username] {
+            splitViewController = sceneDelegate.splitVC
+        } else if let splitVC = view?.window?.rootViewController as? DogeChatSplitViewController {
+            splitViewController = splitVC
         } else {
-            splitViewController = self.splitViewController
+            return UIScreen.main.bounds.size
         }
         let height = splitViewController.view.bounds.height
         if splitViewController.isCollapsed {
@@ -203,41 +143,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     @objc func heightFor(side: SplitVCSide, username: String?, view: UIView? = nil) -> CGFloat {
         return sizeFor(side: side, username: username, view: view).height
     }
-    
-    func login() {
-        self.navigationController = self.tabBarController.viewControllers?.first as? UINavigationController
-        if let username = UserDefaults.standard.value(forKey: "lastUsername") as? String,
-           let password = UserDefaults.standard.value(forKey: "lastPassword") as? String {
-            self.username = username
-            let socket = WebSocketManager()
-            let adapter = WebSocketManagerAdapter(manager: socket, username: username)
-            NotificationManager.shared.username = username
-            WebSocketManager.usersToSocketManager[username] = socket
-            WebSocketManagerAdapter.usernameToAdapter[username] = adapter
-            socket.myInfo.username = username
-            socket.messageManager.encrypt = EncryptMessage()
-            let contactVC = ContactsTableViewController()
-            contactVC.navigationItem.title = username
-            contactVC.username = username
-            contactVC.password = password
-            self.contactVC = contactVC
-            self.navigationController?.viewControllers = [contactVC]
-            contactVC.loginAndConnect()
-        } else {
-            self.navigationController?.viewControllers = [JoinChatViewController()]
-        }
-    }
-    
-    func getContactVC() -> ContactsTableViewController? {
-        return (tabBarController.viewControllers?.first as? UINavigationController)?.viewControllers.first as? ContactsTableViewController
-    }
-    
-    func needRelogin() -> Bool {
-        guard let socketManager = self.socketManager else { return true }
-        let nowTime = Date().timeIntervalSince1970
-        return nowTime - socketManager.httpsManager.cookieTime >= 2 * 24 * 60 * 60 // 2天
-    }
-    
+                
     func application(_ application: UIApplication, handleEventsForBackgroundURLSession identifier: String, completionHandler: @escaping () -> Void) {
         self.backgroundSessionCompletionHandler = completionHandler
     }
@@ -251,51 +157,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func applicationDidBecomeActive(_ application: UIApplication) {
-        print("become active")
         application.applicationIconBadgeNumber = 0
-        guard let socketManager = self.socketManager else { return }
-        DispatchQueue.global().async {
-            socketManager.commonWebSocket.sortMessages()
-        }
-        if AppDelegate.shared.callManager.hasCall() {
-            return
-        }
-        if needRelogin() {
-            self.contactVC?.loginAndConnect()
-        } else {
-            socketManager.commonWebSocket.connect()
-        }
     }
-    
-    func applicationDidEnterBackground(_ application: UIApplication) {
-        launchedByPushAction = false
-        checkIfShouldRemoveCache()
-        print("enter background")
-        lastAppEnterBackgroundTime = NSDate().timeIntervalSince1970
-        guard !callManager.hasCall() else { return }
-        socketManager?.disconnect()
-    }
-    
-    func application(_ application: UIApplication, performActionFor shortcutItem: UIApplicationShortcutItem, completionHandler: @escaping (Bool) -> Void) {
-        tabBarController.selectedViewController = navigationController
-        guard let nav = navigationController else { return }
-        switch shortcutItem.type {
-        case "add":
-            if nav.topViewController is SelectShortcutTVC { return }
-            nav.pushViewController(SelectShortcutTVC(), animated: true)
-        case "contact":
-            if !(nav.topViewController is JoinChatViewController) {
-                nav.popToRootViewController(animated: true)
-            }
-            guard let userInfo = shortcutItem.userInfo, let username = userInfo["username"] as? String,
-                  let password = userInfo["password"] as? String else { return }
-            guard let vc = nav.topViewController as? JoinChatViewController else { return }
-            vc.login(username: username, password: password)
-        default:
-            return
-        }
-    }
-    
+            
     // app 在前台运行中收到通知会调用
     func application(
         _ application: UIApplication,
@@ -303,12 +167,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void
     ) {
         print(userInfo)
-        // socket如果断开却没回调通知我的话，就算收到推送也会安静
-        socketManager.commonWebSocket.pingWithResult { [weak self] success in
-            if !success {
-                self?.socketManager.connect()
-            }
-        }
     }
     
     func registerNotification() {
@@ -339,31 +197,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         guard let userInfo = response.notification.request.content.userInfo as? [String: AnyObject],
               let aps = userInfo["aps"] as? [String: AnyObject] else { return }
-        notificationManager.username = username
-        notificationManager.processRemoteNotification(aps)
+        SceneDelegate.usernameToDelegate.first?.value.notificationManager.processRemoteNotification(aps)
         
         switch response.actionIdentifier {
         case "REPLY_ACTION":
             if let textResponse = response as? UNTextInputNotificationResponse {
-                notificationManager.actionCompletionHandler = completionHandler
+                SceneDelegate.usernameToDelegate.first?.value.notificationManager.actionCompletionHandler = completionHandler
                 let input = textResponse.userText
-                notificationManager.processReplyAction(replyContent: input)
+                SceneDelegate.usernameToDelegate.first?.value.notificationManager.processReplyAction(replyContent: input)
             }
         case "DO_NOT_DISTURT_ACTION":
-            if let username = UserDefaults.standard.value(forKey: "lastUsername") as? String,
-               let password = UserDefaults.standard.value(forKey: "lastPassword") as? String {
-                socketManager.commonWebSocket.httpRequestsManager.login(username: username, password: password) { success in
-                    if success {
-                        self.socketManager.doNotDisturb(for: "", hour: 4) {
-                            completionHandler()
-                            print("已经调用completionHandler")
-                        }
-                    } else {
-                        completionHandler()
-                    }
-                }
-
-            }
             break
         default:
             break
@@ -387,15 +230,24 @@ extension AppDelegate: PKPushRegistryDelegate {
               let alert = aps["alert"] as? [String: Any],
               let caller = alert["title"] as? String,
               let uuid = alert["uuid"] as? String
-              else { return }
+              else {
+                  ProviderDelegate(callManager: CallManager()).reportIncomingCall(uuid: UUID(), handle: "未知用户", completion: nil)
+                  completion()
+                  return
+              }
         let sender = String(caller)
         print(sender + "打电话来啦")
         let wrappedUUID = UUID(uuidString: uuid)
         let finalUUID = wrappedUUID ?? UUID()
-        socketManager.nowCallUUID = finalUUID
-        providerDelegate.reportIncomingCall(uuid: finalUUID, handle: sender) { (error) in
-            guard error == nil else { return }
-            self.notificationManager.prepareVoiceChat(caller: sender, uuid: finalUUID)
+        self.nowCallUUID = finalUUID
+        if let sceneDelegate = SceneDelegate.usernameToDelegate.first?.value {
+            sceneDelegate.socketManager?.nowCallUUID = finalUUID
+            sceneDelegate.providerDelegate.reportIncomingCall(uuid: finalUUID, handle: sender) { (error) in
+                guard error == nil else { return }
+                sceneDelegate.notificationManager.prepareVoiceChat(caller: sender, uuid: finalUUID)
+            }
+        } else {
+            ProviderDelegate(callManager: CallManager()).reportIncomingCall(uuid: UUID(), handle: "未知用户", completion: nil)
         }
         completion()
     }
@@ -403,57 +255,7 @@ extension AppDelegate: PKPushRegistryDelegate {
     func pushRegistry(_ registry: PKPushRegistry, didInvalidatePushTokenFor type: PKPushType) {
         print(type)
     }
-    
-    func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
-        if callManager.hasCall() { return false }
-        guard let intent = userActivity.interaction?.intent as? INStartAudioCallIntent,
-              let name = intent.contacts?.first?.personHandle?.value else { return false }
-        let uuid = UUID().uuidString
-        return true
-    }
-    
-}
-
-extension AppDelegate: VoiceDelegate {
-    func time(toSend data: Data) {
-        socketManager.sendVoiceData(data)
-    }
-}
-
-extension AppDelegate: FloatWindowTouchDelegate {
-    func tapPush(_ window: FloatWindow!, sender: String, content: String) {
-        self.tabBarController.selectedViewController = navigationController
-        if let contactVC = navigationController?.viewControllers.first as? ContactsTableViewController,
-           let index = contactVC.usernames.firstIndex(of: sender) {
-            contactVC.tableView(contactVC.tableView, didSelectRowAt: IndexPath(row: index, section: 0))
-        }
-    }
-    
-    func tapAlwaysDisplay(_ window: FloatWindow!, name: String) {
-        if window.alwayDisplayType == .shouldDismiss {
-            adapterFor(username: username).readyToSendVideoData = false
-            Recorder.sharedInstance().needSendVideo = false
-            guard let call = callManager.callWithUUID(socketManager.nowCallUUID ?? UUID()) else { return }
-            call.end()
-            callManager.end(call: call)
-            if #available(iOS 13.0, *) {
-#if !targetEnvironment(macCatalyst)
-                if let videoVC = self.navigationController?.visibleViewController as? VideoChatViewController {
-                    videoVC.dismiss(animated: true)
-                }
-#endif
-            } 
-            socketManager.nowCallUUID = nil
-            switcherWindow.isHidden = true
-        } else {
-            if Recorder.sharedInstance().nowRoute == .headphone {
-                Recorder.sharedInstance().setRouteToOption(.speaker)
-            } else {
-                Recorder.sharedInstance().setRouteToOption(.headphone)
-            }
-        }
-    }
-    
+        
 }
 
 // 通知快捷操作

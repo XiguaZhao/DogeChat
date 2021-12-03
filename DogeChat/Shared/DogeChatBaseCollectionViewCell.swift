@@ -24,13 +24,11 @@ class DogeChatBaseCollectionViewCell: UICollectionViewCell {
     
     @objc func forceDarkMode(noti: Notification) {
         let force = noti.object as! Bool
-        if #available(iOS 13.0, *) {
-            if force {
-                self.backgroundColor = .clear
-            } else {
-                self.backgroundColor = .systemBackground
-            }
+        if force {
+            self.backgroundColor = .clear
+        } else {
+            self.backgroundColor = .systemBackground
         }
     }
-
+    
 }

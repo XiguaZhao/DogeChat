@@ -16,7 +16,6 @@ enum HistoryVCType {
     case referView
 }
 
-@available(iOS 13.0, *)
 class HistoryVC: DogeChatViewController, DogeChatVCTableDataSource {
     
     enum Section {
@@ -122,29 +121,29 @@ class HistoryVC: DogeChatViewController, DogeChatVCTableDataSource {
     }
     
     private func configDataSource() {
-        tableView.register(MessageCollectionViewTextCell.self, forCellReuseIdentifier: MessageCollectionViewTextCell.cellID)
-        tableView.register(MessageCollectionViewImageCell.self, forCellReuseIdentifier: MessageCollectionViewImageCell.cellID)
-        tableView.register(MessageCollectionViewDrawCell.self, forCellReuseIdentifier: MessageCollectionViewDrawCell.cellID)
-        tableView.register(MessageCollectionViewTrackCell.self, forCellReuseIdentifier: MessageCollectionViewTrackCell.cellID)
-        tableView.register(MessageCollectionViewLivePhotoCell.self, forCellReuseIdentifier: MessageCollectionViewLivePhotoCell.cellID)
-        tableView.register(MessageCollectionViewVideoCell.self, forCellReuseIdentifier: MessageCollectionViewVideoCell.cellID)
+        tableView.register(MessageTextCell.self, forCellReuseIdentifier: MessageTextCell.cellID)
+        tableView.register(MessageImageCell.self, forCellReuseIdentifier: MessageImageCell.cellID)
+        tableView.register(MessageDrawCell.self, forCellReuseIdentifier: MessageDrawCell.cellID)
+        tableView.register(MessageTrackCell.self, forCellReuseIdentifier: MessageTrackCell.cellID)
+        tableView.register(MessageLivePhotoCell.self, forCellReuseIdentifier: MessageLivePhotoCell.cellID)
+        tableView.register(MessageVideoCell.self, forCellReuseIdentifier: MessageVideoCell.cellID)
         dataSource = UITableViewDiffableDataSource<Section, Message>(tableView: tableView) { [weak self] tableView, indexPath, message in
             let id: String
             switch message.messageType {
             case .text, .join, .voice:
-                id = MessageCollectionViewTextCell.cellID
+                id = MessageTextCell.cellID
             case .image:
-                id = MessageCollectionViewImageCell.cellID
+                id = MessageImageCell.cellID
             case .livePhoto:
-                id = MessageCollectionViewLivePhotoCell.cellID
+                id = MessageLivePhotoCell.cellID
             case .video:
-                id = MessageCollectionViewVideoCell.cellID
+                id = MessageVideoCell.cellID
             case .draw:
-                id = MessageCollectionViewDrawCell.cellID
+                id = MessageDrawCell.cellID
             case .track:
-                id = MessageCollectionViewTrackCell.cellID
+                id = MessageTrackCell.cellID
             }
-            let cell = tableView.dequeueReusableCell(withIdentifier: id, for: indexPath) as! MessageCollectionViewBaseCell
+            let cell = tableView.dequeueReusableCell(withIdentifier: id, for: indexPath) as! MessageBaseCell
             cell.contactDataSource = self?.contactDataSource
             cell.indexPath = indexPath
             cell.tableView = tableView
@@ -202,7 +201,7 @@ class HistoryVC: DogeChatViewController, DogeChatVCTableDataSource {
     
     
     func requestPage(_ page: Int) {
-        socketForUsername(username).historyMessages(for: friend, pageNum: page)
+        socketForUsername(username)?.historyMessages(for: friend, pageNum: page)
     }
     
     @objc func refreshFooterAction() {
@@ -229,10 +228,9 @@ class HistoryVC: DogeChatViewController, DogeChatVCTableDataSource {
     
 }
 
-@available(iOS 13.0, *)
 extension HistoryVC: UITableViewDelegate, MessageTableViewCellDelegate {
     
-    func mediaViewTapped(_ cell: MessageCollectionViewBaseCell, path: String, isAvatar: Bool) {
+    func mediaViewTapped(_ cell: MessageBaseCell, path: String, isAvatar: Bool) {
         let browser = MediaBrowserViewController()
         if !isAvatar {
             let paths = (self.messages.filter { $0.messageType == .image || $0.messageType == .livePhoto || $0.messageType == .video }).map { $0.text }
@@ -244,26 +242,26 @@ extension HistoryVC: UITableViewDelegate, MessageTableViewCellDelegate {
             browser.imagePaths = [path]
         }
         browser.modalPresentationStyle = .fullScreen
-        AppDelegate.shared.navigationController?.present(browser, animated: true, completion: nil)
+        self.navigationController?.present(browser, animated: true, completion: nil)
     }
 
-    func emojiOutBounds(from cell: MessageCollectionViewBaseCell, gesture: UIGestureRecognizer) {
+    func emojiOutBounds(from cell: MessageBaseCell, gesture: UIGestureRecognizer) {
         
     }
     
-    func emojiInfoDidChange(from oldInfo: EmojiInfo?, to newInfo: EmojiInfo?, cell: MessageCollectionViewBaseCell) {
+    func emojiInfoDidChange(from oldInfo: EmojiInfo?, to newInfo: EmojiInfo?, cell: MessageBaseCell) {
         
     }
     
-    func pkViewTapped(_ cell: MessageCollectionViewBaseCell, pkView: UIView!) {
+    func pkViewTapped(_ cell: MessageBaseCell, pkView: UIView!) {
         
     }
     
-    func avatarDoubleTap(_ cell: MessageCollectionViewBaseCell) {
+    func avatarDoubleTap(_ cell: MessageBaseCell) {
         
     }
     
-    func sharedTracksTap(_ cell: MessageCollectionViewBaseCell, tracks: [Track]) {
+    func sharedTracksTap(_ cell: MessageBaseCell, tracks: [Track]) {
         
     }
     
@@ -271,11 +269,11 @@ extension HistoryVC: UITableViewDelegate, MessageTableViewCellDelegate {
         
     }
     
-    func longPressCell(_ cell: MessageCollectionViewBaseCell, ges: UILongPressGestureRecognizer!) {
+    func longPressCell(_ cell: MessageBaseCell, ges: UILongPressGestureRecognizer!) {
         
     }
     
-    func downloadSuccess(_ cell: MessageCollectionViewBaseCell?, message: Message) {
+    func downloadSuccess(_ cell: MessageBaseCell?, message: Message) {
         guard let cell = cell, cell.message == message else {
             return
         }
@@ -289,20 +287,20 @@ extension HistoryVC: UITableViewDelegate, MessageTableViewCellDelegate {
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         guard indexPath.row < messages.count else { return 0 }
-        return MessageCollectionViewBaseCell.height(for: messages[indexPath.row], username: username)
+        return MessageBaseCell.height(for: messages[indexPath.row], username: username)
     }
     
     func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        (cell as? MessageCollectionViewBaseCell)?.cleanEmojis()
-        (cell as? MessageCollectionViewImageCell)?.cleanAvatar()
-        (cell as? MessageCollectionViewImageCell)?.cleanAnimatedImageView()
+        (cell as? MessageBaseCell)?.cleanEmojis()
+        (cell as? MessageImageCell)?.cleanAvatar()
+        (cell as? MessageImageCell)?.cleanAnimatedImageView()
         (cell as? DogeChatTableViewCell)?.endDisplayBlock?(cell as! DogeChatTableViewCell, tableView)
     }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        (cell as? MessageCollectionViewBaseCell)?.addEmojis()
-        (cell as? MessageCollectionViewBaseCell)?.loadAvatar()
-        (cell as? MessageCollectionViewImageCell)?.loadImageIfNeeded()
+        (cell as? MessageBaseCell)?.addEmojis()
+        (cell as? MessageBaseCell)?.loadAvatar()
+        (cell as? MessageImageCell)?.loadImageIfNeeded()
         (cell as? DogeChatTableViewCell)?.willDisplayBlock?(cell as! DogeChatTableViewCell, tableView)
     }
 

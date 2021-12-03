@@ -33,14 +33,12 @@ extension ChatRoomViewController: UITableViewDragDelegate {
                 items.append(item)
             }
         } else if message.messageType == .draw {
-            if #available(iOS 13, *) {
-                if let url = fileURLAt(dirName: drawDir, fileName: (message.pkDataURL ?? "").components(separatedBy: "/").last ?? ""), let data = try? Data(contentsOf: url), let draw = try? PKDrawing(data: data) {
-                    #if !targetEnvironment(macCatalyst)
-                    let image = draw.image(from: draw.bounds, scale: UIScreen.main.scale)
-                    let item = UIDragItem(itemProvider: NSItemProvider(object: image))
-                    items.append(item)
-                    #endif
-                }
+            if let url = fileURLAt(dirName: drawDir, fileName: (message.pkDataURL ?? "").components(separatedBy: "/").last ?? ""), let data = try? Data(contentsOf: url), let draw = try? PKDrawing(data: data) {
+#if !targetEnvironment(macCatalyst)
+                let image = draw.image(from: draw.bounds, scale: UIScreen.main.scale)
+                let item = UIDragItem(itemProvider: NSItemProvider(object: image))
+                items.append(item)
+#endif
             }
         }
         items.forEach( { $0.localObject = "local" })
@@ -49,7 +47,7 @@ extension ChatRoomViewController: UITableViewDragDelegate {
     
     func tableView(_ tableView: UITableView, dragPreviewParametersForRowAt indexPath: IndexPath) -> UIDragPreviewParameters? {
         let preview = UIDragPreviewParameters()
-        guard let cell = tableView.cellForRow(at: indexPath) as? MessageCollectionViewBaseCell else { return nil }
+        guard let cell = tableView.cellForRow(at: indexPath) as? MessageBaseCell else { return nil }
         let rect: CGRect? = cell.indicationNeighborView?.frame
         guard var rect = rect, let targetView = cell.indicationNeighborView else {
             return nil

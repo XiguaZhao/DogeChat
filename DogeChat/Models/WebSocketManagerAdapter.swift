@@ -24,7 +24,7 @@ func playSound(needSound: Bool = true) {
 class WebSocketManagerAdapter: NSObject {
     
     var username = ""
-    weak var sceneDelegate: AnyObject!
+    weak var sceneDelegate: SceneDelegate?
     @objc static var usernameToAdapter = [String : WebSocketManagerAdapter]()
     weak var manager: WebSocketManager!
     @objc var readyToSendVideoData = false {
@@ -43,11 +43,7 @@ class WebSocketManagerAdapter: NSObject {
     }
     
     var navigationController: UINavigationController? {
-        if #available(iOS 13, *) {
-            return (sceneDelegate as? SceneDelegate)?.navigationController
-        } else {
-            return AppDelegate.shared.navigationController
-        }
+        return (sceneDelegate as? SceneDelegate)?.navigationController
     }
     
     var chatRoom: ChatRoomViewController? {
@@ -100,6 +96,11 @@ class WebSocketManagerAdapter: NSObject {
     }
     
     @objc func sendToken(noti: Notification) {
+        if UIApplication.shared.supportsMultipleScenes,
+            let mainUsername = UserDefaults(suiteName: "group.dogechat.zhaoxiguang")?.value(forKey: "mainUsername") as? String,
+            mainUsername != self.username {
+            return
+        }
         manager.commonWebSocket.sendToken((UIApplication.shared.delegate as! AppDelegate).deviceToken)
         manager.commonWebSocket.sendVoipToken(AppDelegate.shared.pushKitToken)
     }
@@ -108,7 +109,7 @@ class WebSocketManagerAdapter: NSObject {
         let userInfo = noti.userInfo!
         let name = userInfo["name"] as! String
         let uuid = userInfo["uuid"] as! String
-        AppDelegate.shared.callManager.startCall(handle: name, uuid: uuid)
+        sceneDelegate?.callManager.startCall(handle: name, uuid: uuid)
     }
     
     @objc func preloadEmojiPaths(noti: Notification) {
@@ -148,8 +149,8 @@ class WebSocketManagerAdapter: NSObject {
 #endif
         }
         guard let _uuid = UUID(uuidString: uuid),
-              let call = AppDelegate.shared.callManager.callWithUUID(_uuid) else { return }
-        AppDelegate.shared.callManager.end(call: call)
+              let call = sceneDelegate?.callManager.callWithUUID(_uuid) else { return }
+        sceneDelegate?.callManager.end(call: call)
     }
     
     @objc func receiveDrawMessageUpdate(_ noti: Notification) {
@@ -164,11 +165,11 @@ class WebSocketManagerAdapter: NSObject {
         }
     }
     
-    func getDrawCell(for message: Message) -> MessageCollectionViewDrawCell? {
-        guard let chatVC = AppDelegate.shared.navigationController?.visibleViewController as? ChatRoomViewController else { return nil }
-        if let cells = chatVC.tableView.visibleCells as? [MessageCollectionViewBaseCell] {
+    func getDrawCell(for message: Message) -> MessageDrawCell? {
+        guard let chatVC = SceneDelegate.usernameToDelegate[self.username]?.navigationController.visibleViewController as? ChatRoomViewController else { return nil }
+        if let cells = chatVC.tableView.visibleCells as? [MessageBaseCell] {
             if let index = cells.firstIndex(where: { $0.message == message }) {
-                return cells[index] as? MessageCollectionViewDrawCell
+                return cells[index] as? MessageDrawCell
             }
         }
         return nil
@@ -178,24 +179,22 @@ class WebSocketManagerAdapter: NSObject {
         guard let json = noti.userInfo?["json"] as? JSON else { return }
         let uuid = json["uuid"].stringValue
         let _ = json["sender"].stringValue
-        if #available(iOS 13.0, *) {
-            guard let targetMessage = manager.messageManager.drawMessages.first(where: { $0.uuid == uuid} ) else { return }
-            if let base64Str = json["base64Str"].string {
-                guard let strokeData = Data(base64Encoded: base64Str) else { return }
-                if let newStroke = (try? PKDrawing(data: strokeData))?.transformed(using: CGAffineTransform(scaleX: targetMessage.drawScale, y: targetMessage.drawScale)) {
-                    if let cell = self.getDrawCell(for: targetMessage), let drawing = cell.getPKView()?.drawing {
-                        let wholeNewDrawing = drawing.appending(newStroke)
-                        cell.getPKView()!.drawing = wholeNewDrawing
-                        cell.getPKView()?.isScrollEnabled = true
-                        let newBounds = wholeNewDrawing.bounds
-                        let widthLack = newBounds.maxX > cell.getPKView()!.bounds.maxX
-                        let _ = newBounds.maxY > cell.getPKView()!.bounds.maxY
-                        if widthLack {
-                            cell.getPKView()!.drawing = cell.getPKView()!.drawing.transformed(using: CGAffineTransform(scaleX: 0.8, y: 0.8))
-                            targetMessage.drawScale *= 0.8
-                        }
-                        cell.getPKView()?.scrollRectToVisible(newStroke.bounds, animated: true)
+        guard let targetMessage = manager.messageManager.drawMessages.first(where: { $0.uuid == uuid} ) else { return }
+        if let base64Str = json["base64Str"].string {
+            guard let strokeData = Data(base64Encoded: base64Str) else { return }
+            if let newStroke = (try? PKDrawing(data: strokeData))?.transformed(using: CGAffineTransform(scaleX: targetMessage.drawScale, y: targetMessage.drawScale)) {
+                if let cell = self.getDrawCell(for: targetMessage), let drawing = cell.getPKView()?.drawing {
+                    let wholeNewDrawing = drawing.appending(newStroke)
+                    cell.getPKView()!.drawing = wholeNewDrawing
+                    cell.getPKView()?.isScrollEnabled = true
+                    let newBounds = wholeNewDrawing.bounds
+                    let widthLack = newBounds.maxX > cell.getPKView()!.bounds.maxX
+                    let _ = newBounds.maxY > cell.getPKView()!.bounds.maxY
+                    if widthLack {
+                        cell.getPKView()!.drawing = cell.getPKView()!.drawing.transformed(using: CGAffineTransform(scaleX: 0.8, y: 0.8))
+                        targetMessage.drawScale *= 0.8
                     }
+                    cell.getPKView()?.scrollRectToVisible(newStroke.bounds, animated: true)
                 }
             }
         }
@@ -205,7 +204,7 @@ class WebSocketManagerAdapter: NSObject {
 
 extension WebSocketManagerAdapter: VoiceDelegate, WebSocketDataDelegate {
     func didReceiveData(_ data: Data!) {
-        guard let data = data.decompress(withAlgorithm: .lzfse) else { return }
+        guard let data = data.decompress(withAlgorithm: .zlib) else { return }
         let range = NSRange(location: 12, length: 4)
         let typeData: NSData = (data as NSData).subdata(with: range) as NSData
         let type = Recorder.int(with: typeData as Data)
@@ -242,7 +241,7 @@ extension WebSocketManagerAdapter: VoiceDelegate, WebSocketDataDelegate {
     
     func time(toSend data: Data) {
         print("压缩前\(data)")
-        if let compressed = data.compress(withAlgorithm: .lzfse) {
+        if let compressed = data.compress(withAlgorithm: .zlib) {
             manager.sendVoiceData(compressed)
         }
     }

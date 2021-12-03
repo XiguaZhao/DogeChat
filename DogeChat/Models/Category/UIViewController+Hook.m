@@ -20,10 +20,8 @@
 }
 
 - (void)dogeChat_presentViewController:(UIViewController *)vc animated:(BOOL)animated completion:(void(^)(void))completion {
-    if (@available(iOS 13, *)) {
-        if (AppDelegate.shared.isForceDarkMode) {
-            vc.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
-        }
+    if (AppDelegate.shared.isForceDarkMode) {
+        vc.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
     }
     
     [self dogeChat_presentViewController:vc animated:animated completion:completion];

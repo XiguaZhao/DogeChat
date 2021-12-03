@@ -11,16 +11,12 @@ import UIKit
 class DogeChatStaticBlurView: UIView {
     
     weak var topConstraint: NSLayoutConstraint!
-
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         
         let blurView: UIVisualEffectView
-        if #available(iOS 13.0, *) {
-            blurView = UIVisualEffectView(effect: UIBlurEffect(style: .systemChromeMaterial))
-        } else {
-            blurView = UIVisualEffectView(effect: UIBlurEffect(style: .regular))
-        }
+        blurView = UIVisualEffectView(effect: UIBlurEffect(style: .systemChromeMaterial))
         self.addSubview(blurView)
         self.sendSubviewToBack(blurView)
         blurView.translatesAutoresizingMaskIntoConstraints = false

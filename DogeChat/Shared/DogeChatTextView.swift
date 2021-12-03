@@ -12,7 +12,7 @@ class DogeChatTextView: UITextView, UITextPasteDelegate {
     
     var isActive = false
     var ignoreActions = false
-
+    
     override init(frame: CGRect, textContainer: NSTextContainer?) {
         super.init(frame: frame, textContainer: textContainer)
         if AppDelegate.shared.immersive {
@@ -41,12 +41,10 @@ class DogeChatTextView: UITextView, UITextPasteDelegate {
     
     @objc func forceDarkMode(noti: Notification) {
         let force = AppDelegate.shared.isForceDarkMode
-        if #available(iOS 13.0, *) {
-            if force {
-                self.overrideUserInterfaceStyle = .dark
-            } else {
-                self.overrideUserInterfaceStyle = .unspecified
-            }
+        if force {
+            self.overrideUserInterfaceStyle = .dark
+        } else {
+            self.overrideUserInterfaceStyle = .unspecified
         }
     }
     

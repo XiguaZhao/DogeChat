@@ -17,11 +17,7 @@ let dirName = "trackInfos"
 var userID: String {
     var userID: String! = ""
     if let dict = (UserDefaults.standard.value(forKey: usernameToIdKey) as? [String: String]) {
-        if #available(iOS 13, *) {
-            userID = dict[(UIApplication.shared.windows.first(where: { $0.isKeyWindow })?.windowScene?.delegate as? SceneDelegate)?.username ?? ""] ?? UserDefaults.standard.value(forKey: "userID") as? String ?? ""
-        } else {
-            userID = UserDefaults.standard.value(forKey: "userID") as? String ?? ""
-        }
+        userID = dict[(UIApplication.shared.windows.first(where: { $0.isKeyWindow })?.windowScene?.delegate as? SceneDelegate)?.username ?? ""] ?? UserDefaults.standard.value(forKey: "userID") as? String ?? ""
     }
     return userID
 }
@@ -53,7 +49,7 @@ class PlayListViewController: DogeChatViewController, SelectContactsDelegate, Do
             
         }
     }
-    var manager: WebSocketManager {
+    var manager: WebSocketManager? {
         return socketForUsername(username)
     }
     var type: PlayListVCType = .normal
@@ -95,7 +91,7 @@ class PlayListViewController: DogeChatViewController, SelectContactsDelegate, Do
                 make?.edges.equalTo()(self?.view)
             }
         case .share:
-            AppDelegate.shared.navigationController?.interactivePopGestureRecognizer?.isEnabled = false
+            self.navigationController?.interactivePopGestureRecognizer?.isEnabled = false
             tableView.allowsMultipleSelection = true
             tableView.allowsMultipleSelectionDuringEditing = true
             let toolBar = UIToolbar()
@@ -136,7 +132,7 @@ class PlayListViewController: DogeChatViewController, SelectContactsDelegate, Do
     }
     
     deinit {
-        AppDelegate.shared.navigationController?.interactivePopGestureRecognizer?.isEnabled = true
+        SceneDelegate.usernameToDelegate[self.username]?.navigationController?.interactivePopGestureRecognizer?.isEnabled = true
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -286,15 +282,15 @@ class PlayListViewController: DogeChatViewController, SelectContactsDelegate, Do
     }
     
     func shareTracksToFriends(_ friends: [Friend], tracks: [Track]) {
-        if let tracksData = try? JSONEncoder().encode(selectedTracks) {
-            socketForUsername(username).uploadData(tracksData, path: "message/uploadImg", name: "upload", fileName: "", needCookie: true, contentType: "application/octet-stream", params: nil) { [weak self] task, data in
+        if let manager = manager, let tracksData = try? JSONEncoder().encode(selectedTracks) {
+            socketForUsername(username)?.uploadData(tracksData, path: "message/uploadImg", name: "upload", fileName: "", needCookie: true, contentType: "application/octet-stream", params: nil) { [weak self] task, data in
                 guard let self = self, let data = data else { return }
                 let json = JSON(data)
                 guard json["status"].stringValue == "success" else {
                     print("上传失败")
                     return
                 }
-                let filePath = socketForUsername(self.username).messageManager.encrypt.decryptMessage(json["filePath"].stringValue)
+                let filePath = manager.messageManager.encrypt.decryptMessage(json["filePath"].stringValue)
                 for friend in friends {
                     let message = Message(message: filePath,
                                           friend: friend,
@@ -302,10 +298,10 @@ class PlayListViewController: DogeChatViewController, SelectContactsDelegate, Do
                                           receiver: friend.username,
                                           receiverUserID: friend.userID,
                                           sender: self.username,
-                                          senderUserID: self.manager.messageManager.myId,
+                                          senderUserID: manager.messageManager.myId,
                                           messageType: .track,
                                           tracks: tracks)
-                    socketForUsername(self.username).commonWebSocket.sendWrappedMessage(message)
+                    manager.commonWebSocket.sendWrappedMessage(message)
                     (self.splitViewController as? DogeChatSplitViewController)?.findContactVC()?.receiveNewMessages([message], isGroup: message.option == .toGroup)
                 }
                 self.makeAutoAlert(message: "发送成功", detail: nil, showTime: 0.2) {
@@ -498,7 +494,6 @@ extension PlayListViewController: UITableViewDelegate, UITableViewDataSource {
         }
     }
     
-    @available(iOS 13.0, *)
     func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
         guard type == .normal else { return nil }
         return .init(identifier: ("\(indexPath.row)" as NSString), previewProvider: nil) { [weak self] elements -> UIMenu? in

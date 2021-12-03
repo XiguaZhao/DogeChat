@@ -54,13 +54,16 @@ extension ChatRoomViewController {
     func checkReferMessage(_ message: Message) {
         if message.referMessage != nil { return }
         if let referUUID = message.referMessageUUID {
-            manager.httpsManager.getMessagesWith(friendID: message.friend.userID, uuid: referUUID, pageNum: nil, pageSize: nil)
+            manager?.httpsManager.getMessagesWith(friendID: message.friend.userID, uuid: referUUID, pageNum: nil, pageSize: nil)
         }
     }
     
     // TODO: 发送文件的也需要加到未发送数组中（比如别的app拖过来这时候还没连接上）
     
     @objc func confirmSendPhoto() {
+        guard let manager = manager else {
+            return
+        }
         let infos = self.latestPickedImageInfos
         var newMessages = [Message]()
         for (_, imageURL, size) in infos {
@@ -74,7 +77,7 @@ extension ChatRoomViewController {
                 guard let self = self else { return }
                 let json = JSON(data as Any)
                 var filePath = json["filePath"].stringValue
-                filePath = socketForUsername(self.username).messageManager.encrypt.decryptMessage(filePath)
+                filePath = manager.messageManager.encrypt.decryptMessage(filePath)
                 message.imageURL = filePath
                 message.text = message.imageURL ?? ""
                 let dir = createDir(name: photoDir)
@@ -96,7 +99,7 @@ extension ChatRoomViewController {
         defer {
             self.voiceInfo = nil
         }
-        guard let info = self.voiceInfo else { return }
+        guard let manager = manager, let info = self.voiceInfo else { return }
         let message = processMessageString(for: "", type: .voice, imageURL: nil, videoURL: nil)
         message.voiceLocalPath = info.url
         message.voiceDuration = info.duration
@@ -106,7 +109,7 @@ extension ChatRoomViewController {
             guard let self = self, let data = data as? Data else { return }
             let json = JSON(data as Any)
             var voicePath = json["filePath"].stringValue
-            voicePath = socketForUsername(self.username).messageManager.encrypt.decryptMessage(voicePath)
+            voicePath = manager.messageManager.encrypt.decryptMessage(voicePath)
             print(voicePath)
             message.voiceURL = voicePath
             message.text = voicePath
@@ -126,7 +129,7 @@ extension ChatRoomViewController {
         defer {
             self.pickedVideos = nil
         }
-        guard let info = self.pickedVideos else { return }
+        guard let manager = manager, let info = self.pickedVideos else { return }
         let message = processMessageString(for: "", type: .video, imageURL: nil, videoURL: nil)
         message.videoLocalPath = info.url
         message.receiver = friendName
@@ -138,7 +141,7 @@ extension ChatRoomViewController {
             guard let self = self, let data = data as? Data else { return }
             let json = JSON(data as Any)
             var videoPath = json["filePath"].stringValue
-            videoPath = socketForUsername(self.username).messageManager.encrypt.decryptMessage(videoPath)
+            videoPath = manager.messageManager.encrypt.decryptMessage(videoPath)
             print(videoPath)
             message.text = videoPath
             message.videoURL = videoPath
@@ -155,6 +158,9 @@ extension ChatRoomViewController {
     }
     
     func sendLivePhotos() {
+        guard let manager = manager else {
+            return
+        }
         var newMessages = [Message]()
         for livePhoto in pickedLivePhotos {
             let message = processMessageString(for: "", type: .livePhoto, imageURL: nil, videoURL: nil)
@@ -169,15 +175,15 @@ extension ChatRoomViewController {
                 guard let self = self else { return }
                 let json = JSON(data as Any)
                 var imagePath = json["filePath"].stringValue
-                imagePath = socketForUsername(self.username).messageManager.encrypt.decryptMessage(imagePath)
+                imagePath = manager.messageManager.encrypt.decryptMessage(imagePath)
                 print(imagePath)
-                self.manager.uploadPhoto(imageUrl: livePhoto.videoURL, message: message, size: livePhoto.size) { [weak self] progress in
+                manager.uploadPhoto(imageUrl: livePhoto.videoURL, message: message, size: livePhoto.size) { [weak self] progress in
                     self?.downloadProgressUpdate(progress: progress.fractionCompleted, message: message)
                 } success: { [weak self] task, data in
                     guard let self = self else { return }
                     let json = JSON(data as Any)
                     var videoPath = json["filePath"].stringValue
-                    videoPath = socketForUsername(self.username).messageManager.encrypt.decryptMessage(videoPath)
+                    videoPath = manager.messageManager.encrypt.decryptMessage(videoPath)
                     print(videoPath)
                     message.imageURL = imagePath
                     message.videoURL = videoPath
@@ -204,7 +210,7 @@ extension ChatRoomViewController {
         playHaptic()
         let wrappedMessage = processMessageString(for: content, type: .text, imageURL: nil, videoURL: nil)
         insertNewMessageCell([wrappedMessage])
-        manager.commonWebSocket.sendWrappedMessage(wrappedMessage)
+        manager?.commonWebSocket.sendWrappedMessage(wrappedMessage)
     }
     
 }
@@ -213,7 +219,7 @@ extension ChatRoomViewController: EmojiViewDelegate {
     func didSelectEmoji(filePath: String) {
         let message = processMessageString(for: filePath, type: .image, imageURL: filePath, videoURL: nil)
         insertNewMessageCell([message])
-        manager.commonWebSocket.sendWrappedMessage(message)
+        manager?.commonWebSocket.sendWrappedMessage(message)
     }
 }
 

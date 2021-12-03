@@ -10,7 +10,6 @@ import UIKit
 import DogeChatNetwork
 import DogeChatUniversal
 
-@available(iOS 13.0, *)
 class DrawViewController: UIViewController, PKViewAutoOffsetDelegate {
     
     var username = ""
@@ -119,7 +118,7 @@ class DrawViewController: UIViewController, PKViewAutoOffsetDelegate {
         message.needRealTimeDraw = switcher.isOn
         if switcher.isOn && !didSendNeedRealTime {
             if let message = self.message {
-                socketForUsername(username).sendDrawMessage(message)
+                socketForUsername(username)?.sendDrawMessage(message)
             }
             didSendNeedRealTime = true
         }
