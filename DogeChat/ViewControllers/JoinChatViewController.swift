@@ -3,6 +3,8 @@ import UIKit
 import UserNotifications
 import DogeChatNetwork
 import RSAiOSWatchOS
+import AuthenticationServices
+import DogeChatUniversal
 
 class JoinChatViewController: UIViewController {
     
@@ -13,6 +15,7 @@ class JoinChatViewController: UIViewController {
     let loginButton = UIButton()
     let signUpButton = UIButton()
     let forgetButton = UIButton()
+    let signInWithAppleBtn = ASAuthorizationAppleIDButton(type: .default, style: .whiteOutline)
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -46,8 +49,8 @@ class JoinChatViewController: UIViewController {
         [loginButton, signUpButton, forgetButton].forEach { $0.titleLabel?.font = .systemFont(ofSize: 15) }
         buttonStackView.axis = .horizontal
         buttonStackView.spacing = 30
-        
-        let stackView = UIStackView(arrangedSubviews: [topStackView, buttonStackView])
+                
+        let stackView = UIStackView(arrangedSubviews: [topStackView, buttonStackView, signInWithAppleBtn])
         stackView.axis = .vertical
         stackView.spacing = 30
         view.addSubview(stackView)
@@ -71,22 +74,24 @@ class JoinChatViewController: UIViewController {
         loginButton.addTarget(self, action: #selector(loginTapped), for: .touchUpInside)
         signUpButton.addTarget(self, action: #selector(signUpTapped), for: .touchUpInside)
         forgetButton.addTarget(self, action: #selector(forgetTapped), for: .touchUpInside)
-        
+        signInWithAppleBtn.addTarget(self, action: #selector(handleAuthorizationAppleIDButtonPress), for: .touchDown)
+
         let tap = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         view.addGestureRecognizer(tap)
+        
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        if let username = UserDefaults.standard.value(forKey: "lastUsername") as? String,
-           let password = UserDefaults.standard.value(forKey: "lastPassword") as? String {
+        if let username = UserDefaults(suiteName: groupName)?.value(forKey: "sharedUsername") as? String,
+           let password = UserDefaults(suiteName: groupName)?.value(forKey: "sharedPassword") as? String {
             usernameTF.text = username
             passwordTF.text = password
         }
     }
     
     @objc func forgetTapped() {
-        navigationController?.pushViewController(SignUpViewController(type: .modify), animated: true)
+        self.navigationController?.setViewControllersForSplitVC(vcs: [self, SignUpViewController(type: .modify)])
     }
         
     @objc func loginTapped() {
@@ -95,13 +100,96 @@ class JoinChatViewController: UIViewController {
     }
     
     @objc func signUpTapped() {
-        navigationController?.pushViewController(SignUpViewController(), animated: true)
+        self.navigationController?.setViewControllersForSplitVC(vcs: [self, SignUpViewController()])
     }
     
     @objc func dismissKeyboard() {
         usernameTF.resignFirstResponder()
         passwordTF.resignFirstResponder()
     }
+    
+    
+    @objc func handleAuthorizationAppleIDButtonPress() {
+        let appleIDProvider = ASAuthorizationAppleIDProvider()
+        let request = appleIDProvider.createRequest()
+        request.requestedScopes = [.email]
+        
+        let authorizationController = ASAuthorizationController(authorizationRequests: [request])
+        authorizationController.delegate = self
+        authorizationController.presentationContextProvider = self
+        authorizationController.performRequests()
+    }
+
+}
+
+extension JoinChatViewController: ASAuthorizationControllerDelegate, ASAuthorizationControllerPresentationContextProviding {
+    
+    func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
+        return self.view.window!
+    }
+    
+    func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
+        if let credential = authorization.credential as? ASAuthorizationAppleIDCredential, let data = credential.identityToken, let token = String(data: data, encoding: .utf8) {
+            let manager = WebSocketManager()
+            manager.httpsManager.login(username: nil, password: nil, email: nil, token: token) { success, res in
+                if success {
+                    let info = manager.myInfo
+                    self.processLoginSuccess(username: info.username, password: info.password, manager: manager)
+                } else if res == "not found" {
+                    let alert = UIAlertController(title: "是否与已有账号绑定？", message: nil, preferredStyle: .alert)
+                    alert.addAction(UIAlertAction(title: "绑定", style: .default, handler: { [weak alert] _ in
+                        alert?.dismiss(animated: true, completion: {
+                            let bindAlert = UIAlertController(title: "请输入已有账号邮箱", message: nil, preferredStyle: .alert)
+                            bindAlert.addTextField { textField in
+                                textField.placeholder = "QQ邮箱可不输入后缀"
+                            }
+                            bindAlert.addTextField { textField in
+                                textField.placeholder = "输入原账号密码校验"
+                            }
+                            bindAlert.addAction(UIAlertAction(title: "完成", style: .default, handler: { [weak bindAlert] _ in
+                                if let tf = bindAlert?.textFields?.first, let text = tf.text, let password = bindAlert?.textFields?[1].text, !password.isEmpty, !text.isEmpty {
+                                    var email = text
+                                    if !text.contains("@") {
+                                        email += "@qq.com"
+                                    }
+                                    manager.httpsManager.login(username: nil, password: password, email: email, token: token) { success, _ in
+                                        if success {
+                                            let info = manager.myInfo
+                                            self.processLoginSuccess(username: info.username, password: info.password, manager: manager)
+                                        }
+                                    }
+                                }
+                            }))
+                            bindAlert.addAction(UIAlertAction(title: "取消", style: .cancel, handler: nil))
+                            self.present(bindAlert, animated: true, completion: nil)
+                        })
+                    }))
+                    alert.addAction(UIAlertAction(title: "我是新用户", style: .default, handler: { [weak alert] _ in
+                        alert?.dismiss(animated: true, completion: {
+                            let bindAlert = UIAlertController(title: "请设置用户名", message: nil, preferredStyle: .alert)
+                            bindAlert.addTextField { textField in
+                                textField.placeholder = "最好不要有emoji"
+                            }
+                            bindAlert.addAction(UIAlertAction(title: "完成", style: .default, handler: { [weak bindAlert] _ in
+                                if let tf = bindAlert?.textFields?.first, let text = tf.text {
+                                    manager.httpsManager.login(username: text, password: nil, email: nil, token: token) { success, _ in
+                                        let info = manager.myInfo
+                                        self.processLoginSuccess(username: info.username, password: info.password ?? "", manager: manager)
+                                    }
+                                }
+                            }))
+                            bindAlert.addAction(UIAlertAction(title: "取消", style: .cancel, handler: nil))
+                            self.present(bindAlert, animated: true, completion: nil)
+                        })
+                    }))
+                    self.present(alert, animated: true, completion: nil)
+                }
+            }
+        } else {
+            // 提示常规登录注册
+        }
+    }
+    
 }
 
 extension JoinChatViewController: UITextFieldDelegate {
@@ -119,34 +207,13 @@ extension JoinChatViewController: UITextFieldDelegate {
             return
         }
         guard !WebSocketManager.usersToSocketManager.keys.contains(username) else {
-            makeAutoAlert(message: "该账号已登录", detail: nil, showTime: 1, completion: nil)
+            makeAutoAlert(message: "该账号已登录", detail: isPad() ? "请从expose中恢复关闭的窗口" : nil, showTime: 1, completion: nil)
             return
         }
-        let manager: WebSocketManager
-        let adapter: WebSocketManagerAdapter
-        let socketManager = WebSocketManager()
-        adapter = WebSocketManagerAdapter(manager: socketManager, username: username)
-        manager = socketManager
-        socketManager.commonWebSocket.httpRequestsManager.encrypt = EncryptMessage()
-        manager.myInfo.username = username
-        manager.commonWebSocket.httpRequestsManager.login(username: username, password: password) { [weak self] res in
+        let manager = WebSocketManager()
+        manager.commonWebSocket.httpRequestsManager.login(username: username, password: password) { [weak self] res, _ in
             if res {
-                let contactsTVC = ContactsTableViewController()
-                contactsTVC.setUsername(username, andPassword: password)
-                WebSocketManager.usersToSocketManager[username] = manager
-                WebSocketManagerAdapter.usernameToAdapter[username] = adapter
-                SceneDelegate.usernameToDelegate[username] = (self?.view.window?.windowScene?.delegate as? SceneDelegate)
-                if let sceneDelegate = self?.view.window?.windowScene?.delegate as? SceneDelegate {
-                    sceneDelegate.socketManager = manager
-                    sceneDelegate.socketAdapter = adapter
-                    sceneDelegate.setUsernameAndPassword(username, password)
-                    sceneDelegate.contactVC = contactsTVC
-                }
-                updateUsernames(username)
-                self?.navigationController?.setViewControllers([contactsTVC], animated: false)
-                contactsTVC.loginAndConnect()
-                UserDefaults.standard.setValue(username, forKey: "lastUsername")
-                UserDefaults.standard.setValue(password, forKey: "lastPassword")
+                self?.processLoginSuccess(username: username, password: password, manager: manager)
             } else {
                 let alert = UIAlertController(title: "登录失败", message: "请重新检查输入", preferredStyle: .alert)
                 alert.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
@@ -155,6 +222,36 @@ extension JoinChatViewController: UITextFieldDelegate {
         }
     }
         
+    func processLoginSuccess(username: String, password: String?, manager: WebSocketManager) {
+        manager.commonWebSocket.httpRequestsManager.encrypt = EncryptMessage()
+        manager.myInfo.username = username
+        let adapter = WebSocketManagerAdapter(manager: manager, username: username)
+        let contactsTVC = ContactsTableViewController()
+        contactsTVC.setUsername(username, andPassword: password)
+        WebSocketManager.usersToSocketManager[username] = manager
+        WebSocketManagerAdapter.usernameToAdapter[username] = adapter
+        SceneDelegate.lock.lock()
+        SceneDelegate.usernameToDelegate[username] = (self.view.window?.windowScene?.delegate as? SceneDelegate)
+        SceneDelegate.lock.unlock()
+        if let sceneDelegate = self.view.window?.windowScene?.delegate as? SceneDelegate {
+            sceneDelegate.socketManager = manager
+            sceneDelegate.socketAdapter = adapter
+            sceneDelegate.setUsernameAndPassword(username, password)
+            sceneDelegate.contactVC = contactsTVC
+        }
+        updateUsernames(username)
+        self.navigationController?.setViewControllers([contactsTVC], animated: false)
+        contactsTVC.getContactsAndConnect()
+        UserDefaults(suiteName: groupName)?.setValue(username, forKey: "sharedUsername")
+        UserDefaults(suiteName: groupName)?.setValue(password, forKey: "sharedPassword")
+        let already = SelectShortcutTVC.namesAndPasswords
+        if already.count < 4 && !already.contains(where: { $0.username == username }){
+            let cookieInfo = CookieInfo(cookie: manager.cookie, userID: userID)
+            let info = AccountInfo(username: username, avatarURL: "", password: password, userID: userID, cookieInfo: cookieInfo)
+            SelectShortcutTVC.namesAndPasswords.append(info)
+            SelectShortcutTVC.updateShortcuts()
+        }
+    }
 }
 
 class TextField: UITextField {

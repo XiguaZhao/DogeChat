@@ -32,7 +32,6 @@ class MediaLoader: NSObject, URLSessionDownloadDelegate {
     var cache = [String : Data]()
     var cacheSize = [String : Int]()
     let lock = NSLock()
-    let dictLock = NSLock()
     lazy var session: URLSession = {
         let config: URLSessionConfiguration
         if self.type == .background {
@@ -140,7 +139,9 @@ class MediaLoader: NSObject, URLSessionDownloadDelegate {
             print("下载失败")
             if let url = task.originalRequest?.url {
                 let fileName = url.lastPathComponent.replacingOccurrences(of: "%2B", with: "+")
-                downloadingInfos.remove(key: fileName)
+                DispatchQueue.main.async {
+                    self.downloadingInfos.remove(key: fileName)
+                }
             }
         }
     }
@@ -148,13 +149,16 @@ class MediaLoader: NSObject, URLSessionDownloadDelegate {
     func urlSession(_ session: URLSession, downloadTask: URLSessionDownloadTask, didFinishDownloadingTo location: URL) {
         guard let sourceURL = downloadTask.originalRequest?.url else { return }
         let fileName = sourceURL.lastPathComponent.replacingOccurrences(of: "%2B", with: "+")
-        dictLock.lock()
-        guard (downloadTask.response as? HTTPURLResponse)?.statusCode ?? 0 == 200, let type = downloadingInfos[fileName]?.first?.type else  {
-            downloadingInfos.removeValue(forKey: fileName)
-            dictLock.unlock()
+        var type: MessageType?
+        syncOnMainThread {
+            type = downloadingInfos[fileName]?.first?.type
+        }
+        guard (downloadTask.response as? HTTPURLResponse)?.statusCode ?? 0 == 200, let type = type else  {
+            DispatchQueue.main.async {
+                self.downloadingInfos.removeValue(forKey: fileName)
+            }
             return
         }
-        dictLock.unlock()
         var data: Data!
         var image: UIImage?
         if type == .image {

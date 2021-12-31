@@ -1,9 +1,15 @@
 # Uncomment the next line to define a global platform for your project
 # platform :ios, '9.0'
 use_modular_headers!
+
+def shared_pods
+  pod 'DogeChatUniversal', :path => '/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/DogeChatUniversal'
+end
+
 target 'DogeChat' do
   # Comment the next line if you don't want to use dynamic frameworks
 #  use_frameworks!
+shared_pods
 pod 'DACircularProgress'
 pod 'MJRefresh'
 pod 'AFNetworking'
@@ -13,29 +19,25 @@ pod 'FLAnimatedImage', :path => '/Users/zhaoxiguang/Library/Mobile Documents/com
 pod 'SDWebImage'
 pod 'Masonry'
 pod 'DogeChatNetwork', :path => '/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/DogeChatNetwork'
-pod 'DogeChatUniversal', :path => '/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/DogeChatUniversal'
-pod 'LookinServer'
-pod 'ReachabilitySwift'
+pod 'LookinServer', :configurations => ['Debug']
 pod 'RSAiOSWatchOS', :path => '/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/RSAiOSWatchOS'
-pod 'GzipSwift'
 pod 'DataCompression'
 end
 
 
 target 'DogeChatWatch Extension' do
   platform :watchos, '7.0'
-  pod 'DogeChatUniversal', :path => '/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/DogeChatUniversal'
+  shared_pods
   pod 'AFNetworking'
   pod 'SwiftyJSON', :git => 'https://github.com/SwiftyJSON/SwiftyJSON.git', :commit => '2b6054efa051565954e1d2b9da831680026cd768'
   pod 'RSAiOSWatchOS', :path => '/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/RSAiOSWatchOS'
 end
 
 target 'mynotification' do
-  pod 'DogeChatUniversal', :path => '/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/DogeChatUniversal'
+  shared_pods
 end
 
 target 'DogeChatSiri' do
-  pod 'DogeChatUniversal', :path => '/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/DogeChatUniversal'
-  pod 'DogeChatNetwork', :path => '/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/DogeChatNetwork'
+  shared_pods
   pod 'RSAiOSWatchOS', :path => '/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/RSAiOSWatchOS'
 end

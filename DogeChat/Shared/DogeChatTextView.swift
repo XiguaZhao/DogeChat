@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Foundation
 
 class DogeChatTextView: UITextView, UITextPasteDelegate {
     
@@ -18,8 +19,8 @@ class DogeChatTextView: UITextView, UITextPasteDelegate {
         if AppDelegate.shared.immersive {
             self.backgroundColor = .clear
         }
-        NotificationCenter.default.addObserver(self, selector: #selector(forceDarkMode(noti:)), name: .immersive, object: nil)
         self.pasteDelegate = self
+        self.showsVerticalScrollIndicator = false
     }
     
     required init?(coder: NSCoder) {
@@ -39,16 +40,12 @@ class DogeChatTextView: UITextView, UITextPasteDelegate {
         return super.resignFirstResponder()
     }
     
-    @objc func forceDarkMode(noti: Notification) {
-        let force = AppDelegate.shared.isForceDarkMode
-        if force {
-            self.overrideUserInterfaceStyle = .dark
-        } else {
-            self.overrideUserInterfaceStyle = .unspecified
-        }
-    }
-    
     func textPasteConfigurationSupporting(_ textPasteConfigurationSupporting: UITextPasteConfigurationSupporting, transform item: UITextPasteItem) {
+        if item.itemProvider.hasItemConformingToTypeIdentifier("public.file-url") {
+            item.setNoResult()
+            NotificationCenter.default.post(name: .pasteImage, object: self, userInfo: ["itemProvider": item.itemProvider])
+            return
+        }
         if item.itemProvider.canLoadObject(ofClass: String.self) {
             _ = item.itemProvider.loadObject(ofClass: String.self) { str, error in
                 if let str = str {
@@ -59,7 +56,9 @@ class DogeChatTextView: UITextView, UITextPasteDelegate {
             }
         } else if item.itemProvider.canLoadObject(ofClass: UIImage.self) {
             item.setNoResult()
-            NotificationCenter.default.post(name: .pasteImage, object: self, userInfo: ["itemProvider": item.itemProvider])
+            if isPhone() {
+                NotificationCenter.default.post(name: .pasteImage, object: self, userInfo: ["itemProvider": item.itemProvider])
+            }
         }
     }
     

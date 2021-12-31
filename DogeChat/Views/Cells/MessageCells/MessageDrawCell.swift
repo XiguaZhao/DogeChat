@@ -83,6 +83,8 @@ class MessageDrawCell: MessageBaseCell {
         }
         pkView.isScrollEnabled = false
         pkView.drawingGestureRecognizer.isEnabled = false
+        pkView.showsHorizontalScrollIndicator = false
+        pkView.showsVerticalScrollIndicator = false
         self.contentView.addSubview(pkView)
         tapGes = UITapGestureRecognizer(target: self, action: #selector(pkViewTapAction(_:)))
         contentView.addGestureRecognizer(tapGes)

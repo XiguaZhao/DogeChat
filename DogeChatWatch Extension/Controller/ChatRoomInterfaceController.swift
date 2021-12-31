@@ -19,22 +19,9 @@ func syncOnMain(_ block: () -> Void) {
     }
 }
 
-func contentForSpecialType(_ message: Message?) -> String {
-    guard let message = message else { return "" }
-    switch message.messageType {
-    case .text, .join:
-        return message.text
-    case .image, .livePhoto:
-        return "[图片]"
-    case .draw:
-        return "[速绘]"
-    case .video:
-        return "[视频]"
-    case .track:
-        return "[歌曲分享]"
-    case .voice:
-        return "[语音]"
-    }
+func contentForSpecialType(_ message: Message?) -> String? {
+    guard let message = message else { return nil }
+    return message.summary()
 }
 
 class ChatRoomInterfaceController: WKInterfaceController {
@@ -107,14 +94,19 @@ class ChatRoomInterfaceController: WKInterfaceController {
     
     override func didAppear() {
         super.didAppear()
-        let userActivity = NSUserActivity(activityType: "com.zhaoxiguang.dogechat")
+        let userActivity = NSUserActivity(activityType: userActivityID)
         userActivity.title = "ChatRoom"
-        userActivity.userInfo = ["username": manager.commonSocket.myName,
-                                 "password": manager.messageManager.getPassword(),
-                                 "friendID": friend.userID]
-        userActivity.isEligibleForHandoff = true
-        userActivity.requiredUserInfoKeys = ["username", "password", "friendID"]
-        userActivity.becomeCurrent()
+        let modal = UserActivityModal(username: manager.httpManager.myName,
+                                      password: manager.messageManager.getPassword(),
+                                      cookie: manager.httpManager.cookie,
+                                      userID: manager.httpManager.accountInfo.userID,
+                                      friendID: friend.userID,
+                                      avatarURL: manager.httpManager.accountInfo.avatarURL)
+        if let data = try? JSONEncoder().encode(modal) {
+            userActivity.userInfo = ["data": data]
+            userActivity.isEligibleForHandoff = true
+            userActivity.becomeCurrent()
+        }
         self.update(userActivity)
     }
     
@@ -202,9 +194,7 @@ class ChatRoomInterfaceController: WKInterfaceController {
                 self.table.scrollToRow(at: self.messages.count - 1)
             }
             isFirstTimeFetch = false
-        } else {
-            self.table.scrollToRow(at: oldIndex)
-        }
+        } 
     }
     
     

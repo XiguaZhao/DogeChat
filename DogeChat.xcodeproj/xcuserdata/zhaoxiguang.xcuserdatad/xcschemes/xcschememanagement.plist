@@ -23,6 +23,13 @@
 			<key>orderHint</key>
 			<integer>0</integer>
 		</dict>
+		<key>DogeChatDesktopWidgetExtension.xcscheme_^#shared#^_</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+			<key>orderHint</key>
+			<integer>11</integer>
+		</dict>
 		<key>DogeChatMac.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>isShown</key>
@@ -30,10 +37,15 @@
 			<key>orderHint</key>
 			<integer>8</integer>
 		</dict>
-		<key>DogeChatSiri.xcscheme_^#shared#^_</key>
+		<key>DogeChatShare.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>orderHint</key>
 			<integer>36</integer>
+		</dict>
+		<key>DogeChatSiri.xcscheme_^#shared#^_</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>12</integer>
 		</dict>
 		<key>DogeChatSiriUI.xcscheme_^#shared#^_</key>
 		<dict>
@@ -132,6 +144,11 @@
 			<true/>
 		</dict>
 		<key>07C6AF7C247D1AF10007222F</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>07D0FB7B2749403F00B34FE4</key>
 		<dict>
 			<key>primary</key>
 			<true/>

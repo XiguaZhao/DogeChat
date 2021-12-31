@@ -14,15 +14,7 @@ class IntentHandler: INExtension, INSendMessageIntentHandling {
     
     var receiver: String?
     var text: String?
-    let httpManager = HttpRequestsManager()
-    let messageManager = MessageManager()
-    
-    override init() {
-        super.init()
-        httpManager.messageManager = messageManager
-        messageManager.httpRequestsManager = httpManager
-        messageManager.encrypt = EncryptMessage()
-    }
+    let httpMessage = HttpMessage()
     
     override func handler(for intent: INIntent) -> Any {
         // This is the default implementation.  If you want different objects to handle different intents,
@@ -66,42 +58,32 @@ class IntentHandler: INExtension, INSendMessageIntentHandling {
     
     func handle(intent: INSendMessageIntent, completion: @escaping (INSendMessageIntentResponse) -> Void) {
         // Implement your application logic to send a message here.
-        if let username = UserDefaults(suiteName: "group.dogechat.zhaoxiguang")?.value(forKey: "sharedUsername") as? String,
-           let password = UserDefaults(suiteName: "group.dogechat.zhaoxiguang")?.value(forKey: "sharedPassword") as? String,
-           let text = self.text,
+
+        if  let text = self.text,
            let receiver = self.receiver {
-            let httpManager = self.httpManager
-            httpManager.login(username: username, password: password) { success in
-                if success {
-                    httpManager.getContacts { friends, error in
-                        if error == nil {
-                            httpManager.getPublicKey { pubKey in
-                                if pubKey != nil {
-                                    if let friend = httpManager.friends.first(where: { $0.nickName == receiver || $0.username == receiver }) {
-                                        let message = Message(message: text, friend: friend, messageSender: .ourself, receiver: receiver, receiverUserID: friend.userID, sender: httpManager.myName, senderUserID: httpManager.myId, messageType: .text)
-                                        httpManager.sendMessage(message) { success in
-                                            if success {
-                                                let userActivity = NSUserActivity(activityType: "INSendMessageIntent")
-                                                userActivity.title = "ChatRoom"
-                                                userActivity.userInfo = ["username": username,
-                                                                         "password": password,
-                                                                         "friendID": friend.userID]
-                                                completion(INSendMessageIntentResponse(code: .success, userActivity: userActivity))
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
+            httpMessage.sendText(text, to: receiver) { [weak self] success, friend in
+                if success, let myAccountInfo = self?.httpMessage.httpManager.accountInfo, let friend = friend {
+                    let userActivity = NSUserActivity(activityType: "INSendMessageIntent")
+                    userActivity.title = "ChatRoom"
+                    let modal = UserActivityModal(username: myAccountInfo.username,
+                                                  password: myAccountInfo.password,
+                                                  cookie: myAccountInfo.cookieInfo?.cookie,
+                                                  userID: myAccountInfo.userID,
+                                                  friendID: friend.userID,
+                                                  avatarURL: myAccountInfo.avatarURL)
+                    if let data = try? JSONEncoder().encode(modal) {
+                        userActivity.userInfo = ["data": data]
                     }
+                    completion(INSendMessageIntentResponse(code: .success, userActivity: userActivity))
+                } else {
+                    completion(INSendMessageIntentResponse(code: .failure, userActivity: nil))
                 }
             }
         } else {
             completion(INSendMessageIntentResponse(code: .failure, userActivity: nil))
         }
     }
-    
+        
     
 }
 
-extension EncryptMessage: RSAEncryptProtocol {}

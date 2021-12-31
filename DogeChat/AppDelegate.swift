@@ -21,6 +21,9 @@ enum PushAction: String {
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
     
+    static let mediaBrowserWindow = "mediaBrowserWindow"
+    static let chatRoomWindow = "chatRoomWindow"
+    
     var deviceToken: String?
     var pushKitToken: String?
     var nowCallUUID: UUID?
@@ -28,7 +31,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var backgroundSessionCompletionHandler: (() -> Void)?
     let voipRegistry = PKPushRegistry(queue: DispatchQueue.main)
     var lastAppEnterBackgroundTime = NSDate().timeIntervalSince1970
-    var lastUserInterfaceStyle: UIUserInterfaceStyle = .unspecified
+    var latestRemoteNotiInfo: RemoteNotificationInfo? {
+        didSet {
+            if let latestRemoteNotiInfo = latestRemoteNotiInfo {
+                DispatchQueue.main.async {
+                    NotificationCenter.default.post(name: .remoteNotiInfoSet, object: latestRemoteNotiInfo)
+                }
+            }
+        }
+    }
     var immersive: Bool {
         fileURLAt(dirName: "customBlur", fileName: userID) != nil || (PlayerManager.shared.isPlaying && UserDefaults.standard.bool(forKey: "immersive"))
     }
@@ -40,14 +51,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        UserDefaults(suiteName: "group.dogechat.zhaoxiguang")?.set(true, forKey: "hostActive")
+        UserDefaults(suiteName: groupName)?.set(true, forKey: "hostActive")
         registerPushAction()
         if UserDefaults.standard.value(forKey: "forceDarkMode") == nil {
             UserDefaults.standard.setValue(true, forKey: "forceDarkMode")
         }
         for session in UIApplication.shared.openSessions {
             if session.stateRestorationActivity == nil {
-                UIApplication.shared.requestSceneSessionDestruction(session, options: nil, errorHandler: nil)
+                UIApplication.shared.requestSceneSessionDestruction(session, options: nil, errorHandler: { error in
+                    print(error)
+                })
             }
         }
         let notificationOptions = launchOptions?[.remoteNotification]
@@ -73,7 +86,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             self?.backgroundSessionCompletionHandler?()
         }
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-            if UserDefaults.standard.value(forKey: "lastUsername") != nil {
+            if UserDefaults(suiteName: groupName)?.value(forKey: "sharedUsername") != nil {
                 INPreferences.requestSiriAuthorization { status in
                     print("授权状态")
                     print(status)
@@ -81,7 +94,27 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             }
         }
         
+        NotificationCenter.default.addObserver(self, selector: #selector(backgroundImageChangeNoti(_:)), name: .backgroundImageChanged, object: nil)
+        
         return true
+    }
+    
+    @objc func backgroundImageChangeNoti(_ noti: Notification) {
+        guard let url = noti.userInfo?["url"] as? String else { return }
+        if url.isEmpty {
+            deleteFile(dirName: "customBlur", fileName: userID)
+            PlayerManager.shared.customImage = nil
+            return
+        }
+        MediaLoader.shared.requestImage(urlStr: url, type: .image, completion: { image, data, _ in
+            if let data = data {
+                saveFileToDisk(dirName: "customBlur", fileName: userID, data: data)
+            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                PlayerManager.shared.blurSource = .customBlur
+                PlayerManager.shared.customImage = image
+            }
+        }, progress: nil)
     }
     
     func checkIfShouldRemoveCache() {
@@ -100,16 +133,28 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func application(_ application: UIApplication, didDiscardSceneSessions sceneSessions: Set<UISceneSession>) {
-        
     }
     
     func applicationWillTerminate(_ application: UIApplication) {
-        UserDefaults(suiteName: "group.dogechat.zhaoxiguang")?.set(false, forKey: "hostActive")
+        UserDefaults(suiteName: groupName)?.set(false, forKey: "hostActive")
+        for sceneDelegate in SceneDelegate.usernameToDelegate.values {
+            if let friends = sceneDelegate.contactVC?.friends, !friends.isEmpty, let userID = sceneDelegate.socketManager?.myInfo.userID, !userID.isEmpty {
+                saveFriendsToDisk(friends, userID: userID)
+            }
+        }
+        if let maxID = SceneDelegate.usernameToDelegate.first?.value.socketManager?.messageManager.maxId {
+            UserDefaults.standard.set(maxID, forKey: "maxID")
+        }
     }
     
     func application(_ application: UIApplication,
                      configurationForConnecting connectingSceneSession: UISceneSession,
                      options: UIScene.ConnectionOptions) -> UISceneConfiguration {
+        if options.userActivities.first?.title == Self.chatRoomWindow {
+            return UISceneConfiguration(name: "ChatRoom", sessionRole: connectingSceneSession.role)
+        } else if options.userActivities.first?.title == Self.mediaBrowserWindow {
+            return UISceneConfiguration(name: "MediaBrowser", sessionRole: connectingSceneSession.role)
+        }
         return UISceneConfiguration(name: "Default Configuration", sessionRole: connectingSceneSession.role)
     }
         
@@ -198,13 +243,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         guard let userInfo = response.notification.request.content.userInfo as? [String: AnyObject],
               let aps = userInfo["aps"] as? [String: AnyObject] else { return }
         SceneDelegate.usernameToDelegate.first?.value.notificationManager.processRemoteNotification(aps)
-        
+        self.latestRemoteNotiInfo = NotificationManager.getRemoteNotiInfo(aps)
         switch response.actionIdentifier {
         case "REPLY_ACTION":
-            if let textResponse = response as? UNTextInputNotificationResponse {
-                SceneDelegate.usernameToDelegate.first?.value.notificationManager.actionCompletionHandler = completionHandler
+            if let textResponse = response as? UNTextInputNotificationResponse,
+                let username = getUsernameAndPassword()?.username,
+                let sceneDelegate = SceneDelegate.usernameToDelegate[username] {
                 let input = textResponse.userText
-                SceneDelegate.usernameToDelegate.first?.value.notificationManager.processReplyAction(replyContent: input)
+                sceneDelegate.notificationManager.actionCompletionHandler = completionHandler
+                sceneDelegate.notificationManager.processReplyAction(replyContent: input)
             }
         case "DO_NOT_DISTURT_ACTION":
             break

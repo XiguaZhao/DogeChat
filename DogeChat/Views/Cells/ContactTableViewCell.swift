@@ -41,17 +41,21 @@ class ContactTableViewCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         self.backgroundColor = .clear
-        nameLabel.font = UIFont.systemFont(ofSize: 15)
+        nameLabel.font = UIFont.preferredFont(forTextStyle: .body)//UIFont.systemFont(ofSize: 15)
         
         latestMessageLabel.textColor = .lightGray
         latestMessageLabel.numberOfLines = 1
         latestMessageLabel.lineBreakMode = .byTruncatingTail
-        latestMessageLabel.font = UIFont.systemFont(ofSize: nameLabel.font.pointSize - 3)
+        latestMessageLabel.font = .preferredFont(forTextStyle: .footnote)// UIFont.systemFont(ofSize: nameLabel.font.pointSize - 3)
         
         avatarImageView.layer.masksToBounds = true
-        avatarImageView.layer.cornerRadius = (ContactTableViewCell.cellHeight - avataroffset) / 2
+        avatarImageView.layer.cornerRadius = 24
         avatarImageView.contentMode = .scaleAspectFill
         avatarImageView.isUserInteractionEnabled = true
+        
+        avatarImageView.mas_makeConstraints { make in
+            make?.width.height().mas_equalTo()(48)
+        }
         
         labelStackView = UIStackView(arrangedSubviews: [nameLabel, latestMessageLabel])
         labelStackView.axis = .vertical
@@ -64,9 +68,10 @@ class ContactTableViewCell: UITableViewCell {
         contentView.addSubview(stackView)
         stackView.mas_makeConstraints { [weak self] make in
             guard let self = self else { return }
-            make?.centerY.equalTo()(self.contentView.mas_centerY)
             make?.leading.equalTo()(self.contentView.mas_leading)?.offset()(15)
-            make?.trailing.equalTo()(self.contentView.mas_trailing)?.offset()(-40)
+            make?.trailing.equalTo()(self.contentView.mas_trailing)
+            make?.top.equalTo()(self.contentView)?.offset()(tableViewCellTopBottomPadding)
+            make?.bottom.equalTo()(self.contentView)?.offset()(-tableViewCellTopBottomPadding)
         }
         
         unreadLabel.layer.masksToBounds = true
@@ -84,6 +89,7 @@ class ContactTableViewCell: UITableViewCell {
         avatarImageView.image = nil
         avatarImageView.animatedImage = nil
         unreadLabel.isHidden = true
+        latestMessageLabel.text = nil
     }
     
     required init?(coder: NSCoder) {
@@ -92,17 +98,13 @@ class ContactTableViewCell: UITableViewCell {
     
     override func layoutSubviews() {
         super.layoutSubviews()
-        avatarImageView.mas_updateConstraints { [weak self] make in
-            make?.width.mas_equalTo()(ContactTableViewCell.cellHeight - avataroffset)
-            make?.width.mas_equalTo()(self?.avatarImageView.mas_height)
-        }
     }
-    
+        
     @objc func avatarTapAction(_ tap: UITapGestureRecognizer) {
 //        delegate?.avatarTapped(self, path: info.avatarUrl)
     }
     
-    func apply(_ info: Friend, titleMore: String? = nil, subTitle: String? = nil) {
+    func apply(_ info: Friend, titleMore: String? = nil, subTitle: String? = nil, hasAt: Bool = false) {
         self.info = info
         var title = info.username
         if let nickName = info.nickName, !nickName.isEmpty {
@@ -113,39 +115,30 @@ class ContactTableViewCell: UITableViewCell {
         }
         self.nameLabel.text = title
         var text = ""
+        var latestMessageText: String?
         if let message = info.latestMessage {
             if info.isGroup {
-                if let manager = manager,
-                    message.messageSender == .ourself,
-                   let myNameInGroup = manager.myInfo.nameInGroupsDict[info.userID] {
-                    text += (myNameInGroup + "：")
-                } else {
-                    text += "\(message.senderUsername)："
-                }
+                text += "\(message.senderUsername)："
             }
-            switch message.messageType {
-            case .draw:
-                text += "[速绘]"
-            case .image:
-                text += "[图片]"
-            case .livePhoto:
-                text += "[Live Photo]"
-            case .join, .text:
-                text += message.text
-            case .video:
-                text += "[视频]"
-            case .track:
-                text += "[歌曲分享]"
-            case .voice:
-                text += "[语音]"
-            }
-            latestMessageLabel.text = text
+            text += message.summary()
+            latestMessageText = text
             latestMessageLabel.isHidden = false
         } else if let subTitle = subTitle {
-            latestMessageLabel.text = subTitle
+            latestMessageText = subTitle
+            latestMessageLabel.isHidden = false
+        } else if let latestMessageStr = info.latestMessageString {
+            latestMessageText = latestMessageStr
             latestMessageLabel.isHidden = false
         } else {
             latestMessageLabel.isHidden = true
+        }
+        if let latestMessageText = latestMessageText {
+            let attrStr = NSMutableAttributedString()
+            if hasAt {
+                attrStr.append(NSAttributedString(string: "[有人@你]", attributes: [.foregroundColor : #colorLiteral(red: 0.9254902005, green: 0.2352941185, blue: 0.1019607857, alpha: 1)]))
+            }
+            attrStr.append(NSAttributedString(string: latestMessageText))
+            latestMessageLabel.attributedText = attrStr
         }
         avatarImageView.isHidden = info.avatarURL.isEmpty
         if !info.avatarURL.isEmpty {

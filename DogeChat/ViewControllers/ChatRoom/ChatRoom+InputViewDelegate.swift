@@ -15,7 +15,7 @@ import DogeChatNetwork
 extension ChatRoomViewController: MessageInputDelegate, VoiceRecordDelegate {
     
     func messageInputBarFrameChange(_ endFrame: CGRect, shouldDown: Bool, ignore: Bool) {
-        keyboardFrameChange(endFrame, shouldDown: shouldDown)
+        keyboardFrameChange(endFrame, shouldDown: shouldDown, duration: 0.3)
         self.ignoreKeyboardChange = ignore
     }
     
@@ -27,12 +27,9 @@ extension ChatRoomViewController: MessageInputDelegate, VoiceRecordDelegate {
         case .voice:
             voiceButtonTapped(button)
         case .camera:
-            imagePicker.sourceType = .camera
-            imagePicker.mediaTypes = UIImagePickerController.availableMediaTypes(for: .camera)!
-            imagePicker.videoQuality = .typeIFrame1280x720
-            imagePicker.cameraCaptureMode = .photo
-            self.present(imagePicker, animated: true, completion: nil)
+            cameraAction()
         case .photo:
+            imagePickerType = .image
             if #available(iOS 14, *) {
                 var config = PHPickerConfiguration()
                 config.filter = PHPickerFilter.any(of: [.images])
@@ -41,9 +38,10 @@ extension ChatRoomViewController: MessageInputDelegate, VoiceRecordDelegate {
                 picker.delegate = self
                 self.present(picker, animated: true, completion: nil)
             } else {
-                
+                self.present(imagePicker, animated: true, completion: nil)
             }
         case .livePhoto:
+            imagePickerType = .livePhoto
             if #available(iOS 14, *) {
                 var config = PHPickerConfiguration()
                 config.filter = PHPickerFilter.livePhotos
@@ -52,14 +50,11 @@ extension ChatRoomViewController: MessageInputDelegate, VoiceRecordDelegate {
                 picker.delegate = self
                 self.present(picker, animated: true, completion: nil)
             } else {
-                
+                imagePicker.mediaTypes = ["public.image", "com.apple.live-photo"]
+                self.present(imagePicker, animated: true, completion: nil)
             }
         case .video:
-            if #available(iOS 14.0, *) {
-                imagePicker.mediaTypes = [UTType.movie.identifier]
-            } else {
-                imagePicker.mediaTypes = ["public.movie"]
-            }
+            imagePicker.mediaTypes = ["public.movie"]
             self.present(imagePicker, animated: true, completion: nil)
         case .draw:
             let drawVC = DrawViewController()
@@ -73,7 +68,48 @@ extension ChatRoomViewController: MessageInputDelegate, VoiceRecordDelegate {
             self.navigationController?.present(drawVC, animated: true, completion: nil)
         case .add:
             addButtonTapped()
+        case .location:
+            locationAction()
+        case .at:
+            atAction()
         }
+    }
+    
+    func atAction() {
+        if let group = self.friend as? Group {
+            let selectVC = SelectContactsViewController(username: self.username, group: group, members: group.membersDict?.map({$0.value}) ?? self.groupMembers)
+            selectVC.delegate = self
+            self.present(selectVC, animated: true, completion: nil)
+        }
+    }
+    
+    func cameraAction() {
+        let imagePicker = UIImagePickerController()
+        imagePicker.delegate = self
+        imagePicker.sourceType = .camera
+        imagePicker.mediaTypes = UIImagePickerController.availableMediaTypes(for: .camera)!
+        imagePicker.videoQuality = .typeIFrame1280x720
+        imagePicker.cameraCaptureMode = .photo
+        self.present(imagePicker, animated: true, completion: nil)
+    }
+    
+    func locationAction() {
+        let locationVC = LocationVC()
+        locationVC.delegate = self
+        self.navigationController?.pushViewController(locationVC, animated: true)
+    }
+        
+    @objc func emojiButtonTapped() {
+        emojiSelectView.collectionView.reloadData()
+        manager?.getEmojis { _ in
+        }
+        if messageInputBar.emojiButton.image(for: .normal)?.accessibilityIdentifier == "pin" {
+            messageInputBar.emojiButtonStatus = .pin
+        }
+        let image = UIImage(systemName: "pin.circle.fill", withConfiguration: MessageInputView.largeConfig)
+        image?.accessibilityIdentifier = "pin"
+        messageInputBar.emojiButton.setImage(image, for: .normal)
+        
     }
     
     func addButtonTapped() {
@@ -82,24 +118,38 @@ extension ChatRoomViewController: MessageInputDelegate, VoiceRecordDelegate {
         let popover = actionSheet.popoverPresentationController
         popover?.sourceView = messageInputBar.addButton
         popover?.sourceRect = CGRect(x: 0, y: 0, width: 100, height: 100)
+        popover?.permittedArrowDirections = [.down]
         let startCallAction = { [weak self] in
             guard let self = self else { return }
             let uuid = UUID().uuidString
             self.manager?.sendCallRequst(to: self.friendName, uuid: uuid)
+            self.manager?.nowCallUUID = UUID(uuidString: uuid)
             SceneDelegate.usernameToDelegate[self.username]?.callManager.startCall(handle: self.friendName, uuid: uuid)
         }
-        if !isMac() {
+        if !friend.isGroup {
             actionSheet.addAction(UIAlertAction(title: "语音通话", style: .default, handler: {  (action) in
                 startCallAction()
             }))
-            actionSheet.addAction(UIAlertAction(title: "视频通话", style: .default, handler: { (action) in
-                startCallAction()
-                Recorder.sharedInstance().needSendVideo = true
-            }))
+            if debugUsers.contains(self.username) {
+                actionSheet.addAction(UIAlertAction(title: "视频通话", style: .default, handler: { (action) in
+                    startCallAction()
+                    Recorder.sharedInstance().needSendVideo = true
+                }))
+            }
         }
-        actionSheet.addAction(UIAlertAction(title: "Music", style: .default, handler: { [weak self] _ in
+        actionSheet.addAction(UIAlertAction(title: "Tracks Preview", style: .default, handler: { [weak self] _ in
             self?.shareMusic()
         }))
+        if messageInputBar.locationButton.isHidden {
+            actionSheet.addAction(UIAlertAction(title: "分享定位", style: .default, handler: { [weak self] _ in
+                self?.locationAction()
+            }))
+        }
+        if messageInputBar.cameraButton.isHidden {
+            actionSheet.addAction(UIAlertAction(title: "拍照/录像", style: .default, handler: { [weak self] _ in
+                self?.cameraAction()
+            }))
+        }
         actionSheet.addAction(UIAlertAction(title: "取消", style: .cancel, handler: nil))
         present(actionSheet, animated: true, completion: nil)
     }
@@ -140,8 +190,8 @@ extension ChatRoomViewController: MessageInputDelegate, VoiceRecordDelegate {
     }
     
     func voiceConfirmSend(_ url: URL, duration: Int) {
-        self.voiceInfo = (url, duration)
-        sendVoice()
+        self.messageSender.voiceInfo = (url, duration)
+        self.messageSender.sendVoice(friends: [friend])
     }
     
     @available(iOS 14, *)
@@ -149,25 +199,17 @@ extension ChatRoomViewController: MessageInputDelegate, VoiceRecordDelegate {
         picker.dismiss(animated: true, completion: nil)
         if results.isEmpty { return }
         let isLivePhotoOnly = picker.configuration.filter == .livePhotos
-        self.pickedLivePhotos.removeAll()
+        self.messageSender.pickedLivePhotos.removeAll()
         if isLivePhotoOnly {
-            let alert = makeAlert(message: "正在压缩" + "0/\(results.count)")
-            present(alert, animated: true, completion: nil)
             for result in results {
                 if result.itemProvider.canLoadObject(ofClass: PHLivePhoto.self) {
                     result.itemProvider.loadObject(ofClass: PHLivePhoto.self) {[self] livePhoto, error in
                         if let live = livePhoto as? PHLivePhoto {
-                            alert.title = "正在压缩" + "0/\(results.count)"
-                            LivePhotoGenerator().generate(for: live, windowWidth: AppDelegate.shared.widthFor(side: .right, username: self.username, view: self.view)) { livePhoto in
+                            LivePhotoGenerator().generate(for: live, windowWidth: self.tableView.frame.width) { livePhoto in
                                 let imageURL = livePhoto.value(forKey: "imageURL") as! URL
                                 let videoURL = livePhoto.value(forKey: "videoURL") as! URL
-                                self.pickedLivePhotos.append((imageURL, videoURL, livePhoto.size, livePhoto))
-                                alert.title = "正在压缩" + "\(self.pickedLivePhotos.count)/\(results.count)"
-                                if self.pickedLivePhotos.count == results.count {
-                                    alert.dismiss(animated: true) {
-                                        self.sendLivePhotos()
-                                    }
-                                }
+                                self.messageSender.pickedLivePhotos = [(imageURL, videoURL, livePhoto.size, livePhoto)]
+                                self.sendLivePhotos()
                             }
                         }
                     }
@@ -180,87 +222,55 @@ extension ChatRoomViewController: MessageInputDelegate, VoiceRecordDelegate {
     }
     
     func processItemProviders(_ items: [NSItemProvider]) {
-        for item in items {
-            item.loadObject(ofClass: UIImage.self) { [weak self] object, error in
-                if let image = object as? UIImage {
-                    if #available(iOS 14.0, *) {
-                        item.loadItem(forTypeIdentifier: UTType.gif.identifier, options: nil) { gif, error in
-                            if var gifUrl = gif as? URL {
-                                if gifUrl.absoluteString.contains("Pasteboard") || gifUrl.absoluteString.contains("NSItemProvider") || gifUrl.absoluteString.contains("DragUI") { //从剪贴板过来的
-                                    
-                                    if gifUrl.startAccessingSecurityScopedResource(),
-                                       let data = try? Data(contentsOf: gifUrl)
-                                        {
-                                        let id = UUID().uuidString
-                                        let newURL = createDir(name: pasteDir).appendingPathComponent(id).appendingPathExtension("gif")
-                                        saveFileToDisk(dirName: pasteDir, fileName: newURL.lastPathComponent, data: data)
-                                        gifUrl.stopAccessingSecurityScopedResource()
-                                        gifUrl = newURL
-                                    }
-                                }
-                                if let success = try? gifUrl.checkResourceIsReachable(), success {
-                                    self?.latestPickedImageInfos.append((image, gifUrl, image.size))
-                                } else {
-                                    self?.latestPickedImageInfos.append(compressImage(image))
-                                }
-                            } else {
-                                self?.latestPickedImageInfos.append(compressImage(image))
-                            }
-                            if self?.latestPickedImageInfos.count == items.count {
-                                self?.confirmSendPhoto()
-                            }
-                        }
-                    }
-                }
-            }
+        messageSender.processItemProviders(items, friends: [self.friend]) { messages in
+            self.insertNewMessageCell(messages)
         }
     }
-    
+        
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         if let type = info[.mediaType] as? String, type == "public.movie" {
             if let videoURL = info[.mediaURL] as? URL {
-                let dir = createDir(name: videoDir)
-                let uuid = UUID().uuidString
-                let newURL = dir.appendingPathComponent(uuid).appendingPathExtension("mov")
-                LivePhotoGenerator().compressVideo(withInputURL: videoURL, outputURL: newURL, quality: .quality540, compressType: .thirdParty) {
-                    self.pickedVideos = (newURL, self.resolutionForLocalVideo(url: newURL) ?? .zero)
-                    self.sendVideo()
-                }
+                self.messageSender.compressAndSendVideo(videoURL, friends: [friend], completion: nil)
             }
             picker.dismiss(animated: true, completion: nil)
             return
         }
-        
         guard let image = info[.originalImage] as? UIImage else {
             picker.dismiss(animated: true, completion: nil)
             return
         }
         var isGif = false
         var originalUrl: URL?
-        if let originalUrl_ = info[.imageURL] as? URL {
-            isGif = originalUrl_.absoluteString.hasSuffix(".gif")
-            originalUrl = originalUrl_
-        }
-        self.latestPickedImageInfos = [(isGif ? (nil, originalUrl!, image.size) : compressImage(image))]
-        picker.dismiss(animated: true) {
-            guard !isGif else {
-                self.confirmSendPhoto()
-                return
+        if imagePickerType == .image {
+            if let originalUrl_ = info[.imageURL] as? URL {
+                isGif = originalUrl_.absoluteString.hasSuffix(".gif")
+                originalUrl = originalUrl_
             }
-            let vc = ImageConfirmViewController()
-            if let image = self.latestPickedImageInfos.first?.image {
-                vc.image = image
-            } else {
-                vc.image = image
+            self.messageSender.latestPickedImageInfos = [(isGif ? (nil, originalUrl!, image.size) : compressImage(image))]
+            picker.dismiss(animated: true) {
+                guard !isGif && picker.sourceType != .camera else {
+                    self.confirmSendPhoto()
+                    return
+                }
+                let vc = ImageConfirmViewController()
+                if let image = self.messageSender.latestPickedImageInfos.first?.image {
+                    vc.image = image
+                } else {
+                    vc.image = image
+                }
+                self.navigationController?.pushViewController(vc, animated: true)
             }
-            self.navigationController?.pushViewController(vc, animated: true)
+        } else if imagePickerType == .livePhoto {
+            if let live = info[.livePhoto] as? PHLivePhoto {
+                LivePhotoGenerator().generate(for: live, windowWidth: self.tableView.frame.width) { livePhoto in
+                    let imageURL = livePhoto.value(forKey: "imageURL") as! URL
+                    let videoURL = livePhoto.value(forKey: "videoURL") as! URL
+                    self.messageSender.pickedLivePhotos = [(imageURL, videoURL, livePhoto.size, livePhoto)]
+                    self.sendLivePhotos()
+                }
+            }
         }
     }
     
-    private func resolutionForLocalVideo(url: URL) -> CGSize? {
-        guard let track = AVURLAsset(url: url).tracks(withMediaType: AVMediaType.video).first else { return nil }
-        let size = track.naturalSize.applying(track.preferredTransform)
-        return CGSize(width: abs(size.width), height: abs(size.height))
-    }
-
+    
 }

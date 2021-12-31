@@ -12,12 +12,32 @@ import UIKit
 
 extension ChatRoomViewController: MessageTableViewCellDelegate {
     
-    func downloadProgressUpdate(progress: Double, message: Message) {
+    func longPressAvatar(_ cell: MessageBaseCell, ges: UILongPressGestureRecognizer!) {
+        guard let group = self.friend as? Group, let manager = self.manager else { return }
+        if let index = tableView.indexPath(for: cell)?.row {
+            let message = messages[index]
+            if let friend = self.groupMembers?.first(where: { $0.userID == message.senderUserID }) {
+                atFriends([friend])
+            } else {
+                manager.httpsManager.getGroupMembers(group: group) { [weak self] members in
+                    guard let self = self else { return }
+                    self.groupMembers = members
+                    if let friend = members.first(where: { $0.userID == message.senderUserID }) {
+                        self.atFriends([friend])
+                    }
+                }
+            }
+        }
+    }
+    
+    func downloadProgressUpdate(progress: Double, messages: [Message]) {
         syncOnMainThread {
-            if let index = self.messages.firstIndex(where: { $0.uuid == message.uuid }) {
-                let hud = (self.tableView.cellForRow(at: IndexPath(row: index, section: 0)) as? MessageBaseCell)?.progress
-                hud?.isHidden = progress >= 1
-                hud?.setProgress(CGFloat(progress), animated: false)
+            for message in messages {
+                if let index = self.messages.firstIndex(where: { $0.uuid == message.uuid }) {
+                    let hud = (self.tableView.cellForRow(at: IndexPath(row: index, section: 0)) as? MessageBaseCell)?.progress
+                    hud?.isHidden = progress >= 1
+                    hud?.setProgress(CGFloat(progress), animated: false)
+                }
             }
         }
     }
@@ -32,21 +52,84 @@ extension ChatRoomViewController: MessageTableViewCellDelegate {
             cell.setNeedsLayout()
         }
     }
+    
+    func mapViewTap(_ cell: MessageBaseCell, latitude: Double, longitude: Double) {
+        let vc = LocationVC()
+        vc.apply(name: (cell as! MessageLocationCell).locationLabel.text ?? "", latitude: latitude, longitude: longitude, avatarURL: friend.avatarURL)
+        self.navigationController?.pushViewController(vc, animated: true)
+    }
+    
+    func textCellDoubleTap(_ cell: MessageBaseCell) {
+        if let text = cell.message?.text {
+            let vc = TextBrowerVC()
+            vc.setText(text)
+            self.navigationController?.pushViewController(vc, animated: true)
+        }
+    }
+    
+    func textCellSingleTap(_ cell: MessageBaseCell) {
+        if let text = cell.message?.text {
+            guard let textURL = text.webUrlify() else { return }
+            if isPad() {
+                if !isMac() {
+                    let userActivity = wrapMediaBrowserUserActivity(paths: nil, url: textURL, targetIndex: nil)
+                    let option = UIScene.ActivationRequestOptions()
+                    option.requestingScene = self.view.window?.windowScene
+                    UIApplication.shared.requestSceneSessionActivation(nil, userActivity: userActivity, options: option, errorHandler: nil)
+                } else {
+                    if let url = URL(string: textURL) {
+                        UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                    }
+                }
+            } else if isPhone() {
+                let vc = WebViewController()
+                vc.apply(url: textURL)
+                self.navigationController?.present(vc, animated: true, completion: nil)
+            }
+        }
+    }
         
     func mediaViewTapped(_ cell: MessageBaseCell, path: String, isAvatar: Bool) {
         messageInputBar.textViewResign()
         let browser = MediaBrowserViewController()
+        let paths: [String]
+        var targetIndex = 0
         if !isAvatar {
-            let paths = (self.messages.filter { $0.messageType == .image || $0.messageType == .livePhoto || $0.messageType == .video }).map { $0.text }
+            paths = (self.messages.filter { $0.messageType == .image || $0.messageType == .livePhoto || $0.messageType == .video }).map { $0.text }
             browser.imagePaths = paths
             if let index = paths.firstIndex(of: path) {
                 browser.targetIndex = index
+                targetIndex = index
             }
         } else {
+            paths = [path]
             browser.imagePaths = [path]
         }
         browser.modalPresentationStyle = .fullScreen
-        self.navigationController?.present(browser, animated: true, completion: nil)
+        if !isMac() {
+            self.navigationController?.present(browser, animated: true, completion: nil)
+        } else {
+            let option = UIScene.ActivationRequestOptions()
+            option.requestingScene = self.view.window?.windowScene
+            UIApplication.shared.requestSceneSessionActivation(nil, userActivity: self.wrapMediaBrowserUserActivity(paths: paths, targetIndex: targetIndex), options: option, errorHandler: nil)
+        }
+    }
+    
+    func wrapMediaBrowserUserActivity(paths: [String]?, url: String? = nil, targetIndex: Int? = 0) -> NSUserActivity {
+        let userActivity = NSUserActivity(activityType: userActivityID)
+        userActivity.title = AppDelegate.mediaBrowserWindow
+        var userInfo = [String: Any]()
+        if let paths = paths {
+            userInfo["paths"] = paths
+        }
+        if let targetIndex = targetIndex {
+            userInfo["index"] = targetIndex
+        }
+        if let url = url {
+            userInfo["url"] = url
+        }
+        userActivity.userInfo = userInfo
+        return userActivity
     }
 
     //MARK: PKView手写
@@ -89,9 +172,9 @@ extension ChatRoomViewController: MessageTableViewCellDelegate {
             messages[oldIndexPath.item].emojisInfo.remove(at: messageIndex)
             let newPoint = gesture.location(in: tableView.cellForRow(at: newIndexPath)?.contentView)
             emojiInfo.x = newPoint.x / UIScreen.main.bounds.width
-            emojiInfo.y = newPoint.y / MessageBaseCell.height(for: messages[newIndexPath.item], username: username)
+            emojiInfo.y = newPoint.y / MessageBaseCell.height(for: messages[newIndexPath.item], tableViewSize: tableView.frame.size)
             emojiInfo.lastModifiedBy = manager.messageManager.myName
-            emojiInfo.lastModifiedUserId = manager.myInfo.userID
+            emojiInfo.lastModifiedUserId = manager.myInfo.userID ?? ""
             messages[newIndexPath.item].emojisInfo.append(emojiInfo)
             needReload(indexPath: [newIndexPath, oldIndexPath])
             manager.sendEmojiInfos([messages[oldIndexPath.item], messages[newIndexPath.item]])
@@ -102,7 +185,7 @@ extension ChatRoomViewController: MessageTableViewCellDelegate {
         if let manager = manager, let indexPahth = tableView.indexPath(for: cell) {
             needReload(indexPath: [indexPahth])
             newInfo?.lastModifiedBy = manager.myName
-            newInfo?.lastModifiedUserId = manager.myInfo.userID
+            newInfo?.lastModifiedUserId = manager.myInfo.userID ?? ""
             manager.sendEmojiInfos([messages[indexPahth.item]])
         }
     }
@@ -174,7 +257,7 @@ extension ChatRoomViewController: MessageTableViewCellDelegate {
         revoke(message: messages[index])
     }
     
-    @objc func sendToOthersMenuItemAction(sender: UIMenuController) {
+    @objc func sendToOthersMenuItemAction(sender: UIMenuController?) {
         menuItemDone()
         guard let cell = activeMenuCell,
               let indexPath = tableView.indexPath(for: cell) else { return }

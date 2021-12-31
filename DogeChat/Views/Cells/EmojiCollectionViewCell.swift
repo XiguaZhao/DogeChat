@@ -42,6 +42,9 @@ class EmojiCollectionViewCell: DogeChatBaseCollectionViewCell {
         emojiView.layer.masksToBounds = true
         let longPress = UILongPressGestureRecognizer(target: self, action: #selector(longPressAction(_:)))
         emojiView.isUserInteractionEnabled = true
+        if isMac() {
+            longPress.isEnabled = false
+        }
         emojiView.addGestureRecognizer(longPress)
         
         contentView.addSubview(progress)

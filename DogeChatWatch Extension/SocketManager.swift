@@ -11,8 +11,7 @@ import AFNetworking
 import SwiftyJSON
 import DogeChatUniversal
 
-class SocketManager: NSObject, URLSessionDelegate, URLSessionWebSocketDelegate, DCWebSocketProtocol {
-    
+class SocketManager: NSObject, URLSessionDelegate, URLSessionWebSocketDelegate, DCWebSocketProtocol, DeviceInfoProvider {
     
     static let shared = SocketManager()
     var commonSocket: DogeChatWebSocket!
@@ -51,6 +50,10 @@ class SocketManager: NSObject, URLSessionDelegate, URLSessionWebSocketDelegate, 
     override init() {
         super.init()
         commonSocket = DogeChatWebSocket(socketProtocol: self)
+        httpManager.deviceInfoProvider = self
+        NotificationCenter.default.addObserver(forName: .cookieSet, object: nil, queue: .none) { noti in
+            MediaLoader.shared.cookie = noti.object as? String
+        }
     }
     
     func connect() {
@@ -63,9 +66,12 @@ class SocketManager: NSObject, URLSessionDelegate, URLSessionWebSocketDelegate, 
         guard !messageManager.cookie.isEmpty else {
             return
         }
-        var request = URLRequest(url: URL(string: "wss://121.5.152.193/webSocket?deviceType=3")!)
+        var request = URLRequest(url: URL(string: "wss://121.5.152.193/webSocket?deviceType=\(deviceType())")!)
         request.addValue("SESSION="+messageManager.cookie, forHTTPHeaderField: "Cookie")
         self.socket = session.webSocketTask(with: request)
+        DispatchQueue.main.async {
+            NotificationCenter.default.post(name: .connecting, object: self.httpManager.myName)
+        }
         socket.resume()
     }
     
@@ -104,10 +110,6 @@ class SocketManager: NSObject, URLSessionDelegate, URLSessionWebSocketDelegate, 
         }
     }
                 
-    public func postNotification(message: Message) {
-        NotificationCenter.default.post(name: .receiveNewMessage, object: message)
-    }
-    
     func sendText(_ text: String) {
         let message = URLSessionWebSocketTask.Message.string(text)
         self.socket.send(message) { _ in
@@ -142,4 +144,10 @@ class SocketManager: NSObject, URLSessionDelegate, URLSessionWebSocketDelegate, 
         let credential = URLCredential(trust: challenge.protectionSpace.serverTrust!)
         completionHandler(.useCredential, credential)
     }
+    
+    
+    func deviceType() -> Int {
+        return 3
+    }
+
 }

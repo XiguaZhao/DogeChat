@@ -175,7 +175,7 @@ inline static NSDictionary *lf_assetExportVideoConfig(CGSize size, LFAssetExport
     }
     
     return @{
-        AVVideoCodecKey: AVVideoCodecH264,
+        AVVideoCodecKey: AVVideoCodecTypeH264,
         AVVideoWidthKey:[NSNumber numberWithInteger:videoSize.width],
         AVVideoHeightKey:[NSNumber numberWithInteger:videoSize.height],
         AVVideoScalingModeKey:AVVideoScalingModeResizeAspectFill,

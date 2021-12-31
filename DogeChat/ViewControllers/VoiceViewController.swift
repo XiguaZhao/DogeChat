@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import DogeChatUniversal
 
 protocol VoiceRecordDelegate: AnyObject {
     func voiceConfirmSend(_ url: URL, duration: Int)

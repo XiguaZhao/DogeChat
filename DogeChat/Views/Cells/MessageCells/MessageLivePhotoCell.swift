@@ -10,7 +10,7 @@ import UIKit
 import DogeChatUniversal
 import PhotosUI
 
-class MessageLivePhotoCell: MessageBaseCell, PHLivePhotoViewDelegate {
+class MessageLivePhotoCell: MessageImageKindCell, PHLivePhotoViewDelegate {
 
     static let cellID = "MessageLivePhotoCell"
     
@@ -60,12 +60,7 @@ class MessageLivePhotoCell: MessageBaseCell, PHLivePhotoViewDelegate {
     override func layoutSubviews() {
         super.layoutSubviews()
         guard message != nil else { return }
-        let maxSize = CGSize(width: 2*(AppDelegate.shared.widthFor(side: .right, username: username, view: self)/3), height: CGFloat.greatestFiniteMagnitude)
-        let nameHeight = message.messageSender == .ourself ? 0 : (MessageBaseCell.height(forText: message.senderUsername, fontSize: 10, maxSize: maxSize) + 4 )
-        let height = contentView.bounds.height - 30 - nameHeight - (message.referMessage == nil ? 0 : ReferView.height + ReferView.margin)
-        let width = message.imageSize.width * height / message.imageSize.height
-        livePhotoView.bounds = CGRect(x: 0, y: 0, width: width, height: height)
-        livePhotoView.layer.cornerRadius = min(width, height) / 12
+        layoutImageKindView(livePhotoView)
         layoutIndicatorViewAndMainView()
     }
     
@@ -94,7 +89,7 @@ class MessageLivePhotoCell: MessageBaseCell, PHLivePhotoViewDelegate {
         let size = sizeForImageOrVideo(message)
         let livePhotoLoadBlock: (URL, URL, Bool) -> Void = { [weak self] localImageURL, localVideoURL, playNow in
             guard let self = self else { return }
-            let width = AppDelegate.shared.widthFor(side: .right, username: self.username, view: self) * 0.5
+            let width = self.tableView!.frame.width * 0.5
             PHLivePhoto.request(withResourceFileURLs: [
                 localImageURL, localVideoURL]
                                 , placeholderImage: nil, targetSize: size == nil ? .zero : CGSize(width: width, height: width / size!.width * size!.height), contentMode: .aspectFit) { live, info in
@@ -124,7 +119,7 @@ class MessageLivePhotoCell: MessageBaseCell, PHLivePhotoViewDelegate {
                     self?.delegate?.downloadSuccess(self, message: capturedMessage!)
                     NotificationCenter.default.post(name: .mediaDownloadFinished, object: capturedMessage?.text, userInfo: nil)
                 } progress: { [weak self] progress in
-                    self?.delegate?.downloadProgressUpdate(progress: progress, message: capturedMessage!)
+                    self?.delegate?.downloadProgressUpdate(progress: progress, messages: [capturedMessage!])
                 }
                 
             } progress: { _ in

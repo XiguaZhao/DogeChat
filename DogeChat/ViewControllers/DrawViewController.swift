@@ -53,9 +53,9 @@ class DrawViewController: UIViewController, PKViewAutoOffsetDelegate {
         let realTimeLabel = UILabel()
         realTimeLabel.text = "实时"
         let realTimeSwitcher = UISwitch()
-        let stackView = UIStackView(arrangedSubviews: [realTimeLabel, realTimeSwitcher])
-        stackView.spacing = 15
-        let switcherBarItem = UIBarButtonItem(customView: stackView)
+        let realtimeStackView = UIStackView(arrangedSubviews: [realTimeLabel, realTimeSwitcher])
+        realtimeStackView.spacing = 15
+        let switcherBarItem = UIBarButtonItem(customView: realtimeStackView)
         realTimeSwitcher.isOn = message.needRealTimeDraw
         realTimeSwitcher.addTarget(self, action: #selector(realTimerSwitchAction(_:)), for: .valueChanged)
         let cancleButton = UIBarButtonItem(title: "取消", style: .done, target: self, action: #selector(cancelTapAction(_:)))
@@ -65,13 +65,14 @@ class DrawViewController: UIViewController, PKViewAutoOffsetDelegate {
         var items = [cancleButton, previewBarItem, switcherBarItem, returnBarItem, confirmButton]
         if #available(iOS 14.0, *) {
             let flex = UIBarButtonItem(systemItem: .flexibleSpace)
-            items = [cancleButton, flex, previewBarItem, flex, switcherBarItem, flex, returnBarItem, flex, confirmButton]
+            for i in 1..<items.count {
+                items.insert(flex, at: i * 2 - 1)
+            }
         }
         
         toolBar.setItems(items, animated: true)
         view.addSubview(pkView)
         pkView.contentInsetAdjustmentBehavior = .never
-        pkView.backgroundColor = .gray
         pkView.delegate = pkViewDelegate
         pkView.contentSize = CGSize(width: 2000, height: 2000)
         pkViewDelegate.pkView = pkView
@@ -92,7 +93,13 @@ class DrawViewController: UIViewController, PKViewAutoOffsetDelegate {
         let forwardImage = UIImage(systemName: "forward", withConfiguration: largeConfig)
         forwardButton.setImage(forwardImage, for: .normal)
         forwardButton.addTarget(self, action: #selector(forwardTapAction(_:)), for: .touchUpInside)
+        if #available(iOS 14, *) {
+            toolPicker?.setVisible(true, forFirstResponder: pkView)
+            toolPicker?.addObserver(pkViewDelegate)
+            pkView.becomeFirstResponder()
+        }
     }
+    
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
@@ -102,11 +109,20 @@ class DrawViewController: UIViewController, PKViewAutoOffsetDelegate {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        toolPicker?.setVisible(true, forFirstResponder: pkView)
-        toolPicker?.addObserver(pkViewDelegate)
-        pkView.becomeFirstResponder()
+        if #available(iOS 14, *) {} else {
+            if let toolPicker = toolPicker {
+                toolPicker.setVisible(true, forFirstResponder: pkView)
+                toolPicker.addObserver(pkViewDelegate)
+                pkView.becomeFirstResponder()
+                pkViewDelegate.toolPickerSelectedToolDidChange(toolPicker)
+            }
+        }
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+    }
+        
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         if isPhone() {
@@ -126,6 +142,10 @@ class DrawViewController: UIViewController, PKViewAutoOffsetDelegate {
     
     @objc func pickerSwitchAction(_ pickerSwitcher: UISwitch) {
         toolPicker?.setVisible(pickerSwitcher.isOn, forFirstResponder: pkView)
+    }
+    
+    @objc func toolPickerSwitchAction(_ switcher: UISwitch) {
+        toolPicker?.setVisible(switcher.isOn, forFirstResponder: pkView)
     }
     
     

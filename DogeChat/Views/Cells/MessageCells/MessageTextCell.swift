@@ -15,29 +15,18 @@ let messageFontSize: CGFloat = 17
 
 class MessageTextCell: MessageBaseCell {
     
+    static let macCatalystMaxTextLength = 200
+    static let iosMaxTextLength = 5000
     static let cellID = "MessageTextCell"
-    static let voicePlayer = AVPlayer()
-    static var voiceURL: URL?
+    static let paraStyle: NSParagraphStyle = {
+        let para = NSMutableParagraphStyle()
+        para.lineSpacing = Label.lineSpacing
+        return para
+    }()
     
     let messageLabel = Label()
-    let tapGes = UITapGestureRecognizer()
-    var isPlaying = false {
-        didSet {
-            if isPlaying {
-                PlayerManager.shared.playerTypes.insert(.chatroomVoiceCell)
-            } else {
-                PlayerManager.shared.playerTypes.remove(.chatroomVoiceCell)
-            }
-        }
-    }
-    var isEnd = false
-    weak var item: AVPlayerItem!
-    var voiceURL: URL? {
-        if let name = message?.voiceURL?.components(separatedBy: "/").last {
-            return fileURLAt(dirName: voiceDir, fileName: name)
-        }
-        return nil
-    }
+    var textLabelDoubleTap: UITapGestureRecognizer!
+    var textLabelSingleTap: UITapGestureRecognizer!
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -46,14 +35,21 @@ class MessageTextCell: MessageBaseCell {
         messageLabel.textColor = .white
         messageLabel.numberOfLines = 0
         messageLabel.isUserInteractionEnabled = true
+        messageLabel.lineBreakMode = .byTruncatingTail
         contentView.addSubview(messageLabel)
         indicationNeighborView = messageLabel
         
+        textLabelDoubleTap = UITapGestureRecognizer(target: self, action: #selector(textLabelDoubleTapAction))
+        textLabelDoubleTap.isEnabled = false
+        textLabelDoubleTap.numberOfTapsRequired = 2
         
-        tapGes.addTarget(self, action: #selector(tapAction))
-        messageLabel.addGestureRecognizer(tapGes)
+        textLabelSingleTap = UITapGestureRecognizer(target: self, action: #selector(textLabelSingleTapAction))
+        textLabelSingleTap.isEnabled = false
         
-        NotificationCenter.default.addObserver(self, selector: #selector(playToEnd(_:)), name: .AVPlayerItemDidPlayToEndTime, object: nil)
+        textLabelSingleTap.require(toFail: textLabelDoubleTap)
+        
+        messageLabel.addGestureRecognizer(textLabelDoubleTap)
+        messageLabel.addGestureRecognizer(textLabelSingleTap)
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -62,9 +58,9 @@ class MessageTextCell: MessageBaseCell {
     
     override func prepareForReuse() {
         super.prepareForReuse()
-        tapGes.isEnabled = false
-        isPlaying = false
         messageLabel.textAlignment = .left
+        messageLabel.textColor = .white
+        messageLabel.attributedText = nil
     }
     
     override func layoutSubviews() {
@@ -81,8 +77,22 @@ class MessageTextCell: MessageBaseCell {
     
     override func apply(message: Message) {
         super.apply(message: message)
+        textLabelDoubleTap.isEnabled = message.messageType == .text
+        let textURLAndRange = message.text.webUrlifyWithountChange()
+        textLabelSingleTap.isEnabled = textURLAndRange != nil
+        
+        messageLabel.font = UIFont(name: "Helvetica", size: min(maxFontSize, message.fontSize * fontSizeScale) + (isMac() ? 3 : 0))
+
         if message.messageType == .text || message.messageType == .join {
-            messageLabel.text = message.text
+            let attrStr: NSAttributedString
+            if let textURLAndRange = textURLAndRange {
+                let attributedStr = NSMutableAttributedString(string: message.text)
+                attributedStr.addAttributes([.underlineStyle: NSNumber(integerLiteral: NSUnderlineStyle.single.rawValue)], range: textURLAndRange.range)
+                attrStr = attributedStr
+            } else {
+                attrStr = processText()
+            }
+            messageLabel.attributedText = processAtFor(attributedString: attrStr, message: message)
         } else if message.messageType == .voice {
             var count = message.voiceDuration
             count = min(count, 25)
@@ -96,83 +106,51 @@ class MessageTextCell: MessageBaseCell {
         } else {
             messageLabel.backgroundColor = #colorLiteral(red: 0.09282096475, green: 0.7103053927, blue: 1, alpha: 1)
         }
-        downloadVoiceIfNeeded()
     }
     
-    @objc func playToEnd(_ noti: Notification) {
-        if noti.object as? AVPlayerItem != self.item {
-            return
+    func processText() -> NSAttributedString {
+        var text = message.text
+        var length = Self.iosMaxTextLength
+        #if targetEnvironment(macCatalyst)
+        length = Self.macCatalystMaxTextLength
+        #endif
+        if text.count > length {
+            text = (text as NSString).substring(to: length) + "..."
         }
-        isPlaying = false
-        isEnd = true
+        let attr = NSAttributedString(string: text, attributes: [.paragraphStyle : Self.paraStyle])
+        return attr
     }
     
-    func playVoice() {
-        if AVAudioSession.sharedInstance().categoryOptions.contains(.mixWithOthers) {
-            try? AVAudioSession.sharedInstance().setCategory(.playback, options: [.allowBluetooth, .allowBluetoothA2DP])
+    func processAtFor(attributedString: NSAttributedString, message: Message) -> NSAttributedString {
+        guard message.messageType == .text, let group = message.friend as? Group else { return attributedString }
+        if message.at.isEmpty {
+            return attributedString
         }
-        if let path = message.voiceURL, let url = fileURLAt(dirName: voiceDir, fileName: path.components(separatedBy: "/").last!) {
-            let player = MessageTextCell.voicePlayer
-            let item = AVPlayerItem(url: url)
-            self.item = item
-            player.replaceCurrentItem(with: item)
-            player.seek(to: .zero)
-            player.play()
-            MessageTextCell.voiceURL = url
-            isEnd = false
-            isPlaying = true
+        let res = NSMutableAttributedString(attributedString: attributedString)
+        for atInfo in message.at {
+            if atInfo.userID == group.userID || atInfo.userID == self.manager?.myID {
+                if let range = atInfo.range.getRange() {
+                    let nsRange = NSRange(location: range.location-1, length: range.length+1)
+                    res.addAttributes([.foregroundColor : #colorLiteral(red: 0, green: 0.4159892797, blue: 1, alpha: 1),
+                                       .font : UIFont.boldSystemFont(ofSize: messageLabel.font.pointSize)], range: nsRange)
+                }
+            }
         }
+        return res
     }
     
-    @objc func tapAction() {
-        if MessageTextCell.voiceURL == self.voiceURL {
-            if isPlaying {
-                MessageTextCell.voicePlayer.pause()
-                isPlaying = false
-            } else {
-                MessageTextCell.voicePlayer.play()
-                isPlaying = true
-            }
-            if isEnd || MessageTextCell.voicePlayer.currentItem == nil {
-                playVoice()
-                isPlaying = true
-            }
-        } else {
-            playVoice()
-        }
+    @objc func textLabelDoubleTapAction() {
+        delegate?.textCellDoubleTap(self)
     }
     
-    func downloadVoiceIfNeeded() {
-        var url: URL?
-        guard let captured = self.message, message.messageType == .voice else { return }
-        let block: () -> Void = { [weak self] in
-            guard let self = self, captured == self.message, let url = url else { return }
-            self.message.videoLocalPath = url
-            self.tapGes.isEnabled = true
-            syncOnMainThread {
-                self.messageLabel.backgroundColor = #colorLiteral(red: 0.667152524, green: 0.4650295377, blue: 1, alpha: 1)
-            }
-        }
-        if message.voiceLocalPath != nil && message.sendStatus == .fail {
-            url = message.voiceLocalPath!
-            block()
-        } else if let _url = fileURLAt(dirName: voiceDir, fileName: self.message.voiceURL!.components(separatedBy: "/").last!) {
-            url = _url
-            block()
-        } else {
-            MediaLoader.shared.requestImage(urlStr: message.voiceURL!, type: .voice, cookie: manager?.cookie, syncIfCan: true) { [weak self] _, _, localURL in
-                self?.delegate?.downloadSuccess(self, message: captured)
-            } progress: { progress in
-                self.delegate?.downloadProgressUpdate(progress: progress, message: captured)
-            }
-        }
+    @objc func textLabelSingleTapAction() {
+        delegate?.textCellSingleTap(self)
     }
     
     func layoutForTextMessage() {
-        messageLabel.textColor = .white
-        messageLabel.font = UIFont(name: "Helvetica", size: message.fontSize)
-        let size = messageLabel.sizeThatFits(CGSize(width: 2*(bounds.size.width/3), height: CGFloat.greatestFiniteMagnitude))
-        messageLabel.frame = CGRect(x: 0, y: 0, width: size.width + 32, height: size.height + 16)
+        var size = messageLabel.sizeThatFits(CGSize(width: 2*(contentView.bounds.width/3), height: CGFloat.greatestFiniteMagnitude))
+        size.height = min(size.height, maxTextHeight - ((nameLabel.isHidden ? 0 : nameLabel.bounds.height) + 3 * nameLabelStartY + 2 * Label.verticalPadding))
+        messageLabel.bounds = CGRect(x: 0, y: 0, width: size.width + 2 * Label.horizontalPadding, height: size.height + 2 * Label.verticalPadding)
     }
     
     func layoutForRevokeMessage() {

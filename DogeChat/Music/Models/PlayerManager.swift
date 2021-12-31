@@ -32,7 +32,9 @@ class PlayerManager: NSObject {
     var playerTypes = Set<PlayerType>() {
         didSet {
             if playerTypes.isEmpty {
-                try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+                DispatchQueue.global().async {
+                    try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+                }
             }
         }
     }

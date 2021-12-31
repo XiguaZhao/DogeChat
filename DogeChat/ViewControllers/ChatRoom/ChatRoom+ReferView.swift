@@ -45,6 +45,9 @@ extension ChatRoomViewController: ReferViewDelegate {
         if message.messageType == .image || message.messageType == .livePhoto || message.messageType == .video {
             let browser = MediaBrowserViewController()
             browser.imagePaths = [message.text]
+            if isMac() {
+                browser.modalPresentationStyle = .fullScreen
+            }
             present(browser, animated: true, completion: nil)
         } else if let index = self.messages.firstIndex(of: message) {
             let indexPath = IndexPath(row: index, section: 0)
@@ -57,26 +60,31 @@ extension ChatRoomViewController: ReferViewDelegate {
             let message = message.copied()
             vc.messages = [message]
             vc.friend = friend
+            if isMac() {
+                vc.modalPresentationStyle = .fullScreen
+            }
             navigationController?.pushViewController(vc, animated: true)
         }
     }
     
     func cancleAction(_ referView: ReferView) {
         guard referView.type == .inputView else { return }
-        messageInputBar.layoutIfNeeded()
-        var inset = tableView.contentInset
-        inset.bottom -= ReferView.height
-        var offset = tableView.contentOffset
-        offset.y -= ReferView.height
-        UIView.animate(withDuration: 0.4, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 2) { [self] in
-            messageInputBar.referView.alpha = 0
-            messageInputBar.referViewBottomContraint.constant = ReferView.height
-            messageInputBar.topConstraint.constant = 0
+        syncOnMainThread {
             messageInputBar.layoutIfNeeded()
-            tableView.contentInset = inset
-            tableView.contentOffset = offset
-        } completion: { _ in
-            
+            var inset = tableView.contentInset
+            inset.bottom -= ReferView.height
+            var offset = tableView.contentOffset
+            offset.y -= ReferView.height
+            UIView.animate(withDuration: 0.4, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 2) { [self] in
+                messageInputBar.referView.alpha = 0
+                messageInputBar.referViewBottomContraint.constant = ReferView.height
+                messageInputBar.topConstraint.constant = 0
+                messageInputBar.layoutIfNeeded()
+                tableView.contentInset = inset
+                tableView.contentOffset = offset
+            } completion: { _ in
+                
+            }
         }
     }
     

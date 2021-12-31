@@ -82,7 +82,7 @@
     }
     
     self.videoOutput = [[AVCaptureVideoDataOutput alloc] init];
-    [self.videoOutput setAlwaysDiscardsLateVideoFrames:YES];  // 是否抛弃延迟的帧：NO
+    [self.videoOutput setAlwaysDiscardsLateVideoFrames:NO];  // 是否抛弃延迟的帧：NO
     
     [self.videoOutput setVideoSettings:[NSDictionary dictionaryWithObject:[NSNumber numberWithInt:kCVPixelFormatType_420YpCbCr8BiPlanarFullRange] forKey:(id)kCVPixelBufferPixelFormatTypeKey]];
     [self.videoOutput setSampleBufferDelegate:self.delegate queue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)];
@@ -102,7 +102,7 @@
     AVCaptureDeviceDiscoverySession *session = [AVCaptureDeviceDiscoverySession discoverySessionWithDeviceTypes:@[type] mediaType:AVMediaTypeVideo position:(isFront ? AVCaptureDevicePositionFront : AVCaptureDevicePositionBack)];
     AVCaptureDevice *camera = session.devices.firstObject;
     [camera lockForConfiguration:nil];
-    camera.activeVideoMinFrameDuration = CMTimeMake(1, 30);
+    camera.activeVideoMinFrameDuration = CMTimeMake(1, 20);
     [camera unlockForConfiguration];
     _nowUseFront = isFront;
     _nowUseType = type;

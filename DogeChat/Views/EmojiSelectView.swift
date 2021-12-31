@@ -10,6 +10,7 @@ import UIKit
 import DogeChatNetwork
 import SwiftyJSON
 import DogeChatUniversal
+import Foundation
 
 @objc protocol EmojiViewDelegate: AnyObject {
     @objc optional func didSelectEmoji(filePath: String)
@@ -133,6 +134,7 @@ extension EmojiSelectView: UICollectionViewDataSource, UICollectionViewDelegateF
                 guard let data = data else { return }
                 let json = JSON(data)
                 if json["status"].stringValue == "success" {
+                    SceneDelegate.usernameToDelegate.first?.value.splitVC.makeAutoAlert(message: "成功更换", detail: nil, showTime: 0.5, completion: nil)
                     let avatarURL = json["avatarUrl"].stringValue
                     if append != nil {
                         if let friend = manager.httpsManager.friends.first(where: { $0.userID == self.friend.userID } ) {
@@ -140,7 +142,7 @@ extension EmojiSelectView: UICollectionViewDataSource, UICollectionViewDelegateF
                             NotificationCenter.default.post(name: .friendChangeAvatar, object: username, userInfo: ["friend": friend])
                         }
                     } else {
-                        manager.messageManager.myAvatarUrl = url_pre + JSON(data)["avatarUrl"].stringValue
+                        manager.httpsManager.accountInfo.avatarURL = JSON(data)["avatarUrl"].stringValue
                     }
                 }
             }
@@ -179,11 +181,32 @@ extension EmojiSelectView: UICollectionViewDataSource, UICollectionViewDelegateF
         return cell
     }
     
-#if targetEnvironment(macCatalyst)
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
-        return nil
+        if !isMac() { return nil }
+        let identifier = "\(indexPath.row)" as NSString
+        let cell = collectionView.cellForItem(at: indexPath)
+        return UIContextMenuConfiguration(identifier: identifier, previewProvider: nil) { [weak self] elements -> UIMenu? in
+            let avatarMenuItem = UIAction(title: "设为自己头像") { [weak self, weak cell] _ in
+                if let cell = cell as? EmojiCollectionViewCell {
+                    self?.useAsSelfAvatar(cell: cell)
+                }
+            }
+            let deleteMenuItem = UIAction(title: "删除") { [weak self, weak cell] _ in
+                if let cell = cell as? EmojiCollectionViewCell {
+                    self?.deleteEmoji(cell: cell)
+                }
+            }
+            var items = [avatarMenuItem, deleteMenuItem]
+            if let self = self, self.friend.isGroup {
+                items.append(UIAction(title: "设为群聊头像") { [weak self, weak cell] _ in
+                    if let self = self, let cell = cell as? EmojiCollectionViewCell {
+                        self.useAsSelfAvatar(cell: cell, append: "&groupId=\(self.friend.userID)")
+                    }
+                })
+            }
+            return UIMenu(title: "", image: nil, children: items)
+        }
     }
-#endif
     
 }
 
@@ -194,7 +217,7 @@ extension EmojiSelectView: UICollectionViewDragDelegate {
         weak var weakCell = collectionView.cellForItem(at: indexPath) as? EmojiCollectionViewCell
         guard let cell = weakCell, let image = cell.emojiView.image else { return [] }
         let dragItem = UIDragItem(itemProvider: NSItemProvider(object: image))
-        dragItem.localObject = [cell.url?.absoluteString ?? ""]
+        dragItem.localObject = ["emojiURL": cell.url?.absoluteString]
         playHaptic()
         return [dragItem]
     }

@@ -38,7 +38,13 @@ class FriendDetailViewController: DogeChatViewController, UITableViewDataSource,
     
     var myNameInGroup: String?
     
-    var members: [Friend] = []
+    var members: [Friend] = [] {
+        didSet {
+            if sections.count > 1 {
+                sections
+            }
+        }
+    }
     
     var sections = [[Any]]()
     
@@ -117,18 +123,7 @@ class FriendDetailViewController: DogeChatViewController, UITableViewDataSource,
         }
         return 0
     }
-    
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        let commonHeight: CGFloat = 50
-        let section = sections[indexPath.section]
-        if section is [RowType] {
-            return commonHeight
-        } else if section is [Friend] {
-            return ContactTableViewCell.cellHeight
-        }
-        return 0
-    }
-    
+        
     func numberOfSections(in tableView: UITableView) -> Int {
         return sections.count
     }
@@ -341,7 +336,6 @@ class FriendDetailViewController: DogeChatViewController, UITableViewDataSource,
 extension FriendDetailViewController: SelectContactsDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, TrailingViewProtocol {
     
     func didSelectContacts(_ contacts: [Friend], vc: SelectContactsViewController) {
-        vc.dismiss(animated: true, completion: nil)
         let filtered = contacts.filter( { !members.contains($0) })
         let ids = filtered.map { $0.userID }
         let groupID = newlyCreatedGroup?.userID ?? self.friend.userID
@@ -362,6 +356,10 @@ extension FriendDetailViewController: SelectContactsDelegate, UIImagePickerContr
         if newlyCreatedGroup != nil {
             group.leave()
         }
+    }
+    
+    func didFetchContacts(_ contacts: [Friend], vc: SelectContactsViewController) {
+        
     }
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
@@ -395,7 +393,7 @@ extension FriendDetailViewController: SelectContactsDelegate, UIImagePickerContr
                 personal = true
             }
             let targetID = friend.userID
-            manager?.httpsManager.changeNickName(targetID: targetID, nickName: text, personal: personal, isGroup: friend.isGroup) { [weak manager] success in
+            manager?.httpsManager.changeNickName(targetID: targetID, nickName: text, personal: personal, isGroup: friend.isGroup) { success in
                 if success {
                     if personal ?? false {
                         self.updateMyNameInGroup(text: text)
@@ -412,7 +410,7 @@ extension FriendDetailViewController: SelectContactsDelegate, UIImagePickerContr
     }
     
     func updateMyNameInGroup(text: String) {
-        manager?.myInfo.nameInGroupsDict[friend.userID] = text
+        manager?.myInfo.nameInGroupsDict?[friend.userID] = text
         self.myNameInGroup = text
         if let myself = self.members.first(where: { $0.userID == manager?.myInfo.userID} ) {
             myself.nameInGroup = text

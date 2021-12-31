@@ -6,6 +6,11 @@ import DogeChatUniversal
 import PhotosUI
 import FLAnimatedImage
 
+enum ChatRoomType {
+    case normal
+    case single
+}
+
 class ChatRoomViewController: DogeChatViewController, DogeChatVCTableDataSource {
     
     static let numberOfHistory = 10
@@ -13,16 +18,21 @@ class ChatRoomViewController: DogeChatViewController, DogeChatVCTableDataSource 
         return socketForUsername(username)
     }
     var tableView = DogeChatTableView()
+    var type: ChatRoomType = .normal
     let messageInputBar = MessageInputView()
     var messageOption: MessageOption {
         friend.isGroup ? .toGroup : .toOne
     }
+    var groupMembers: [Friend]?
     var friend: Friend! {
         didSet {
             messages = friend.messages
             messagesUUIDs = friend.messageUUIDs
             customTitle = friend.nickName ?? friend.username
             emojiSelectView.friend = friend
+            DispatchQueue.main.async {
+                self.messageInputBar.atButton.isHidden = !self.friend.isGroup
+            }
         }
     }
     var friendName: String {
@@ -35,16 +45,24 @@ class ChatRoomViewController: DogeChatViewController, DogeChatVCTableDataSource 
             }
         }
     }
-    var heightCache = [Int : CGFloat]()
+    var imagePickerType: MessageType = .image
+    var heightCache = [String : CGFloat]()
+    var jumpToUnreadStack: UIStackView!
+    let jumpToUnreadButton = UIImageView()
+    var jumpToBottomStack: UIStackView!
+    let atLabel = UILabel()
+    var explictJumpMessageUUID: String?
     let titleLabel = UILabel()
     let titleAvatar = FLAnimatedImageView()
     var pagesAndCurNum = (pages: 1, curNum: 1)
-    var originOfInputBar = CGPoint()
     var activeSwipeIndexPath: IndexPath?
-    var latestPickedImageInfos: [(image: UIImage?, fileUrl: URL, size: CGSize)] = []
-    var pickedLivePhotos: [(imageURL: URL, videoURL: URL, size: CGSize, live: PHLivePhoto)] = []
-    var pickedVideos: (url: URL, size: CGSize)?
-    var voiceInfo: (url: URL, duration: Int)?
+    lazy var messageSender: MessageSender = {
+        let sender = MessageSender()
+        sender.progressDelegate = self
+        sender.referMessageDataSource = self
+        sender.manager = self.manager
+        return sender
+    }()
     let emojiSelectView = EmojiSelectView()
     var messages = [Message]()
     var messagesUUIDs = Set<String>()
@@ -86,25 +104,29 @@ class ChatRoomViewController: DogeChatViewController, DogeChatVCTableDataSource 
         super.viewDidLoad()
         makeDetailRightBarButton()
         if isPad() {
-            if #available(iOS 14.0, *), ProcessInfo.processInfo.isiOSAppOnMac {
-            } else {
+            if !isMac() {
                 NotificationCenter.default.addObserver(self, selector: #selector(keyboardFrameChangeNoti(_:)), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
             }
         } else if isPhone() {
             NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(noti:)), name: UIWindow.keyboardWillShowNotification, object: nil)
             NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(noti:)), name: UIWindow.keyboardWillHideNotification, object: nil)
         }
-        NotificationCenter.default.addObserver(self, selector: #selector(sendSuccess(notification:)), name: .sendSuccess, object: username)
-        NotificationCenter.default.addObserver(self, selector: #selector(uploadSuccess(notification:)), name: .uploadSuccess, object: username)
-        NotificationCenter.default.addObserver(self, selector: #selector(receiveNewMessageNotification(_:)), name: .receiveNewMessage, object: username)
+        NotificationCenter.default.addObserver(self, selector: #selector(sendSuccess(notification:)), name: .sendSuccess, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(receiveNewMessageNotification(_:)), name: .receiveNewMessage, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(confirmSendPhoto), name: .confirmSendPhoto, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(emojiButtonTapped), name: .emojiButtonTapped, object: messageInputBar)
-        NotificationCenter.default.addObserver(self, selector: #selector(receiveEmojiInfoChangedNotification(_:)), name: .emojiInfoChanged, object: username)
-        NotificationCenter.default.addObserver(self, selector: #selector(receiveHistoryMessages(_:)), name: .receiveHistoryMessages, object: username)
-        NotificationCenter.default.addObserver(self, selector: #selector(displayHistoryIfNeeded), name: .connected, object: username)
+        NotificationCenter.default.addObserver(self, selector: #selector(receiveEmojiInfoChangedNotification(_:)), name: .emojiInfoChanged, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(receiveHistoryMessages(_:)), name: .receiveHistoryMessages, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(connected(_:)), name: .connected, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(pasteImageAction(_:)), name: .pasteImage, object: messageInputBar.textView)
+        NotificationCenter.default.addObserver(self, selector: #selector(sizeCategoryChange(_:)), name: UIContentSizeCategory.didChangeNotification, object: nil)
         NotificationCenter.default.addObserver(forName: .logout, object: username, queue: .main) { [weak self] _ in
             self?.navigationController?.viewControllers = []
+        }
+        NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: .main) { [weak self] _ in
+            if isMac() {
+                self?.messageInputBar.textView.becomeFirstResponder()
+            }
         }
         NotificationCenter.default.addObserver(self, selector: #selector(groupInfoChange(noti:)), name: .groupInfoChange, object: username)
         NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: .main) { [weak self] _ in
@@ -119,7 +141,7 @@ class ChatRoomViewController: DogeChatViewController, DogeChatVCTableDataSource 
         
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        navigationController?.setToolbarHidden(true, animated: true)
+        navigationController?.setToolbarHidden(!tableView.isEditing, animated: true)
         messageInputBar.textView.delegate = self
         if isMac() {
             messageInputBar.textView.becomeFirstResponder()
@@ -141,30 +163,55 @@ class ChatRoomViewController: DogeChatViewController, DogeChatVCTableDataSource 
         guard let manager = manager else {
             return
         }
-        let userActivity = NSUserActivity(activityType: "com.zhaoxiguang.dogechat")
+        let userActivity = NSUserActivity(activityType: userActivityID)
         userActivity.title = "ChatRoom"
-        userActivity.userInfo = ["username": manager.messageManager.myName,
-                                 "password": manager.messageManager.getPassword(),
-                                 "friendID": friend.userID]
-        userActivity.isEligibleForHandoff = true
-        self.userActivity = userActivity
-        userActivity.becomeCurrent()
+        let modal = UserActivityModal(username: self.username,
+                                      password: manager.messageManager.getPassword(),
+                                      cookie: manager.cookie,
+                                      userID: manager.myInfo.userID,
+                                      friendID: friend.userID,
+                                      avatarURL: manager.myInfo.avatarURL)
+        if let data = try? JSONEncoder().encode(modal) {
+            userActivity.userInfo = ["data": data]
+            userActivity.isEligibleForHandoff = true
+            self.userActivity = userActivity
+            userActivity.becomeCurrent()
+        }
+        if self.type == .single {
+            self.view.window?.windowScene?.title = username + "与\(friend.username)"
+        }
     }
         
     deinit {
         print("chat room VC deinit")
-        MessageTextCell.voicePlayer.replaceCurrentItem(with: nil)
+        MessageAudioCell.voicePlayer.replaceCurrentItem(with: nil)
         PlayerManager.shared.playerTypes.remove(.chatroomImageCell)
         PlayerManager.shared.playerTypes.remove(.chatroomVoiceCell)
     }
     
+    override func pressesBegan(_ presses: Set<UIPress>, with event: UIPressesEvent?) {
+        super.pressesBegan(presses, with: event)
+        if let key = presses.first?.key {
+            let keyCode = key.keyCode
+            if keyCode == .keyboardUpArrow {
+                contactVC?.arrowUp(messageInputBar.textView)
+            } else if keyCode == .keyboardDownArrow {
+                contactVC?.arrowDown(messageInputBar.textView)
+            } else if keyCode == .keyboardV && key.modifierFlags == .command {
+                processItemProviders(UIPasteboard.general.itemProviders)
+            } else if !messageInputBar.textView.isFirstResponder {
+                messageInputBar.textView.becomeFirstResponder()
+            }
+        }
+    }
+
     func contentHeight() -> CGFloat {
         return heightCache.values.reduce(0, +)
     }
     
     func scrollBotton() {
         if self.needScrollToBottom {
-            if !messages.isEmpty {
+            if messages.count > 1 {
                 tableView.scrollToRow(at: IndexPath(row: messages.count - 1, section: 0), at: .bottom, animated: true)
             }
         }
@@ -172,19 +219,24 @@ class ChatRoomViewController: DogeChatViewController, DogeChatVCTableDataSource 
     
     func checkMyNameInGroup() {
         guard let manager = manager, friend is Group else { return }
-        if manager.myInfo.nameInGroupsDict[friend.userID] == nil {
+        if manager.myInfo.nameInGroupsDict?[friend.userID] == nil {
             manager.httpsManager.getGroupMembers(group: friend as! Group) { [self] members in
                 for member in members {
                     if member.userID == manager.myInfo.userID, let myNameInGroup = member.nameInGroup {
-                        manager.myInfo.nameInGroupsDict[friend.userID] = myNameInGroup
+                        manager.myInfo.nameInGroupsDict?[friend.userID] = myNameInGroup
                     }
                 }
             }
         }
     }
     
-    @objc func displayHistoryIfNeeded() {
-        if tableView.contentSize.height < view.bounds.height * 0.8 {
+    @objc func connected(_ noti: Notification) {
+        guard noti.object as? String == self.username else { return }
+        displayHistoryIfNeeded()
+    }
+    
+    func displayHistoryIfNeeded() {
+        if tableView.contentSize.height < view.bounds.height * 0.7 {
             if let manager = manager, manager.commonWebSocket.canSend {
                 displayHistory()
             }
@@ -192,31 +244,26 @@ class ChatRoomViewController: DogeChatViewController, DogeChatVCTableDataSource 
     }
     
     @objc func sendSuccess(notification: Notification) {
+        guard notification.object as? String == self.username else { return }
         let userInfo = notification.userInfo
-        guard let message = userInfo?["message"] as? Message else {
+        guard let message = userInfo?["message"] as? Message, message.friend?.userID == self.friend.userID else {
             return
         }
-        guard let index = messages.firstIndex(of: message) else {
-            return
-        }
-        messages[index].sendStatus = .success
-        messages[index].id = message.id
-        let indexPath = IndexPath(row: index, section: 0)
-        if let cell = tableView.cellForRow(at: indexPath) as? MessageBaseCell {
-            cell.layoutIfNeeded()
-            cell.setNeedsLayout()
-        } else {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
-                self?.tableView.reloadRows(at: [indexPath], with: .none)
+        if let index = messages.firstIndex(of: message)  {
+            messages[index].sendStatus = .success
+            messages[index].id = message.id
+            let indexPath = IndexPath(row: index, section: 0)
+            if let cell = tableView.cellForRow(at: indexPath) as? MessageBaseCell {
+                cell.layoutIfNeeded()
+                cell.setNeedsLayout()
+            } else {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
+                    self?.tableView.reloadRows(at: [indexPath], with: .none)
+                }
             }
+        } else {
+            insertNewMessageCell([message])
         }
-    }
-    
-    @objc func uploadSuccess(notification: Notification) {
-        guard let message = notification.userInfo?["message"] as? Message else { return }
-        guard let index = messages.firstIndex(of: message) else { return }
-        messages[index].sendStatus = .success
-        manager?.commonWebSocket.sendWrappedMessage(message)
     }
     
 }
@@ -232,35 +279,6 @@ extension ChatRoomViewController: UIImagePickerControllerDelegate, UINavigationC
         guard let _ = targetCell as? MessageBaseCell else { return }
     }
     
-    func processMessageString(for string: String, type: MessageType, imageURL: String?, videoURL: String?) -> Message {
-        guard let manager = manager else {
-            return Message(message: "", friend: self.friend, messageSender: .ourself, receiver: friendName, receiverUserID: friend.userID, sender: username, senderUserID: "", messageType: type)
-        }
-        let message = Message(message: string,
-                       friend: friend,
-                       imageURL: imageURL,
-                       videoURL: videoURL,
-                       messageSender: .ourself,
-                       receiver: friendName,
-                       receiverUserID: friend.userID,
-                       sender: username,
-                       senderUserID: manager.messageManager.myId,
-                       messageType: type,
-                       id: manager.messageManager.maxId + 1,
-                       sendStatus: .fail,
-                       fontSize: messageInputBar.textView.font!.pointSize)
-        if messageInputBar.referView.alpha > 0, let referMessage = messageInputBar.referView.message {
-            message.referMessage = referMessage
-            cancleAction(messageInputBar.referView)
-        }
-        return message
-    }
-    
-    @objc func emojiButtonTapped() {
-        emojiSelectView.collectionView.reloadData()
-        manager?.getEmojis { _ in
-        }
-    }
 }
 
 extension ChatRoomViewController {
@@ -323,8 +341,8 @@ extension ChatRoomViewController: PKViewChangedDelegate {
             insertNewMessageCell([message], forceScrollBottom: true) { [weak self] in
                 self?.drawDone()
             }
-            manager.uploadData(drawData, path: "message/uploadImg", name: "upload", fileName: "+\(x)+\(y)+\(width)+\(height)", needCookie: true, contentType: "application/octet-stream", params: nil) { [weak self] task, data in
-                guard let self = self, let data = data else { return }
+            manager.uploadData(drawData, path: "message/uploadImg", name: "upload", fileName: "+\(x)+\(y)+\(width)+\(height)", needCookie: true, contentType: "application/octet-stream", params: nil) { task, data in
+                guard let data = data else { return }
                 let json = JSON(data)
                 guard json["status"].stringValue == "success" else {
                     print("上传失败")
@@ -359,12 +377,11 @@ extension ChatRoomViewController: PKViewChangedDelegate {
 extension ChatRoomViewController {
     
     @objc func receiveNewMessageNotification(_ notification: Notification) {
-        guard let message = notification.userInfo?["message"] as? Message, message.option == messageOption else {
-            return
-        }
-        let newMessageFriendID = message.messageSender == .ourself ? message.receiverUserID : message.senderUserID
-        if newMessageFriendID == friend.userID {
-            insertNewMessageCell([message], forceScrollBottom: true)
+        guard notification.object as? String == self.username, let dict = notification.userInfo?["friendDict"] as? [String : [Message]] else { return }
+        for (friendID, newMessages) in dict {
+            if friendID == self.friend.userID {
+                insertNewMessageCell(newMessages)
+            }
         }
     }
         
@@ -387,11 +404,15 @@ extension ChatRoomViewController {
     }
     
     @objc func receiveHistoryMessages(_ noti: Notification) {
+        defer {
+            tableView.refreshControl?.endRefreshing()
+        }
+        guard noti.object as? String == self.username else { return }
         if !self.isPeek && self.navigationController?.visibleViewController != self { return }
         var empty = true
         var tempHeight: CGFloat = 0
         for message in self.messages.reversed() {
-            tempHeight += MessageBaseCell.height(for: message, username: username)
+            tempHeight += self.heightCache[message.uuid] ?? 0
             if tempHeight >= tableView.bounds.height * 0.7 {
                 empty = false
                 break
@@ -410,6 +431,7 @@ extension ChatRoomViewController {
         let filtered = messages.filter { !self.messagesUUIDs.contains($0.uuid) }.reversed() as [Message]
         if filtered.isEmpty {
             tableView.refreshControl?.endRefreshing()
+            return
         }
         
         self.messages.insert(contentsOf: filtered, at: 0)
@@ -469,9 +491,10 @@ extension ChatRoomViewController {
 }
 
 extension ChatRoomViewController: UITextViewDelegate {
-    
+        
     func textViewShouldBeginEditing(_ textView: UITextView) -> Bool {
         showEmojiButton(textView.text.isEmpty)
+        messageInputBar.recoverEmojiButton()
         return true
     }
     

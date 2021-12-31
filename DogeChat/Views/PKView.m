@@ -15,12 +15,17 @@
 
 @end
 
-@implementation PKViewDelegate
+@implementation PKViewDelegate {
+    BOOL _sendDeletes;
+}
 
 
 - (void)canvasViewDrawingDidChange:(PKCanvasView *)canvasView {
     if (@available(iOS 14, *)) {
         if ([canvasView.tool isKindOfClass:[PKEraserTool class]]) {
+            if (!_sendDeletes) {
+                return;
+            }
             NSSet<PKStroke *> *nowStrokes = [NSSet setWithArray:canvasView.drawing.strokes];
             NSMutableArray<NSNumber *> *deleteIndexes = [NSMutableArray new];
             [self.oldStrokes enumerateObjectsUsingBlock:^(PKStroke * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
@@ -36,8 +41,9 @@
             }
         } else {
             PKStroke *newStroke = canvasView.drawing.strokes.lastObject;
+            if (!newStroke) return;
             self.lastStroke = newStroke;
-            if (newStroke != nil && ![self.oldStrokes containsObject:newStroke]) {
+            if (![self.oldStrokes containsObject:newStroke]) {
                 [self.dataChangedDelegate pkView:self.pkView message:self.message addNewStroke:newStroke];
             }
             CGRect bounds = [[PKDrawing alloc] initWithStrokes:@[newStroke]].bounds;

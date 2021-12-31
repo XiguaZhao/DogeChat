@@ -9,6 +9,7 @@
 import Foundation
 import DogeChatNetwork
 import DogeChatUniversal
+import UIKit
 
 func playHaptic(_ intensity: CGFloat = 1) {
     HapticManager.shared.playHapticTransient(time: 0, intensity: Float(intensity), sharpness: 1)
@@ -24,7 +25,8 @@ func socketForUsername(_ username: String) -> WebSocketManager? {
 
 func removeSocketForUsername(_ username: String) {
     if let index = WebSocketManager.usersToSocketManager.firstIndex(where: { $0.key == username }) {
-        WebSocketManager.usersToSocketManager.remove(at: index)
+        let socket = WebSocketManager.usersToSocketManager.remove(at: index)
+        socket.value.disconnect()
     }
     if let index = WebSocketManagerAdapter.usernameToAdapter.firstIndex(where: { $0.key == username }) {
         WebSocketManagerAdapter.usernameToAdapter.remove(at: index)
@@ -32,14 +34,7 @@ func removeSocketForUsername(_ username: String) {
     _ = SceneDelegate.usernameToDelegate.remove(key: username)
 }
 
-var safeArea: UIEdgeInsets {
-    if ProcessInfo.processInfo.isMacCatalystApp {
-        return .zero
-    } else if #available(iOS 14, *), ProcessInfo.processInfo.isiOSAppOnMac {
-        return .zero
-    }
-    return UIApplication.shared.keyWindow?.safeAreaInsets ?? .zero
-}
+var safeArea: UIEdgeInsets = .zero
 
 func isLandscape() -> Bool {
     return UIDevice.current.orientation == .landscapeLeft || UIDevice.current.orientation == .landscapeRight
@@ -101,9 +96,6 @@ func sceneDelegate() -> Any? {
     return UIApplication.shared.windows.first(where: { $0.isKeyWindow })?.windowScene?.delegate
 }
 
-func userIDFor(username: String) -> String? {
-    return (UserDefaults.standard.value(forKey: usernameToIdKey) as? [String : String])?[username]
-}
 
 func adapterFor(username: String) -> WebSocketManagerAdapter {
     return WebSocketManagerAdapter.usernameToAdapter[username]!
@@ -130,3 +122,44 @@ func updateUsernameForVC(_ vc: UIViewController, username: String) {
         }
     }
 }
+
+func getUsernameForId(_ userID: String) -> String? {
+    if let info = accountInfo(userID: userID) {
+        return info.username
+    }
+    return nil
+}
+
+func getScaleForSizeCategory(_ sizeCategory: UIContentSizeCategory) -> CGFloat {
+    let fontSizeScale: CGFloat
+    switch sizeCategory {
+    case .accessibilityExtraExtraExtraLarge:
+        fontSizeScale = 3.1
+    case .accessibilityExtraExtraLarge:
+        fontSizeScale = 2.75
+    case .accessibilityExtraLarge:
+        fontSizeScale = 2.35
+    case .accessibilityLarge:
+        fontSizeScale = 1.9
+    case .accessibilityMedium:
+        fontSizeScale = 1.6
+    case .extraExtraExtraLarge:
+        fontSizeScale = 1.35
+    case .extraExtraLarge:
+        fontSizeScale = 1.2
+    case .extraLarge:
+        fontSizeScale = 1.1
+    case .large:
+        fontSizeScale = 1
+    case .medium:
+        fontSizeScale = 0.9
+    case .small:
+        fontSizeScale = 0.85
+    case .extraSmall:
+        fontSizeScale = 0.8
+    default:
+        fontSizeScale = 1
+    }
+    return fontSizeScale
+}
+

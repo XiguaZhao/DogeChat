@@ -23,17 +23,12 @@ class DogeChatTableViewCell: UITableViewCell {
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        if AppDelegate.shared.immersive {
-            self.backgroundColor = .clear
-        }
-        NotificationCenter.default.addObserver(self, selector: #selector(forceDarkMode(noti:)), name: .immersive, object: nil)
+        self.backgroundColor = .clear
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    @objc func forceDarkMode(noti: Notification) {
-    }
 
 }

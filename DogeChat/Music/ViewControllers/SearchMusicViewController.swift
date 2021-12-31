@@ -96,10 +96,6 @@ extension SearchMusicViewController: UISearchBarDelegate, UITableViewDelegate, U
         searchBar.resignFirstResponder()
     }
     
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 60
-    }
-    
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         searchTapped()
     }

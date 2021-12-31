@@ -8,6 +8,7 @@
 
 import CallKit
 import DogeChatNetwork
+import DogeChatUniversal
 
 class CallManager: NSObject {
     
@@ -51,7 +52,7 @@ class CallManager: NSObject {
         startCallAction.isVideo = false
         var callWindow: FloatWindow?
         var switcherWindow: FloatWindow?
-        if let username = UserDefaults.standard.value(forKey: "lastUsername") as? String {
+        if let username = UserDefaults(suiteName: groupName)?.value(forKey: "sharedUsername") as? String {
             callWindow = SceneDelegate.usernameToDelegate[username]?.callWindow
             switcherWindow = SceneDelegate.usernameToDelegate[username]?.switcherWindow
         }

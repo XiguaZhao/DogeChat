@@ -9,6 +9,15 @@
 import UIKit
 import DogeChatNetwork
 import DogeChatUniversal
+import RSAiOSWatchOS
+
+struct RemoteNotificationInfo {
+    var sender: String?
+    var senderID: String?
+    var content: String?
+    var receiverID: String?
+    var receiver: String?
+}
 
 class NotificationManager: NSObject {
     
@@ -16,12 +25,12 @@ class NotificationManager: NSObject {
     var manager: WebSocketManager? {
         sceneDelegate?.socketManager
     }
-    
     var nowPushInfo: (sender: String, content: String, senderID: String) = ("", "", "")
     var actionCompletionHandler: (() -> Void)?
     var quickReplyMessage: Message?
     var remoteNotificationUsername = ""
-        
+    let httpMessage = HttpMessage()
+    
     override init() {
         super.init()
         registerNoti()
@@ -44,14 +53,36 @@ class NotificationManager: NSObject {
         }
         actionCompletionHandler?()
         actionCompletionHandler = nil
-        print("快捷回复完成，调用completionHandler")
+    }
+    
+    public static func getRemoteNotiInfo(_ notification: [String: Any]) -> RemoteNotificationInfo {
+        var sender: String?
+        var content: String?
+        var senderID: String?
+        var receiverID: String?
+        var receiver: String?
+        if let alert = notification["alert"] as? [String: Any],
+           let _sender = alert["title"] as? String,
+           let _content = alert["body"] as? String,
+           let _senderID = notification["senderId"] as? String {
+            sender = _sender
+            content = _content
+            senderID = _senderID
+            if let _receiverID = notification["receiverId"] as? String {
+                receiverID = _receiverID
+            }
+            if let _receiver = notification["receiver"] as? String {
+                receiver = _receiver
+            }
+        }
+        return RemoteNotificationInfo(sender: sender, senderID: senderID, content: content, receiverID: receiverID, receiver: receiver)
     }
 
-    public func processRemoteNotification(_ notification: [String: AnyObject]) {
-        guard let alert = notification["alert"] as? [String: AnyObject],
-              let sender = alert["title"] as? String,
-              let content = alert["body"] as? String,
-              let senderID = notification["senderId"] as? String else { return }
+    public func processRemoteNotification(_ notification: [String: Any]) {
+        let processed = Self.getRemoteNotiInfo(notification)
+        guard let sender = processed.sender,
+              let content = processed.content,
+              let senderID = processed.senderID else { return }
         nowPushInfo = (sender, content, senderID)
         UIApplication.shared.applicationIconBadgeNumber = 0
         if !AppDelegate.shared.launchedByPushAction {
@@ -60,13 +91,17 @@ class NotificationManager: NSObject {
     }
     
     private func login(success: @escaping (()->Void), fail: @escaping (()->Void)) {
-        guard let username = sceneDelegate?.username, let info = UserDefaults.standard.value(forKey: usernameToPswKey) as? [String : String],
-              let password = info[username] else { return }
-        sceneDelegate?.socketManager?.loginAndConnect(username: username, password: password) { _success in
-            if _success {
-                success()
-            } else {
-                fail()
+        
+        if let username = sceneDelegate?.username,
+           let data = UserDefaults(suiteName: groupName)?.value(forKey: userInfoKey) as? Data,
+           let saved = try? JSONDecoder().decode([AccountInfo].self, from: data),
+           let first = saved.first(where: { $0.username == username }) {
+            sceneDelegate?.socketManager?.loginAndConnect(username: username, password: first.password) { _success in
+                if _success {
+                    success()
+                } else {
+                    fail()
+                }
             }
         }
     }
@@ -75,7 +110,6 @@ class NotificationManager: NSObject {
         sceneDelegate?.socketManager?.commonWebSocket.pingWithResult { [self] success in
             if !success {
                 login {
-                    self.sceneDelegate?.socketManager?.connect()
                 } fail: {
                     if let call = sceneDelegate?.callManager.callWithUUID(uuid) {
                         sceneDelegate!.callManager.end(call: call)
@@ -87,23 +121,18 @@ class NotificationManager: NSObject {
     }
     
     func processReplyAction(replyContent: String) {
-        login { [self] in
-            guard self.nowPushInfo.sender.count != 0, let manager = self.manager else { return }
-            guard let friend = manager.messageManager.friends.first(where: { $0.userID == self.nowPushInfo.senderID }) else { return }
-            let message = Message(message: replyContent, friend: friend, imageURL: nil, videoURL: nil, messageSender: .ourself, receiver: self.nowPushInfo.sender, receiverUserID: nowPushInfo.senderID, uuid: UUID().uuidString, sender: manager.messageManager.myName, senderUserID: manager.messageManager.myId, messageType: .text, sendStatus: .fail, emojisInfo: [])
-            self.quickReplyMessage = message
-            manager.quickReplyUUID = message.uuid
-            manager.commonWebSocket.sendWrappedMessage(message)
-            DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
-                if !manager.quickReplyUUID.isEmpty {
-                    self.actionCompletionHandler?()
-                    self.actionCompletionHandler = nil
+        if !self.nowPushInfo.sender.isEmpty {
+            let receiver = nowPushInfo.sender
+            httpMessage.sendText(replyContent, to: receiver) { [weak self] success, _ in
+                if success {
+                    print("快捷回复成功")
+                } else {
+                    print("快捷回复失败")
                 }
+                self?.actionCompletionHandler?()
+                self?.actionCompletionHandler = nil
             }
-        } fail: {
-            
         }
-
     }
     
 }

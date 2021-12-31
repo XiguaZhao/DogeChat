@@ -9,20 +9,19 @@
 import UIKit
 import DogeChatUniversal
 
-class MessageVideoCell: MessageBaseCell {
+class MessageVideoCell: MessageImageKindCell {
     
     static let cellID = "MessageVideoCell"
 
-    var videoView = VideoView()
+    let videoView = VideoView()
+    let iconView = UIImageView(image: UIImage(systemName: "play.circle.fill"))
     var videoEnd = false
     let player = AVPlayer()
     var item: AVPlayerItem!
     var isPlaying = false {
         didSet {
-            if isPlaying {
-                PlayerManager.shared.playerTypes.insert(.chatroomImageCell)
-            } else {
-                PlayerManager.shared.playerTypes.remove(.chatroomImageCell)
+            DispatchQueue.main.async {
+                self.iconView.isHidden = self.isPlaying
             }
         }
     }
@@ -30,9 +29,15 @@ class MessageVideoCell: MessageBaseCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         contentView.addSubview(videoView)
+        videoView.addSubview(iconView)
         indicationNeighborView = videoView
         
         videoView.layer.masksToBounds = true
+        
+        iconView.mas_makeConstraints { make in
+            make?.width.height().mas_equalTo()(50)
+            make?.center.equalTo()(videoView)
+        }
         
         NotificationCenter.default.addObserver(self, selector: #selector(playToEnd(_:)), name: .AVPlayerItemDidPlayToEndTime, object: nil)
         
@@ -42,11 +47,13 @@ class MessageVideoCell: MessageBaseCell {
             guard let self = self else { return }
             self.player.pause()
             self.videoEnd = true
+            self.isPlaying = false
         }
 
         resignCenterBlock = { [weak self] _, _ in
             guard let self = self else { return }
             self.player.pause()
+            self.isPlaying = false
             self.videoEnd = true
         }
 
@@ -68,6 +75,7 @@ class MessageVideoCell: MessageBaseCell {
         item = nil
         player.replaceCurrentItem(with: nil)
         videoEnd = false
+        isPlaying = false
     }
 
     override func apply(message: Message) {
@@ -77,13 +85,8 @@ class MessageVideoCell: MessageBaseCell {
     
     override func layoutSubviews() {
         super.layoutSubviews()
-        guard let message = message else { return }
-        let maxSize = CGSize(width: 2*(AppDelegate.shared.widthFor(side: .right, username: username, view: self)/3), height: CGFloat.greatestFiniteMagnitude)
-        let nameHeight = message.messageSender == .ourself ? 0 : (MessageBaseCell.height(forText: message.senderUsername, fontSize: 10, maxSize: maxSize) + 4 )
-        let height = contentView.bounds.height - 30 - nameHeight - (message.referMessage == nil ? 0 : ReferView.height + ReferView.margin)
-        let width = message.imageSize.width * height / message.imageSize.height
-        videoView.bounds = CGRect(x: 0, y: 0, width: width, height: height)
-        videoView.layer.cornerRadius = min(width, height) / 12
+        guard message != nil else { return }
+        layoutImageKindView(videoView)
         layoutIndicatorViewAndMainView()
     }
 
@@ -135,7 +138,7 @@ class MessageVideoCell: MessageBaseCell {
                 self?.delegate?.downloadSuccess(self, message: captured!)
                 NotificationCenter.default.post(name: .mediaDownloadFinished, object: captured?.text, userInfo: nil)
             } progress: { [weak self] progress in
-                self?.delegate?.downloadProgressUpdate(progress: progress, message: captured!)
+                self?.delegate?.downloadProgressUpdate(progress: progress, messages: [captured!])
             }
         }
     }

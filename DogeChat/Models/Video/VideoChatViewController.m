@@ -7,28 +7,18 @@
 //
 
 
-#import "VideoChatViewController.h"
-#import "MainVideoView.h"
 #import "OverlayVideoView.h"
-#import "HJH264Encoder.h"
-#import "HJH264Decoder.h"
 #import <Masonry/Masonry.h>
 #import "DogeChat-Swift.h"
 #import "Recorder.h"
 @import DogeChatNetwork;
 
-#if CompileVideo
-
-static CGFloat overlayWidth = 0;
-
 @interface VideoChatViewController () <AVCaptureVideoDataOutputSampleBufferDelegate>
 
-@property (nonatomic, strong) MainVideoView *mainVideoView;
+@property (nonatomic, strong) FriendVideoView *friendView;
 @property (nonatomic, strong) OverlayVideoView *overlayVideoView;
-@property (nonatomic, strong) HJH264Encoder *encoder;
-@property (nonatomic, strong) HJH264Decoder *decoder;
-@property (nonatomic, strong) HJOpenGLView *playView;
-@property(nonatomic, assign) int count;
+@property (nonatomic, assign) int count;
+@property (nonatomic, strong) VideoProcessor *processor;
 
 @end
 
@@ -46,19 +36,18 @@ static CGFloat overlayWidth = 0;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    _encoder = [HJH264Encoder new];
-    _decoder = [HJH264Decoder new];
-    overlayWidth = self.view.bounds.size.width / 3;
-    self.mainVideoView = [[MainVideoView alloc] initWithFrame:self.view.bounds];
+    self.processor = [VideoProcessor new];
+    self.friendView = [[FriendVideoView alloc] initWithFrame:self.view.bounds];
     self.overlayVideoView = [[OverlayVideoView alloc] initWithFrame:CGRectZero delegate:self];
     self.overlayVideoView.viewController = self;
-    [self.view addSubview:_mainVideoView];
+    [_friendView prepare];
+    [self.view addSubview:_friendView];
     [self.view addSubview:_overlayVideoView];
     __weak VideoChatViewController *wself = self;
     [_overlayVideoView mas_makeConstraints:^(MASConstraintMaker *make) {
         make.top.equalTo(wself.view.mas_safeAreaLayoutGuideTop);
         make.trailing.equalTo(wself.view).offset(-20);
-        make.width.mas_equalTo(overlayWidth);
+        make.width.mas_equalTo(200 * 72 / 128);
         make.height.mas_equalTo(200);
     }];
     _count = 0;
@@ -68,16 +57,7 @@ static CGFloat overlayWidth = 0;
 }
 
 - (void)dismiss {
-    [self.encoder stopH264Encode];
     [self dismissViewControllerAnimated:YES completion:nil];
-}
-
-- (void)updateRatioForOverlayVideoView:(CGFloat)width height:(CGFloat)height {
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self.overlayVideoView mas_updateConstraints:^(MASConstraintMaker *make) {
-            make.height.mas_equalTo(height * (width) / overlayWidth);
-        }];
-    });
 }
 
 - (void)viewDidAppear:(BOOL)animated {
@@ -87,7 +67,6 @@ static CGFloat overlayWidth = 0;
 
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
-    self.mainVideoView.exit = YES;
     [self.overlayVideoView.avSession stopRunning];
     UIApplication.sharedApplication.idleTimerDisabled = false;
 }
@@ -96,7 +75,7 @@ static CGFloat overlayWidth = 0;
     if (output != self.overlayVideoView.videoOutput) return;
     if (WebSocketManagerAdapter.usernameToAdapter[self.username].readyToSendVideoData) {
         __weak VideoChatViewController *wself = self;
-        [self.encoder startH264EncodeWithSampleBuffer:sampleBuffer andReturnData:^(NSData *data) {
+        [self.processor compressAndSend:sampleBuffer arFrame:nil sendHandler:^(NSData *data) {
             __strong VideoChatViewController *strongSelf = wself;
             strongSelf->_count++;
             NSMutableData *mData = [[NSMutableData alloc] init];
@@ -125,7 +104,7 @@ static CGFloat overlayWidth = 0;
 }
 
 - (void)didReceiveVideoData:(NSData *)videoData {
-    [self.mainVideoView didReceiveData:videoData];
+    [self.friendView didReceiveData:videoData];
 }
 
 - (NSData * )bytewithInt:(int )i {
@@ -140,4 +119,3 @@ static CGFloat overlayWidth = 0;
 
 @end
 
-#endif

@@ -8,6 +8,7 @@
 
 import UIKit
 import DogeChatUniversal
+import SwiftyJSON
 
 protocol ReferViewDelegate: AnyObject {
     func referViewTapAction(_ referView: ReferView, message: Message?)
@@ -101,7 +102,7 @@ class ReferView: UIView {
         self.message = message
         var text: String?
         switch message.messageType {
-        case .text:
+        case .text, .join:
             text = message.text
         case .image:
             makeImage()
@@ -112,11 +113,19 @@ class ReferView: UIView {
         case .draw:
             makeDrawing()
         case .track:
-            text = "[Tracks]"
+            if let first = message.tracks.first {
+                text = first.artist + "-" + first.name
+            } else {
+                text = "[Tracks]"
+            }
         case .voice:
-            text = message.text
-        default:
-            text = nil
+            text = "[语音]"
+        case .location:
+            if let name = JSON(parseJSON: message.text)["name"].string {
+                text = name
+            } else {
+                text = "[位置分享]"
+            }
         }
         nameLabel.text = message.senderUsername + "："
         messageLabel.isHidden = text == nil

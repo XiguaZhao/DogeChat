@@ -46,26 +46,15 @@ class SearchViewController: DogeChatViewController, DogeChatVCTableDataSource {
     }
     
     private func setupUI() {
-        view.addSubview(searchBar)
         view.addSubview(tableView)
         
-        tableView.rowHeight = ContactTableViewCell.cellHeight
+        tableView.rowHeight = UITableView.automaticDimension
         searchBar.becomeFirstResponder()
         
-        searchBar.translatesAutoresizingMaskIntoConstraints = false
         tableView.translatesAutoresizingMaskIntoConstraints = false
         
-        NSLayoutConstraint.activate([
-            searchBar.topAnchor.constraint(equalTo: view.topAnchor),
-            searchBar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            searchBar.trailingAnchor.constraint(equalTo: view.trailingAnchor)])
-        
-        NSLayoutConstraint.activate([
-            tableView.topAnchor.constraint(equalTo: searchBar.bottomAnchor),
-            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
-        ])
+        self.navigationItem.titleView = searchBar
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "取消", style: .plain, target: self, action: #selector(swipeAction))
         
         searchBar.delegate = self
         tableView.delegate = self
@@ -75,6 +64,11 @@ class SearchViewController: DogeChatViewController, DogeChatVCTableDataSource {
         let swipeDown = UISwipeGestureRecognizer(target: self, action: #selector(swipeAction))
         swipeDown.direction = .down
         view.addGestureRecognizer(swipeDown)
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        self.tableView.frame = self.view.bounds
     }
     
     @objc func swipeAction() {

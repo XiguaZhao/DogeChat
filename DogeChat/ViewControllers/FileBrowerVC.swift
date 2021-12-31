@@ -67,6 +67,8 @@ class FileBrowerVC: DogeChatViewController {
     
     @objc func showSheet(sender: UIBarButtonItem) {
         let sheet = UIAlertController(title: "请选择文件类型", message: nil, preferredStyle: .actionSheet)
+        let popover = sheet.popoverPresentationController
+        popover?.barButtonItem = sender
         for type in dirTypes.keys {
             let action = UIAlertAction(title: type.rawValue, style: .default) { _ in
                 self.changeToType(type)

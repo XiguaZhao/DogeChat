@@ -77,6 +77,11 @@ class MediaBrowserViewController: UIViewController {
 
     @objc func escapeAction(_ sender: Any) {
         self.dismiss(animated: true, completion: nil)
+        if let scene = self.view?.window?.windowScene, scene.delegate is MediaBrowserSceneDelegate {
+            let option = UIWindowSceneDestructionRequestOptions()
+            option.windowDismissalAnimation = .commit
+            UIApplication.shared.requestSceneSessionDestruction(scene.session, options: option, errorHandler: nil)
+        }
     }
     
     func scrollToIndex(_ index: Int) {
@@ -123,6 +128,7 @@ extension MediaBrowserViewController: UICollectionViewDataSource, UICollectionVi
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         if let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MediaBrowserCell.cellID, for: indexPath) as? MediaBrowserCell {
             cell.delegate = self
+            cell.vc = self
             return cell
         }
         return UICollectionViewCell()

@@ -30,19 +30,19 @@ class DogeChatViewController: UIViewController, UIPopoverPresentationControllerD
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        self.view.backgroundColor = .systemBackground
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
             guard let self = self else { return }
             NotificationCenter.default.addObserver(self, selector: #selector(self.immersive(noti:)), name: .immersive, object: nil)
         }
-        toggleBlurView(force: AppDelegate.shared.immersive, needAnimation: false)
+        toggleBlurView(needBlur: AppDelegate.shared.immersive, needAnimation: false)
     }
     
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
-        if let previous = previousTraitCollection, previous.userInterfaceStyle != UIScreen.main.traitCollection.userInterfaceStyle {
+        if let previous = previousTraitCollection, previous.userInterfaceStyle != self.traitCollection.userInterfaceStyle {
             NotificationCenter.default.post(name: .immersive, object: AppDelegate.shared.immersive)
         }
-        AppDelegate.shared.lastUserInterfaceStyle = UIScreen.main.traitCollection.userInterfaceStyle
     }
         
     func recoverBackgroundColor() {
@@ -53,11 +53,25 @@ class DogeChatViewController: UIViewController, UIPopoverPresentationControllerD
         super.viewDidAppear(animated)
     }
     
-    func toggleBlurView(force: Bool, needAnimation: Bool) {
+    override func pressesBegan(_ presses: Set<UIPress>, with event: UIPressesEvent?) {
+        super.pressesBegan(presses, with: event)
+        if let key = presses.first?.key {
+            let keyCode = key.keyCode
+            if keyCode == .keyboardEscape {
+                if self.presentingViewController != nil {
+                    self.dismiss(animated: true, completion: nil)
+                } else {
+                    self.navigationController?.popViewController(animated: true)
+                }
+            }
+        }
+    }
+    
+    func toggleBlurView(needBlur: Bool, needAnimation: Bool) {
         if self.username.isEmpty, let myName = (self.splitViewController as? DogeChatSplitViewController)?.findContactVC()?.username {
             self.username = myName
         }
-        if force {
+        if needBlur {
             var tableView: UITableView?
             if let tableViewDataSource = self as? DogeChatVCTableDataSource {
                 tableView = tableViewDataSource.tableView
@@ -75,7 +89,7 @@ class DogeChatViewController: UIViewController, UIPopoverPresentationControllerD
     @objc func immersive(noti: Notification) {
         let force = noti.object as! Bool
         DispatchQueue.main.async {
-            self.toggleBlurView(force: force, needAnimation: true)
+            self.toggleBlurView(needBlur: force, needAnimation: true)
         }
     }
     
@@ -102,7 +116,9 @@ func makeBlurViewForViewController(_ vc: UIViewController, blurView: inout UIIma
     } else if fileURLAt(dirName: "customBlur", fileName: userID) != nil && PlayerManager.shared.customImage != nil {
         targetImage = PlayerManager.shared.customImage
     }
-    guard let targetImage = targetImage else { return }
+    guard let targetImage = targetImage else {
+        return
+    }
     let interfaceStyle: UIUserInterfaceStyle
     if UserDefaults.standard.bool(forKey: "forceDarkMode") {
         interfaceStyle = .dark
@@ -183,7 +199,6 @@ func recoverVC(_ vc: UIViewController, blurView: inout UIImageView!) {
     vc.splitViewController?.overrideUserInterfaceStyle = .unspecified
     vc.tabBarController?.overrideUserInterfaceStyle = .unspecified
     vc.overrideUserInterfaceStyle = .unspecified
-    vc.view.backgroundColor = .systemBackground
     vc.splitViewController?.view.backgroundColor = .systemBackground
     vc.view.window?.overrideUserInterfaceStyle = .unspecified
     UIView.animate(withDuration: 0.5) { [weak blurView] in

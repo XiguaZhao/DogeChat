@@ -76,7 +76,7 @@ class HistoryVC: DogeChatViewController, DogeChatVCTableDataSource {
             header.addTarget(self, action: #selector(refreshHeaderAction), for: .valueChanged)
             tableView.refreshControl = header
             
-            NotificationCenter.default.addObserver(self, selector: #selector(receiveHistory(_:)), name: .receiveHistoryMessages, object: username)
+            NotificationCenter.default.addObserver(self, selector: #selector(receiveHistory(_:)), name: .receiveHistoryMessages, object: nil)
 
             nowPage = 1
             requestPage(1)
@@ -127,6 +127,7 @@ class HistoryVC: DogeChatViewController, DogeChatVCTableDataSource {
         tableView.register(MessageTrackCell.self, forCellReuseIdentifier: MessageTrackCell.cellID)
         tableView.register(MessageLivePhotoCell.self, forCellReuseIdentifier: MessageLivePhotoCell.cellID)
         tableView.register(MessageVideoCell.self, forCellReuseIdentifier: MessageVideoCell.cellID)
+        tableView.register(MessageLocationCell.self, forCellReuseIdentifier: MessageLocationCell.cellID)
         dataSource = UITableViewDiffableDataSource<Section, Message>(tableView: tableView) { [weak self] tableView, indexPath, message in
             let id: String
             switch message.messageType {
@@ -142,6 +143,8 @@ class HistoryVC: DogeChatViewController, DogeChatVCTableDataSource {
                 id = MessageDrawCell.cellID
             case .track:
                 id = MessageTrackCell.cellID
+            case .location:
+                id = MessageLocationCell.cellID
             }
             let cell = tableView.dequeueReusableCell(withIdentifier: id, for: indexPath) as! MessageBaseCell
             cell.contactDataSource = self?.contactDataSource
@@ -156,6 +159,7 @@ class HistoryVC: DogeChatViewController, DogeChatVCTableDataSource {
     }
     
     @objc func receiveHistory(_ noti: Notification) {
+        guard noti.object as? String == self.username else { return }
         guard var messages = noti.userInfo?["messages"] as? [Message], !messages.isEmpty,
               let pages = noti.userInfo?["pages"] as? Int,
               let current = noti.userInfo?["current"] as? Int else { return }
@@ -230,6 +234,10 @@ class HistoryVC: DogeChatViewController, DogeChatVCTableDataSource {
 
 extension HistoryVC: UITableViewDelegate, MessageTableViewCellDelegate {
     
+    func longPressAvatar(_ cell: MessageBaseCell, ges: UILongPressGestureRecognizer!) {
+        
+    }
+    
     func mediaViewTapped(_ cell: MessageBaseCell, path: String, isAvatar: Bool) {
         let browser = MediaBrowserViewController()
         if !isAvatar {
@@ -243,6 +251,18 @@ extension HistoryVC: UITableViewDelegate, MessageTableViewCellDelegate {
         }
         browser.modalPresentationStyle = .fullScreen
         self.navigationController?.present(browser, animated: true, completion: nil)
+    }
+    
+    func mapViewTap(_ cell: MessageBaseCell, latitude: Double, longitude: Double) {
+        
+    }
+    
+    func textCellDoubleTap(_ cell: MessageBaseCell) {
+        
+    }
+    
+    func textCellSingleTap(_ cell: MessageBaseCell) {
+        
     }
 
     func emojiOutBounds(from cell: MessageBaseCell, gesture: UIGestureRecognizer) {
@@ -265,7 +285,7 @@ extension HistoryVC: UITableViewDelegate, MessageTableViewCellDelegate {
         
     }
     
-    func downloadProgressUpdate(progress: Double, message: Message) {
+    func downloadProgressUpdate(progress: Double, messages: [Message]) {
         
     }
     
@@ -287,7 +307,7 @@ extension HistoryVC: UITableViewDelegate, MessageTableViewCellDelegate {
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         guard indexPath.row < messages.count else { return 0 }
-        return MessageBaseCell.height(for: messages[indexPath.row], username: username)
+        return MessageBaseCell.height(for: messages[indexPath.row], tableViewSize: tableView.frame.size)
     }
     
     func tableView(_ tableView: UITableView, didEndDisplaying cell: UITableViewCell, forRowAt indexPath: IndexPath) {

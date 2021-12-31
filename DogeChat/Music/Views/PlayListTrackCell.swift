@@ -28,24 +28,25 @@ class PlayListTrackCell: UITableViewCell {
         albumImageView.mas_makeConstraints { make in
             make?.width.height().mas_equalTo()(40)
         }
-        trackNameLabel.font = .systemFont(ofSize: 17)
-        artistLabel.font = .systemFont(ofSize: trackNameLabel.font.pointSize - 3)
+        trackNameLabel.font = .preferredFont(forTextStyle: .body)
+        artistLabel.font = .preferredFont(forTextStyle: .footnote)
         downloadProgress.isHidden = true
         downloadProgress.mas_makeConstraints { make in
             make?.height.mas_equalTo()(5)
-            make?.width.mas_equalTo()(300)
         }
         let rightStack = UIStackView(arrangedSubviews: [trackNameLabel, artistLabel, downloadProgress])
         rightStack.axis = .vertical
         rightStack.spacing = 3
         let wholeStack = UIStackView(arrangedSubviews: [albumImageView, rightStack])
+        wholeStack.alignment = .center
         wholeStack.spacing = 10
-        wholeStack.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(wholeStack)
         wholeStack.mas_makeConstraints { [weak self] make in
-            make?.centerY.equalTo()(self?.contentView)
             make?.leading.equalTo()(self?.contentView)?.offset()(20)
             make?.trailing.equalTo()(self?.contentView)?.offset()(-60)
+            make?.top.equalTo()(self?.contentView)?.offset()(tableViewCellTopBottomPadding)
+            make?.bottom.equalTo()(self?.contentView)?.offset()(-tableViewCellTopBottomPadding)
+            make?.height.mas_greaterThanOrEqualTo()(45)
         }
     }
     

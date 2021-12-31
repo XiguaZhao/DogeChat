@@ -7,10 +7,24 @@
 //
 
 import UIKit
+import DogeChatUniversal
+
+let videoIdentifier = "public.movie"
+let gifIdentifier = "com.compuserve.gif"
+let fileIdentifier = "public.file-url"
+let audioIdentifier = "public.audio"
 
 extension ChatRoomViewController: UITableViewDragDelegate {
     
+    func tableView(_ tableView: UITableView, itemsForAddingTo session: UIDragSession, at indexPath: IndexPath, point: CGPoint) -> [UIDragItem] {
+        return wrapItmesWithIndexPath(indexPath)
+    }
+    
     func tableView(_ tableView: UITableView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
+        return wrapItmesWithIndexPath(indexPath)
+    }
+        
+    func wrapItmesWithIndexPath(_ indexPath: IndexPath) -> [UIDragItem] {
         let message = messages[indexPath.row]
         guard message.messageType == .image || message.messageType == .text || message.messageType == .draw || message.messageType == .voice || message.messageType == .video else { return [] }
         var items = [UIDragItem]()
@@ -41,7 +55,7 @@ extension ChatRoomViewController: UITableViewDragDelegate {
 #endif
             }
         }
-        items.forEach( { $0.localObject = "local" })
+        items.forEach( { $0.localObject = ["userID" : self.friend.userID, "message" : message] })
         return items
     }
     

@@ -8,15 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		0702F7E6247E62B200B22846 /* ContactsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0702F7E5247E62B200B22846 /* ContactsTableViewController.swift */; };
-		0706B45F2740E5CF00E4563F /* 猫咪2.png in Resources */ = {isa = PBXBuildFile; fileRef = 0706B45E2740E5CF00E4563F /* 猫咪2.png */; };
-		0706B4672740EEF300E4563F /* _哆啦A梦.png in Resources */ = {isa = PBXBuildFile; fileRef = 0706B4662740EEF300E4563F /* _哆啦A梦.png */; };
-		0706B46B2740F02400E4563F /* __海贼王.png in Resources */ = {isa = PBXBuildFile; fileRef = 0706B46A2740F02400E4563F /* __海贼王.png */; };
-		0706B46D2740F09500E4563F /* _海贼王2.png in Resources */ = {isa = PBXBuildFile; fileRef = 0706B46C2740F09500E4563F /* _海贼王2.png */; };
-		0706B46F2740F13900E4563F /* _蜡笔小新.png in Resources */ = {isa = PBXBuildFile; fileRef = 0706B46E2740F13900E4563F /* _蜡笔小新.png */; };
-		0706B4712740F1AE00E4563F /* _小黄人2.png in Resources */ = {isa = PBXBuildFile; fileRef = 0706B4702740F1AD00E4563F /* _小黄人2.png */; };
-		0706B4732740F1BF00E4563F /* _小黄人.png in Resources */ = {isa = PBXBuildFile; fileRef = 0706B4722740F1BF00E4563F /* _小黄人.png */; };
-		0706B4762740F20C00E4563F /* ChangeIconVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0706B4742740F20C00E4563F /* ChangeIconVC.swift */; };
-		0706B4772740F20C00E4563F /* ChangeIconVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0706B4752740F20C00E4563F /* ChangeIconVC.xib */; };
+		070575D5276EFDC00041C3B8 /* ProfileVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 070575D4276EFDC00041C3B8 /* ProfileVC.swift */; };
+		070575DA276F308E0041C3B8 /* ProfileAvatarCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 070575D9276F308E0041C3B8 /* ProfileAvatarCell.swift */; };
 		0709ECBA2719626C007F229F /* SessionDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0709ECB92719626C007F229F /* SessionDelegate.swift */; };
 		0709ECBB2719626C007F229F /* SessionDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0709ECB92719626C007F229F /* SessionDelegate.swift */; };
 		070C41742489204F0035314A /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 070C41732489204F0035314A /* SearchViewController.swift */; };
@@ -27,6 +20,9 @@
 		071379A82689DCBD007EF6D6 /* ChatRoom+CellDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 071379A72689DCBD007EF6D6 /* ChatRoom+CellDelegate.swift */; };
 		0715EA7C2673ACCB0042F4F0 /* Encrypt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0715EA7B2673ACCB0042F4F0 /* Encrypt.swift */; };
 		0715EA7D2673ACCB0042F4F0 /* Encrypt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0715EA7B2673ACCB0042F4F0 /* Encrypt.swift */; };
+		07178B1A27659CBD007D32AB /* HttpMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07178B1927659CBD007D32AB /* HttpMessage.swift */; };
+		07178B1B27659CBD007D32AB /* HttpMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07178B1927659CBD007D32AB /* HttpMessage.swift */; };
+		07178B1C2765A2A6007D32AB /* Encrypt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0715EA7B2673ACCB0042F4F0 /* Encrypt.swift */; };
 		0718AC0D2685CEAE00E27B28 /* Common.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0718AC0C2685CEAE00E27B28 /* Common.swift */; };
 		0718AC0E2685CF1200E27B28 /* Common.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0718AC0C2685CEAE00E27B28 /* Common.swift */; };
 		0718AC102685DE9F00E27B28 /* PlayerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0718AC0F2685DE9F00E27B28 /* PlayerManager.swift */; };
@@ -43,13 +39,20 @@
 		0718AC2826878E8900E27B28 /* DogeChatNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0718AC2726878E8900E27B28 /* DogeChatNavigationController.swift */; };
 		0718AC2A2688025C00E27B28 /* CommonTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0718AC292688025C00E27B28 /* CommonTableCell.swift */; };
 		0718AC2C268816B700E27B28 /* DogeChatBlurView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0718AC2B268816B700E27B28 /* DogeChatBlurView.swift */; };
+		071B89132770A500007ACCBE /* WebViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 071B89122770A500007ACCBE /* WebViewController.swift */; };
+		071B893C27732D27007ACCBE /* MediaBrowserSceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 071B893B27732D27007ACCBE /* MediaBrowserSceneDelegate.swift */; };
+		071B893E27733DEA007ACCBE /* MediaBrowser.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 071B893D27733DEA007ACCBE /* MediaBrowser.storyboard */; };
 		071CF7B426609F6900897B01 /* MessageTextCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 071CF7B326609F6900897B01 /* MessageTextCell.swift */; };
 		071CF7B626609F7C00897B01 /* MessageImageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 071CF7B526609F7C00897B01 /* MessageImageCell.swift */; };
 		071CF7B826609F8900897B01 /* MessageDrawCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 071CF7B726609F8900897B01 /* MessageDrawCell.swift */; };
 		071CF7D2266383BD00897B01 /* ContactTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 071CF7D0266383BC00897B01 /* ContactTableViewCell.swift */; };
 		07201DDE26DF67FA007D2EDB /* HistoryVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07201DDD26DF67FA007D2EDB /* HistoryVC.swift */; };
 		0726D96C267E2E5B005B89DC /* MediaBrowserCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0726D96B267E2E5B005B89DC /* MediaBrowserCell.swift */; };
+		0733CAD02774B4D80059A7E0 /* Annotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0733CACF2774B4D80059A7E0 /* Annotation.swift */; };
+		0734758F275CE126007A3ED2 /* UINavigationController+SplitVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0734758E275CE126007A3ED2 /* UINavigationController+SplitVC.swift */; };
 		0735ABCA26CCF90D007B4ADE /* SDWebImageManager+TempModifyURLPre.m in Sources */ = {isa = PBXBuildFile; fileRef = 0735ABC926CCF90D007B4ADE /* SDWebImageManager+TempModifyURLPre.m */; };
+		0736FDEB27756FA000A334A0 /* ChangeIconVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0736FDE927756FA000A334A0 /* ChangeIconVC.swift */; };
+		0736FDEC27756FA000A334A0 /* ChangeIconVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0736FDEA27756FA000A334A0 /* ChangeIconVC.xib */; };
 		0739FA3E25B9557A00B6A7AB /* MediaBrowserViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0739FA3D25B9557900B6A7AB /* MediaBrowserViewController.swift */; };
 		0739FA4425BA829E00B6A7AB /* PushKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0739FA4325BA829D00B6A7AB /* PushKit.framework */; };
 		0739FA4825BA855A00B6A7AB /* CallKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0739FA4725BA855A00B6A7AB /* CallKit.framework */; };
@@ -59,11 +62,6 @@
 		0739FA5825BAB00300B6A7AB /* Audio.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0739FA5725BAB00300B6A7AB /* Audio.swift */; };
 		0739FABC25BEEF6B00B6A7AB /* FloatWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0739FABB25BEEF6B00B6A7AB /* FloatWindow.swift */; };
 		073FDF6A25B2A35000FE01CD /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 073FDF6925B2A35000FE01CD /* NotificationManager.swift */; };
-		07471A3F265002440042EC2D /* OverlayVideoView.m in Sources */ = {isa = PBXBuildFile; fileRef = 07471A3E265002440042EC2D /* OverlayVideoView.m */; };
-		07471A42265008820042EC2D /* MainVideoView.m in Sources */ = {isa = PBXBuildFile; fileRef = 07471A41265008820042EC2D /* MainVideoView.m */; };
-		07471A4526501B200042EC2D /* VideoChatViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 07471A4426501B200042EC2D /* VideoChatViewController.m */; };
-		07471A49265036700042EC2D /* Shader.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 07471A47265036700042EC2D /* Shader.vsh */; };
-		07471A4A265036700042EC2D /* Shader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 07471A48265036700042EC2D /* Shader.fsh */; };
 		0749E65F25E521420058EC30 /* EmojiSelectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0749E65E25E521420058EC30 /* EmojiSelectView.swift */; };
 		0749E66225E601690058EC30 /* EmojiCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0749E66125E601690058EC30 /* EmojiCollectionViewCell.swift */; };
 		075293A92715629400D10D65 /* MediaLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 075293A82715629400D10D65 /* MediaLoader.swift */; };
@@ -72,9 +70,7 @@
 		075557342666317000F63F55 /* SettingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 075557332666317000F63F55 /* SettingViewController.swift */; };
 		075557362666529B00F63F55 /* DatePickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 075557352666529B00F63F55 /* DatePickerViewController.swift */; };
 		0755575D266B3D9F00F63F55 /* ContactsTableViewController+Avatar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0755575C266B3D9E00F63F55 /* ContactsTableViewController+Avatar.swift */; };
-		0760E10125E74BD30030337E /* HJOpenGLView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0760E0FE25E74BD30030337E /* HJOpenGLView.m */; };
-		0760E10225E74BD30030337E /* HJH264Encoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 0760E0FF25E74BD30030337E /* HJH264Encoder.m */; };
-		0760E10625E74C410030337E /* HJH264Decoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 0760E10425E74C410030337E /* HJH264Decoder.m */; };
+		075C475C2761C8E400A45655 /* TextBrowerVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 075C475B2761C8E300A45655 /* TextBrowerVC.swift */; };
 		0761F58326835D8800E27B07 /* TrackSearchResultCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0761F58226835D8800E27B07 /* TrackSearchResultCell.swift */; };
 		0761F5852683671900E27B07 /* TrackDownloadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0761F5842683671900E27B07 /* TrackDownloadManager.swift */; };
 		0761F5872684AC2B00E27B07 /* PlayListTrackCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0761F5862684AC2A00E27B07 /* PlayListTrackCell.swift */; };
@@ -99,17 +95,45 @@
 		078E66A22658C0D600E5277E /* PKView.m in Sources */ = {isa = PBXBuildFile; fileRef = 078E66A12658C0D600E5277E /* PKView.m */; };
 		078E66A6265A310F00E5277E /* DrawViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 078E66A5265A310F00E5277E /* DrawViewController.swift */; };
 		079317282643CDA2008EBB27 /* WebSocketManagerAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 079317272643CDA2008EBB27 /* WebSocketManagerAdapter.swift */; };
+		0796FBF8275A2F8500AAF146 /* VideoChatViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0796FBDA275A2B8F00AAF146 /* VideoChatViewController.m */; };
+		0796FBF9275A2F9D00AAF146 /* FriendVideoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0796FBE2275A2B9000AAF146 /* FriendVideoView.swift */; };
+		0796FBFA275A2FA300AAF146 /* OverlayVideoView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0796FBDB275A2B8F00AAF146 /* OverlayVideoView.m */; };
+		0796FBFB275A2FA800AAF146 /* VertexDescriptors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0796FBEC275A2B9100AAF146 /* VertexDescriptors.swift */; };
+		0796FBFC275A2FAC00AAF146 /* Shaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 0796FBEA275A2B9100AAF146 /* Shaders.metal */; };
+		0796FBFD275A2FAF00AAF146 /* DepthStencilStates.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0796FBEE275A2B9200AAF146 /* DepthStencilStates.swift */; };
+		0796FBFE275A2FB500AAF146 /* MetalUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0796FBF5275A2B9300AAF146 /* MetalUtils.swift */; };
+		0796FBFF275A2FB700AAF146 /* RenderDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0796FBF6275A2B9300AAF146 /* RenderDestination.swift */; };
+		0796FC00275A2FB900AAF146 /* BufferView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0796FBF7275A2B9300AAF146 /* BufferView.swift */; };
+		0796FC01275A2FBC00AAF146 /* PipelineStates.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0796FBEB275A2B9100AAF146 /* PipelineStates.swift */; };
+		0796FC02275A2FBE00AAF146 /* Renderer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0796FBED275A2B9100AAF146 /* Renderer.swift */; };
+		0796FC03275A2FC600AAF146 /* Ray.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0796FBF1275A2B9200AAF146 /* Ray.swift */; };
+		0796FC05275A2FCB00AAF146 /* SIMD+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0796FBF3275A2B9300AAF146 /* SIMD+Extensions.swift */; };
+		0796FC06275A2FD100AAF146 /* VideoFrameData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0796FBE8275A2B9100AAF146 /* VideoFrameData.swift */; };
+		0796FC07275A2FD300AAF146 /* VideoProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0796FBDF275A2B9000AAF146 /* VideoProcessor.swift */; };
+		0798B99C2777837D001F91C8 /* ContactsVC+Drop.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0798B99B2777837D001F91C8 /* ContactsVC+Drop.swift */; };
 		0799068625B3D44B0083C1B8 /* main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0799068525B3D44B0083C1B8 /* main.storyboard */; };
 		079BA83426D76DC100E2C8BB /* DogeChatStaticBlurView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 079BA83326D76DC100E2C8BB /* DogeChatStaticBlurView.swift */; };
 		079BA83826D7A15500E2C8BB /* VideoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 079BA83726D7A15500E2C8BB /* VideoView.swift */; };
 		079BA83D26D892E600E2C8BB /* LivePhotoGenerator.m in Sources */ = {isa = PBXBuildFile; fileRef = 079BA83C26D892E600E2C8BB /* LivePhotoGenerator.m */; };
 		079BA83F26D8961000E2C8BB /* QuickTimeMov.swift in Sources */ = {isa = PBXBuildFile; fileRef = 079BA83E26D8961000E2C8BB /* QuickTimeMov.swift */; };
 		079BA84226D8E52C00E2C8BB /* LFAssetExportSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 079BA84126D8E52B00E2C8BB /* LFAssetExportSession.m */; };
+		079BB421275B82ED009B8FB0 /* Common.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0718AC0C2685CEAE00E27B28 /* Common.swift */; };
+		07A2074F276DC16200EAAE63 /* MessageImageKindCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07A2074E276DC16200EAAE63 /* MessageImageKindCell.swift */; };
+		07A20753276DC6AA00EAAE63 /* MessageAudioCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07A20752276DC6AA00EAAE63 /* MessageAudioCell.swift */; };
+		07A624C8277486F80061BAEF /* LocationVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07A624C7277486F80061BAEF /* LocationVC.swift */; };
+		07A624CC27748B380061BAEF /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07A624CB27748B380061BAEF /* LocationManager.swift */; };
+		07A624CE2774982D0061BAEF /* MessageLocationCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07A624CD2774982D0061BAEF /* MessageLocationCell.swift */; };
+		07A624D127749BF50061BAEF /* ChatRoom+Location.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07A624D027749BF50061BAEF /* ChatRoom+Location.swift */; };
 		07AB7B0B248F2A7A005306A1 /* SignUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07AB7B09248F2A7A005306A1 /* SignUpViewController.swift */; };
 		07AB7B0C248F2A7A005306A1 /* SignUpViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 07AB7B0A248F2A7A005306A1 /* SignUpViewController.xib */; };
 		07B3F5D4262470D70016B5C9 /* ChatRoom+Drop.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07B3F5D3262470D70016B5C9 /* ChatRoom+Drop.swift */; };
 		07B8321426820512009434AC /* PlayListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07B8321326820512009434AC /* PlayListViewController.swift */; };
 		07B8321626820A54009434AC /* SearchMusicViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07B8321526820A54009434AC /* SearchMusicViewController.swift */; };
+		07BA6044277E123300496047 /* ShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07BA6043277E123300496047 /* ShareViewController.swift */; };
+		07BA6047277E123300496047 /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 07BA6045277E123300496047 /* MainInterface.storyboard */; };
+		07BA604B277E123300496047 /* DogeChatShare.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 07BA6041277E123300496047 /* DogeChatShare.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		07BA605D277EA0FB00496047 /* 狗512*512.png in Resources */ = {isa = PBXBuildFile; fileRef = 07BA605B277EA0FB00496047 /* 狗512*512.png */; };
+		07BA605E277EA0FB00496047 /* 猫512*512.png in Resources */ = {isa = PBXBuildFile; fileRef = 07BA605C277EA0FB00496047 /* 猫512*512.png */; };
 		07BB5527272C2A9500AE60A6 /* FriendDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07BB5525272C2A9300AE60A6 /* FriendDetailViewController.swift */; };
 		07BB552C272C2D2300AE60A6 /* Conform.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07BB552B272C2D2300AE60A6 /* Conform.swift */; };
 		07BB552E272C31E100AE60A6 /* ChatRoom+NavigationBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07BB552D272C31E100AE60A6 /* ChatRoom+NavigationBar.swift */; };
@@ -128,6 +152,8 @@
 		07D0FBA02749604B00B34FE4 /* AppIntentVocabulary.plist in Resources */ = {isa = PBXBuildFile; fileRef = 07D0FB9F2749604B00B34FE4 /* AppIntentVocabulary.plist */; };
 		07D0FBA4274A2EB400B34FE4 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 07D0FBA3274A2EB400B34FE4 /* InfoPlist.strings */; };
 		07D298DE266CBD3800C09F6C /* HapticManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07D298DD266CBD3800C09F6C /* HapticManager.swift */; };
+		07D59400277C416400BD8290 /* MessageSender.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07D593FF277C416400BD8290 /* MessageSender.swift */; };
+		07D59402277C631000BD8290 /* ChatRoom+JumpButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07D59401277C631000BD8290 /* ChatRoom+JumpButton.swift */; };
 		07DDE8CD26E8BFE800573D0A /* DogeChatSplitViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07DDE8CC26E8BFE800573D0A /* DogeChatSplitViewController.swift */; };
 		07E001DA248CA56800D4A287 /* SelectShortcutTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07E001D9248CA56800D4A287 /* SelectShortcutTVC.swift */; };
 		07E1BAFC267F86B000559A3B /* ChatRoom+InputViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07E1BAFB267F86B000559A3B /* ChatRoom+InputViewDelegate.swift */; };
@@ -136,6 +162,8 @@
 		07E4DD43271C1F250027BA0C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0761FB13266E484F00AE0171 /* Assets.xcassets */; };
 		07E4DD5B271C288C0027BA0C /* EmojiRowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07E4DD5A271C288C0027BA0C /* EmojiRowController.swift */; };
 		07E4DD5D271C28F80027BA0C /* EmojiInterfaceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07E4DD5C271C28F80027BA0C /* EmojiInterfaceController.swift */; };
+		07E745B8275BC64C00897751 /* ChatRoom.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 07E745B7275BC64C00897751 /* ChatRoom.storyboard */; };
+		07E745BC275BC6FE00897751 /* ChatRoomSceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07E745BB275BC6FE00897751 /* ChatRoomSceneDelegate.swift */; };
 		07ED6B6A268C2BE400F86DC0 /* MiniPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07ED6B69268C2BE400F86DC0 /* MiniPlayerView.swift */; };
 		07ED6B6C268C2C2500F86DC0 /* MiniPlayerCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07ED6B6B268C2C2500F86DC0 /* MiniPlayerCell.swift */; };
 		07ED6B70268C53DF00F86DC0 /* DogeChatTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07ED6B6F268C53DF00F86DC0 /* DogeChatTabBarController.swift */; };
@@ -146,7 +174,6 @@
 		07FE06CA27019DE90048B6A7 /* mynotification.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 07FE06C327019DE90048B6A7 /* mynotification.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		07FE06D42701E6D90048B6A7 /* Common.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0718AC0C2685CEAE00E27B28 /* Common.swift */; };
 		07FEB845266F898800255F8F /* LoginInterfaceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07FEB844266F898800255F8F /* LoginInterfaceController.swift */; };
-		58D994877399E352111AE8D0 /* libPods-mynotification.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FA628731B3D7AE983BA8C753 /* libPods-mynotification.a */; };
 		924E50340220B9EE9CD5CB47 /* libPods-DogeChatSiri.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DD4B42E6E732B3FC5D0DA8A /* libPods-DogeChatSiri.a */; };
 		AE909BEB1EB54099009D9D95 /* MessageBaseCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE909BEA1EB54099009D9D95 /* MessageBaseCell.swift */; };
 		AE909BEF1EB54C4B009D9D95 /* Label.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE909BEE1EB54C4B009D9D95 /* Label.swift */; };
@@ -158,10 +185,9 @@
 		AEC6BF461EAF320E007CA6E5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = AEC6BF451EAF320E007CA6E5 /* Assets.xcassets */; };
 		AEC6BF491EAF320E007CA6E5 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = AEC6BF471EAF320E007CA6E5 /* LaunchScreen.storyboard */; };
 		AEC6BF511EAF345A007CA6E5 /* ChatRoomViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = AEC6BF501EAF345A007CA6E5 /* ChatRoomViewController.swift */; };
-		AEFEAA511EAF37BC00889E76 /* Inconsolata-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AEFEAA4F1EAF37BC00889E76 /* Inconsolata-Bold.ttf */; };
-		AEFEAA521EAF37BC00889E76 /* Inconsolata-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AEFEAA501EAF37BC00889E76 /* Inconsolata-Regular.ttf */; };
 		E52F38351E69F8D1B345D569 /* libPods-DogeChat.a in Frameworks */ = {isa = PBXBuildFile; fileRef = CA29E1DB30A197FEE7773D92 /* libPods-DogeChat.a */; };
 		F964358E661A8735058E8C73 /* libPods-DogeChatWatch Extension.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 662BDD147731663819D8A961 /* libPods-DogeChatWatch Extension.a */; };
+		FB78052AEE663B93AA91FDEA /* libPods-mynotification.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4EE1A092520253AC997DD23B /* libPods-mynotification.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -193,6 +219,13 @@
 			remoteGlobalIDString = 335FA2021F5DF71D00F6D2EC;
 			remoteInfo = "Starscream Tests";
 		};
+		07BA6049277E123300496047 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AEC6BF331EAF320E007CA6E5 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 07BA6040277E123300496047;
+			remoteInfo = DogeChatShare;
+		};
 		07D0FB932749404000B34FE4 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = AEC6BF331EAF320E007CA6E5 /* Project object */;
@@ -216,6 +249,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
+				07BA604B277E123300496047 /* DogeChatShare.appex in Embed App Extensions */,
 				07D0FB952749404000B34FE4 /* DogeChatSiri.appex in Embed App Extensions */,
 				07FE06CA27019DE90048B6A7 /* mynotification.appex in Embed App Extensions */,
 			);
@@ -248,15 +282,8 @@
 
 /* Begin PBXFileReference section */
 		0702F7E5247E62B200B22846 /* ContactsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsTableViewController.swift; sourceTree = "<group>"; };
-		0706B45E2740E5CF00E4563F /* 猫咪2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "猫咪2.png"; sourceTree = "<group>"; };
-		0706B4662740EEF300E4563F /* _哆啦A梦.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "_哆啦A梦.png"; sourceTree = "<group>"; };
-		0706B46A2740F02400E4563F /* __海贼王.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "__海贼王.png"; sourceTree = "<group>"; };
-		0706B46C2740F09500E4563F /* _海贼王2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "_海贼王2.png"; sourceTree = "<group>"; };
-		0706B46E2740F13900E4563F /* _蜡笔小新.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "_蜡笔小新.png"; sourceTree = "<group>"; };
-		0706B4702740F1AD00E4563F /* _小黄人2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "_小黄人2.png"; sourceTree = "<group>"; };
-		0706B4722740F1BF00E4563F /* _小黄人.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "_小黄人.png"; sourceTree = "<group>"; };
-		0706B4742740F20C00E4563F /* ChangeIconVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangeIconVC.swift; sourceTree = "<group>"; };
-		0706B4752740F20C00E4563F /* ChangeIconVC.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ChangeIconVC.xib; sourceTree = "<group>"; };
+		070575D4276EFDC00041C3B8 /* ProfileVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileVC.swift; sourceTree = "<group>"; };
+		070575D9276F308E0041C3B8 /* ProfileAvatarCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileAvatarCell.swift; sourceTree = "<group>"; };
 		0709ECB6271956F6007F229F /* DogeChatWatch.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = DogeChatWatch.entitlements; sourceTree = "<group>"; };
 		0709ECB92719626C007F229F /* SessionDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionDelegate.swift; sourceTree = "<group>"; };
 		070C41732489204F0035314A /* SearchViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewController.swift; sourceTree = "<group>"; };
@@ -265,6 +292,7 @@
 		071379A52689B636007EF6D6 /* SelectContactsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectContactsViewController.swift; sourceTree = "<group>"; };
 		071379A72689DCBD007EF6D6 /* ChatRoom+CellDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChatRoom+CellDelegate.swift"; sourceTree = "<group>"; };
 		0715EA7B2673ACCB0042F4F0 /* Encrypt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Encrypt.swift; sourceTree = "<group>"; };
+		07178B1927659CBD007D32AB /* HttpMessage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HttpMessage.swift; sourceTree = "<group>"; };
 		0718AC0C2685CEAE00E27B28 /* Common.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Common.swift; sourceTree = "<group>"; };
 		0718AC0F2685DE9F00E27B28 /* PlayerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayerManager.swift; sourceTree = "<group>"; };
 		0718AC112686F61100E27B28 /* PlayListsSelectVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayListsSelectVC.swift; sourceTree = "<group>"; };
@@ -280,14 +308,23 @@
 		0718AC2726878E8900E27B28 /* DogeChatNavigationController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DogeChatNavigationController.swift; sourceTree = "<group>"; };
 		0718AC292688025C00E27B28 /* CommonTableCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonTableCell.swift; sourceTree = "<group>"; };
 		0718AC2B268816B700E27B28 /* DogeChatBlurView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DogeChatBlurView.swift; sourceTree = "<group>"; };
+		071B89122770A500007ACCBE /* WebViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewController.swift; sourceTree = "<group>"; };
+		071B891E2771F0BB007ACCBE /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		071B89202771F0BB007ACCBE /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		071B893B27732D27007ACCBE /* MediaBrowserSceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaBrowserSceneDelegate.swift; sourceTree = "<group>"; };
+		071B893D27733DEA007ACCBE /* MediaBrowser.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = MediaBrowser.storyboard; sourceTree = "<group>"; };
 		071CF7B326609F6900897B01 /* MessageTextCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageTextCell.swift; sourceTree = "<group>"; };
 		071CF7B526609F7C00897B01 /* MessageImageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageImageCell.swift; sourceTree = "<group>"; };
 		071CF7B726609F8900897B01 /* MessageDrawCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageDrawCell.swift; sourceTree = "<group>"; };
 		071CF7D0266383BC00897B01 /* ContactTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactTableViewCell.swift; sourceTree = "<group>"; };
 		07201DDD26DF67FA007D2EDB /* HistoryVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryVC.swift; sourceTree = "<group>"; };
 		0726D96B267E2E5B005B89DC /* MediaBrowserCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaBrowserCell.swift; sourceTree = "<group>"; };
+		0733CACF2774B4D80059A7E0 /* Annotation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Annotation.swift; sourceTree = "<group>"; };
+		0734758E275CE126007A3ED2 /* UINavigationController+SplitVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UINavigationController+SplitVC.swift"; sourceTree = "<group>"; };
 		0735ABC826CCF90D007B4ADE /* SDWebImageManager+TempModifyURLPre.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SDWebImageManager+TempModifyURLPre.h"; sourceTree = "<group>"; };
 		0735ABC926CCF90D007B4ADE /* SDWebImageManager+TempModifyURLPre.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "SDWebImageManager+TempModifyURLPre.m"; sourceTree = "<group>"; };
+		0736FDE927756FA000A334A0 /* ChangeIconVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChangeIconVC.swift; sourceTree = "<group>"; };
+		0736FDEA27756FA000A334A0 /* ChangeIconVC.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = ChangeIconVC.xib; sourceTree = "<group>"; };
 		0739FA3D25B9557900B6A7AB /* MediaBrowserViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaBrowserViewController.swift; sourceTree = "<group>"; };
 		0739FA4325BA829D00B6A7AB /* PushKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = PushKit.framework; path = System/Library/Frameworks/PushKit.framework; sourceTree = SDKROOT; };
 		0739FA4725BA855A00B6A7AB /* CallKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CallKit.framework; path = System/Library/Frameworks/CallKit.framework; sourceTree = SDKROOT; };
@@ -301,14 +338,6 @@
 		073FDF9F25B2F3BE00FE01CD /* DogeChat-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "DogeChat-Bridging-Header.h"; sourceTree = "<group>"; };
 		073FDFAC25B2F61500FE01CD /* libAFNetworking.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libAFNetworking.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		073FDFDE25B2FA3700FE01CD /* SwiftyJSON.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SwiftyJSON.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		07471A3D265002440042EC2D /* OverlayVideoView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OverlayVideoView.h; sourceTree = "<group>"; };
-		07471A3E265002440042EC2D /* OverlayVideoView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OverlayVideoView.m; sourceTree = "<group>"; };
-		07471A40265008820042EC2D /* MainVideoView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MainVideoView.h; sourceTree = "<group>"; };
-		07471A41265008820042EC2D /* MainVideoView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MainVideoView.m; sourceTree = "<group>"; };
-		07471A4326501B200042EC2D /* VideoChatViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VideoChatViewController.h; sourceTree = "<group>"; };
-		07471A4426501B200042EC2D /* VideoChatViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VideoChatViewController.m; sourceTree = "<group>"; };
-		07471A47265036700042EC2D /* Shader.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = Shader.vsh; sourceTree = "<group>"; };
-		07471A48265036700042EC2D /* Shader.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = Shader.fsh; sourceTree = "<group>"; };
 		0749E65E25E521420058EC30 /* EmojiSelectView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiSelectView.swift; sourceTree = "<group>"; };
 		0749E66125E601690058EC30 /* EmojiCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiCollectionViewCell.swift; sourceTree = "<group>"; };
 		075293A82715629400D10D65 /* MediaLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaLoader.swift; sourceTree = "<group>"; };
@@ -319,12 +348,7 @@
 		075557332666317000F63F55 /* SettingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingViewController.swift; sourceTree = "<group>"; };
 		075557352666529B00F63F55 /* DatePickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatePickerViewController.swift; sourceTree = "<group>"; };
 		0755575C266B3D9E00F63F55 /* ContactsTableViewController+Avatar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ContactsTableViewController+Avatar.swift"; sourceTree = "<group>"; };
-		0760E0FD25E74BD30030337E /* HJH264Encoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HJH264Encoder.h; sourceTree = "<group>"; };
-		0760E0FE25E74BD30030337E /* HJOpenGLView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HJOpenGLView.m; sourceTree = "<group>"; };
-		0760E0FF25E74BD30030337E /* HJH264Encoder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HJH264Encoder.m; sourceTree = "<group>"; };
-		0760E10025E74BD30030337E /* HJOpenGLView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HJOpenGLView.h; sourceTree = "<group>"; };
-		0760E10425E74C410030337E /* HJH264Decoder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HJH264Decoder.m; sourceTree = "<group>"; };
-		0760E10525E74C410030337E /* HJH264Decoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HJH264Decoder.h; sourceTree = "<group>"; };
+		075C475B2761C8E300A45655 /* TextBrowerVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextBrowerVC.swift; sourceTree = "<group>"; };
 		0761F58226835D8800E27B07 /* TrackSearchResultCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackSearchResultCell.swift; sourceTree = "<group>"; };
 		0761F5842683671900E27B07 /* TrackDownloadManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackDownloadManager.swift; sourceTree = "<group>"; };
 		0761F5862684AC2A00E27B07 /* PlayListTrackCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayListTrackCell.swift; sourceTree = "<group>"; };
@@ -359,6 +383,25 @@
 		078E66A12658C0D600E5277E /* PKView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PKView.m; sourceTree = "<group>"; };
 		078E66A5265A310F00E5277E /* DrawViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawViewController.swift; sourceTree = "<group>"; };
 		079317272643CDA2008EBB27 /* WebSocketManagerAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebSocketManagerAdapter.swift; sourceTree = "<group>"; };
+		0796FBDA275A2B8F00AAF146 /* VideoChatViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VideoChatViewController.m; sourceTree = "<group>"; };
+		0796FBDB275A2B8F00AAF146 /* OverlayVideoView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = OverlayVideoView.m; sourceTree = "<group>"; };
+		0796FBDF275A2B9000AAF146 /* VideoProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoProcessor.swift; sourceTree = "<group>"; };
+		0796FBE1275A2B9000AAF146 /* VideoChatViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = VideoChatViewController.h; path = "../../../../DogeChat视频通用/DogeChat/Models/Video/VideoChatViewController.h"; sourceTree = "<group>"; };
+		0796FBE2275A2B9000AAF146 /* FriendVideoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendVideoView.swift; sourceTree = "<group>"; };
+		0796FBE5275A2B9000AAF146 /* OverlayVideoView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = OverlayVideoView.m; path = "../../../../DogeChat视频通用/DogeChat/Models/Video/OverlayVideoView.m"; sourceTree = "<group>"; };
+		0796FBE8275A2B9100AAF146 /* VideoFrameData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoFrameData.swift; sourceTree = "<group>"; };
+		0796FBEA275A2B9100AAF146 /* Shaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
+		0796FBEB275A2B9100AAF146 /* PipelineStates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PipelineStates.swift; sourceTree = "<group>"; };
+		0796FBEC275A2B9100AAF146 /* VertexDescriptors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VertexDescriptors.swift; sourceTree = "<group>"; };
+		0796FBED275A2B9100AAF146 /* Renderer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Renderer.swift; sourceTree = "<group>"; };
+		0796FBEE275A2B9200AAF146 /* DepthStencilStates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DepthStencilStates.swift; sourceTree = "<group>"; };
+		0796FBEF275A2B9200AAF146 /* ShaderTypes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ShaderTypes.h; sourceTree = "<group>"; };
+		0796FBF1275A2B9200AAF146 /* Ray.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Ray.swift; sourceTree = "<group>"; };
+		0796FBF3275A2B9300AAF146 /* SIMD+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SIMD+Extensions.swift"; sourceTree = "<group>"; };
+		0796FBF5275A2B9300AAF146 /* MetalUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetalUtils.swift; sourceTree = "<group>"; };
+		0796FBF6275A2B9300AAF146 /* RenderDestination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenderDestination.swift; sourceTree = "<group>"; };
+		0796FBF7275A2B9300AAF146 /* BufferView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BufferView.swift; sourceTree = "<group>"; };
+		0798B99B2777837D001F91C8 /* ContactsVC+Drop.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ContactsVC+Drop.swift"; sourceTree = "<group>"; };
 		0799068525B3D44B0083C1B8 /* main.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = main.storyboard; sourceTree = "<group>"; };
 		079BA83326D76DC100E2C8BB /* DogeChatStaticBlurView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DogeChatStaticBlurView.swift; sourceTree = "<group>"; };
 		079BA83726D7A15500E2C8BB /* VideoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoView.swift; sourceTree = "<group>"; };
@@ -367,15 +410,29 @@
 		079BA83E26D8961000E2C8BB /* QuickTimeMov.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QuickTimeMov.swift; sourceTree = "<group>"; };
 		079BA84026D8E52B00E2C8BB /* LFAssetExportSession.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LFAssetExportSession.h; sourceTree = "<group>"; };
 		079BA84126D8E52B00E2C8BB /* LFAssetExportSession.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LFAssetExportSession.m; sourceTree = "<group>"; };
+		07A2074E276DC16200EAAE63 /* MessageImageKindCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageImageKindCell.swift; sourceTree = "<group>"; };
+		07A20752276DC6AA00EAAE63 /* MessageAudioCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageAudioCell.swift; sourceTree = "<group>"; };
+		07A624C7277486F80061BAEF /* LocationVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationVC.swift; sourceTree = "<group>"; };
+		07A624CB27748B380061BAEF /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
+		07A624CD2774982D0061BAEF /* MessageLocationCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageLocationCell.swift; sourceTree = "<group>"; };
+		07A624D027749BF50061BAEF /* ChatRoom+Location.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChatRoom+Location.swift"; sourceTree = "<group>"; };
 		07A740A82514E5E90014880E /* Starscream.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Starscream.xcodeproj; path = "../../../DownloadedFromRaywenderlich/Starscream-master/Starscream.xcodeproj"; sourceTree = "<group>"; };
 		07A740F82514E9490014880E /* SwiftyJSON.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SwiftyJSON.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		07A7410F2514E9C60014880E /* SwiftyJSON.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = SwiftyJSON.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		07A741222514EE2C0014880E /* AFNetworking.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = AFNetworking.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		07AAE62E5574A45652FD65C9 /* Pods-mynotification.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-mynotification.debug.xcconfig"; path = "Target Support Files/Pods-mynotification/Pods-mynotification.debug.xcconfig"; sourceTree = "<group>"; };
 		07AB7B09248F2A7A005306A1 /* SignUpViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpViewController.swift; sourceTree = "<group>"; };
 		07AB7B0A248F2A7A005306A1 /* SignUpViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SignUpViewController.xib; sourceTree = "<group>"; };
 		07B3F5D3262470D70016B5C9 /* ChatRoom+Drop.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChatRoom+Drop.swift"; sourceTree = "<group>"; };
 		07B8321326820512009434AC /* PlayListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayListViewController.swift; sourceTree = "<group>"; };
 		07B8321526820A54009434AC /* SearchMusicViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchMusicViewController.swift; sourceTree = "<group>"; };
+		07BA6041277E123300496047 /* DogeChatShare.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = DogeChatShare.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		07BA6043277E123300496047 /* ShareViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShareViewController.swift; sourceTree = "<group>"; };
+		07BA6046277E123300496047 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
+		07BA6048277E123300496047 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		07BA604C277E123300496047 /* DogeChatShare.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = DogeChatShare.entitlements; sourceTree = "<group>"; };
+		07BA605B277EA0FB00496047 /* 狗512*512.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "狗512*512.png"; sourceTree = "<group>"; };
+		07BA605C277EA0FB00496047 /* 猫512*512.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "猫512*512.png"; sourceTree = "<group>"; };
 		07BB5525272C2A9300AE60A6 /* FriendDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendDetailViewController.swift; sourceTree = "<group>"; };
 		07BB552B272C2D2300AE60A6 /* Conform.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Conform.swift; sourceTree = "<group>"; };
 		07BB552D272C31E100AE60A6 /* ChatRoom+NavigationBar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChatRoom+NavigationBar.swift"; sourceTree = "<group>"; };
@@ -399,12 +456,17 @@
 		07D0FB9F2749604B00B34FE4 /* AppIntentVocabulary.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = AppIntentVocabulary.plist; sourceTree = "<group>"; };
 		07D0FBA3274A2EB400B34FE4 /* InfoPlist.strings */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; path = InfoPlist.strings; sourceTree = "<group>"; };
 		07D298DD266CBD3800C09F6C /* HapticManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticManager.swift; sourceTree = "<group>"; };
+		07D593FF277C416400BD8290 /* MessageSender.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageSender.swift; sourceTree = "<group>"; };
+		07D59401277C631000BD8290 /* ChatRoom+JumpButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChatRoom+JumpButton.swift"; sourceTree = "<group>"; };
 		07DDE8CC26E8BFE800573D0A /* DogeChatSplitViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DogeChatSplitViewController.swift; sourceTree = "<group>"; };
 		07E001D9248CA56800D4A287 /* SelectShortcutTVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectShortcutTVC.swift; sourceTree = "<group>"; };
 		07E1BAFB267F86B000559A3B /* ChatRoom+InputViewDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChatRoom+InputViewDelegate.swift"; sourceTree = "<group>"; };
 		07E1BAFD267F8CBA00559A3B /* VoiceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceViewController.swift; sourceTree = "<group>"; };
 		07E4DD5A271C288C0027BA0C /* EmojiRowController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiRowController.swift; sourceTree = "<group>"; };
 		07E4DD5C271C28F80027BA0C /* EmojiInterfaceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiInterfaceController.swift; sourceTree = "<group>"; };
+		07E745B7275BC64C00897751 /* ChatRoom.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = ChatRoom.storyboard; sourceTree = "<group>"; };
+		07E745BB275BC6FE00897751 /* ChatRoomSceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatRoomSceneDelegate.swift; sourceTree = "<group>"; };
+		07E833A7275FA2B0006ACBFF /* DogeChatWatch ExtensionRelease.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "DogeChatWatch ExtensionRelease.entitlements"; sourceTree = "<group>"; };
 		07ED6B69268C2BE400F86DC0 /* MiniPlayerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MiniPlayerView.swift; sourceTree = "<group>"; };
 		07ED6B6B268C2C2500F86DC0 /* MiniPlayerCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MiniPlayerCell.swift; sourceTree = "<group>"; };
 		07ED6B6F268C53DF00F86DC0 /* DogeChatTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DogeChatTabBarController.swift; sourceTree = "<group>"; };
@@ -425,11 +487,12 @@
 		1C3BF7D0F9CBDEF8B033D902 /* Pods-DogeChatMac.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DogeChatMac.release.xcconfig"; path = "Target Support Files/Pods-DogeChatMac/Pods-DogeChatMac.release.xcconfig"; sourceTree = "<group>"; };
 		1DD4B42E6E732B3FC5D0DA8A /* libPods-DogeChatSiri.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-DogeChatSiri.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		3A00166581D5028C88378B40 /* Pods-DogeChatWatch Extension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DogeChatWatch Extension.debug.xcconfig"; path = "Target Support Files/Pods-DogeChatWatch Extension/Pods-DogeChatWatch Extension.debug.xcconfig"; sourceTree = "<group>"; };
+		4EE1A092520253AC997DD23B /* libPods-mynotification.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-mynotification.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		623C2810C9BF792F9AE7C5E9 /* Pods-DogeChatSiri.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DogeChatSiri.debug.xcconfig"; path = "Target Support Files/Pods-DogeChatSiri/Pods-DogeChatSiri.debug.xcconfig"; sourceTree = "<group>"; };
 		662BDD147731663819D8A961 /* libPods-DogeChatWatch Extension.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-DogeChatWatch Extension.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		68AD0BCEC76ECC0EDB995E15 /* Pods-mynotification.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-mynotification.release.xcconfig"; path = "Target Support Files/Pods-mynotification/Pods-mynotification.release.xcconfig"; sourceTree = "<group>"; };
 		9BE932888DEA4AE98C7FEC3A /* libPods-SiriMessage.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SiriMessage.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		A8314936592D9B8008FA8F43 /* Pods-SiriMessage.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SiriMessage.debug.xcconfig"; path = "Target Support Files/Pods-SiriMessage/Pods-SiriMessage.debug.xcconfig"; sourceTree = "<group>"; };
+		A992053F8367DB59701EB8AA /* Pods-mynotification.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-mynotification.release.xcconfig"; path = "Target Support Files/Pods-mynotification/Pods-mynotification.release.xcconfig"; sourceTree = "<group>"; };
 		AE909BEA1EB54099009D9D95 /* MessageBaseCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageBaseCell.swift; sourceTree = "<group>"; };
 		AE909BEE1EB54C4B009D9D95 /* Label.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Label.swift; sourceTree = "<group>"; };
 		AE909BF01EB63FDB009D9D95 /* MessageInputView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MessageInputView.swift; sourceTree = "<group>"; };
@@ -442,13 +505,9 @@
 		AEC6BF481EAF320E007CA6E5 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		AEC6BF4A1EAF320E007CA6E5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		AEC6BF501EAF345A007CA6E5 /* ChatRoomViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChatRoomViewController.swift; sourceTree = "<group>"; };
-		AEFEAA4F1EAF37BC00889E76 /* Inconsolata-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Inconsolata-Bold.ttf"; sourceTree = "<group>"; };
-		AEFEAA501EAF37BC00889E76 /* Inconsolata-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Inconsolata-Regular.ttf"; sourceTree = "<group>"; };
 		B982BAC15863CB473A2CEFA4 /* libPods-DogeChatMac.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-DogeChatMac.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		CA29E1DB30A197FEE7773D92 /* libPods-DogeChat.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-DogeChat.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E37CABB08A07DCE97EBE5DB4 /* Pods-DogeChatMac.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-DogeChatMac.debug.xcconfig"; path = "Target Support Files/Pods-DogeChatMac/Pods-DogeChatMac.debug.xcconfig"; sourceTree = "<group>"; };
-		FA1FED9A853F32A1E9DF0D92 /* Pods-mynotification.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-mynotification.debug.xcconfig"; path = "Target Support Files/Pods-mynotification/Pods-mynotification.debug.xcconfig"; sourceTree = "<group>"; };
-		FA628731B3D7AE983BA8C753 /* libPods-mynotification.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-mynotification.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -457,6 +516,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				F964358E661A8735058E8C73 /* libPods-DogeChatWatch Extension.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		07BA603E277E123300496047 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -473,7 +539,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				58D994877399E352111AE8D0 /* libPods-mynotification.a in Frameworks */,
+				FB78052AEE663B93AA91FDEA /* libPods-mynotification.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -514,10 +580,22 @@
 				9BE932888DEA4AE98C7FEC3A /* libPods-SiriMessage.a */,
 				662BDD147731663819D8A961 /* libPods-DogeChatWatch Extension.a */,
 				B982BAC15863CB473A2CEFA4 /* libPods-DogeChatMac.a */,
-				FA628731B3D7AE983BA8C753 /* libPods-mynotification.a */,
 				1DD4B42E6E732B3FC5D0DA8A /* libPods-DogeChatSiri.a */,
+				071B891E2771F0BB007ACCBE /* WidgetKit.framework */,
+				071B89202771F0BB007ACCBE /* SwiftUI.framework */,
+				4EE1A092520253AC997DD23B /* libPods-mynotification.a */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		0734758D275C9580007A3ED2 /* SceneDelegates */ = {
+			isa = PBXGroup;
+			children = (
+				07BD40DE26E7667700F2761D /* SceneDelegate.swift */,
+				07E745BB275BC6FE00897751 /* ChatRoomSceneDelegate.swift */,
+				071B893B27732D27007ACCBE /* MediaBrowserSceneDelegate.swift */,
+			);
+			path = SceneDelegates;
 			sourceTree = "<group>";
 		};
 		0739FA4C25BAA90800B6A7AB /* Call */ = {
@@ -533,49 +611,15 @@
 			path = Call;
 			sourceTree = "<group>";
 		};
-		07471A09264F838B0042EC2D /* EncoderDecorder */ = {
-			isa = PBXGroup;
-			children = (
-				07471A48265036700042EC2D /* Shader.fsh */,
-				07471A47265036700042EC2D /* Shader.vsh */,
-				0760E10525E74C410030337E /* HJH264Decoder.h */,
-				0760E10425E74C410030337E /* HJH264Decoder.m */,
-				0760E0FD25E74BD30030337E /* HJH264Encoder.h */,
-				0760E0FF25E74BD30030337E /* HJH264Encoder.m */,
-				0760E10025E74BD30030337E /* HJOpenGLView.h */,
-				0760E0FE25E74BD30030337E /* HJOpenGLView.m */,
-			);
-			path = EncoderDecorder;
-			sourceTree = "<group>";
-		};
 		0754886F2740CEA70025D908 /* 可选图标 */ = {
 			isa = PBXGroup;
 			children = (
-				0706B4742740F20C00E4563F /* ChangeIconVC.swift */,
-				0706B4752740F20C00E4563F /* ChangeIconVC.xib */,
-				0706B46A2740F02400E4563F /* __海贼王.png */,
-				0706B4662740EEF300E4563F /* _哆啦A梦.png */,
-				0706B46C2740F09500E4563F /* _海贼王2.png */,
-				0706B46E2740F13900E4563F /* _蜡笔小新.png */,
-				0706B4722740F1BF00E4563F /* _小黄人.png */,
-				0706B4702740F1AD00E4563F /* _小黄人2.png */,
-				0706B45E2740E5CF00E4563F /* 猫咪2.png */,
+				07BA605B277EA0FB00496047 /* 狗512*512.png */,
+				07BA605C277EA0FB00496047 /* 猫512*512.png */,
+				0736FDE927756FA000A334A0 /* ChangeIconVC.swift */,
+				0736FDEA27756FA000A334A0 /* ChangeIconVC.xib */,
 			);
 			path = "可选图标";
-			sourceTree = "<group>";
-		};
-		0760E0FC25E74BD30030337E /* Video */ = {
-			isa = PBXGroup;
-			children = (
-				07471A09264F838B0042EC2D /* EncoderDecorder */,
-				07471A4326501B200042EC2D /* VideoChatViewController.h */,
-				07471A4426501B200042EC2D /* VideoChatViewController.m */,
-				07471A40265008820042EC2D /* MainVideoView.h */,
-				07471A41265008820042EC2D /* MainVideoView.m */,
-				07471A3D265002440042EC2D /* OverlayVideoView.h */,
-				07471A3E265002440042EC2D /* OverlayVideoView.m */,
-			);
-			path = Video;
 			sourceTree = "<group>";
 		};
 		0761F58126835D6D00E27B07 /* Views */ = {
@@ -604,6 +648,7 @@
 		0761FB0A266E484E00AE0171 /* DogeChatWatch Extension */ = {
 			isa = PBXGroup;
 			children = (
+				07E833A7275FA2B0006ACBFF /* DogeChatWatch ExtensionRelease.entitlements */,
 				07FEB84A267102A400255F8F /* DogeChatWatch Extension.entitlements */,
 				0761FB22266E489700AE0171 /* ComplicationController.swift */,
 				0761FB23266E489700AE0171 /* ExtensionDelegate.swift */,
@@ -678,6 +723,8 @@
 				07D0FB722747DB6900B34FE4 /* ChatRoom+ReferView.swift */,
 				AEA5A1781EC362150041C7B4 /* ChatRoom+TableDelegate.swift */,
 				AEC6BF501EAF345A007CA6E5 /* ChatRoomViewController.swift */,
+				07A624D027749BF50061BAEF /* ChatRoom+Location.swift */,
+				07D59401277C631000BD8290 /* ChatRoom+JumpButton.swift */,
 			);
 			path = ChatRoom;
 			sourceTree = "<group>";
@@ -695,8 +742,7 @@
 			isa = PBXGroup;
 			children = (
 				077F4B8226DE0E5C00C50D0D /* ChatRoom */,
-				0702F7E5247E62B200B22846 /* ContactsTableViewController.swift */,
-				0755575C266B3D9E00F63F55 /* ContactsTableViewController+Avatar.swift */,
+				0798B99F27778383001F91C8 /* ContactsVC */,
 				075557352666529B00F63F55 /* DatePickerViewController.swift */,
 				078E66A5265A310F00E5277E /* DrawViewController.swift */,
 				071299BE2736302000C52D45 /* FileBrowerVC.swift */,
@@ -714,6 +760,10 @@
 				07AB7B0A248F2A7A005306A1 /* SignUpViewController.xib */,
 				07ED6B73268D7BCE00F86DC0 /* SplitViewControllerDelegate.swift */,
 				07E1BAFD267F8CBA00559A3B /* VoiceViewController.swift */,
+				075C475B2761C8E300A45655 /* TextBrowerVC.swift */,
+				070575D4276EFDC00041C3B8 /* ProfileVC.swift */,
+				071B89122770A500007ACCBE /* WebViewController.swift */,
+				07A624C7277486F80061BAEF /* LocationVC.swift */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -732,6 +782,7 @@
 				07D0FB6627453EF500B34FE4 /* ReferView.swift */,
 				07BB552F272C449200AE60A6 /* SelectContactTableView.swift */,
 				079BA83726D7A15500E2C8BB /* VideoView.swift */,
+				0733CACF2774B4D80059A7E0 /* Annotation.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -739,14 +790,16 @@
 		078D413F248DF75B00E78605 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				07D593FC277C414500BD8290 /* SendMessage */,
+				0796FBCC275A2B8F00AAF146 /* Video */,
 				0739FA4C25BAA90800B6A7AB /* Call */,
-				0760E0FC25E74BD30030337E /* Video */,
 				077F4B7F26DE02D600C50D0D /* Live Photo */,
 				073FDF6925B2A35000FE01CD /* NotificationManager.swift */,
 				079317272643CDA2008EBB27 /* WebSocketManagerAdapter.swift */,
 				07D298DD266CBD3800C09F6C /* HapticManager.swift */,
 				0761FAF3266E342E00AE0171 /* HelperMethods.swift */,
 				075293A82715629400D10D65 /* MediaLoader.swift */,
+				07A624CB27748B380061BAEF /* LocationManager.swift */,
 				0764B95126CE060E0058FDFC /* Category */,
 			);
 			path = Models;
@@ -757,8 +810,6 @@
 			children = (
 				AEC6BF451EAF320E007CA6E5 /* Assets.xcassets */,
 				AEC6BF471EAF320E007CA6E5 /* LaunchScreen.storyboard */,
-				AEFEAA4F1EAF37BC00889E76 /* Inconsolata-Bold.ttf */,
-				AEFEAA501EAF37BC00889E76 /* Inconsolata-Regular.ttf */,
 			);
 			path = SupportingFiles;
 			sourceTree = "<group>";
@@ -781,21 +832,84 @@
 				0718AC2126876DFB00E27B28 /* DogeChatViewController.swift */,
 				0715EA7B2673ACCB0042F4F0 /* Encrypt.swift */,
 				0709ECB92719626C007F229F /* SessionDelegate.swift */,
+				07178B1927659CBD007D32AB /* HttpMessage.swift */,
 			);
 			path = Shared;
+			sourceTree = "<group>";
+		};
+		0796FBCC275A2B8F00AAF146 /* Video */ = {
+			isa = PBXGroup;
+			children = (
+				0796FBE2275A2B9000AAF146 /* FriendVideoView.swift */,
+				0796FBE5275A2B9000AAF146 /* OverlayVideoView.m */,
+				0796FBDB275A2B8F00AAF146 /* OverlayVideoView.m */,
+				0796FBE9275A2B9100AAF146 /* Renderer */,
+				0796FBF0275A2B9200AAF146 /* Utilities */,
+				0796FBE1275A2B9000AAF146 /* VideoChatViewController.h */,
+				0796FBDA275A2B8F00AAF146 /* VideoChatViewController.m */,
+				0796FBE8275A2B9100AAF146 /* VideoFrameData.swift */,
+				0796FBDF275A2B9000AAF146 /* VideoProcessor.swift */,
+			);
+			path = Video;
+			sourceTree = "<group>";
+		};
+		0796FBE9275A2B9100AAF146 /* Renderer */ = {
+			isa = PBXGroup;
+			children = (
+				0796FBEC275A2B9100AAF146 /* VertexDescriptors.swift */,
+				0796FBEA275A2B9100AAF146 /* Shaders.metal */,
+				0796FBEE275A2B9200AAF146 /* DepthStencilStates.swift */,
+				0796FBEF275A2B9200AAF146 /* ShaderTypes.h */,
+				0796FBF4275A2B9300AAF146 /* Utilities */,
+				0796FBEB275A2B9100AAF146 /* PipelineStates.swift */,
+				0796FBED275A2B9100AAF146 /* Renderer.swift */,
+			);
+			path = Renderer;
+			sourceTree = "<group>";
+		};
+		0796FBF0275A2B9200AAF146 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				0796FBF1275A2B9200AAF146 /* Ray.swift */,
+				0796FBF3275A2B9300AAF146 /* SIMD+Extensions.swift */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
+		0796FBF4275A2B9300AAF146 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				0796FBF5275A2B9300AAF146 /* MetalUtils.swift */,
+				0796FBF6275A2B9300AAF146 /* RenderDestination.swift */,
+				0796FBF7275A2B9300AAF146 /* BufferView.swift */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
+		0798B99F27778383001F91C8 /* ContactsVC */ = {
+			isa = PBXGroup;
+			children = (
+				0702F7E5247E62B200B22846 /* ContactsTableViewController.swift */,
+				0798B99B2777837D001F91C8 /* ContactsVC+Drop.swift */,
+				0755575C266B3D9E00F63F55 /* ContactsTableViewController+Avatar.swift */,
+			);
+			path = ContactsVC;
 			sourceTree = "<group>";
 		};
 		07A03CE727520A6000BC66CE /* MessageCells */ = {
 			isa = PBXGroup;
 			children = (
+				07A20752276DC6AA00EAAE63 /* MessageAudioCell.swift */,
 				AE909BEA1EB54099009D9D95 /* MessageBaseCell.swift */,
+				0761FAAB266CC98600AE0171 /* MessageBaseCell+Emitter.swift */,
 				071CF7B726609F8900897B01 /* MessageDrawCell.swift */,
 				071CF7B526609F7C00897B01 /* MessageImageCell.swift */,
+				07A2074E276DC16200EAAE63 /* MessageImageKindCell.swift */,
 				07D0FB6C2746B18300B34FE4 /* MessageLivePhotoCell.swift */,
-				07D0FB6E2746B19100B34FE4 /* MessageVideoCell.swift */,
 				071CF7B326609F6900897B01 /* MessageTextCell.swift */,
 				071379A326898E2E007EF6D6 /* MessageTrackCell.swift */,
-				0761FAAB266CC98600AE0171 /* MessageBaseCell+Emitter.swift */,
+				07D0FB6E2746B19100B34FE4 /* MessageVideoCell.swift */,
+				07A624CD2774982D0061BAEF /* MessageLocationCell.swift */,
 			);
 			path = MessageCells;
 			sourceTree = "<group>";
@@ -808,6 +922,7 @@
 				071CF7D0266383BC00897B01 /* ContactTableViewCell.swift */,
 				0749E66125E601690058EC30 /* EmojiCollectionViewCell.swift */,
 				0726D96B267E2E5B005B89DC /* MediaBrowserCell.swift */,
+				070575D9276F308E0041C3B8 /* ProfileAvatarCell.swift */,
 				07A03CE727520A6000BC66CE /* MessageCells */,
 			);
 			path = Cells;
@@ -853,6 +968,17 @@
 			path = Models;
 			sourceTree = "<group>";
 		};
+		07BA6042277E123300496047 /* DogeChatShare */ = {
+			isa = PBXGroup;
+			children = (
+				07BA604C277E123300496047 /* DogeChatShare.entitlements */,
+				07BA6043277E123300496047 /* ShareViewController.swift */,
+				07BA6045277E123300496047 /* MainInterface.storyboard */,
+				07BA6048277E123300496047 /* Info.plist */,
+			);
+			path = DogeChatShare;
+			sourceTree = "<group>";
+		};
 		07D0FB7E2749403F00B34FE4 /* DogeChatSiri */ = {
 			isa = PBXGroup;
 			children = (
@@ -874,6 +1000,14 @@
 			path = DogeChatSiriUI;
 			sourceTree = "<group>";
 		};
+		07D593FC277C414500BD8290 /* SendMessage */ = {
+			isa = PBXGroup;
+			children = (
+				07D593FF277C416400BD8290 /* MessageSender.swift */,
+			);
+			path = SendMessage;
+			sourceTree = "<group>";
+		};
 		07FE06C427019DE90048B6A7 /* mynotification */ = {
 			isa = PBXGroup;
 			children = (
@@ -887,6 +1021,7 @@
 		AEA5A17A1EC3641C0041C7B4 /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
+				0734758E275CE126007A3ED2 /* UINavigationController+SplitVC.swift */,
 			);
 			name = Extensions;
 			sourceTree = "<group>";
@@ -901,6 +1036,7 @@
 				07FE06C427019DE90048B6A7 /* mynotification */,
 				07D0FB7E2749403F00B34FE4 /* DogeChatSiri */,
 				07D0FB882749403F00B34FE4 /* DogeChatSiriUI */,
+				07BA6042277E123300496047 /* DogeChatShare */,
 				AEC6BF3C1EAF320E007CA6E5 /* Products */,
 				073144A3245FF83D00D915E8 /* Frameworks */,
 				B12E227B93FFC54FE5E82718 /* Pods */,
@@ -915,6 +1051,7 @@
 				0761FB06266E484E00AE0171 /* DogeChatWatch Extension.appex */,
 				07FE06C327019DE90048B6A7 /* mynotification.appex */,
 				07D0FB7C2749403F00B34FE4 /* DogeChatSiri.appex */,
+				07BA6041277E123300496047 /* DogeChatShare.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -923,12 +1060,14 @@
 			isa = PBXGroup;
 			children = (
 				AEC6BF3E1EAF320E007CA6E5 /* AppDelegate.swift */,
-				07BD40DE26E7667700F2761D /* SceneDelegate.swift */,
+				0734758D275C9580007A3ED2 /* SceneDelegates */,
 				073FDF6525B289A800FE01CD /* DogeChat.entitlements */,
 				AEC6BF4A1EAF320E007CA6E5 /* Info.plist */,
 				07D0FB9F2749604B00B34FE4 /* AppIntentVocabulary.plist */,
 				07D0FBA3274A2EB400B34FE4 /* InfoPlist.strings */,
 				0799068525B3D44B0083C1B8 /* main.storyboard */,
+				071B893D27733DEA007ACCBE /* MediaBrowser.storyboard */,
+				07E745B7275BC64C00897751 /* ChatRoom.storyboard */,
 				07B83212268204FF009434AC /* Music */,
 				078D413F248DF75B00E78605 /* Models */,
 				078D413E248DF71700E78605 /* Views */,
@@ -954,10 +1093,10 @@
 				0A4AEF28A524D18B5C8ECDC5 /* Pods-DogeChatWatch Extension.release.xcconfig */,
 				E37CABB08A07DCE97EBE5DB4 /* Pods-DogeChatMac.debug.xcconfig */,
 				1C3BF7D0F9CBDEF8B033D902 /* Pods-DogeChatMac.release.xcconfig */,
-				FA1FED9A853F32A1E9DF0D92 /* Pods-mynotification.debug.xcconfig */,
-				68AD0BCEC76ECC0EDB995E15 /* Pods-mynotification.release.xcconfig */,
 				623C2810C9BF792F9AE7C5E9 /* Pods-DogeChatSiri.debug.xcconfig */,
 				172D08E843A9116091D96AC1 /* Pods-DogeChatSiri.release.xcconfig */,
+				07AAE62E5574A45652FD65C9 /* Pods-mynotification.debug.xcconfig */,
+				A992053F8367DB59701EB8AA /* Pods-mynotification.release.xcconfig */,
 			);
 			path = Pods;
 			sourceTree = "<group>";
@@ -1001,6 +1140,23 @@
 			productReference = 0761FB06266E484E00AE0171 /* DogeChatWatch Extension.appex */;
 			productType = "com.apple.product-type.watchkit2-extension";
 		};
+		07BA6040277E123300496047 /* DogeChatShare */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 07BA6051277E123300496047 /* Build configuration list for PBXNativeTarget "DogeChatShare" */;
+			buildPhases = (
+				07BA603D277E123300496047 /* Sources */,
+				07BA603E277E123300496047 /* Frameworks */,
+				07BA603F277E123300496047 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = DogeChatShare;
+			productName = DogeChatShare;
+			productReference = 07BA6041277E123300496047 /* DogeChatShare.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
 		07D0FB7B2749403F00B34FE4 /* DogeChatSiri */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 07D0FB9A2749404000B34FE4 /* Build configuration list for PBXNativeTarget "DogeChatSiri" */;
@@ -1023,7 +1179,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 07FE06CC27019DE90048B6A7 /* Build configuration list for PBXNativeTarget "mynotification" */;
 			buildPhases = (
-				E8DAD6746C68C2D51A9A0603 /* [CP] Check Pods Manifest.lock */,
+				0D71BC2F02038282731D6CA1 /* [CP] Check Pods Manifest.lock */,
 				07FE06BF27019DE90048B6A7 /* Sources */,
 				07FE06C027019DE90048B6A7 /* Frameworks */,
 				07FE06C127019DE90048B6A7 /* Resources */,
@@ -1055,6 +1211,7 @@
 				0761FB18266E484F00AE0171 /* PBXTargetDependency */,
 				07FE06C927019DE90048B6A7 /* PBXTargetDependency */,
 				07D0FB942749404000B34FE4 /* PBXTargetDependency */,
+				07BA604A277E123300496047 /* PBXTargetDependency */,
 			);
 			name = DogeChat;
 			productName = DogeChat;
@@ -1067,7 +1224,7 @@
 		AEC6BF331EAF320E007CA6E5 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 1310;
+				LastSwiftUpdateCheck = 1320;
 				LastUpgradeCheck = 1200;
 				ORGANIZATIONNAME = "Luke Parham";
 				TargetAttributes = {
@@ -1077,6 +1234,9 @@
 					0761FB05266E484E00AE0171 = {
 						CreatedOnToolsVersion = 12.5;
 						LastSwiftMigration = 1250;
+					};
+					07BA6040277E123300496047 = {
+						CreatedOnToolsVersion = 13.2.1;
 					};
 					07D0FB7B2749403F00B34FE4 = {
 						CreatedOnToolsVersion = 13.1;
@@ -1114,6 +1274,7 @@
 				0761FB05266E484E00AE0171 /* DogeChatWatch Extension */,
 				07FE06C227019DE90048B6A7 /* mynotification */,
 				07D0FB7B2749403F00B34FE4 /* DogeChatSiri */,
+				07BA6040277E123300496047 /* DogeChatShare */,
 			);
 		};
 /* End PBXProject section */
@@ -1154,6 +1315,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		07BA603F277E123300496047 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				07BA6047277E123300496047 /* MainInterface.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		07D0FB7A2749403F00B34FE4 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1172,31 +1341,46 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0706B4712740F1AE00E4563F /* _小黄人2.png in Resources */,
-				07471A4A265036700042EC2D /* Shader.fsh in Resources */,
-				0706B46D2740F09500E4563F /* _海贼王2.png in Resources */,
-				07471A49265036700042EC2D /* Shader.vsh in Resources */,
-				0706B45F2740E5CF00E4563F /* 猫咪2.png in Resources */,
+				07BA605D277EA0FB00496047 /* 狗512*512.png in Resources */,
 				07AB7B0C248F2A7A005306A1 /* SignUpViewController.xib in Resources */,
 				0799068625B3D44B0083C1B8 /* main.storyboard in Resources */,
-				0706B4732740F1BF00E4563F /* _小黄人.png in Resources */,
-				0706B4772740F20C00E4563F /* ChangeIconVC.xib in Resources */,
+				07BA605E277EA0FB00496047 /* 猫512*512.png in Resources */,
 				AEC6BF491EAF320E007CA6E5 /* LaunchScreen.storyboard in Resources */,
+				071B893E27733DEA007ACCBE /* MediaBrowser.storyboard in Resources */,
 				07D0FBA4274A2EB400B34FE4 /* InfoPlist.strings in Resources */,
-				0706B4672740EEF300E4563F /* _哆啦A梦.png in Resources */,
 				07C9633025E3B53900C2BF4C /* ImageConfirmViewController.xib in Resources */,
-				AEFEAA521EAF37BC00889E76 /* Inconsolata-Regular.ttf in Resources */,
-				0706B46B2740F02400E4563F /* __海贼王.png in Resources */,
+				07E745B8275BC64C00897751 /* ChatRoom.storyboard in Resources */,
+				0736FDEC27756FA000A334A0 /* ChangeIconVC.xib in Resources */,
 				07D0FBA02749604B00B34FE4 /* AppIntentVocabulary.plist in Resources */,
-				AEFEAA511EAF37BC00889E76 /* Inconsolata-Bold.ttf in Resources */,
 				AEC6BF461EAF320E007CA6E5 /* Assets.xcassets in Resources */,
-				0706B46F2740F13900E4563F /* _蜡笔小新.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		0D71BC2F02038282731D6CA1 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-mynotification-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
 		35FCD15A283D4DAE5E214271 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -1235,28 +1419,6 @@
 			);
 			outputPaths = (
 				"$(DERIVED_FILE_DIR)/Pods-DogeChatSiri-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
-		E8DAD6746C68C2D51A9A0603 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-mynotification-checkManifestLockResult.txt",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -1328,10 +1490,21 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		07BA603D277E123300496047 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				07BA6044277E123300496047 /* ShareViewController.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		07D0FB782749403F00B34FE4 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				07178B1B27659CBD007D32AB /* HttpMessage.swift in Sources */,
+				07178B1C2765A2A6007D32AB /* Encrypt.swift in Sources */,
+				079BB421275B82ED009B8FB0 /* Common.swift in Sources */,
 				07D0FB802749403F00B34FE4 /* IntentHandler.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1353,29 +1526,32 @@
 				07D0FB732747DB6A00B34FE4 /* ChatRoom+ReferView.swift in Sources */,
 				071CF7D2266383BD00897B01 /* ContactTableViewCell.swift in Sources */,
 				0739FA5525BAACD400B6A7AB /* ProviderDelegate.swift in Sources */,
+				0796FC01275A2FBC00AAF146 /* PipelineStates.swift in Sources */,
 				0715EA7C2673ACCB0042F4F0 /* Encrypt.swift in Sources */,
 				078E66A22658C0D600E5277E /* PKView.m in Sources */,
+				0796FC02275A2FBE00AAF146 /* Renderer.swift in Sources */,
 				AEC6BF411EAF320E007CA6E5 /* JoinChatViewController.swift in Sources */,
+				0798B99C2777837D001F91C8 /* ContactsVC+Drop.swift in Sources */,
 				07BB5532272C4D3200AE60A6 /* DetailContactsCell.swift in Sources */,
-				0760E10125E74BD30030337E /* HJOpenGLView.m in Sources */,
 				0761F58326835D8800E27B07 /* TrackSearchResultCell.swift in Sources */,
 				07BD40DF26E7667700F2761D /* SceneDelegate.swift in Sources */,
+				07A2074F276DC16200EAAE63 /* MessageImageKindCell.swift in Sources */,
 				0761F5852683671900E27B07 /* TrackDownloadManager.swift in Sources */,
 				0726D96C267E2E5B005B89DC /* MediaBrowserCell.swift in Sources */,
 				075557322665D4B000F63F55 /* Recorder.m in Sources */,
+				0796FBFD275A2FAF00AAF146 /* DepthStencilStates.swift in Sources */,
 				07C9632F25E3B53900C2BF4C /* ImageConfirmViewController.swift in Sources */,
 				07D0FB6727453EF500B34FE4 /* ReferView.swift in Sources */,
 				07D0FB6F2746B19100B34FE4 /* MessageVideoCell.swift in Sources */,
-				0760E10225E74BD30030337E /* HJH264Encoder.m in Sources */,
 				0755575D266B3D9F00F63F55 /* ContactsTableViewController+Avatar.swift in Sources */,
-				0706B4762740F20C00E4563F /* ChangeIconVC.swift in Sources */,
-				07471A42265008820042EC2D /* MainVideoView.m in Sources */,
 				0761F5872684AC2B00E27B07 /* PlayListTrackCell.swift in Sources */,
 				0761FAF4266E342E00AE0171 /* HelperMethods.swift in Sources */,
 				0739FA4F25BAA9A300B6A7AB /* Call.swift in Sources */,
 				0718AC2A2688025C00E27B28 /* CommonTableCell.swift in Sources */,
+				07A624D127749BF50061BAEF /* ChatRoom+Location.swift in Sources */,
 				0718AC1E2687683800E27B28 /* DogeChatBaseCollectionView.swift in Sources */,
 				07ED6B70268C53DF00F86DC0 /* DogeChatTabBarController.swift in Sources */,
+				070575DA276F308E0041C3B8 /* ProfileAvatarCell.swift in Sources */,
 				0718AC182687650800E27B28 /* DogeChatBaseView.swift in Sources */,
 				07DDE8CD26E8BFE800573D0A /* DogeChatSplitViewController.swift in Sources */,
 				0702F7E6247E62B200B22846 /* ContactsTableViewController.swift in Sources */,
@@ -1383,39 +1559,51 @@
 				AE909BF11EB63FDB009D9D95 /* MessageInputView.swift in Sources */,
 				070C41742489204F0035314A /* SearchViewController.swift in Sources */,
 				0718AC142686FFE700E27B28 /* SelectPlayListCell.swift in Sources */,
+				0736FDEB27756FA000A334A0 /* ChangeIconVC.swift in Sources */,
 				07B3F5D4262470D70016B5C9 /* ChatRoom+Drop.swift in Sources */,
 				AE909BEB1EB54099009D9D95 /* MessageBaseCell.swift in Sources */,
 				07BB5527272C2A9500AE60A6 /* FriendDetailViewController.swift in Sources */,
 				07D298DE266CBD3800C09F6C /* HapticManager.swift in Sources */,
+				071B893C27732D27007ACCBE /* MediaBrowserSceneDelegate.swift in Sources */,
+				0796FC07275A2FD300AAF146 /* VideoProcessor.swift in Sources */,
 				0761FAAE266CE87400AE0171 /* EmojiEmitterLayer.swift in Sources */,
 				0718AC20268769A900E27B28 /* DogeChatTextView.swift in Sources */,
 				0718AC122686F61100E27B28 /* PlayListsSelectVC.swift in Sources */,
+				07A624C8277486F80061BAEF /* LocationVC.swift in Sources */,
 				07E001DA248CA56800D4A287 /* SelectShortcutTVC.swift in Sources */,
 				071299BF2736302000C52D45 /* FileBrowerVC.swift in Sources */,
 				0718AC102685DE9F00E27B28 /* PlayerManager.swift in Sources */,
+				0734758F275CE126007A3ED2 /* UINavigationController+SplitVC.swift in Sources */,
+				0796FBF9275A2F9D00AAF146 /* FriendVideoView.swift in Sources */,
+				0796FC03275A2FC600AAF146 /* Ray.swift in Sources */,
 				07F858C626E4C27A00F370F8 /* ChatRoom+Drag.swift in Sources */,
 				07ED6B6C268C2C2500F86DC0 /* MiniPlayerCell.swift in Sources */,
+				0796FBFE275A2FB500AAF146 /* MetalUtils.swift in Sources */,
 				071CF7B826609F8900897B01 /* MessageDrawCell.swift in Sources */,
 				076B209626E466A800BCD003 /* ChatRoom+Emitter.swift in Sources */,
 				073FDF6A25B2A35000FE01CD /* NotificationManager.swift in Sources */,
+				07D59402277C631000BD8290 /* ChatRoom+JumpButton.swift in Sources */,
 				0709ECBA2719626C007F229F /* SessionDelegate.swift in Sources */,
 				079317282643CDA2008EBB27 /* WebSocketManagerAdapter.swift in Sources */,
 				071379A82689DCBD007EF6D6 /* ChatRoom+CellDelegate.swift in Sources */,
-				07471A4526501B200042EC2D /* VideoChatViewController.m in Sources */,
 				0739FA3E25B9557A00B6A7AB /* MediaBrowserViewController.swift in Sources */,
 				075293AE2715A0AC00D10D65 /* UIViewController+Hook.m in Sources */,
 				071CF7B426609F6900897B01 /* MessageTextCell.swift in Sources */,
+				0796FBFA275A2FA300AAF146 /* OverlayVideoView.m in Sources */,
 				0749E66225E601690058EC30 /* EmojiCollectionViewCell.swift in Sources */,
 				AE909BEF1EB54C4B009D9D95 /* Label.swift in Sources */,
 				0718AC2826878E8900E27B28 /* DogeChatNavigationController.swift in Sources */,
 				0718AC0D2685CEAE00E27B28 /* Common.swift in Sources */,
+				07178B1A27659CBD007D32AB /* HttpMessage.swift in Sources */,
 				AEC6BF3F1EAF320E007CA6E5 /* AppDelegate.swift in Sources */,
 				07B8321426820512009434AC /* PlayListViewController.swift in Sources */,
 				AEA5A1771EC3618C0041C7B4 /* ChatRoom+Layout.swift in Sources */,
 				07AB7B0B248F2A7A005306A1 /* SignUpViewController.swift in Sources */,
 				0739FA5825BAB00300B6A7AB /* Audio.swift in Sources */,
+				0796FBFB275A2FA800AAF146 /* VertexDescriptors.swift in Sources */,
 				07ED6B72268D740F00F86DC0 /* LyricViewController.swift in Sources */,
 				07E1BAFC267F86B000559A3B /* ChatRoom+InputViewDelegate.swift in Sources */,
+				0796FBF8275A2F8500AAF146 /* VideoChatViewController.m in Sources */,
 				071CF7B626609F7C00897B01 /* MessageImageCell.swift in Sources */,
 				0718AC16268700BD00E27B28 /* TrackStore.swift in Sources */,
 				07201DDE26DF67FA007D2EDB /* HistoryVC.swift in Sources */,
@@ -1428,29 +1616,41 @@
 				AEC6BF511EAF345A007CA6E5 /* ChatRoomViewController.swift in Sources */,
 				AEA5A1791EC362150041C7B4 /* ChatRoom+TableDelegate.swift in Sources */,
 				0718AC262687766D00E27B28 /* DogeChatTableView.swift in Sources */,
+				07A20753276DC6AA00EAAE63 /* MessageAudioCell.swift in Sources */,
 				07E1BAFE267F8CBA00559A3B /* VoiceViewController.swift in Sources */,
 				0739FABC25BEEF6B00B6A7AB /* FloatWindow.swift in Sources */,
+				070575D5276EFDC00041C3B8 /* ProfileVC.swift in Sources */,
 				07ED6B6A268C2BE400F86DC0 /* MiniPlayerView.swift in Sources */,
 				0718AC2C268816B700E27B28 /* DogeChatBlurView.swift in Sources */,
 				079BA83826D7A15500E2C8BB /* VideoView.swift in Sources */,
 				079BA84226D8E52C00E2C8BB /* LFAssetExportSession.m in Sources */,
+				0796FC05275A2FCB00AAF146 /* SIMD+Extensions.swift in Sources */,
 				075293A92715629400D10D65 /* MediaLoader.swift in Sources */,
+				07A624CC27748B380061BAEF /* LocationManager.swift in Sources */,
+				0796FBFC275A2FAC00AAF146 /* Shaders.metal in Sources */,
 				0735ABCA26CCF90D007B4ADE /* SDWebImageManager+TempModifyURLPre.m in Sources */,
 				0718AC1C2687672200E27B28 /* DogeChatTableViewCell.swift in Sources */,
+				0796FC06275A2FD100AAF146 /* VideoFrameData.swift in Sources */,
 				077F4B8126DE0C5000C50D0D /* ChatRoom+InsertMessage.swift in Sources */,
+				07D59400277C416400BD8290 /* MessageSender.swift in Sources */,
+				07A624CE2774982D0061BAEF /* MessageLocationCell.swift in Sources */,
+				071B89132770A500007ACCBE /* WebViewController.swift in Sources */,
 				071379A426898E2E007EF6D6 /* MessageTrackCell.swift in Sources */,
+				0796FC00275A2FB900AAF146 /* BufferView.swift in Sources */,
+				0796FBFF275A2FB700AAF146 /* RenderDestination.swift in Sources */,
+				07E745BC275BC6FE00897751 /* ChatRoomSceneDelegate.swift in Sources */,
 				07B8321626820A54009434AC /* SearchMusicViewController.swift in Sources */,
+				075C475C2761C8E400A45655 /* TextBrowerVC.swift in Sources */,
+				0733CAD02774B4D80059A7E0 /* Annotation.swift in Sources */,
 				079BA83D26D892E600E2C8BB /* LivePhotoGenerator.m in Sources */,
 				07BB552C272C2D2300AE60A6 /* Conform.swift in Sources */,
 				07BB5530272C449200AE60A6 /* SelectContactTableView.swift in Sources */,
 				075557342666317000F63F55 /* SettingViewController.swift in Sources */,
 				0718AC1A2687671500E27B28 /* DogeChatBaseCollectionViewCell.swift in Sources */,
 				07D0FB6D2746B18300B34FE4 /* MessageLivePhotoCell.swift in Sources */,
-				0760E10625E74C410030337E /* HJH264Decoder.m in Sources */,
 				078E66A6265A310F00E5277E /* DrawViewController.swift in Sources */,
 				0749E65F25E521420058EC30 /* EmojiSelectView.swift in Sources */,
 				07BB552E272C31E100AE60A6 /* ChatRoom+NavigationBar.swift in Sources */,
-				07471A3F265002440042EC2D /* OverlayVideoView.m in Sources */,
 				071379A62689B636007EF6D6 /* SelectContactsViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1468,6 +1668,11 @@
 			platformFilter = ios;
 			target = 0761FAF9266E484C00AE0171 /* DogeChatWatch */;
 			targetProxy = 0761FB17266E484F00AE0171 /* PBXContainerItemProxy */;
+		};
+		07BA604A277E123300496047 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 07BA6040277E123300496047 /* DogeChatShare */;
+			targetProxy = 07BA6049277E123300496047 /* PBXContainerItemProxy */;
 		};
 		07D0FB942749404000B34FE4 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -1488,6 +1693,14 @@
 				0761FAFD266E484C00AE0171 /* Base */,
 			);
 			name = Interface.storyboard;
+			sourceTree = "<group>";
+		};
+		07BA6045277E123300496047 /* MainInterface.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				07BA6046277E123300496047 /* Base */,
+			);
+			name = MainInterface.storyboard;
 			sourceTree = "<group>";
 		};
 		07D0FB8B2749403F00B34FE4 /* MainInterface.storyboard */ = {
@@ -1521,6 +1734,7 @@
 				CODE_SIGN_ENTITLEMENTS = "DogeChatWatch Extension/DogeChatWatch Extension.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 17;
 				DEVELOPMENT_TEAM = ABSGGSAFHU;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = "DogeChatWatch Extension/Info.plist";
@@ -1529,6 +1743,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
+				MARKETING_VERSION = 2.1;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.dogechat.watchkitapp.watchkitextension;
@@ -1553,9 +1768,10 @@
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_ENTITLEMENTS = "DogeChatWatch Extension/DogeChatWatch Extension.entitlements";
+				CODE_SIGN_ENTITLEMENTS = "DogeChatWatch Extension/DogeChatWatch ExtensionRelease.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 17;
 				DEVELOPMENT_TEAM = ABSGGSAFHU;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = "DogeChatWatch Extension/Info.plist";
@@ -1564,8 +1780,9 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
+				MARKETING_VERSION = 2.1;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.dogechat.watchkitapp.watchkitextension2;
+				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.dogechat.watchkitapp.watchkitextension;
 				PRODUCT_NAME = "${TARGET_NAME}";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = watchos;
@@ -1590,10 +1807,12 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 17;
 				DEVELOPMENT_TEAM = ABSGGSAFHU;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				IBSC_MODULE = DogeChatWatch_Extension;
 				INFOPLIST_FILE = DogeChatWatch/Info.plist;
+				MARKETING_VERSION = 2.1;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.dogechat.watchkitapp;
@@ -1621,10 +1840,12 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 17;
 				DEVELOPMENT_TEAM = ABSGGSAFHU;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				IBSC_MODULE = DogeChatWatch_Extension;
 				INFOPLIST_FILE = DogeChatWatch/Info.plist;
+				MARKETING_VERSION = 2.1;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.dogechat.watchkitapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1634,6 +1855,80 @@
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 4;
 				WATCHOS_DEPLOYMENT_TARGET = 7.4;
+			};
+			name = Release;
+		};
+		07BA604D277E123300496047 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_ENTITLEMENTS = DogeChatShare/DogeChatShare.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = ABSGGSAFHU;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = DogeChatShare/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = DogeChatShare;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2021 Luke Parham. All rights reserved.";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.dogechat.DogeChatShare;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SUPPORTS_MACCATALYST = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		07BA604E277E123300496047 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_ENTITLEMENTS = DogeChatShare/DogeChatShare.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = ABSGGSAFHU;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = DogeChatShare/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = DogeChatShare;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2021 Luke Parham. All rights reserved.";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.dogechat.DogeChatShare;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SUPPORTS_MACCATALYST = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
@@ -1649,21 +1944,21 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 17;
 				DEVELOPMENT_TEAM = ABSGGSAFHU;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = DogeChatSiri/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = DogeChatSiri;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2021 Luke Parham. All rights reserved.";
-				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				"IPHONEOS_DEPLOYMENT_TARGET[sdk=macosx*]" = 14.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 2.1;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.dogechat.DogeChatSiri;
@@ -1691,21 +1986,21 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 17;
 				DEVELOPMENT_TEAM = ABSGGSAFHU;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = DogeChatSiri/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = DogeChatSiri;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2021 Luke Parham. All rights reserved.";
-				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				"IPHONEOS_DEPLOYMENT_TARGET[sdk=macosx*]" = 14.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 2.1;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.dogechat.DogeChatSiri;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1721,7 +2016,7 @@
 		};
 		07FE06CD27019DE90048B6A7 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = FA1FED9A853F32A1E9DF0D92 /* Pods-mynotification.debug.xcconfig */;
+			baseConfigurationReference = 07AAE62E5574A45652FD65C9 /* Pods-mynotification.debug.xcconfig */;
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CLANG_ENABLE_OBJC_WEAK = YES;
@@ -1731,20 +2026,21 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 17;
 				DEVELOPMENT_TEAM = ABSGGSAFHU;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = mynotification/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = mynotification;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2021 赵锡光. All rights reserved.";
-				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				"IPHONEOS_DEPLOYMENT_TARGET[sdk=macosx*]" = 14.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 2.1;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.dogechat.mynotification;
@@ -1760,7 +2056,7 @@
 		};
 		07FE06CE27019DE90048B6A7 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 68AD0BCEC76ECC0EDB995E15 /* Pods-mynotification.release.xcconfig */;
+			baseConfigurationReference = A992053F8367DB59701EB8AA /* Pods-mynotification.release.xcconfig */;
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
 				CLANG_ENABLE_OBJC_WEAK = YES;
@@ -1770,20 +2066,21 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 17;
 				DEVELOPMENT_TEAM = ABSGGSAFHU;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = mynotification/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = mynotification;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2021 赵锡光. All rights reserved.";
-				IPHONEOS_DEPLOYMENT_TARGET = 12.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				"IPHONEOS_DEPLOYMENT_TARGET[sdk=macosx*]" = 14.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 2.1;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.dogechat.mynotification;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1924,15 +2221,18 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 17;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEFINES_MODULE = NO;
 				DEVELOPMENT_TEAM = ABSGGSAFHU;
 				INFOPLIST_FILE = DogeChat/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				"IPHONEOS_DEPLOYMENT_TARGET[sdk=macosx*]" = 14.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				MARKETING_VERSION = 2.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.dogechat;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1956,19 +2256,22 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CLANG_ENABLE_MODULES = YES;
-				CODE_SIGN_ENTITLEMENTS = DogeChat/DogeChat.entitlements;
+				CODE_SIGN_ENTITLEMENTS = DogeChat/DogeChatRelease.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 17;
 				DEFINES_MODULE = NO;
 				DEVELOPMENT_TEAM = ABSGGSAFHU;
 				INFOPLIST_FILE = DogeChat/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				"IPHONEOS_DEPLOYMENT_TARGET[sdk=macosx*]" = 14.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
+				MARKETING_VERSION = 2.1;
 				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.dogechat;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -2000,6 +2303,15 @@
 			buildConfigurations = (
 				0761FB1F266E484F00AE0171 /* Debug */,
 				0761FB20266E484F00AE0171 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		07BA6051277E123300496047 /* Build configuration list for PBXNativeTarget "DogeChatShare" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				07BA604D277E123300496047 /* Debug */,
+				07BA604E277E123300496047 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

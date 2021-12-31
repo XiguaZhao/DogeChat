@@ -36,6 +36,8 @@ class TrackSearchResultCell: UITableViewCell {
         contentView.addSubview(label)
         downloadButton.setTitle("下载", for: .normal)
         favoriteButton.setTitle("收藏", for: .normal)
+        downloadButton.setContentCompressionResistancePriority(.required, for: .horizontal)
+        favoriteButton.setContentCompressionResistancePriority(.required, for: .horizontal)
         downloadButton.setTitleColor(.systemBlue, for: .normal)
         favoriteButton.setTitleColor(.systemBlue, for: .normal)
         downloadButton.addTarget(self, action: #selector(downloadAction(_:)), for: .touchUpInside)
@@ -45,16 +47,18 @@ class TrackSearchResultCell: UITableViewCell {
             make?.centerY.equalTo()(self?.contentView)
             make?.trailing.equalTo()(self?.contentView)?.offset()(-20)
         }
-        trackNameLabel.font = .systemFont(ofSize: 17)
-        artistLabel.font = .systemFont(ofSize: 14)
+        trackNameLabel.font = .preferredFont(forTextStyle: .body)
+        artistLabel.font = .preferredFont(forTextStyle: .footnote)
         leftStack = UIStackView(arrangedSubviews: [trackNameLabel, artistLabel])
         leftStack.axis = .vertical
         leftStack.spacing = 3
         contentView.addSubview(leftStack)
         leftStack.mas_makeConstraints { [weak self] make in
-            make?.centerY.equalTo()(self?.contentView)
             make?.leading.equalTo()(self?.contentView)?.offset()(20)
-            make?.trailing.lessThanOrEqualTo()(stackView.mas_leading)?.offset()(-20)
+            make?.trailing.lessThanOrEqualTo()(stackView.mas_leading)?.offset()(-5)
+            make?.top.equalTo()(self?.contentView)?.offset()(tableViewCellTopBottomPadding)
+            make?.bottom.equalTo()(self?.contentView)?.offset()(-tableViewCellTopBottomPadding)
+            make?.height.mas_greaterThanOrEqualTo()(45)
         }
     }
     

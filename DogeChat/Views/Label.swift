@@ -1,39 +1,53 @@
-/**
- * Copyright (c) 2017 Razeware LLC
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * Notwithstanding the foregoing, you may not use, copy, modify, merge, publish,
- * distribute, sublicense, create a derivative work, and/or sell copies of the
- * Software in any work that is designed, intended, or marketed for pedagogical or
- * instructional purposes related to programming, coding, application development,
- * or information technology.  Permission for such use, copying, modification,
- * merger, publication, distribution, sublicensing, creation of derivative works,
- * or sale is expressly withheld.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
 
 import UIKit
 
 class Label: UILabel {
-
-  override func drawText(in rect: CGRect) {
-    let insets = UIEdgeInsets.init(top: 8, left: 16, bottom: 8, right: 16)
-    super.drawText(in: rect.inset(by: insets))
-  }
+    
+    static let verticalPadding: CGFloat = 10
+    static let horizontalPadding: CGFloat = 16
+    static let lineSpacing: CGFloat = 5
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func drawText(in rect: CGRect) {
+        let insets = UIEdgeInsets.init(top: Self.verticalPadding, left: Self.horizontalPadding, bottom: Self.verticalPadding, right: Self.horizontalPadding)
+        super.drawText(in: rect.inset(by: insets))
+    }
+        
+//    override func display(_ layer: CALayer) {
+//        let size = self.bounds.size
+//        let scale = UIScreen.main.scale
+//        DispatchQueue.global().async {
+//            UIGraphicsBeginImageContextWithOptions(size, false, scale)
+//            guard let context = UIGraphicsGetCurrentContext() else {
+//                return
+//            }
+//            self.draw(context: context, size: size)
+//            let image = UIGraphicsGetImageFromCurrentImageContext()
+//            UIGraphicsEndImageContext()
+//            let contents = image?.cgImage
+//            DispatchQueue.main.async {
+//                layer.contents = contents
+//            }
+//        }
+//    }
+    
+    private func draw(context: CGContext, size: CGSize) {
+        context.textMatrix = CGAffineTransform.identity
+        context.translateBy(x: 0, y: size.height)
+        context.scaleBy(x: 1, y: -1)
+        let path = CGMutablePath()
+        path.addRect(CGRect(origin: .zero, size: size))
+        let attrStr = NSAttributedString(string: self.text ?? "", attributes: [.font : self.font as Any])
+        let frameSetter = CTFramesetterCreateWithAttributedString(attrStr)
+        let frame = CTFramesetterCreateFrame(frameSetter, CFRange(location: 0, length: attrStr.length), path, nil)
+        CTFrameDraw(frame, context)
+    }
+    
 }

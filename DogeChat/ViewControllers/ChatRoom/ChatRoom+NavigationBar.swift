@@ -12,6 +12,36 @@ import DogeChatUniversal
 
 extension ChatRoomViewController {
     
+    func addItemForSingle() {
+        if self.type == .single {
+            let item = UIBarButtonItem(title: "关闭", style: .done, target: self, action: #selector(doneWithSingle))
+            self.navigationItem.leftBarButtonItem = item
+        }
+        if self.type == .normal && UIApplication.shared.supportsMultipleScenes {
+            let item = UIBarButtonItem(image: UIImage(systemName: "rectangle.portrait.split.2x1"), style: .plain, target: self, action: #selector(openNewScene))
+            var items = [item]
+            if let detailItem = self.navigationItem.rightBarButtonItem {
+                items.insert(detailItem, at: 0)
+            }
+            self.navigationItem.setRightBarButtonItems(items, animated: true)
+        }
+    }
+    
+    @objc func openNewScene() {
+        let option = UIScene.ActivationRequestOptions()
+        option.requestingScene = self.view.window?.windowScene
+        UIApplication.shared.requestSceneSessionActivation(nil, userActivity: self.contactVC?.wrapUserActivity(for: self.friend), options: option, errorHandler: nil)
+    }
+    
+    
+    @objc func doneWithSingle() {
+        if let session = self.view.window?.windowScene?.session {
+            let option = UIWindowSceneDestructionRequestOptions()
+            option.windowDismissalAnimation = .commit
+            UIApplication.shared.requestSceneSessionDestruction(session, options: option, errorHandler: nil)
+        }
+    }
+    
     func setupToolBar() {
         let cancle = UIBarButtonItem(title: "取消", style: .plain, target: self, action: #selector(self.cancelItemAction))
         let share = UIBarButtonItem(title: "转发", style: .plain, target: self, action: #selector(self.didFinishMultiSelection(_:)))

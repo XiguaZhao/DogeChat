@@ -10,15 +10,13 @@ import UIKit
 import DogeChatNetwork
 import DogeChatUniversal
 
-class MessageImageCell: MessageBaseCell {
+class MessageImageCell: MessageImageKindCell {
     
     static let cellID = "MessageImageCell"
     
     var animatedImageView: FLAnimatedImageView!
     var isGif: Bool {
-        guard let url = message.imageURL else {
-            return false
-        }
+        let url = message.imageURL ?? message.imageLocalPath?.absoluteString ?? ""
         return url.hasSuffix(".gif")
     }
 
@@ -79,16 +77,7 @@ class MessageImageCell: MessageBaseCell {
     }
     
     func layoutImageView() {
-        if message.imageSize == .zero {
-            animatedImageView.frame = CGRect(x: 0, y: 0, width: 120, height: 120)
-            return
-        }
-        let maxSize = CGSize(width: 2*(AppDelegate.shared.widthFor(side: .right, username: username, view: self)/3), height: CGFloat.greatestFiniteMagnitude)
-        let nameHeight = message.messageSender == .ourself ? 0 : (MessageBaseCell.height(forText: message.senderUsername, fontSize: 10, maxSize: maxSize) + 4 )
-        let height = contentView.bounds.height - 30 - nameHeight - (message.referMessage == nil ? 0 : ReferView.height + ReferView.margin)
-        let width = message.imageSize.width * height / message.imageSize.height
-        animatedImageView.bounds = CGRect(x: 0, y: 0, width: width, height: height)
-        animatedImageView.layer.cornerRadius = min(width, height) / 12
+        layoutImageKindView(animatedImageView)
     }
     
     func downloadImageIfNeeded() {
@@ -111,7 +100,7 @@ class MessageImageCell: MessageBaseCell {
         }
         let capturedMessage = message
         // 接下来进入下载操作
-        MediaLoader.shared.requestImage(urlStr: imageUrl, type: .image, syncIfCan: message.syncGetMedia, imageWidth: isGif ? .original : (isPad() ? .width300 : .width100)) { [self] image, data, _ in
+        MediaLoader.shared.requestImage(urlStr: imageUrl, type: .image, syncIfCan: message.syncGetMedia, imageWidth: isGif ? .original : .width300) { [self] image, data, _ in
                 guard let capturedMessage = capturedMessage, capturedMessage.imageURL == message.imageURL, let data = data else {
                     return
                 }
@@ -124,7 +113,7 @@ class MessageImageCell: MessageBaseCell {
                 capturedMessage.sendStatus = .success
                 NotificationCenter.default.post(name: .mediaDownloadFinished, object: capturedMessage.text, userInfo: nil)
             } progress: { progress in
-                self.delegate?.downloadProgressUpdate(progress: progress, message: capturedMessage!)
+                self.delegate?.downloadProgressUpdate(progress: progress, messages: [capturedMessage!])
             }
         message.syncGetMedia = false
         

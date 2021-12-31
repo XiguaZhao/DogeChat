@@ -17,6 +17,7 @@ class ExtensionDelegate: NSObject, WKExtensionDelegate, UNUserNotificationCenter
     static let shared = WKExtension.shared().delegate as! ExtensionDelegate
     var lastEnterBackgroundTime = Date().timeIntervalSince1970
     var deviceToken: String?
+    weak var contactVC: ContactInterfaceController!
     
     func applicationDidFinishLaunching() {
         // Perform any final initialization of your application.
@@ -55,6 +56,20 @@ class ExtensionDelegate: NSObject, WKExtensionDelegate, UNUserNotificationCenter
         lastEnterBackgroundTime = Date().timeIntervalSince1970
         SocketManager.shared.disconnect()
         checkIfShouldRemoveCache()
+        saveContact()
+        let maxID = SocketManager.shared.messageManager.maxId
+        UserDefaults.standard.set(maxID, forKey: "maxID")
+    }
+    
+    func applicationDidEnterBackground() {
+        saveContact()
+    }
+    
+    func saveContact() {
+        let userID = SocketManager.shared.httpManager.myId
+        if let friends = contactVC?.friends, !friends.isEmpty, !userID.isEmpty {
+            saveFriendsToDisk(friends, userID: userID)
+        }
     }
     
     func checkIfShouldRemoveCache() {

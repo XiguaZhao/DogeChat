@@ -31,7 +31,7 @@ class ImageConfirmViewController: UIViewController {
         guard let navigationController = self.navigationController else { return }
         for vc in navigationController.viewControllers {
             if vc.isKind(of: ChatRoomViewController.self) {
-                (vc as! ChatRoomViewController).latestPickedImageInfos.removeAll()
+                (vc as! ChatRoomViewController).messageSender.latestPickedImageInfos.removeAll()
             }
         }
         self.navigationController?.popViewController(animated: true)

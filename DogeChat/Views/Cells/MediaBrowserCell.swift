@@ -26,6 +26,8 @@ class MediaBrowserCell: UICollectionViewCell, PHLivePhotoViewDelegate {
     var imagePath: String!
     var scrollView: UIScrollView!
     var messageType = MessageType.image
+    var longPress: UILongPressGestureRecognizer!
+    weak var vc: UIViewController?
     var isPlaying = false {
         didSet {
             if isPlaying {
@@ -48,12 +50,16 @@ class MediaBrowserCell: UICollectionViewCell, PHLivePhotoViewDelegate {
         scrollView.maximumZoomScale = 4
         scrollView.contentInsetAdjustmentBehavior = .never
         scrollView.delegate = self
+        scrollView.isDirectionalLockEnabled = true
         contentView.addSubview(scrollView)
         imageView.contentMode = .scaleAspectFit
         livePhotoView.contentMode = .scaleAspectFit
         scrollView.addSubview(imageView)
         scrollView.addSubview(livePhotoView)
         scrollView.addSubview(videoView)
+        
+        longPress = UILongPressGestureRecognizer(target: self, action: #selector(longPress(_:)))
+        self.contentView.addGestureRecognizer(longPress)
         
         tap = UITapGestureRecognizer(target: self, action: #selector(tapAction))
         self.contentView.addGestureRecognizer(tap)
@@ -128,6 +134,62 @@ class MediaBrowserCell: UICollectionViewCell, PHLivePhotoViewDelegate {
         delegate?.singleTap(self)
     }
     
+    @objc func longPress(_ ges: UILongPressGestureRecognizer) {
+        let sheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        sheet.addAction(UIAlertAction(title: "保存到相册", style: .default, handler: { [weak self] _ in
+            guard let self = self else { return }
+            switch self.messageType {
+            case .image:
+                if let image = self.imageView.image {
+                    UIImageWriteToSavedPhotosAlbum(image, self, #selector(self.image(image:didFinishSavingWithError:contextInfo:)), nil)
+                }
+            case .video:
+                if let filename = self.imagePath?.fileName, let filePath = fileURLAt(dirName: videoDir, fileName: filename)?.filePath {
+                    UISaveVideoAtPathToSavedPhotosAlbum(filePath, self, #selector(self.video(videoPath:didFinishSavingWithError:contextInfo:)), nil)
+                }
+            case .livePhoto:
+                let saveBlock: (PHAuthorizationStatus) -> Void = { status in
+                    if status == .authorized {
+                        if let (localImageURL, localVideoURL) = self.localUrlPathLivePhoto() {
+                            PHPhotoLibrary.shared().performChanges {
+                                let request = PHAssetCreationRequest.forAsset()
+                                request.addResource(with: .photo, fileURL: localImageURL, options: nil)
+                                request.addResource(with: .pairedVideo, fileURL: localVideoURL, options: nil)
+                            } completionHandler: { success, error in
+                                self.vc?.makeAutoAlert(message: (error == nil ? "成功" : error!.localizedDescription), detail: nil, showTime: 1, completion: nil)
+                            }
+                        }
+                    } else {
+                        self.vc?.makeAutoAlert(message: "未授权", detail: nil, showTime: 0.5, completion: nil)
+                    }
+                }
+                if #available(iOS 14, *) {
+                    PHPhotoLibrary.requestAuthorization(for: .readWrite, handler: { status in
+                        saveBlock(status)
+                    })
+                } else {
+                    PHPhotoLibrary.requestAuthorization { status in
+                        saveBlock(status)
+                    }
+                }
+
+                break
+            default: break
+            }
+        }))
+        sheet.addAction(UIAlertAction(title: "取消", style: .cancel, handler: nil))
+        self.vc?.present(sheet, animated: true, completion: nil)
+    }
+    
+    @objc func image(image: UIImage, didFinishSavingWithError error: NSError?, contextInfo:UnsafeRawPointer) {
+        self.vc?.makeAutoAlert(message: (error == nil ? "成功" : error!.localizedDescription), detail: nil, showTime: 1, completion: nil)
+    }
+    
+    @objc func video(videoPath: String, didFinishSavingWithError error: NSError?, contextInfo:UnsafeRawPointer) {
+        self.vc?.makeAutoAlert(message: (error == nil ? "成功" : error!.localizedDescription), detail: nil, showTime: 1, completion: nil)
+    }
+
+    
     @objc func doubleTapAction(_ ges: UITapGestureRecognizer) {
         let location = ges.location(in: self.contentView)
         if messageType == .video {
@@ -176,20 +238,28 @@ class MediaBrowserCell: UICollectionViewCell, PHLivePhotoViewDelegate {
     }
     
     func makeLivePhoto() {
+        if let localURLs = localUrlPathLivePhoto() {
+            PHLivePhoto.request(withResourceFileURLs: [localURLs.imageURL, localURLs.videoURL], placeholderImage: nil, targetSize: .zero, contentMode: .aspectFit) { livePhoto, _ in
+                if let livePhoto = livePhoto {
+                    self.livePhotoView.livePhoto = livePhoto
+                    self.livePhotoView.startPlayback(with: .full)
+                }
+            }
+        }
+    }
+    
+    func localUrlPathLivePhoto() -> (imageURL: URL, videoURL: URL)? {
         if let components = imagePath?.components(separatedBy: " "), components.count > 1,
            let imageFileName = components[0].components(separatedBy: "/").last,
            let videoFileName = components[1].components(separatedBy: "/").last {
             if let localImageURL = fileURLAt(dirName: livePhotoDir, fileName: imageFileName),
                let localVideoURL = fileURLAt(dirName: livePhotoDir, fileName: videoFileName) {
-                PHLivePhoto.request(withResourceFileURLs: [localImageURL, localVideoURL], placeholderImage: nil, targetSize: .zero, contentMode: .aspectFit) { livePhoto, _ in
-                    if let livePhoto = livePhoto {
-                        self.livePhotoView.livePhoto = livePhoto
-                        self.livePhotoView.startPlayback(with: .full)
-                    }
-                }
+                return (localImageURL, localVideoURL)
             }
         }
+        return nil
     }
+    
 }
 
 extension MediaBrowserCell: UIScrollViewDelegate {
