@@ -22,6 +22,7 @@ pod 'DogeChatNetwork', :path => '/Users/zhaoxiguang/Library/Mobile Documents/com
 pod 'LookinServer', :configurations => ['Debug']
 pod 'RSAiOSWatchOS', :path => '/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/RSAiOSWatchOS'
 pod 'DataCompression'
+pod 'DogeChatVideoCompression', :path => '/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/DogeChatVideoCompression'
 end
 
 
@@ -40,4 +41,10 @@ end
 target 'DogeChatSiri' do
   shared_pods
   pod 'RSAiOSWatchOS', :path => '/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/RSAiOSWatchOS'
+end
+
+target 'DogeChatShare' do
+  shared_pods
+  pod 'RSAiOSWatchOS', :path => '/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/RSAiOSWatchOS'
+  pod 'DogeChatVideoCompression', :path => '/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/DogeChatVideoCompression'
 end

@@ -14,7 +14,13 @@ class MessageVideoCell: MessageImageKindCell {
     static let cellID = "MessageVideoCell"
 
     let videoView = VideoView()
-    let iconView = UIImageView(image: UIImage(systemName: "play.circle.fill"))
+    lazy var iconView: UIImageView = {
+        if #available(iOS 13, *) {
+            return UIImageView(image: UIImage(systemName: "play.circle.fill"))
+        } else {
+            return UIImageView(image: UIImage(named: ""))
+        }
+    }()
     var videoEnd = false
     let player = AVPlayer()
     var item: AVPlayerItem!

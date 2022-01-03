@@ -12,12 +12,13 @@ import DogeChatUniversal
 
 extension ChatRoomViewController {
     
+    @available(iOS 13.0, *)
     func addItemForSingle() {
-        if self.type == .single {
+        if self.sceneType == .single {
             let item = UIBarButtonItem(title: "关闭", style: .done, target: self, action: #selector(doneWithSingle))
             self.navigationItem.leftBarButtonItem = item
         }
-        if self.type == .normal && UIApplication.shared.supportsMultipleScenes {
+        if self.sceneType == .normal && UIApplication.shared.supportsMultipleScenes {
             let item = UIBarButtonItem(image: UIImage(systemName: "rectangle.portrait.split.2x1"), style: .plain, target: self, action: #selector(openNewScene))
             var items = [item]
             if let detailItem = self.navigationItem.rightBarButtonItem {
@@ -27,6 +28,7 @@ extension ChatRoomViewController {
         }
     }
     
+    @available(iOS 13.0, *)
     @objc func openNewScene() {
         let option = UIScene.ActivationRequestOptions()
         option.requestingScene = self.view.window?.windowScene
@@ -34,6 +36,7 @@ extension ChatRoomViewController {
     }
     
     
+    @available(iOS 13.0, *)
     @objc func doneWithSingle() {
         if let session = self.view.window?.windowScene?.session {
             let option = UIWindowSceneDestructionRequestOptions()

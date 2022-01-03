@@ -111,7 +111,11 @@ class ReferView: UIView {
         case .livePhoto:
             makeImage()
         case .draw:
-            makeDrawing()
+            if #available(iOS 13, *) {
+                makeDrawing()
+            } else {
+                text = "[Drawing]"
+            }
         case .track:
             if let first = message.tracks.first {
                 text = first.artist + "-" + first.name
@@ -155,6 +159,7 @@ class ReferView: UIView {
         }, progress: nil)
     }
     
+    @available(iOS 13.0, *)
     func makeDrawing() {
         let captured = self.message
         guard let url = message?.pkDataURL else { return }

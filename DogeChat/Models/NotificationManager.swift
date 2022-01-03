@@ -21,9 +21,14 @@ struct RemoteNotificationInfo {
 
 class NotificationManager: NSObject {
     
-    weak var sceneDelegate: SceneDelegate?
+    static let shared = NotificationManager()
+    weak var sceneDelegate: AnyObject?
     var manager: WebSocketManager? {
-        sceneDelegate?.socketManager
+        if #available(iOS 13, *) {
+            return (sceneDelegate as? SceneDelegate)?.socketManager
+        } else {
+            return WebSocketManager.shared
+        }
     }
     var nowPushInfo: (sender: String, content: String, senderID: String) = ("", "", "")
     var actionCompletionHandler: (() -> Void)?
@@ -33,26 +38,14 @@ class NotificationManager: NSObject {
     
     override init() {
         super.init()
-        registerNoti()
-    }
-    
-    func registerNoti() {
-        NotificationCenter.default.addObserver(self, selector: #selector(quickReplyDone(_:)), name: .quickReplyDone, object: nil)
     }
     
     func nav() -> UINavigationController? {
-        return sceneDelegate?.navigationController
-    }
-    
-    @objc func quickReplyDone(_ noti: Notification) {
-        sceneDelegate?.socketManager.disconnect()
-        if let vc = nav()?.visibleViewController as? ChatRoomViewController {
-            if let message = quickReplyMessage {
-                vc.insertNewMessageCell([message])
-            }
+        if #available(iOS 13, *) {
+            return (sceneDelegate as? SceneDelegate)?.navigationController
+        } else {
+            return AppDelegateUI.shared.navController
         }
-        actionCompletionHandler?()
-        actionCompletionHandler = nil
     }
     
     public static func getRemoteNotiInfo(_ notification: [String: Any]) -> RemoteNotificationInfo {
@@ -92,11 +85,11 @@ class NotificationManager: NSObject {
     
     private func login(success: @escaping (()->Void), fail: @escaping (()->Void)) {
         
-        if let username = sceneDelegate?.username,
+        if let username = manager?.myName,
            let data = UserDefaults(suiteName: groupName)?.value(forKey: userInfoKey) as? Data,
            let saved = try? JSONDecoder().decode([AccountInfo].self, from: data),
            let first = saved.first(where: { $0.username == username }) {
-            sceneDelegate?.socketManager?.loginAndConnect(username: username, password: first.password) { _success in
+            manager?.loginAndConnect(username: username, password: first.password) { _success in
                 if _success {
                     success()
                 } else {
@@ -107,17 +100,18 @@ class NotificationManager: NSObject {
     }
     
     func prepareVoiceChat(caller: String, uuid: UUID) {
-        sceneDelegate?.socketManager?.commonWebSocket.pingWithResult { [self] success in
-            if !success {
-                login {
-                } fail: {
-                    if let call = sceneDelegate?.callManager.callWithUUID(uuid) {
-                        sceneDelegate!.callManager.end(call: call)
+        if #available(iOS 13, *) {
+            manager?.commonWebSocket.pingWithResult { [self] success in
+                if !success {
+                    login {
+                    } fail: {
+                        if let call = (sceneDelegate as? SceneDelegate)?.callManager.callWithUUID(uuid) {
+                            (sceneDelegate as? SceneDelegate)?.callManager.end(call: call)
+                        }
                     }
                 }
             }
         }
-
     }
     
     func processReplyAction(replyContent: String) {

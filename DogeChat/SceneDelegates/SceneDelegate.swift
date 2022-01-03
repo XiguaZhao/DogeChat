@@ -22,6 +22,7 @@ enum SceneState {
     case siri
 }
 
+@available(iOS 13.0, *)
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     static let lock = NSLock()
@@ -150,7 +151,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             return
         } else if let userActivity = options.userActivities.first { // 支持多窗口的设备打开的
             if let data = userActivity.userInfo?["data"] as? Data, let modal = try? JSONDecoder().decode(UserActivityModal.self, from: data) {
-                if login(username: modal.username, password: modal.password, cookie: modal.cookie) {
+                let info = modal.accountInfo
+                if login(username: info.username, password: info.password, cookie: info.cookieInfo?.cookie) {
                     processReloginOrReConnect()
                     state = .handoff
                 } else {
@@ -325,13 +327,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func openNewSceneFor(userActivityModal: UserActivityModal?, userActivity: NSUserActivity, newSceneType: SceneState) {
         var password: String?
         var username: String?
-        if let userActivityModal = userActivityModal,
-           let avatar = userActivityModal.avatarURL,
-           let userID = userActivityModal.userID,
-           let cookie = userActivityModal.cookie {
-            username = userActivityModal.username
-            password = userActivityModal.password
-            let accountInfo = AccountInfo(username: userActivityModal.username, avatarURL: avatar, password: password, userID: userID, cookieInfo: CookieInfo(cookie: cookie, userID: userID))
+        if let accountInfo = userActivityModal?.accountInfo{
+            username = accountInfo.username
+            password = accountInfo.password
             updateAccountInfo(accountInfo)
         }
         if let _username = userActivity.userInfo?["username"] as? String {
@@ -427,6 +425,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
 }
 
+@available(iOS 13.0, *)
 extension SceneDelegate: FloatWindowTouchDelegate {
     
     func tapPush(_ window: FloatWindow!, sender: String, content: String) {

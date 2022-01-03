@@ -25,14 +25,20 @@ class MiniPlayerView: UIView, UICollectionViewDataSource, UICollectionViewDelega
         configureCollectionView()
         self.layer.masksToBounds = true
         let blurView: UIVisualEffectView
-        blurView = UIVisualEffectView(effect: UIBlurEffect(style: .systemChromeMaterial))
+        if #available(iOS 13.0, *) {
+            blurView = UIVisualEffectView(effect: UIBlurEffect(style: .systemChromeMaterial))
+        } else {
+            blurView = UIVisualEffectView(effect: UIBlurEffect(style: .light))
+        }
         self.addSubview(blurView)
         self.sendSubviewToBack(blurView)
         blurView.mas_makeConstraints { [weak self] make in
             make?.edges.equalTo()(self)
         }
-        toggleButton.setImage(UIImage(systemName: "pause.circle.fill"), for: .normal)
-        playListButton.setImage(UIImage(systemName: "list.bullet"), for: .normal)
+        if #available(iOS 13.0, *) {
+            toggleButton.setImage(UIImage(systemName: "pause.circle.fill"), for: .normal)
+            playListButton.setImage(UIImage(systemName: "list.bullet"), for: .normal)
+        }
         toggleButton.addTarget(self, action: #selector(toggleButtonAction(_:)), for: .touchUpInside)
         playListButton.addTarget(self, action: #selector(playListButtonAction(_:)), for: .touchUpInside)
         let buttonStack = UIStackView(arrangedSubviews: [toggleButton, playListButton])

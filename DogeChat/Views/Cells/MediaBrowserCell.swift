@@ -135,12 +135,26 @@ class MediaBrowserCell: UICollectionViewCell, PHLivePhotoViewDelegate {
     }
     
     @objc func longPress(_ ges: UILongPressGestureRecognizer) {
+        guard ges.state == .ended else { return }
         let sheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
         sheet.addAction(UIAlertAction(title: "保存到相册", style: .default, handler: { [weak self] _ in
             guard let self = self else { return }
             switch self.messageType {
             case .image:
-                if let image = self.imageView.image {
+                if self.imageView.animatedImage != nil {
+                    self.requestAuth { success in
+                        if success {
+                            PHPhotoLibrary.shared().performChanges {
+                                let request = PHAssetCreationRequest.forAsset()
+                                request.addResource(with: .photo, data: self.imageView.animatedImage.data, options: nil)
+                            } completionHandler: { success, error in
+                                self.vc?.makeAutoAlert(message: (error == nil ? "成功" : error!.localizedDescription), detail: nil, showTime: 0.3, completion: nil)
+                            }
+                        } else {
+                            self.vc?.makeAutoAlert(message: "未授权", detail: nil, showTime: 0.5, completion: nil)
+                        }
+                    }
+                } else if let image = self.imageView.image {
                     UIImageWriteToSavedPhotosAlbum(image, self, #selector(self.image(image:didFinishSavingWithError:contextInfo:)), nil)
                 }
             case .video:
@@ -148,45 +162,54 @@ class MediaBrowserCell: UICollectionViewCell, PHLivePhotoViewDelegate {
                     UISaveVideoAtPathToSavedPhotosAlbum(filePath, self, #selector(self.video(videoPath:didFinishSavingWithError:contextInfo:)), nil)
                 }
             case .livePhoto:
-                let saveBlock: (PHAuthorizationStatus) -> Void = { status in
-                    if status == .authorized {
+                let saveBlock: (Bool) -> Void = { success in
+                    if success {
                         if let (localImageURL, localVideoURL) = self.localUrlPathLivePhoto() {
                             PHPhotoLibrary.shared().performChanges {
                                 let request = PHAssetCreationRequest.forAsset()
                                 request.addResource(with: .photo, fileURL: localImageURL, options: nil)
                                 request.addResource(with: .pairedVideo, fileURL: localVideoURL, options: nil)
                             } completionHandler: { success, error in
-                                self.vc?.makeAutoAlert(message: (error == nil ? "成功" : error!.localizedDescription), detail: nil, showTime: 1, completion: nil)
+                                self.vc?.makeAutoAlert(message: (error == nil ? "成功" : error!.localizedDescription), detail: nil, showTime: 0.3, completion: nil)
                             }
                         }
                     } else {
                         self.vc?.makeAutoAlert(message: "未授权", detail: nil, showTime: 0.5, completion: nil)
                     }
                 }
-                if #available(iOS 14, *) {
-                    PHPhotoLibrary.requestAuthorization(for: .readWrite, handler: { status in
-                        saveBlock(status)
-                    })
-                } else {
-                    PHPhotoLibrary.requestAuthorization { status in
-                        saveBlock(status)
-                    }
+                self.requestAuth { success in
+                    saveBlock(success)
                 }
-
                 break
             default: break
             }
         }))
         sheet.addAction(UIAlertAction(title: "取消", style: .cancel, handler: nil))
+        let popover = sheet.popoverPresentationController
+        popover?.sourceView = self.contentView
+        popover?.sourceRect = CGRect(origin: self.contentView.center, size: CGSize(width: 100, height: 100))
+        popover?.permittedArrowDirections = [.down]
         self.vc?.present(sheet, animated: true, completion: nil)
     }
     
+    func requestAuth(_ completion: @escaping((Bool) -> Void)) {
+        if #available(iOS 14, *) {
+            PHPhotoLibrary.requestAuthorization(for: .readWrite, handler: { status in
+                completion(status == .authorized)
+            })
+        } else {
+            PHPhotoLibrary.requestAuthorization { status in
+                completion(status == .authorized)
+            }
+        }
+    }
+    
     @objc func image(image: UIImage, didFinishSavingWithError error: NSError?, contextInfo:UnsafeRawPointer) {
-        self.vc?.makeAutoAlert(message: (error == nil ? "成功" : error!.localizedDescription), detail: nil, showTime: 1, completion: nil)
+        self.vc?.makeAutoAlert(message: (error == nil ? "成功" : error!.localizedDescription), detail: nil, showTime: 0.3, completion: nil)
     }
     
     @objc func video(videoPath: String, didFinishSavingWithError error: NSError?, contextInfo:UnsafeRawPointer) {
-        self.vc?.makeAutoAlert(message: (error == nil ? "成功" : error!.localizedDescription), detail: nil, showTime: 1, completion: nil)
+        self.vc?.makeAutoAlert(message: (error == nil ? "成功" : error!.localizedDescription), detail: nil, showTime: 0.3, completion: nil)
     }
 
     

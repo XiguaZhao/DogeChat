@@ -26,11 +26,15 @@ extension ChatRoomViewController {
         }
         jumpToUnreadStack.isUserInteractionEnabled = true
         jumpToUnreadStack.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(jumpToFirstUnread)))
-        jumpToUnreadButton.image = UIImage(systemName: "arrow.up.circle.fill", withConfiguration: MessageInputView.largeConfig)
+        if #available(iOS 13, *) {
+            jumpToUnreadButton.image = UIImage(systemName: "arrow.up.circle.fill", withConfiguration: MessageInputView.largeConfig as? UIImage.Configuration)
+        }
         
         let jumpToBottomButton = UIImageView()
         jumpToBottomButton.contentMode = .scaleAspectFit
-        jumpToBottomButton.image = UIImage(systemName: "arrow.down.circle.fill", withConfiguration: MessageInputView.largeConfig)
+        if #available(iOS 13.0, *) {
+            jumpToBottomButton.image = UIImage(systemName: "arrow.down.circle.fill", withConfiguration: MessageInputView.largeConfig as? UIImage.Configuration)
+        }
         jumpToBottomButton.mas_makeConstraints { make in
             make?.width.height().mas_equalTo()(30)
         }
@@ -62,11 +66,12 @@ extension ChatRoomViewController {
     }
     
     func processJumpToBottomButton() {
-        guard let visibleIndexPaths = tableView.indexPathsForVisibleRows else { return }
+        guard self.purpose == .chat, let visibleIndexPaths = tableView.indexPathsForVisibleRows else { return }
         jumpToBottomStack.isHidden = visibleIndexPaths.contains(IndexPath(row: self.messages.count - 1, section: 0))
     }
     
     func processJumpToUnreadButton() {
+        guard self.purpose == .chat else { return }
         var show = false
         var unreads = [Message]()
         if let _ = explictJumpMessageUUID {

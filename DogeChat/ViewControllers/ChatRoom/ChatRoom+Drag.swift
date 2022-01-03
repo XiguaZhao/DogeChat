@@ -9,11 +9,6 @@
 import UIKit
 import DogeChatUniversal
 
-let videoIdentifier = "public.movie"
-let gifIdentifier = "com.compuserve.gif"
-let fileIdentifier = "public.file-url"
-let audioIdentifier = "public.audio"
-
 extension ChatRoomViewController: UITableViewDragDelegate {
     
     func tableView(_ tableView: UITableView, itemsForAddingTo session: UIDragSession, at indexPath: IndexPath, point: CGPoint) -> [UIDragItem] {
@@ -47,13 +42,15 @@ extension ChatRoomViewController: UITableViewDragDelegate {
                 items.append(item)
             }
         } else if message.messageType == .draw {
-            if let url = fileURLAt(dirName: drawDir, fileName: (message.pkDataURL ?? "").components(separatedBy: "/").last ?? ""), let data = try? Data(contentsOf: url), let draw = try? PKDrawing(data: data) {
+            if #available(iOS 13.0, *) {
+                if let url = fileURLAt(dirName: drawDir, fileName: (message.pkDataURL ?? "").components(separatedBy: "/").last ?? ""), let data = try? Data(contentsOf: url), let draw = try? PKDrawing(data: data) {
 #if !targetEnvironment(macCatalyst)
-                let image = draw.image(from: draw.bounds, scale: UIScreen.main.scale)
-                let item = UIDragItem(itemProvider: NSItemProvider(object: image))
-                items.append(item)
+                    let image = draw.image(from: draw.bounds, scale: UIScreen.main.scale)
+                    let item = UIDragItem(itemProvider: NSItemProvider(object: image))
+                    items.append(item)
 #endif
-            }
+                }
+            } 
         }
         items.forEach( { $0.localObject = ["userID" : self.friend.userID, "message" : message] })
         return items

@@ -22,14 +22,14 @@
                 <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="UvR-cw-6Nm">
                     <rect key="frame" x="0.0" y="44" width="414" height="818"/>
                     <subviews>
-                        <imageView clipsSubviews="YES" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="猫.png" translatesAutoresizingMaskIntoConstraints="NO" id="I2i-Kx-XY4">
+                        <imageView clipsSubviews="YES" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="cat180*180.png" translatesAutoresizingMaskIntoConstraints="NO" id="I2i-Kx-XY4">
                             <rect key="frame" x="0.0" y="0.0" width="207" height="818"/>
                             <gestureRecognizers/>
                             <connections>
                                 <outletCollection property="gestureRecognizers" destination="lvu-GV-ez4" appends="YES" id="Anr-4s-zSt"/>
                             </connections>
                         </imageView>
-                        <imageView clipsSubviews="YES" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="狗.png" translatesAutoresizingMaskIntoConstraints="NO" id="3Tu-hf-eeU">
+                        <imageView clipsSubviews="YES" tag="1" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="dog180*180.png" translatesAutoresizingMaskIntoConstraints="NO" id="3Tu-hf-eeU">
                             <rect key="frame" x="207" y="0.0" width="207" height="818"/>
                             <gestureRecognizers/>
                             <connections>
@@ -61,8 +61,8 @@
         </tapGestureRecognizer>
     </objects>
     <resources>
-        <image name="狗.png" width="512" height="512"/>
-        <image name="猫.png" width="512" height="512"/>
+        <image name="cat180*180.png" width="180" height="180"/>
+        <image name="dog180*180.png" width="180" height="180"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>

@@ -14,6 +14,7 @@ import UIKit
 extension ChatRoomViewController: ReferMessageDataSource {
     
     func insertNewMessageCell(_ messages: [Message], position: InsertPosition = .bottom, index: Int = 0, forceScrollBottom: Bool = false, completion: (()->Void)? = nil) {
+        guard self.purpose == .chat else { return }
         let alreadyUUIDs = self.messagesUUIDs
         let newUUIDs: Set<String> = Set(messages.map { $0.uuid })
         let filteredUUIDs = newUUIDs.subtracting(alreadyUUIDs)
@@ -42,7 +43,6 @@ extension ChatRoomViewController: ReferMessageDataSource {
             for message in filtered {
                 indexPaths.append(IndexPath(row: self.messages.count, section: 0))
                 self.messages.append(message)
-                self.messagesUUIDs.insert(message.uuid)
             }
             UIView.performWithoutAnimation {
                 self.tableView.insertRows(at: indexPaths, with: .none)

@@ -15,6 +15,8 @@ class HttpMessage {
     let httpManager = HttpRequestsManager()
     let messageManager = MessageManager()
     
+    var serverKey: String?
+    
     init() {
         httpManager.messageManager = messageManager
         messageManager.httpRequestsManager = httpManager
@@ -22,7 +24,12 @@ class HttpMessage {
     }
     
     func getKey(completion: @escaping((Bool) -> Void)) {
+        if serverKey != nil {
+            completion(true)
+            return
+        }
         httpManager.getPublicKey { key in
+            self.serverKey = key
             completion(key != nil)
         }
     }
@@ -51,7 +58,32 @@ class HttpMessage {
         }
     }
     
-    func sendText(_ text: String, to friend: String, completion: @escaping((Bool, Friend?) -> Void)) {
+    func sendMessage(_ message: Message, completion: @escaping((Bool) -> Void)) {
+        login { [weak self] loginSuccess in
+            if loginSuccess {
+                self?.getContacts { [weak self] friends in
+                    self?.getKey { [weak self] keySuccess in
+                        if keySuccess {
+                            guard let self = self else { return }
+                            self.httpManager.sendMessage(message) { success in
+                                if success {
+                                    completion(true)
+                                } else {
+                                    completion(false)
+                                }
+                            }
+                        } else {
+                            completion(false)
+                        }
+                    }
+                }
+            } else {
+                completion(false)
+            }
+        }
+    }
+    
+    func sendText(_ text: String, to friend: String, userID: String? = nil, type: MessageType = .text, completion: @escaping((Bool, Friend?) -> Void)) {
         login { [weak self] loginSuccess in
             if loginSuccess {
                 self?.getContacts { [weak self] friends in
@@ -59,7 +91,13 @@ class HttpMessage {
                         self?.getKey { [weak self] keySuccess in
                             if keySuccess {
                                 guard let self = self else { return }
-                                if let friend = friends.first(where: { $0.nickName == friend || $0.username == friend }) {
+                                var targetFriend: Friend?
+                                if let userID = userID {
+                                    targetFriend = friends.first(where: { $0.userID == userID })
+                                } else {
+                                    targetFriend = friends.first(where: { $0.nickName == friend || $0.username == friend })
+                                }
+                                if let friend = targetFriend {
                                     let message = Message(message: text, friend: friend, messageSender: .ourself, receiver: friend.username, receiverUserID: friend.userID, sender: self.httpManager.myName, senderUserID: self.httpManager.myId, messageType: .text)
                                     self.httpManager.sendMessage(message) { success in
                                         if success {

@@ -35,7 +35,9 @@ class NestedViewController: UIViewController {
         
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.view.backgroundColor = .systemBackground
+        if #available(iOS 13.0, *) {
+            self.view.backgroundColor = .systemBackground
+        } 
         let tap = UITapGestureRecognizer(target: self, action: #selector(tapped(_:)))
         self.view.addGestureRecognizer(tap)
     }

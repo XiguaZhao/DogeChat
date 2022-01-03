@@ -22,10 +22,13 @@ class DatePickerViewController: UIViewController {
         super.viewDidLoad()
         let confirmButton = UIButton()
         let cancelButton = UIButton()
-        view.backgroundColor = .systemBackground
+        if #available(iOS 13.0, *) {
+            view.backgroundColor = .systemBackground
+        } 
         confirmButton.setTitleColor(.systemBlue, for: .normal)
         cancelButton.setTitleColor(.systemBlue, for: .normal)
         picker.datePickerMode = .countDownTimer
+        picker.countDownDuration = 60 * 60
         
         confirmButton.setTitle("确认", for: .normal)
         confirmButton.addTarget(self, action: #selector(confirmed(_:)), for: .touchUpInside)

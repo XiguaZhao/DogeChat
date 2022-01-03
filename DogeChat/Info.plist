@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>添加照片</string>
 	<key>BGTaskSchedulerPermittedIdentifiers</key>
 	<array>
 		<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
@@ -113,5 +115,31 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+	<key>CFBundleIcons</key>
+	<dict>
+		<key>CFBundleAlternateIcons</key>
+		<dict>
+			<key>dog</key>
+			<dict>
+				<key>CFBundleIconFiles</key>
+				<array>
+					<string>dog120*120</string>
+					<string>dog152*152</string>
+					<string>dog167*167</string>
+					<string>dog180*180</string>
+				</array>
+			</dict>
+			<key>cat</key>
+			<dict>
+				<key>CFBundleIconFiles</key>
+				<array>
+					<string>cat120*120</string>
+					<string>cat152*152</string>
+					<string>cat167*167</string>
+					<string>cat180*180</string>
+				</array>
+			</dict>
+		</dict>
+	</dict>
 </dict>
 </plist>

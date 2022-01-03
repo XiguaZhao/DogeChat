@@ -56,6 +56,7 @@ extension ChatRoomViewController: UITableViewDropDelegate {
     }
     
     func tableView(_ tableView: UITableView, canHandle session: UIDropSession) -> Bool {
+        guard purpose == .chat else { return false }
         var res = session.canLoadObjects(ofClass: UIImage.self) || session.canLoadObjects(ofClass: String.self)
         res = res || session.hasItemsConforming(toTypeIdentifiers: [videoIdentifier])
         res = res || session.hasItemsConforming(toTypeIdentifiers: [audioIdentifier])

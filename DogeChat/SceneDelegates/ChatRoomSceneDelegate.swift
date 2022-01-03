@@ -9,6 +9,7 @@
 import UIKit
 import DogeChatNetwork
 
+@available(iOS 13.0, *)
 class ChatRoomSceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
@@ -28,11 +29,17 @@ class ChatRoomSceneDelegate: UIResponder, UIWindowSceneDelegate {
                 self.chatRoomVC = chatRoom
                 self.username = username
                 chatRoom.username = username
-                chatRoom.type = .single
+                chatRoom.sceneType = .single
                 chatRoom.friend = friend
                 nav.setViewControllers([chatRoomVC], animated: false)
             }
         }
+#if TARGET_OS_UIKITFORMAC || targetEnvironment(macCatalyst)
+        if let titleBar = window?.windowScene?.titlebar {
+            titleBar.titleVisibility = .hidden
+            titleBar.toolbar = nil
+        }
+#endif
     }
     
 }

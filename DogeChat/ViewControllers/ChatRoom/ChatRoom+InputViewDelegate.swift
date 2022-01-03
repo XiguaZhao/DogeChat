@@ -57,15 +57,17 @@ extension ChatRoomViewController: MessageInputDelegate, VoiceRecordDelegate {
             imagePicker.mediaTypes = ["public.movie"]
             self.present(imagePicker, animated: true, completion: nil)
         case .draw:
-            let drawVC = DrawViewController()
-            drawVC.username = username
-            drawVC.pkViewDelegate.dataChangedDelegate = self
-            let newMessage = processMessageString(for: "", type: .draw, imageURL: nil, videoURL: nil)
-            drawVC.message = newMessage
-            drawVC.modalPresentationStyle = .fullScreen
-            drawVC.chatRoomVC = self
-            self.drawingIndexPath = IndexPath(item: self.messages.count, section: 0)
-            self.navigationController?.present(drawVC, animated: true, completion: nil)
+            if #available(iOS 13.0, *) {
+                let drawVC = DrawViewController()
+                drawVC.username = username
+                drawVC.pkViewDelegate.dataChangedDelegate = self
+                let newMessage = processMessageString(for: "", type: .draw, imageURL: nil, videoURL: nil)
+                drawVC.message = newMessage
+                drawVC.modalPresentationStyle = .fullScreen
+                drawVC.chatRoomVC = self
+                self.drawingIndexPath = IndexPath(item: self.messages.count, section: 0)
+                self.navigationController?.present(drawVC, animated: true, completion: nil)
+            }
         case .add:
             addButtonTapped()
         case .location:
@@ -106,9 +108,11 @@ extension ChatRoomViewController: MessageInputDelegate, VoiceRecordDelegate {
         if messageInputBar.emojiButton.image(for: .normal)?.accessibilityIdentifier == "pin" {
             messageInputBar.emojiButtonStatus = .pin
         }
-        let image = UIImage(systemName: "pin.circle.fill", withConfiguration: MessageInputView.largeConfig)
-        image?.accessibilityIdentifier = "pin"
-        messageInputBar.emojiButton.setImage(image, for: .normal)
+        if #available(iOS 13, *) {
+            let image = UIImage(systemName: "pin.circle.fill", withConfiguration: MessageInputView.largeConfig as? UIImage.Configuration)
+            image?.accessibilityIdentifier = "pin"
+            messageInputBar.emojiButton.setImage(image, for: .normal)
+        }
         
     }
     
@@ -124,7 +128,9 @@ extension ChatRoomViewController: MessageInputDelegate, VoiceRecordDelegate {
             let uuid = UUID().uuidString
             self.manager?.sendCallRequst(to: self.friendName, uuid: uuid)
             self.manager?.nowCallUUID = UUID(uuidString: uuid)
-            SceneDelegate.usernameToDelegate[self.username]?.callManager.startCall(handle: self.friendName, uuid: uuid)
+            if #available(iOS 13.0, *) {
+                SceneDelegate.usernameToDelegate[self.username]?.callManager.startCall(handle: self.friendName, uuid: uuid)
+            }
         }
         if !friend.isGroup {
             actionSheet.addAction(UIAlertAction(title: "语音通话", style: .default, handler: {  (action) in
@@ -191,7 +197,7 @@ extension ChatRoomViewController: MessageInputDelegate, VoiceRecordDelegate {
     
     func voiceConfirmSend(_ url: URL, duration: Int) {
         self.messageSender.voiceInfo = (url, duration)
-        self.messageSender.sendVoice(friends: [friend])
+        _ = self.messageSender.sendVoice(friends: [friend])
     }
     
     @available(iOS 14, *)
@@ -261,6 +267,7 @@ extension ChatRoomViewController: MessageInputDelegate, VoiceRecordDelegate {
                 self.navigationController?.pushViewController(vc, animated: true)
             }
         } else if imagePickerType == .livePhoto {
+            picker.dismiss(animated: true, completion: nil)
             if let live = info[.livePhoto] as? PHLivePhoto {
                 LivePhotoGenerator().generate(for: live, windowWidth: self.tableView.frame.width) { livePhoto in
                     let imageURL = livePhoto.value(forKey: "imageURL") as! URL

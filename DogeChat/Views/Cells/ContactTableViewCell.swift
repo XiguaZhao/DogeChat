@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import DogeChatNetwork
 import DogeChatUniversal
 
 protocol ContactTableViewCellDelegate: AnyObject {
@@ -35,7 +34,6 @@ class ContactTableViewCell: UITableViewCell {
     }
     var labelStackView: UIStackView!
     var stackView: UIStackView!
-    weak var manager: WebSocketManager?
     weak var delegate: ContactTableViewCellDelegate?
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
@@ -142,7 +140,7 @@ class ContactTableViewCell: UITableViewCell {
         }
         avatarImageView.isHidden = info.avatarURL.isEmpty
         if !info.avatarURL.isEmpty {
-            let avatarUrl = WebSocketManager.url_pre + info.avatarURL
+            let avatarUrl = info.avatarURL
             let isGif = avatarUrl.hasSuffix(".gif")
             MediaLoader.shared.requestImage(urlStr: avatarUrl, type: .image, syncIfCan: false) { [self] image, data, _ in
                 guard info.username == self.info.username, let data = data else {

@@ -1,0 +1,1 @@
+../../../../../DogeChatVideoCompression/DogeChatVideoCompression/Classes/LivePhotoGenerator.h

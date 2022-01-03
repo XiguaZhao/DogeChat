@@ -16,7 +16,15 @@ let tracksDirName = "tracks"
 let dirName = "trackInfos"
 var userID: String = {
     var userID: String?
-    if let username = SceneDelegate.usernameToDelegate.first?.value.username {
+    var username: String?
+    if #available(iOS 13.0, *) {
+        if let _username = SceneDelegate.usernameToDelegate.first?.value.username {
+            username = _username
+        }
+    } else {
+        username = WebSocketManager.shared.myName
+    }
+    if let username = username {
         if let data = UserDefaults(suiteName: groupName)?.value(forKey: userInfoKey) as? Data,
            let saved = try? JSONDecoder().decode([AccountInfo].self, from: data),
            let first = saved.first(where: { $0.username == username }) {
@@ -135,13 +143,17 @@ class PlayListViewController: DogeChatViewController, SelectContactsDelegate, Do
                 tableView.scrollToRow(at: IndexPath(row: index, section: 0), at: .middle, animated: true)
             }
         }
-        refreshAction()
+        if type == .normal {
+            refreshAction()
+        }
     }
     
     deinit {
-        SceneDelegate.lock.lock()
-        SceneDelegate.usernameToDelegate[self.username]?.navigationController?.interactivePopGestureRecognizer?.isEnabled = true
-        SceneDelegate.lock.unlock()
+        if #available(iOS 13, *) {
+            SceneDelegate.lock.lock()
+            SceneDelegate.usernameToDelegate[self.username]?.navigationController?.interactivePopGestureRecognizer?.isEnabled = true
+            SceneDelegate.lock.unlock()
+        }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -510,6 +522,7 @@ extension PlayListViewController: UITableViewDelegate, UITableViewDataSource {
         }
     }
     
+    @available(iOS 13.0, *)
     func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
         guard type == .normal else { return nil }
         return .init(identifier: ("\(indexPath.row)" as NSString), previewProvider: nil) { [weak self] elements -> UIMenu? in
@@ -632,7 +645,15 @@ func saveTracksInfoToDisk(username: String, needUpload: Bool) {
             saveFileToDisk(dirName: dirName, fileName: userID, data: data)
         }
         if needUpload && !allTracks.isEmpty {
-            if let manager = SceneDelegate.usernameToDelegate[username]?.socketManager {
+            var manager: WebSocketManager?
+            if #available(iOS 13.0, *) {
+                if let _manager = SceneDelegate.usernameToDelegate[username]?.socketManager {
+                    manager = _manager
+                }
+            } else {
+                manager = WebSocketManager.shared
+            }
+            if let manager = manager {
                 manager.httpsManager.uploadData(data, path: "message/uploadImg", name: "upload", fileName: "", needCookie: true, contentType: "application/octet-stream", params: nil) { task, data in
                     guard let data = data else { return }
                     let json = JSON(data)

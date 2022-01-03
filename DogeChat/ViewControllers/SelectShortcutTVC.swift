@@ -76,7 +76,9 @@ class SelectShortcutTVC: DogeChatViewController, DogeChatVCTableDataSource, UITa
         let cell = tableView.dequeueReusableCell(withIdentifier: DogeChatTableViewCell.cellID(), for: indexPath)
         switch indexPath.row {
         case Self.namesAndPasswords.count:
-            cell.imageView?.image = UIImage(systemName: "plus")
+            if #available(iOS 13.0, *) {
+                cell.imageView?.image = UIImage(systemName: "plus")
+            } 
             cell.textLabel?.text = "添加新捷径"
         default:
             cell.textLabel?.text = Self.namesAndPasswords[indexPath.row].username
@@ -142,8 +144,10 @@ class SelectShortcutTVC: DogeChatViewController, DogeChatVCTableDataSource, UITa
         mainAccount.backgroundColor = #colorLiteral(red: 0.2392156869, green: 0.6745098233, blue: 0.9686274529, alpha: 1)
         delete.backgroundColor = #colorLiteral(red: 0.4666666687, green: 0.7647058964, blue: 0.2666666806, alpha: 1)
         var items = [delete]
-        if UIApplication.shared.supportsMultipleScenes {
-            items.insert(mainAccount, at: 0)
+        if #available(iOS 13.0, *) {
+            if UIApplication.shared.supportsMultipleScenes {
+                items.insert(mainAccount, at: 0)
+            }
         }
         let config = UISwipeActionsConfiguration(actions: items)
         config.performsFirstActionWithFullSwipe = true

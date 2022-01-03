@@ -74,7 +74,11 @@ class LocationVC: DogeChatViewController, UISearchBarDelegate, MKMapViewDelegate
         self.view.addSubview(mapView)
         self.view.addSubview(tableView)
         tableView.isHidden = true
-        tableView.backgroundColor = .systemBackground
+        if #available(iOS 13.0, *) {
+            tableView.backgroundColor = .systemBackground
+        } else {
+            tableView.backgroundColor = nil
+        }
         mapView.mas_makeConstraints { make in
             make?.leading.equalTo()(self.view.mas_leading)
             make?.trailing.equalTo()(self.view.mas_trailing)
@@ -116,10 +120,12 @@ class LocationVC: DogeChatViewController, UISearchBarDelegate, MKMapViewDelegate
         stack.spacing = 10
         let locationItem = UIBarButtonItem(customView: stack)
         self.toolbarItems = [locationItem]
-        let appearance = UIToolbarAppearance.init()
-        appearance.configureWithDefaultBackground()
-        if #available(iOS 15.0, *) {
-            self.navigationController?.toolbar.scrollEdgeAppearance = appearance
+        if #available(iOS 13, *) {
+            let appearance = UIToolbarAppearance.init()
+            appearance.configureWithDefaultBackground()
+            if #available(iOS 15.0, *) {
+                self.navigationController?.toolbar.scrollEdgeAppearance = appearance
+            }
         }
     }
     

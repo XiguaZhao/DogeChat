@@ -34,7 +34,7 @@ class ContactsTableViewController: DogeChatViewController, UITableViewDelegate, 
     }
     lazy var messageSender: MessageSender = {
         let sender = MessageSender()
-        sender.manager = self.manager
+        sender.manager = self.manager?.httpsManager
         return sender
     }()
     override var username: String {
@@ -42,16 +42,20 @@ class ContactsTableViewController: DogeChatViewController, UITableViewDelegate, 
             self.navigationItem.title = username
         }
     }
-    var nav: UINavigationController? {
-        return (self.view.window?.windowScene?.delegate as? SceneDelegate)?.navigationController
-    }
-    var barItem = UIBarButtonItem()
+//    var nav: UINavigationController? {
+//        if #available(iOS 13.0, *) {
+//            return (self.view.window?.windowScene?.delegate as? SceneDelegate)?.navigationController
+//        } else {
+//            return self.navigationController
+//        }
+//    }
+    var nameLabel = UILabel()
+    weak var barItem: UIBarButtonItem!
     var newesetDropIndexPath: IndexPath?
     var selectedFriend: Friend? {
         return (self.splitViewController as? DogeChatSplitViewController)?.findChatRoomVC()?.friend
     }
     var tableView = DogeChatTableView()
-    var titleView: UIView?
     static let pkDataWriteQueue = DispatchQueue(label: "com.zhaoxiguang.dogeChat.pkDataWrite")
     var appDelegate: AppDelegate {
         return UIApplication.shared.delegate as! AppDelegate
@@ -103,7 +107,9 @@ class ContactsTableViewController: DogeChatViewController, UITableViewDelegate, 
         
         NotificationCenter.default.addObserver(self, selector: #selector(cookieExpireNoti(_:)), name: .cookieExpire, object: nil)
         setupRefreshControl()
-        barItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(presentSearchVC))
+        let barItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(presentSearchVC))
+        self.navigationItem.rightBarButtonItem = barItem
+        self.barItem = barItem
         setupMyAvatar()
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
             NotificationCenter.default.post(name: .immersive, object: AppDelegate.shared.immersive)
@@ -129,7 +135,6 @@ class ContactsTableViewController: DogeChatViewController, UITableViewDelegate, 
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        navigationItem.rightBarButtonItem = nil
         tableView.refreshControl?.endRefreshing()
     }
             
@@ -139,76 +144,74 @@ class ContactsTableViewController: DogeChatViewController, UITableViewDelegate, 
     }
     
     func processUserActivity() {
-        if let userActivityModal = SceneDelegate.userActivityModal, let userActivity = SceneDelegate.activeUserActivity {
-            let username = userActivityModal.username
-            if let manager = manager, username == manager.httpsManager.myName {
-                let friendID = userActivityModal.friendID!
-                if let index = friends.firstIndex(where: { $0.userID == friendID }) {
-                    tableView(tableView, didSelectRowAt: IndexPath(row: index, section: 0))
+        if #available(iOS 13, *) {
+            if let userActivityModal = SceneDelegate.userActivityModal, let userActivity = SceneDelegate.activeUserActivity {
+                let username = userActivityModal.accountInfo.username
+                if let manager = manager, username == manager.httpsManager.myName {
+                    let friendID = userActivityModal.friendID
+                    if let index = friends.firstIndex(where: { $0.userID == friendID }) {
+                        tableView(tableView, didSelectRowAt: IndexPath(row: index, section: 0))
+                        SceneDelegate.activeUserActivity = nil
+                        SceneDelegate.userActivityModal = nil
+                    }
+                } else {
+                    if let sceneDelegate = SceneDelegate.usernameToDelegate[username] {
+                        UIApplication.shared.requestSceneSessionActivation(sceneDelegate.window?.windowScene?.session, userActivity: userActivity, options: nil, errorHandler: nil)
+                    } else {
+                        UIApplication.shared.requestSceneSessionActivation(nil, userActivity: userActivity, options: nil, errorHandler: nil)
+                    }
                     SceneDelegate.activeUserActivity = nil
                     SceneDelegate.userActivityModal = nil
                 }
-            } else {
-                if let sceneDelegate = SceneDelegate.usernameToDelegate[username] {
-                    UIApplication.shared.requestSceneSessionActivation(sceneDelegate.window?.windowScene?.session, userActivity: userActivity, options: nil, errorHandler: nil)
-                } else {
-                    UIApplication.shared.requestSceneSessionActivation(nil, userActivity: userActivity, options: nil, errorHandler: nil)
-                }
-                SceneDelegate.activeUserActivity = nil
-                SceneDelegate.userActivityModal = nil
             }
-        }
-        
-        let userActivity = NSUserActivity(activityType: userActivityID)
-        userActivity.title = "dogechat"
-        userActivity.userInfo = ["username": username,
-                                 "password": password as Any,
-                                 "cookie": manager?.cookie as Any]
-        userActivity.needsSave = true
-        self.view.window?.windowScene?.userActivity = userActivity
-        self.view.window?.windowScene?.updateUserActivityState(userActivity)
-    }
             
-    func saveTitleView() {
-        if let titleView = self.navigationItem.titleView {
-            self.titleView = titleView
+            let userActivity = NSUserActivity(activityType: userActivityID)
+            userActivity.title = "dogechat"
+            userActivity.userInfo = ["username": username,
+                                     "password": password as Any,
+                                     "cookie": manager?.cookie as Any]
+            userActivity.needsSave = true
+            self.view.window?.windowScene?.userActivity = userActivity
+            self.view.window?.windowScene?.updateUserActivityState(userActivity)
         }
     }
-    
-    func restoreTitleView() {
-        if let titleView = self.titleView {
-            self.navigationItem.titleView = titleView
-        }
-    }
-    
+                    
     @objc func reachabilityChangeNoti(_ noti: Notification) {
     }
     
     @objc func connectingNoti(_ noti: Notification) {
         guard noti.object as? String == self.username else { return }
-        saveTitleView()
         navigationItem.title = "正在连接..."
-        navigationItem.titleView = nil
+        nameLabel.text = navigationItem.title
     }
     
     @objc func connectedNoti(_ noti: Notification) {
         guard noti.object as? String == self.username else { return }
-        setupMyAvatar()
+        if !tableView.isEditing {
+            setupMyAvatar()
+        }
         navigationItem.title = username
         processUserActivity()
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) { [weak self] in
             self?.refreshContacts(completion: nil)
+            self?.manager?.inspectQuery(completion: { requests in
+                let lateset = requests.map({ getTimestampFromStr($0.requestTime) }).max() ?? 0
+                if lateset > self?.manager?.httpsManager.accountInfo.lastOpenRequestTime ?? 0 {
+                    self?.newFriendRequest()
+                }
+            })
         }
         manager?.httpsManager.getProfile(nil)
         checkGroupInfos()
-        self.view.window?.windowScene?.title = username
+        if #available(iOS 13.0, *) {
+            self.view.window?.windowScene?.title = username
+        }
     }
     
     @objc func loginingNoti(_ noti: Notification) {
         guard noti.object as? String == self.username else { return }
-        saveTitleView()
-        navigationItem.titleView = nil
         navigationItem.title = "正在登录..."
+        nameLabel.text = navigationItem.title
     }
     
     @objc func loginedNoti(_ noti: Notification) {
@@ -243,7 +246,11 @@ class ContactsTableViewController: DogeChatViewController, UITableViewDelegate, 
                 return
             }
         }
-        SceneDelegate.usernameToDelegate[username]?.makeLoginPage()
+        if #available(iOS 13.0, *) {
+            SceneDelegate.usernameToDelegate[username]?.makeLoginPage()
+        } else {
+            
+        }
     }
     
     func processGroup(_ groups: [Group]) {
@@ -261,19 +268,23 @@ class ContactsTableViewController: DogeChatViewController, UITableViewDelegate, 
         if self.manager?.myInfo.userID == info.receiverID {
             if let friend = self.friends.first(where: { $0.userID == info.senderID }) {
                 self.tabBarController?.selectedIndex = 0
-                jumpToFriend(friend)
+                if (self.splitViewController as? DogeChatSplitViewController)?.findChatRoomVC()?.friend != friend {
+                    jumpToFriend(friend)
+                }
                 AppDelegate.shared.latestRemoteNotiInfo = nil
-                if isMac(), let sceneSession = SceneDelegate.usernameToDelegate[username]?.session {
-                    let option = UIScene.ActivationRequestOptions()
-                    option.requestingScene = self.view.window?.windowScene
-                    UIApplication.shared.requestSceneSessionActivation(sceneSession, userActivity: nil, options: option, errorHandler: nil)
+                if #available(iOS 13, *) {
+                    if isMac(), let sceneSession = SceneDelegate.usernameToDelegate[username]?.session {
+                        let option = UIScene.ActivationRequestOptions()
+                        option.requestingScene = self.view.window?.windowScene
+                        UIApplication.shared.requestSceneSessionActivation(sceneSession, userActivity: nil, options: option, errorHandler: nil)
+                    }
                 }
             }
         }
     }
         
     @objc func presentSearchVC() {
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(presentSearchVC))
+        barItem.badgeValue = "0"
         let vc = SearchViewController()
         vc.username = self.username
         vc.delegate = self
@@ -338,7 +349,11 @@ class ContactsTableViewController: DogeChatViewController, UITableViewDelegate, 
         } else if let cookieInfo = accountInfo(username: username)?.cookieInfo, cookieInfo.isValid {
             getContactsAndConnect()
         } else {
-            SceneDelegate.usernameToDelegate[username]?.makeLoginPage()
+            if #available(iOS 13.0, *) {
+                SceneDelegate.usernameToDelegate[username]?.makeLoginPage()
+            } else {
+                AppDelegateUI.shared.makeLogininVC()
+            }
         }
     }
     
@@ -402,7 +417,9 @@ class ContactsTableViewController: DogeChatViewController, UITableViewDelegate, 
             }
             var content = message.option == .toGroup ? "\(message.senderUsername)：" : ""
             content += message.summary()
-            SceneDelegate.usernameToDelegate[username]?.pushWindow.assignValueForPush(sender: message.friend.username, content: content)
+            if #available(iOS 13.0, *) {
+                SceneDelegate.usernameToDelegate[username]?.pushWindow.assignValueForPush(sender: message.friend.username, content: content)
+            }
         }
         reselectFriend(nil)
     }
@@ -432,7 +449,6 @@ class ContactsTableViewController: DogeChatViewController, UITableViewDelegate, 
         syncOnMainThread {
             let friend = self.friends[indexPath.row]
             cell = tableView.dequeueReusableCell(withIdentifier: ContactTableViewCell.cellID, for: indexPath) as? ContactTableViewCell
-            cell.manager = self.manager
             cell.apply(friend, hasAt: self.unreadMessage[friend.userID]?.hasAt ?? false)
             cell.delegate = self
             if let number = unreadMessage[self.friends[indexPath.row].userID]?.unreadCount {
@@ -454,13 +470,14 @@ class ContactsTableViewController: DogeChatViewController, UITableViewDelegate, 
         unreadMessage[self.friends[indexPath.row].userID]?.unreadCount = 0
     }
     
+    @available(iOS 13.0, *)
     func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
         let path = self.friends[indexPath.row].avatarURL
         let config =  UIContextMenuConfiguration(identifier: (self.friends[indexPath.row].username as NSString)) {
             [weak self] in
             guard let self = self else { return nil }
             let vc = self.chatroomVC(for: indexPath)
-            vc.isPeek = true
+            vc.purpose = .peek
             return vc
         } actionProvider: { (menuElement) -> UIMenu? in
             let avatarElement = UIAction(title: "查看头像") { [weak self] _ in
@@ -481,6 +498,7 @@ class ContactsTableViewController: DogeChatViewController, UITableViewDelegate, 
         return config
     }
     
+    @available(iOS 13.0, *)
     func tableView(_ tableView: UITableView, willPerformPreviewActionForMenuWith configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionCommitAnimating) {
         let username = configuration.identifier as! String
         if let index = self.usernames.firstIndex(of: username) {
@@ -572,13 +590,15 @@ extension ContactsTableViewController: MessageDelegate, AddContactDelegate {
         if let chatRoom = (self.splitViewController as? DogeChatSplitViewController)?.findChatRoomVC() {
             chatRooms.append(chatRoom)
         }
-        for scene in UIApplication.shared.connectedScenes {
-            if let chatRoomSceneDelegate = scene.delegate as? ChatRoomSceneDelegate,
-               let chatRoom = chatRoomSceneDelegate.chatRoomVC,
-               chatRoomSceneDelegate.username == self.username {
-                chatRooms.append(chatRoom)
+        if #available(iOS 13.0, *) {
+            for scene in UIApplication.shared.connectedScenes {
+                if let chatRoomSceneDelegate = scene.delegate as? ChatRoomSceneDelegate,
+                   let chatRoom = chatRoomSceneDelegate.chatRoomVC,
+                   chatRoomSceneDelegate.username == self.username {
+                    chatRooms.append(chatRoom)
+                }
             }
-        }
+        } 
         return chatRooms
     }
         
@@ -594,7 +614,8 @@ extension ContactsTableViewController: MessageDelegate, AddContactDelegate {
     
     func newFriendRequest() {
         playSound()
-        navigationItem.rightBarButtonItem?.image = UIImage(systemName: "person.badge.plus")
+        let button = navigationItem.rightBarButtonItem
+        button?.badgeValue = "1"
     }
     
     func revokeSuccess(id: Int, senderID: String, receiverID: String) {

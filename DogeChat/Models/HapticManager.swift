@@ -9,6 +9,7 @@
 import Foundation
 import CoreHaptics
 
+@available(iOS 13.0, *)
 class HapticManager: NSObject {
     static let shared = HapticManager()
     private override init() {

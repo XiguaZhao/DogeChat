@@ -11,7 +11,6 @@ import CoreGraphics
 
 class DogeChatSplitViewController: UISplitViewController {
     
-    var blurView: UIImageView!
 
     let vcDelegate = SplitViewControllerDelegate()
 
@@ -22,22 +21,8 @@ class DogeChatSplitViewController: UISplitViewController {
         self.preferredPrimaryColumnWidthFraction = 0.35
         self.preferredDisplayMode = .allVisible
         
-        if isMac() {
-            NotificationCenter.default.addObserver(self, selector: #selector(self.immersive(noti:)), name: .immersive, object: nil)
-        }
     }
     
-    @objc func immersive(noti: Notification) {
-        let force = noti.object as! Bool
-        DispatchQueue.main.async { [self] in
-            if force {
-                makeBlurViewForViewController(self, blurView: &blurView)
-            } else {
-                recoverVC(self, blurView: &blurView)
-            }
-        }
-    }
-
     
     func findContactVC() -> ContactsTableViewController? {
         if let tabBarController = self.viewControllers.first as? UITabBarController {

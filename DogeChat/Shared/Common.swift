@@ -9,6 +9,11 @@
 import UIKit
 import DogeChatUniversal
 
+let videoIdentifier = "public.movie"
+let gifIdentifier = "com.compuserve.gif"
+let fileIdentifier = "public.file-url"
+let audioIdentifier = "public.audio"
+
 let livePhotoDir = "livephotos"
 let videoDir = "videos"
 let voiceDir = "voice"
@@ -179,9 +184,8 @@ extension Dictionary where Key == String {
 }
 
 func compressEmojis(_ image: UIImage, imageWidth: ImageWidth = .width100) -> Data {
-    let isTransparent = image.isTransparent()
     if imageWidth == .original {
-        return isTransparent ? image.pngData()! : image.jpegData(compressionQuality: 0.5)!
+        return image.jpegData(compressionQuality: 0.3) ?? Data()
     }
     let width = imageWidth.rawValue
     var size = CGSize(width: width, height: floor(image.size.height * (width / image.size.width)))
@@ -190,14 +194,10 @@ func compressEmojis(_ image: UIImage, imageWidth: ImageWidth = .width100) -> Dat
     }
     let rect = CGRect(origin: .zero, size: size)
     UIGraphicsBeginImageContextWithOptions(size, false, 0.0)
-    if isTransparent {
-        image.draw(in: rect, blendMode: .multiply, alpha: 1)
-    } else {
-        image.draw(in: rect)
-    }
+    image.draw(in: rect)
     let image = UIGraphicsGetImageFromCurrentImageContext()
     UIGraphicsEndImageContext()
-    return (isTransparent ? image?.pngData() : image?.jpegData(compressionQuality: 0.5)) ?? Data()
+    return image?.jpegData(compressionQuality: 0.3) ?? Data()
 }
 
 func boundsForDraw(_ message: Message) -> CGRect? {
@@ -240,3 +240,27 @@ func sizeFromStr(_ str: String) -> CGSize? {
     return nil
 }
 
+public func getTimestampFromStr(_ str: String) -> TimeInterval {
+    let dfmatter = DateFormatter()
+    dfmatter.dateFormat="yyyy-MM-dd HH:mm:ss"
+    let date = dfmatter.date(from: str)
+    
+    let dateStamp = date?.timeIntervalSince1970
+    return dateStamp ?? 0
+}
+
+public func dirNameForType(_ type: MessageType) -> String {
+    switch type {
+    case .image:
+        return photoDir
+    case .video:
+        return videoDir
+    case .livePhoto:
+        return livePhotoDir
+    case .draw:
+        return drawDir
+    case .voice:
+        return audioDir
+    default: return ""
+    }
+}

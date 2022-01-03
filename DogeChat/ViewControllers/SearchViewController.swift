@@ -36,11 +36,7 @@ class SearchViewController: DogeChatViewController, DogeChatVCTableDataSource {
         setupUI()
         lookupAddRequest()
     }
-    
-    override var keyCommands: [UIKeyCommand]? {
-        return [UIKeyCommand(action: #selector(escapeAction(_:)), input: UIKeyCommand.inputEscape)]
-    }
-    
+        
     @objc func escapeAction(_ sender: Any) {
         self.dismiss(animated: true, completion: nil)
     }
@@ -139,6 +135,10 @@ extension SearchViewController: UITableViewDataSource, UITableViewDelegate, UISe
     
     func lookupAddRequest() {
         status = .accept
+        if var accounInfo = manager?.httpsManager.accountInfo {
+            accounInfo.lastOpenRequestTime = Date().timeIntervalSince1970
+            manager?.httpsManager.accountInfo = accounInfo
+        }
         manager?.inspectQuery { friends in
             self.friends = friends
             self.tableView.reloadData()

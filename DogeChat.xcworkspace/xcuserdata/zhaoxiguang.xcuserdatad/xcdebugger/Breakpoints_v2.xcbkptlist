@@ -492,8 +492,8 @@
             filePath = "../DogeChatUniversal/DogeChatUniversal/Classes/MessageManager.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "202"
-            endingLineNumber = "202"
+            startingLineNumber = "208"
+            endingLineNumber = "208"
             landmarkName = "wrapMessage(messageJSON:insertPosition:needEncrypt:needInsert:updateMaxID:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -524,22 +524,6 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "1C4131B4-5D80-4DA4-8267-66E40E421262"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "DogeChat/Models/NotificationManager.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "111"
-            endingLineNumber = "111"
-            landmarkName = "prepareVoiceChat(caller:uuid:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
             uuid = "25FA69C7-AB27-4A46-AC16-0293E58CA956"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
@@ -547,8 +531,8 @@
             filePath = "../DogeChatUniversal/DogeChatUniversal/Classes/HttpRequests.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "307"
-            endingLineNumber = "307"
+            startingLineNumber = "288"
+            endingLineNumber = "288"
             landmarkName = "checkLoginStatus(json:)"
             landmarkType = "7">
          </BreakpointContent>
@@ -563,9 +547,9 @@
             filePath = "DogeChat/Models/HelperMethods.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "28"
-            endingLineNumber = "28"
-            landmarkName = "removeSocketForUsername(_:)"
+            startingLineNumber = "34"
+            endingLineNumber = "34"
+            landmarkName = "removeSocketForUsername(_:removeScene:)"
             landmarkType = "9">
          </BreakpointContent>
       </BreakpointProxy>
@@ -579,9 +563,9 @@
             filePath = "DogeChat/Models/HelperMethods.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "27"
-            endingLineNumber = "27"
-            landmarkName = "removeSocketForUsername(_:)"
+            startingLineNumber = "33"
+            endingLineNumber = "33"
+            landmarkName = "removeSocketForUsername(_:removeScene:)"
             landmarkType = "9">
          </BreakpointContent>
       </BreakpointProxy>

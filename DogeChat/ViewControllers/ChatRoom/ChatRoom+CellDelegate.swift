@@ -73,9 +73,11 @@ extension ChatRoomViewController: MessageTableViewCellDelegate {
             if isPad() {
                 if !isMac() {
                     let userActivity = wrapMediaBrowserUserActivity(paths: nil, url: textURL, targetIndex: nil)
-                    let option = UIScene.ActivationRequestOptions()
-                    option.requestingScene = self.view.window?.windowScene
-                    UIApplication.shared.requestSceneSessionActivation(nil, userActivity: userActivity, options: option, errorHandler: nil)
+                    if #available(iOS 13.0, *) {
+                        let option = UIScene.ActivationRequestOptions()
+                        option.requestingScene = self.view.window?.windowScene
+                        UIApplication.shared.requestSceneSessionActivation(nil, userActivity: userActivity, options: option, errorHandler: nil)
+                    }
                 } else {
                     if let url = URL(string: textURL) {
                         UIApplication.shared.open(url, options: [:], completionHandler: nil)
@@ -109,9 +111,11 @@ extension ChatRoomViewController: MessageTableViewCellDelegate {
         if !isMac() {
             self.navigationController?.present(browser, animated: true, completion: nil)
         } else {
-            let option = UIScene.ActivationRequestOptions()
-            option.requestingScene = self.view.window?.windowScene
-            UIApplication.shared.requestSceneSessionActivation(nil, userActivity: self.wrapMediaBrowserUserActivity(paths: paths, targetIndex: targetIndex), options: option, errorHandler: nil)
+            if #available(iOS 13.0, *) {
+                let option = UIScene.ActivationRequestOptions()
+                option.requestingScene = self.view.window?.windowScene
+                UIApplication.shared.requestSceneSessionActivation(nil, userActivity: self.wrapMediaBrowserUserActivity(paths: paths, targetIndex: targetIndex), options: option, errorHandler: nil)
+            }
         }
     }
     
@@ -134,29 +138,31 @@ extension ChatRoomViewController: MessageTableViewCellDelegate {
 
     //MARK: PKView手写
     func pkViewTapped(_ cell: MessageBaseCell, pkView: UIView!) {
-        if messageInputBar.isActive {
-            messageInputBar.textViewResign()
-            return
-        }
-        if let lastActive = activePKView {
-            lastActive.isUserInteractionEnabled = false
-            lastActive.resignFirstResponder()
-        }
-        activePKView = pkView
-        if let indexPath = tableView.indexPath(for: cell) {
-            drawingIndexPath = indexPath
-        }
+        if #available(iOS 13, *) {
+            if messageInputBar.isActive {
+                messageInputBar.textViewResign()
+                return
+            }
+            if let lastActive = activePKView {
+                lastActive.isUserInteractionEnabled = false
+                lastActive.resignFirstResponder()
+            }
+            activePKView = pkView
+            if let indexPath = tableView.indexPath(for: cell) {
+                drawingIndexPath = indexPath
+            }
 
-        let drawVC = DrawViewController()
-        drawVC.username = username
-        guard let pkView = pkView as? PKCanvasView else { return }
-        let message = messages[drawingIndexPath.item]
-        drawVC.message = message
-        drawVC.pkView.drawing = pkView.drawing.transformed(using: CGAffineTransform(scaleX: 1/message.drawScale, y: 1/message.drawScale))
-        drawVC.pkViewDelegate.dataChangedDelegate = self
-        drawVC.modalPresentationStyle = .fullScreen
-        drawVC.chatRoomVC = self
-        self.navigationController?.present(drawVC, animated: true, completion: nil)
+            let drawVC = DrawViewController()
+            drawVC.username = username
+            guard let pkView = pkView as? PKCanvasView else { return }
+            let message = messages[drawingIndexPath.item]
+            drawVC.message = message
+            drawVC.pkView.drawing = pkView.drawing.transformed(using: CGAffineTransform(scaleX: 1/message.drawScale, y: 1/message.drawScale))
+            drawVC.pkViewDelegate.dataChangedDelegate = self
+            drawVC.modalPresentationStyle = .fullScreen
+            drawVC.chatRoomVC = self
+            self.navigationController?.present(drawVC, animated: true, completion: nil)
+        }
     }
 
     func emojiOutBounds(from cell: MessageBaseCell, gesture: UIGestureRecognizer) {
@@ -206,7 +212,7 @@ extension ChatRoomViewController: MessageTableViewCellDelegate {
     }
     
     func longPressCell(_ cell: MessageBaseCell, ges: UILongPressGestureRecognizer!) {
-        guard ges.state == .ended, cell.message.messageType != .join else { return }
+        guard purpose == .chat, ges.state == .ended, cell.message.messageType != .join else { return }
         let controller = UIMenuController.shared
         guard let targetView = cell.indicationNeighborView else { return }
         if !messageInputBar.textView.isFirstResponder {
@@ -233,7 +239,11 @@ extension ChatRoomViewController: MessageTableViewCellDelegate {
         controller.menuItems = items
         let rect = CGRect(x: targetView.bounds.width/2, y: 5, width: 0, height: 0)
         messageInputBar.textView.ignoreActions = true
-        controller.showMenu(from: targetView, rect: rect)
+        if #available(iOS 13.0, *) {
+            controller.showMenu(from: targetView, rect: rect)
+        } else {
+            controller.setMenuVisible(true, animated: true)
+        }
         messageInputBar.textView.ignoreActions = false
     }
     
@@ -246,8 +256,15 @@ extension ChatRoomViewController: MessageTableViewCellDelegate {
         menuItemDone()
         guard let cell = activeMenuCell,
               let index = tableView.indexPath(for: cell)?.row else { return }
-        let text = messages[index].text
-        UIPasteboard.general.string = text
+        let message = messages[index]
+        makePasteFor(message: message)
+    }
+    
+    func makePasteFor(message: Message) {
+        if let index = self.messages.firstIndex(of: message) {
+            let items = wrapItmesWithIndexPath(IndexPath(row: index, section: 0))
+            UIPasteboard.general.itemProviders = items.map({ $0.itemProvider })
+        }
     }
     
     @objc func revokeMenuItemAction(sender: UIMenuController) {

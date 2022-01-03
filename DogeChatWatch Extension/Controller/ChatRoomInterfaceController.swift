@@ -96,12 +96,7 @@ class ChatRoomInterfaceController: WKInterfaceController {
         super.didAppear()
         let userActivity = NSUserActivity(activityType: userActivityID)
         userActivity.title = "ChatRoom"
-        let modal = UserActivityModal(username: manager.httpManager.myName,
-                                      password: manager.messageManager.getPassword(),
-                                      cookie: manager.httpManager.cookie,
-                                      userID: manager.httpManager.accountInfo.userID,
-                                      friendID: friend.userID,
-                                      avatarURL: manager.httpManager.accountInfo.avatarURL)
+        let modal = UserActivityModal(friendID: friend.userID, accountInfo: SocketManager.shared.httpManager.accountInfo)
         if let data = try? JSONEncoder().encode(modal) {
             userActivity.userInfo = ["data": data]
             userActivity.isEligibleForHandoff = true

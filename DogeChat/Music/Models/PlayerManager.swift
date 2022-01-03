@@ -25,7 +25,6 @@ enum PlayerType {
 class PlayerManager: NSObject {
     
     static let shared = PlayerManager()
-    weak var activeSceneDelegate: SceneDelegate?
     var isMute = false
     var player = AVPlayer()
     var playMode: PlayMode = .normal

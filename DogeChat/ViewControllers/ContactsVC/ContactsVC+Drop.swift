@@ -15,7 +15,6 @@ extension ContactsTableViewController: UITableViewDropDelegate {
         let point = coordinator.session.location(in: tableView)
         guard let indexPath = tableView.indexPathForRow(at: point) else { return }
         let friend = friends[indexPath.row]
-        let selectVC = SelectContactsViewController(username: self.username, selectedFriends: [friend], excluded: [])
         var messages = [Message]()
         let isLocal = coordinator.items.first?.dragItem.localObject != nil
         if isLocal {
@@ -26,10 +25,9 @@ extension ContactsTableViewController: UITableViewDropDelegate {
                     }
                 }
             }
-            selectVC.didSelectContacts = { [weak self] friends in
-                ChatRoomViewController.transferMessages(messages, to: friends, manager: self?.manager)
+            if let selectedContacts = tableView.indexPathsForSelectedRows?.map({ self.friends[$0.row] }) {
+                ChatRoomViewController.transferMessages(messages, to: selectedContacts, manager: self.manager)
             }
-            self.present(selectVC, animated: true, completion: nil)
         } else if !isMac() {
             let items = coordinator.items.map { $0.dragItem.itemProvider }
             let chatRooms = findChatRoomVCs()
@@ -59,8 +57,7 @@ extension ContactsTableViewController: UITableViewDropDelegate {
     
     func tableView(_ tableView: UITableView, dropSessionDidEnd session: UIDropSession) {
         newesetDropIndexPath = nil
-        guard !isMac() else { return }
-        tableView.setEditing(false, animated: true)
+        completeDrop()
     }
     
     func tableView(_ tableView: UITableView, dropSessionDidUpdate session: UIDropSession, withDestinationIndexPath destinationIndexPath: IndexPath?) -> UITableViewDropProposal {
@@ -76,14 +73,20 @@ extension ContactsTableViewController: UITableViewDropDelegate {
         return .init(operation: .copy)
     }
     
-    func tableView(_ tableView: UITableView, dropSessionDidExit session: UIDropSession) {
-        newesetDropIndexPath = nil
+    func completeDrop() {
         guard !isMac() else { return }
         tableView.setEditing(false, animated: true)
+        nameLabel.text = username
+    }
+    
+    func tableView(_ tableView: UITableView, dropSessionDidExit session: UIDropSession) {
+        newesetDropIndexPath = nil
+        completeDrop()
     }
     
     func tableView(_ tableView: UITableView, dropSessionDidEnter session: UIDropSession) {
-        guard !isMac() && session.localDragSession == nil else { return }
+        guard !isMac() else { return }
+        nameLabel.text = "勾选后松手发送"
         tableView.allowsSelectionDuringEditing = true
         tableView.allowsMultipleSelectionDuringEditing = true
         tableView.setEditing(true, animated: true)

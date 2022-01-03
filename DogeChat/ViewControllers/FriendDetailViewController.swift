@@ -119,7 +119,11 @@ class FriendDetailViewController: DogeChatViewController, UITableViewDataSource,
     
     func getNavHeight() -> CGFloat {
         if let navBar = navigationController?.navigationBar {
-            return navBar.bounds.height + (self.view.window?.windowScene?.statusBarManager?.statusBarFrame.height ?? 0)
+            if #available(iOS 13.0, *) {
+                return navBar.bounds.height + (self.view.window?.windowScene?.statusBarManager?.statusBarFrame.height ?? 0)
+            } else {
+                return navBar.bounds.height + UIApplication.shared.statusBarFrame.height
+            }
         }
         return 0
     }
@@ -201,7 +205,7 @@ class FriendDetailViewController: DogeChatViewController, UITableViewDataSource,
             case .addMember:
                 self.addMember()
             case .history:
-                let vc = HistoryVC(type: .history, username: username)
+                let vc = HistoryVC(purpose: .history)
                 vc.friend = self.friend
                 self.navigationController?.pushViewController(vc, animated: true)
             case .createGroup:

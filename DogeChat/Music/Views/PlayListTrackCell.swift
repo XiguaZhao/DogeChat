@@ -85,9 +85,17 @@ class PlayListTrackCell: UITableViewCell {
         artistLabel.isHidden = track.state == .downloading
         var image: UIImage?
         if track.isPlaying {
-            image = UIImage(systemName: "speaker.zzz.fill")
+            if #available(iOS 13.0, *) {
+                image = UIImage(systemName: "speaker.zzz.fill")
+            } else {
+                image = UIImage(named: "")
+            }
         } else if track.isPaused {
-            image = UIImage(systemName: "pause.circle.fill")
+            if #available(iOS 13.0, *) {
+                image = UIImage(systemName: "pause.circle.fill")
+            } else {
+                image = UIImage(named: "")
+            }
         }
         if let image = image {
             self.accessoryView = UIImageView(image: image)

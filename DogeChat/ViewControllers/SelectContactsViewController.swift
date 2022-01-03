@@ -10,6 +10,10 @@ import UIKit
 import DogeChatUniversal
 import DogeChatNetwork
 
+protocol ContactDataSource: AnyObject {
+    var friends: [Friend] { get }
+}
+
 protocol SelectContactsDelegate: AnyObject {
     func didSelectContacts(_ contacts: [Friend], vc: SelectContactsViewController)
     func didCancelSelectContacts(_ vc: SelectContactsViewController)

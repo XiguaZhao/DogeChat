@@ -12,7 +12,9 @@ import DogeChatUniversal
 import UIKit
 
 func playHaptic(_ intensity: CGFloat = 1) {
-    HapticManager.shared.playHapticTransient(time: 0, intensity: Float(intensity), sharpness: 1)
+    if #available(iOS 13.0, *) {
+        HapticManager.shared.playHapticTransient(time: 0, intensity: Float(intensity), sharpness: 1)
+    } 
 }
 
 var url_pre: String {
@@ -20,10 +22,14 @@ var url_pre: String {
 }
 
 func socketForUsername(_ username: String) -> WebSocketManager? {
-    return WebSocketManager.usersToSocketManager[username]
+    if #available(iOS 13, *) {
+        return WebSocketManager.usersToSocketManager[username]
+    } else {
+        return WebSocketManager.shared
+    }
 }
 
-func removeSocketForUsername(_ username: String) {
+func removeSocketForUsername(_ username: String, removeScene: Bool = true) {
     if let index = WebSocketManager.usersToSocketManager.firstIndex(where: { $0.key == username }) {
         let socket = WebSocketManager.usersToSocketManager.remove(at: index)
         socket.value.disconnect()
@@ -31,7 +37,11 @@ func removeSocketForUsername(_ username: String) {
     if let index = WebSocketManagerAdapter.usernameToAdapter.firstIndex(where: { $0.key == username }) {
         WebSocketManagerAdapter.usernameToAdapter.remove(at: index)
     }
-    _ = SceneDelegate.usernameToDelegate.remove(key: username)
+    if removeScene {
+        if #available(iOS 13.0, *) {
+            _ = SceneDelegate.usernameToDelegate.remove(key: username)
+        } 
+    }
 }
 
 var safeArea: UIEdgeInsets = .zero
@@ -52,11 +62,19 @@ func isMac() -> Bool {
     if #available(iOS 14, *), ProcessInfo.processInfo.isiOSAppOnMac {
         return true
     }
-    return ProcessInfo.processInfo.isMacCatalystApp
+    if #available(iOS 13.0, *) {
+        return ProcessInfo.processInfo.isMacCatalystApp
+    } else {
+        return false
+    }
 }
 
 func isCatalyst() -> Bool {
-    return ProcessInfo.processInfo.isMacCatalystApp
+    if #available(iOS 13.0, *) {
+        return ProcessInfo.processInfo.isMacCatalystApp
+    } else {
+        return false
+    }
 }
 
 public extension UIViewController {
@@ -88,21 +106,22 @@ public extension String {
     
 }
 
-func windowForView(_ view: UIView) -> UIWindow? {
-    return (view.window?.windowScene?.delegate as? SceneDelegate)?.window
-}
-
-func sceneDelegate() -> Any? {
-    return UIApplication.shared.windows.first(where: { $0.isKeyWindow })?.windowScene?.delegate
-}
-
-
 func adapterFor(username: String) -> WebSocketManagerAdapter {
     return WebSocketManagerAdapter.usernameToAdapter[username]!
 }
 
 func updateUsernames(_ username: String) {
-    if let sceneDelegate = SceneDelegate.usernameToDelegate[username], let splitVC = sceneDelegate.splitVC {
+    var splitVC: UISplitViewController?
+    if #available(iOS 13.0, *) {
+        if let sceneDelegate = SceneDelegate.usernameToDelegate[username], let _splitVC = sceneDelegate.splitVC {
+            splitVC = _splitVC
+        }
+    } else {
+        if let _splitVC = UIApplication.shared.keyWindow?.rootViewController as? UISplitViewController {
+            splitVC = _splitVC
+        }
+    }
+    if let splitVC = splitVC {
         for vc in splitVC.viewControllers {
             updateUsernameForVC(vc, username: username)
         }

@@ -15,7 +15,6 @@ class JoinChatViewController: UIViewController {
     let loginButton = UIButton()
     let signUpButton = UIButton()
     let forgetButton = UIButton()
-    let signInWithAppleBtn = ASAuthorizationAppleIDButton(type: .default, style: .whiteOutline)
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -50,10 +49,16 @@ class JoinChatViewController: UIViewController {
         buttonStackView.axis = .horizontal
         buttonStackView.spacing = 30
                 
-        let stackView = UIStackView(arrangedSubviews: [topStackView, buttonStackView, signInWithAppleBtn])
+        let stackView = UIStackView(arrangedSubviews: [topStackView, buttonStackView])
         stackView.axis = .vertical
         stackView.spacing = 30
         view.addSubview(stackView)
+        
+        if #available(iOS 13, *) {
+            let signInWithAppleBtn = ASAuthorizationAppleIDButton(type: .default, style: .whiteOutline)
+            signInWithAppleBtn.addTarget(self, action: #selector(handleAuthorizationAppleIDButtonPress), for: .touchDown)
+            stackView.addArrangedSubview(signInWithAppleBtn)
+        }
         
         stackView.mas_makeConstraints { [weak self] make in
             guard let self = self else { return }
@@ -74,7 +79,6 @@ class JoinChatViewController: UIViewController {
         loginButton.addTarget(self, action: #selector(loginTapped), for: .touchUpInside)
         signUpButton.addTarget(self, action: #selector(signUpTapped), for: .touchUpInside)
         forgetButton.addTarget(self, action: #selector(forgetTapped), for: .touchUpInside)
-        signInWithAppleBtn.addTarget(self, action: #selector(handleAuthorizationAppleIDButtonPress), for: .touchDown)
 
         let tap = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         view.addGestureRecognizer(tap)
@@ -109,6 +113,7 @@ class JoinChatViewController: UIViewController {
     }
     
     
+    @available(iOS 13.0, *)
     @objc func handleAuthorizationAppleIDButtonPress() {
         let appleIDProvider = ASAuthorizationAppleIDProvider()
         let request = appleIDProvider.createRequest()
@@ -124,10 +129,12 @@ class JoinChatViewController: UIViewController {
 
 extension JoinChatViewController: ASAuthorizationControllerDelegate, ASAuthorizationControllerPresentationContextProviding {
     
+    @available(iOS 13.0, *)
     func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
         return self.view.window!
     }
     
+    @available(iOS 13.0, *)
     func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
         if let credential = authorization.credential as? ASAuthorizationAppleIDCredential, let data = credential.identityToken, let token = String(data: data, encoding: .utf8) {
             let manager = WebSocketManager()
@@ -230,14 +237,19 @@ extension JoinChatViewController: UITextFieldDelegate {
         contactsTVC.setUsername(username, andPassword: password)
         WebSocketManager.usersToSocketManager[username] = manager
         WebSocketManagerAdapter.usernameToAdapter[username] = adapter
-        SceneDelegate.lock.lock()
-        SceneDelegate.usernameToDelegate[username] = (self.view.window?.windowScene?.delegate as? SceneDelegate)
-        SceneDelegate.lock.unlock()
-        if let sceneDelegate = self.view.window?.windowScene?.delegate as? SceneDelegate {
-            sceneDelegate.socketManager = manager
-            sceneDelegate.socketAdapter = adapter
-            sceneDelegate.setUsernameAndPassword(username, password)
-            sceneDelegate.contactVC = contactsTVC
+        if #available(iOS 13, *) {
+            SceneDelegate.lock.lock()
+            SceneDelegate.usernameToDelegate[username] = (self.view.window?.windowScene?.delegate as? SceneDelegate)
+            SceneDelegate.lock.unlock()
+            if let sceneDelegate = self.view.window?.windowScene?.delegate as? SceneDelegate {
+                sceneDelegate.socketManager = manager
+                sceneDelegate.socketAdapter = adapter
+                sceneDelegate.setUsernameAndPassword(username, password)
+                sceneDelegate.contactVC = contactsTVC
+            }
+        } else {
+            WebSocketManager.shared = manager
+            WebSocketManagerAdapter.shared = adapter
         }
         updateUsernames(username)
         self.navigationController?.setViewControllers([contactsTVC], animated: false)

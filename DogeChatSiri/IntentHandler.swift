@@ -65,12 +65,7 @@ class IntentHandler: INExtension, INSendMessageIntentHandling {
                 if success, let myAccountInfo = self?.httpMessage.httpManager.accountInfo, let friend = friend {
                     let userActivity = NSUserActivity(activityType: "INSendMessageIntent")
                     userActivity.title = "ChatRoom"
-                    let modal = UserActivityModal(username: myAccountInfo.username,
-                                                  password: myAccountInfo.password,
-                                                  cookie: myAccountInfo.cookieInfo?.cookie,
-                                                  userID: myAccountInfo.userID,
-                                                  friendID: friend.userID,
-                                                  avatarURL: myAccountInfo.avatarURL)
+                    let modal = UserActivityModal(friendID: friend.userID, accountInfo: myAccountInfo)
                     if let data = try? JSONEncoder().encode(modal) {
                         userActivity.userInfo = ["data": data]
                     }

@@ -6,19 +6,27 @@ import DogeChatUniversal
 import PhotosUI
 import FLAnimatedImage
 
-enum ChatRoomType {
+enum ChatRoomSceneType {
     case normal
     case single
 }
 
 class ChatRoomViewController: DogeChatViewController, DogeChatVCTableDataSource {
     
+    enum ChatRoomPurpose {
+        case chat
+        case peek
+        case referView
+        case history
+    }
+    
     static let numberOfHistory = 10
     var manager: WebSocketManager? {
         return socketForUsername(username)
     }
     var tableView = DogeChatTableView()
-    var type: ChatRoomType = .normal
+    var sceneType: ChatRoomSceneType = .normal
+    var purpose = ChatRoomPurpose.chat
     let messageInputBar = MessageInputView()
     var messageOption: MessageOption {
         friend.isGroup ? .toGroup : .toOne
@@ -27,7 +35,6 @@ class ChatRoomViewController: DogeChatViewController, DogeChatVCTableDataSource 
     var friend: Friend! {
         didSet {
             messages = friend.messages
-            messagesUUIDs = friend.messageUUIDs
             customTitle = friend.nickName ?? friend.username
             emojiSelectView.friend = friend
             DispatchQueue.main.async {
@@ -40,7 +47,7 @@ class ChatRoomViewController: DogeChatViewController, DogeChatVCTableDataSource 
     }
     var customTitle = "" {
         didSet {
-            if !customTitle.isEmpty {
+            if !customTitle.isEmpty && self.purpose == .chat {
                 navigationItem.title = customTitle
             }
         }
@@ -60,12 +67,14 @@ class ChatRoomViewController: DogeChatViewController, DogeChatVCTableDataSource 
         let sender = MessageSender()
         sender.progressDelegate = self
         sender.referMessageDataSource = self
-        sender.manager = self.manager
+        sender.manager = self.manager?.httpsManager
         return sender
     }()
     let emojiSelectView = EmojiSelectView()
     var messages = [Message]()
-    var messagesUUIDs = Set<String>()
+    var messagesUUIDs: Set<String> {
+        return Set(self.messages.map{ $0.uuid })
+    }
     var activePKView: UIView!
     var drawingIndexPath: IndexPath!
     var friendAvatarUrl: String {
@@ -77,7 +86,6 @@ class ChatRoomViewController: DogeChatViewController, DogeChatVCTableDataSource 
     weak var activeMenuCell: MessageBaseCell?
     var hapticInputIndex = 0
     var pan: UIScreenEdgePanGestureRecognizer?
-    var isPeek = false
     var ignoreKeyboardChange = false
     var needScrollToBottom = false {
         didSet {
@@ -123,6 +131,7 @@ class ChatRoomViewController: DogeChatViewController, DogeChatVCTableDataSource 
         NotificationCenter.default.addObserver(forName: .logout, object: username, queue: .main) { [weak self] _ in
             self?.navigationController?.viewControllers = []
         }
+        NotificationCenter.default.addObserver(self, selector: #selector(friendChangeAvatar(_:)), name: .friendChangeAvatar, object: nil)
         NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: .main) { [weak self] _ in
             if isMac() {
                 self?.messageInputBar.textView.becomeFirstResponder()
@@ -141,7 +150,9 @@ class ChatRoomViewController: DogeChatViewController, DogeChatVCTableDataSource 
         
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        navigationController?.setToolbarHidden(!tableView.isEditing, animated: true)
+        if purpose == .chat {
+            navigationController?.setToolbarHidden(!tableView.isEditing, animated: true)
+        }
         messageInputBar.textView.delegate = self
         if isMac() {
             messageInputBar.textView.becomeFirstResponder()
@@ -159,26 +170,27 @@ class ChatRoomViewController: DogeChatViewController, DogeChatVCTableDataSource 
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        (self.view.window?.windowScene?.delegate as? SceneDelegate)?.navigationController = self.navigationController
+        if #available(iOS 13.0, *) {
+            (self.view.window?.windowScene?.delegate as? SceneDelegate)?.navigationController = self.navigationController
+        } else {
+            AppDelegateUI.shared.navController = self.navigationController
+        }
         guard let manager = manager else {
             return
         }
         let userActivity = NSUserActivity(activityType: userActivityID)
         userActivity.title = "ChatRoom"
-        let modal = UserActivityModal(username: self.username,
-                                      password: manager.messageManager.getPassword(),
-                                      cookie: manager.cookie,
-                                      userID: manager.myInfo.userID,
-                                      friendID: friend.userID,
-                                      avatarURL: manager.myInfo.avatarURL)
+        let modal = UserActivityModal(friendID: friend.userID, accountInfo: manager.httpsManager.accountInfo)
         if let data = try? JSONEncoder().encode(modal) {
             userActivity.userInfo = ["data": data]
             userActivity.isEligibleForHandoff = true
             self.userActivity = userActivity
             userActivity.becomeCurrent()
         }
-        if self.type == .single {
-            self.view.window?.windowScene?.title = username + "与\(friend.username)"
+        if self.sceneType == .single {
+            if #available(iOS 13.0, *) {
+                self.view.window?.windowScene?.title = username + "与\(friend.username)"
+            }
         }
     }
         
@@ -227,6 +239,19 @@ class ChatRoomViewController: DogeChatViewController, DogeChatVCTableDataSource 
                     }
                 }
             }
+        }
+    }
+    
+    @objc func friendChangeAvatar(_ noti: Notification) {
+        let friend = noti.userInfo?["friend"] as! Friend
+        if friend.userID != self.friend.userID { return }
+        self.friend.avatarURL = friend.avatarURL
+        for message in self.messages {
+            message.avatarUrl = friend.avatarURL
+        }
+        self.tableView.reloadData()
+        if friend is Group {
+            updateTitleAvatar()
         }
     }
     
@@ -307,6 +332,7 @@ extension ChatRoomViewController: PKViewChangedDelegate {
         manager?.sendRealTimeDrawData(base64String, sender: username, receiver: friendName, uuid: message.uuid, senderID: message.senderUserID, receiverID: message.receiverUserID)
     }
     
+    @available(iOS 13.0, *)
     func pkView(_ pkView: PKCanvasView, message: Any?, deleteStrokesIndex: [NSNumber]) {
         print("delete\(deleteStrokesIndex.count)")
         guard let message = message as? Message else { return }
@@ -316,6 +342,7 @@ extension ChatRoomViewController: PKViewChangedDelegate {
         }
     }
     
+    @available(iOS 13.0, *)
     func pkViewDidFinishDrawing(_ pkView: PKCanvasView, message: Any?) {
         if let manager = manager, let message = message as? Message {
             message.sendStatus = .fail
@@ -360,6 +387,7 @@ extension ChatRoomViewController: PKViewChangedDelegate {
         }
     }
     
+    @available(iOS 13.0, *)
     func pkViewDidCancelDrawing(_ pkView: PKCanvasView, message: Any?) {
         drawingIndexPath = nil
         if let message = message as? Message {
@@ -408,7 +436,7 @@ extension ChatRoomViewController {
             tableView.refreshControl?.endRefreshing()
         }
         guard noti.object as? String == self.username else { return }
-        if !self.isPeek && self.navigationController?.visibleViewController != self { return }
+        if purpose == .chat && self.navigationController?.visibleViewController != self { return }
         var empty = true
         var tempHeight: CGFloat = 0
         for message in self.messages.reversed() {
@@ -435,9 +463,6 @@ extension ChatRoomViewController {
         }
         
         self.messages.insert(contentsOf: filtered, at: 0)
-        for message in filtered {
-            self.messagesUUIDs.insert(message.uuid)
-        }
         let indexPaths = [Int](0..<filtered.count).map{ IndexPath(item: $0, section: 0) }
         var myselfIndexPaths = [IndexPath]()
         var othersIndexPaths = [IndexPath]()

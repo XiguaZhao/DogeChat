@@ -65,11 +65,16 @@ class SettingViewController: DogeChatViewController, DatePickerChangeDelegate, U
 
     @objc func logout() {
         NotificationCenter.default.post(name: .logout, object: username)
-        if let sceneDelegate = self.view.window?.windowScene?.delegate as? SceneDelegate {
-            if let contactVCNav = sceneDelegate.contactVC?.navigationController {
-                contactVCNav.setViewControllers([JoinChatViewController()], animated: true)
+        if #available(iOS 13.0, *) {
+            if let sceneDelegate = self.view.window?.windowScene?.delegate as? SceneDelegate {
+                if let contactVCNav = sceneDelegate.contactVC?.navigationController {
+                    contactVCNav.setViewControllers([JoinChatViewController()], animated: true)
+                }
             }
+        } else {
+            AppDelegateUI.shared.makeLogininVC()
         }
+        removeSocketForUsername(username, removeScene: false)
         self.tabBarController?.selectedIndex = 0
     }
     

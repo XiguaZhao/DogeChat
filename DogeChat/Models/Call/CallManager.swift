@@ -45,6 +45,7 @@ class CallManager: NSObject {
         callsChangedHandler?()
     }
     
+    @available(iOS 13.0, *)
     func startCall(handle: String, uuid: String) {
         guard let uuid = UUID(uuidString: uuid) else { return }
         let handle = CXHandle(type: .generic, value: handle)

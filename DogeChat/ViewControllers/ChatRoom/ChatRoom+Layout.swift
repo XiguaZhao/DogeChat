@@ -90,6 +90,7 @@ extension ChatRoomViewController {
                 }
             }
         } completion: { finished in
+            self.didStopScroll()
         }
     }
     
@@ -121,7 +122,7 @@ extension ChatRoomViewController {
         view.addSubview(messageInputBar)
         view.addSubview(emojiSelectView)
 
-        if isPeek {
+        if purpose != .chat {
             messageInputBar.isHidden = true
             emojiSelectView.isHidden = true
         }
@@ -149,7 +150,9 @@ extension ChatRoomViewController {
         pan?.isEnabled = false
         view.addGestureRecognizer(pan!)
 
-        addItemForSingle()
+        if #available(iOS 13.0, *) {
+            addItemForSingle()
+        } 
         
         makeJumpButtons()
     }
@@ -180,7 +183,7 @@ extension ChatRoomViewController {
     func layoutViews(size: CGSize) {
         let size = view.frame.size
         tableView.frame = CGRect(x: 0, y: 0, width: size.width, height: size.height)
-        if !isPeek {
+        if purpose == .chat {
             tableView.contentInset = .init(top: 0, left: 0, bottom: messageBarHeight - safeArea.bottom, right: 0)
         }
         let barFrame = CGRect(x: 0, y: size.height - messageBarHeight, width: size.width, height: messageBarHeight)

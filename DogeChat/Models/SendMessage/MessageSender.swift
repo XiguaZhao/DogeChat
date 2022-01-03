@@ -7,27 +7,43 @@
 //
 
 import Foundation
-import DogeChatNetwork
 import DogeChatUniversal
 import SwiftyJSON
+import Photos
+import DogeChatVideoCompression
 
 protocol ReferMessageDataSource: AnyObject {
     func referMessage() -> Message?
 }
 
+protocol DownloadUploadProgressDelegate: AnyObject {
+    func downloadProgressUpdate(progress: Double, messages: [Message])
+}
+
+protocol KeyProvider: AnyObject {
+    func getClientPublicKey() -> String?
+}
+
 class MessageSender {
     
+    enum MessageSenderType {
+        case normal
+        case shareExtension
+    }
+        
     var latestPickedImageInfos: [(image: UIImage?, fileUrl: URL, size: CGSize)] = []
     var pickedLivePhotos: [(imageURL: URL, videoURL: URL, size: CGSize, live: PHLivePhoto)] = []
     var pickedVideos: (url: URL, size: CGSize)?
     var voiceInfo: (url: URL, duration: Int)?
+    var type: MessageSenderType = .normal
     
     var at: [String : String] = [:]
     
-    var manager: WebSocketManager?
+    var manager: HttpRequestsManager?
     
     weak var progressDelegate: DownloadUploadProgressDelegate?
     weak var referMessageDataSource: ReferMessageDataSource?
+    weak var clientKeyProvider: KeyProvider?
     
     func processMessageString(for string: String, type: MessageType, friend: Friend, fontSize: CGFloat = 17, imageURL: String?, videoURL: String?) -> Message? {
         guard let manager = manager else {
@@ -41,9 +57,9 @@ class MessageSender {
                               receiver: friend.username,
                               receiverUserID: friend.userID,
                               sender: manager.myName,
-                              senderUserID: manager.messageManager.myId,
+                              senderUserID: manager.myId,
                               messageType: type,
-                              id: manager.messageManager.maxId + 1,
+                              id: (manager.messageManager?.maxId ?? 0) + 1,
                               sendStatus: .fail,
                               fontSize: fontSize)
         message.referMessage = self.referMessageDataSource?.referMessage()
@@ -80,6 +96,7 @@ class MessageSender {
         guard let manager = manager else {
             return []
         }
+        let type = self.type
         let infos = self.latestPickedImageInfos
         let username = manager.myName
         var newMessages = [Message]()
@@ -92,7 +109,7 @@ class MessageSender {
                 newMessages.append(message)
                 messagesWithSameURL.append(message)
             }
-            manager.httpsManager.uploadPhoto(imageUrl: imageURL, type: .image, size: size) { [weak self] progress in
+            manager.uploadPhoto(imageUrl: imageURL, type: .image, size: size, clientKey: self.clientKeyProvider?.getClientPublicKey()) { [weak self] progress in
                 self?.progressDelegate?.downloadProgressUpdate(progress: progress.fractionCompleted, messages: messagesWithSameURL)
             } success: { filePath in
                 for (index, message) in messagesWithSameURL.enumerated() {
@@ -100,7 +117,7 @@ class MessageSender {
                     message.text = message.imageURL ?? ""
                     let dir = createDir(name: photoDir)
                     let newImageLocalUrl = dir.appendingPathComponent(filePath.components(separatedBy: "/").last!)
-                    if index == 0 {
+                    if index == 0 && type == .normal {
                         do {
                             try FileManager.default.moveItem(at: imageURL, to: newImageLocalUrl)
                             message.imageLocalPath = newImageLocalUrl
@@ -121,6 +138,7 @@ class MessageSender {
         }
         guard let manager = manager, let info = self.voiceInfo else { return [] }
         let username = manager.myName
+        let type = self.type
         var newMessages = [Message]()
         for friend in friends {
             guard let message = processMessageString(for: "", type: .voice, friend: friend, imageURL: nil, videoURL: nil) else { continue }
@@ -128,7 +146,7 @@ class MessageSender {
             message.voiceDuration = info.duration
             newMessages.append(message)
         }
-        manager.httpsManager.uploadPhoto(imageUrl: info.url, type: .voice, size: .zero, voiceDuration: info.duration) { [weak self] progress in
+        manager.uploadPhoto(imageUrl: info.url, type: .voice, size: .zero, voiceDuration: info.duration, clientKey: self.clientKeyProvider?.getClientPublicKey()) { [weak self] progress in
             self?.progressDelegate?.downloadProgressUpdate(progress: progress.fractionCompleted, messages: newMessages)
         } success: { voicePath in
             print(voicePath)
@@ -138,7 +156,7 @@ class MessageSender {
                 let dir = createDir(name: voiceDir)
                 let newVoiceUrl = dir.appendingPathComponent(voicePath.components(separatedBy: "/").last!)
                 message.videoLocalPath = newVoiceUrl
-                if index == 0 {
+                if index == 0 && type == .normal {
                     try? FileManager.default.moveItem(at: info.url, to: newVoiceUrl)
                 }
                 NotificationCenter.default.post(name: .uploadSuccess, object: username, userInfo: ["message": message])
@@ -154,6 +172,7 @@ class MessageSender {
         }
         guard let manager = manager, let info = self.pickedVideos else { return [] }
         let username = manager.myName
+        let type = self.type
         var newMessages = [Message]()
         for friend in friends {
             guard let message = processMessageString(for: "", type: .video, friend: friend, imageURL: nil, videoURL: nil) else { continue }
@@ -161,7 +180,7 @@ class MessageSender {
             message.imageSize = info.size
             newMessages.append(message)
         }
-        manager.httpsManager.uploadPhoto(imageUrl: info.url, type: .video, size: info.size) { [weak self] progress in
+        manager.uploadPhoto(imageUrl: info.url, type: .video, size: info.size, clientKey: self.clientKeyProvider?.getClientPublicKey()) { [weak self] progress in
             self?.progressDelegate?.downloadProgressUpdate(progress: progress.fractionCompleted, messages: newMessages)
         } success: { videoPath in
             print(videoPath)
@@ -171,8 +190,8 @@ class MessageSender {
                 DispatchQueue.global().async {
                     let dir = createDir(name: videoDir)
                     let newVideoUrl = dir.appendingPathComponent(videoPath.components(separatedBy: "/").last!)
-                    if index == 0 {
-                        if isMac() {
+                    if index == 0 && type == .normal {
+                        if Self.isMac() {
                             try? FileManager.default.copyItem(at: info.url, to: newVideoUrl)
                         } else {
                             try? FileManager.default.moveItem(at: info.url, to: newVideoUrl)
@@ -197,7 +216,7 @@ class MessageSender {
             return []
         }
         let username = manager.myName
-        
+        let type = self.type
         var newMessages = [Message]()
         for livePhoto in pickedLivePhotos {
             var messageWithSameURL = [Message]()
@@ -209,11 +228,11 @@ class MessageSender {
                 message.imageSize = livePhoto.size
                 newMessages.append(message)
                 messageWithSameURL.append(message)
-                manager.httpsManager.uploadPhoto(imageUrl: livePhoto.imageURL, type: .livePhoto, size: livePhoto.size) { _ in
+                manager.uploadPhoto(imageUrl: livePhoto.imageURL, type: .livePhoto, size: livePhoto.size, clientKey: self.clientKeyProvider?.getClientPublicKey()) { _ in
                     
-                } success: { imagePath in
+                } success: { [weak self] imagePath in
                     print(imagePath)
-                    manager.httpsManager.uploadPhoto(imageUrl: livePhoto.videoURL, type: .livePhoto, size: livePhoto.size) { [weak self] progress in
+                    manager.uploadPhoto(imageUrl: livePhoto.videoURL, type: .livePhoto, size: livePhoto.size, clientKey: self?.clientKeyProvider?.getClientPublicKey()) { [weak self] progress in
                         self?.progressDelegate?.downloadProgressUpdate(progress: progress.fractionCompleted, messages: messageWithSameURL)
                     } success: { videoPath in
                         print(videoPath)
@@ -225,7 +244,7 @@ class MessageSender {
                                 let dir = createDir(name: livePhotoDir)
                                 let newImageUrl = dir.appendingPathComponent(imagePath.components(separatedBy: "/").last!)
                                 let newVideoUrl = dir.appendingPathComponent(videoPath.components(separatedBy: "/").last!)
-                                if index == 0 {
+                                if index == 0 && type == .normal {
                                     try? FileManager.default.moveItem(at: livePhoto.imageURL, to: newImageUrl)
                                     try? FileManager.default.moveItem(at: livePhoto.videoURL, to: newVideoUrl)
                                 }
@@ -262,20 +281,6 @@ class MessageSender {
                         }
                     }
                 }
-            } else if item.hasItemConformingToTypeIdentifier(fileIdentifier) { // finder粘贴
-                item.loadItem(forTypeIdentifier: fileIdentifier, options: nil) { res, error in
-                    if error == nil, let data = res as? Data, let str = String(data: data, encoding: .utf8), let url = URL(string: str) {
-                        if str.isVideo {
-                            self.compressAndSendVideo(url, friends: friends)
-                        } else if str.isImage {
-                            if let data = try? Data(contentsOf: url), let image = UIImage(data: data) {
-                                self.latestPickedImageInfos = [compressImage(image)]
-                                let messages = self.confirmSendPhoto(friends: friends)
-                                completion?(messages)
-                            }
-                        }
-                    }
-                }
             } else if item.hasItemConformingToTypeIdentifier(audioIdentifier) {
                 item.loadDataRepresentation(forTypeIdentifier: audioIdentifier) { data, error in
                     if let data = data {
@@ -289,6 +294,20 @@ class MessageSender {
                             completion?(messages)
                         } catch {
                             
+                        }
+                    }
+                }
+            } else if item.hasItemConformingToTypeIdentifier(fileIdentifier) { // finder粘贴
+                item.loadItem(forTypeIdentifier: fileIdentifier, options: nil) { res, error in
+                    if error == nil, let data = res as? Data, let str = String(data: data, encoding: .utf8), let url = URL(string: str) {
+                        if str.isVideo {
+                            self.compressAndSendVideo(url, friends: friends)
+                        } else if str.isImage {
+                            if let data = try? Data(contentsOf: url), let image = UIImage(data: data) {
+                                self.latestPickedImageInfos = [compressImage(image)]
+                                let messages = self.confirmSendPhoto(friends: friends)
+                                completion?(messages)
+                            }
                         }
                     }
                 }
@@ -310,7 +329,7 @@ class MessageSender {
             } else if item.canLoadObject(ofClass: UIImage.self) {
                 item.loadObject(ofClass: UIImage.self) { [weak self] object, error in
                     if let image = object as? UIImage, let self = self {
-                        self.latestPickedImageInfos = [compressImage(image)]
+                        self.latestPickedImageInfos = [compressImage(image, saveMemory: self.type == .shareExtension)]
                         let messages = self.confirmSendPhoto(friends: friends)
                         completion?(messages)
                     }
@@ -336,5 +355,17 @@ class MessageSender {
         let size = track.naturalSize.applying(track.preferredTransform)
         return CGSize(width: abs(size.width), height: abs(size.height))
     }
+    
+    static func isMac() -> Bool {
+        if #available(iOS 14, *), ProcessInfo.processInfo.isiOSAppOnMac {
+            return true
+        }
+        if #available(iOS 13.0, *) {
+            return ProcessInfo.processInfo.isMacCatalystApp
+        } else {
+            return false
+        }
+    }
+
 
 }

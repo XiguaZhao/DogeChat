@@ -25,6 +25,7 @@ PODS:
   - DogeChatUniversal (0.1.0):
     - AFNetworking
     - SwiftyJSON
+  - DogeChatVideoCompression (0.1.0)
   - FLAnimatedImage (1.0.16)
   - LookinServer (1.0.4)
   - Masonry (1.1.0)
@@ -46,6 +47,7 @@ DEPENDENCIES:
   - DataCompression
   - DogeChatNetwork (from `/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/DogeChatNetwork`)
   - DogeChatUniversal (from `/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/DogeChatUniversal`)
+  - DogeChatVideoCompression (from `/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/DogeChatVideoCompression`)
   - FLAnimatedImage (from `/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/FLAnimatedImage`)
   - LookinServer
   - Masonry
@@ -72,6 +74,8 @@ EXTERNAL SOURCES:
     :path: "/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/DogeChatNetwork"
   DogeChatUniversal:
     :path: "/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/DogeChatUniversal"
+  DogeChatVideoCompression:
+    :path: "/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/DogeChatVideoCompression"
   FLAnimatedImage:
     :path: "/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/FLAnimatedImage"
   RSAiOSWatchOS:
@@ -93,6 +97,7 @@ SPEC CHECKSUMS:
   DataCompression: 06628f9c807b6f152e0da37635633f62fc51dc77
   DogeChatNetwork: 27f770e7f08cb0cff614e5658506aba2d4aa4bfb
   DogeChatUniversal: 3901d42c8cc1108179a4986679e23f323f528e8a
+  DogeChatVideoCompression: 5593abc15c98fe4cc7327a0875cb73606bc2d855
   FLAnimatedImage: 8f3e854ebf9680b71f0b6e700939687fc4d82b4b
   LookinServer: 743c1681771d0a8dcc38825325a080c3186404a5
   Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
@@ -103,6 +108,6 @@ SPEC CHECKSUMS:
   SwiftyJSON: 4e107719275086d9d9111e1a7ca6c484b6664574
   SwiftyRSA: 3b9c9179744217951facc6a3e9ae8d8c97061ffa
 
-PODFILE CHECKSUM: 07b9187aac8599fa2a77cf2b9414ff28e05b37dc
+PODFILE CHECKSUM: 1cd92e9048d174c209aeee40d66a010225775660
 
 COCOAPODS: 1.11.0

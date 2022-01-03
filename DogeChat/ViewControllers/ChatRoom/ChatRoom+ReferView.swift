@@ -56,7 +56,7 @@ extension ChatRoomViewController: ReferViewDelegate {
                 tableView.deselectRow(at: indexPath, animated: true)
             }
         } else {
-            let vc = HistoryVC(type: .referView, username: username)
+            let vc = HistoryVC(purpose: .referView)
             let message = message.copied()
             vc.messages = [message]
             vc.friend = friend

@@ -87,7 +87,11 @@ extension EmojiSelectView: UICollectionViewDataSource, UICollectionViewDelegateF
         controller.menuItems = items
         cell.becomeFirstResponder()
         let rect = CGRect(x: cell.bounds.width/2, y: 10, width: 0, height: 0)
-        controller.showMenu(from: cell, rect: rect)
+        if #available(iOS 13.0, *) {
+            controller.showMenu(from: cell, rect: rect)
+        } else {
+            controller.setMenuVisible(true, animated: true)
+        }
     }
     
     func updateDownloadProgress(_ cell: EmojiCollectionViewCell, progress: Double, path: String) {
@@ -111,7 +115,11 @@ extension EmojiSelectView: UICollectionViewDataSource, UICollectionViewDelegateF
             self.deleteEmoji(cell: cell)
         }))
         confirmAlert.addAction(UIAlertAction(title: "取消", style: .cancel, handler: nil))
-        SceneDelegate.usernameToDelegate[username]?.navigationController.present(confirmAlert, animated: true, completion: nil)
+        if #available(iOS 13.0, *) {
+            SceneDelegate.usernameToDelegate[username]?.navigationController.present(confirmAlert, animated: true, completion: nil)
+        } else {
+            AppDelegateUI.shared.navController.present(confirmAlert, animated: true, completion: nil)
+        }
     }
 
     func deleteEmoji(cell: EmojiCollectionViewCell) {
@@ -134,7 +142,11 @@ extension EmojiSelectView: UICollectionViewDataSource, UICollectionViewDelegateF
                 guard let data = data else { return }
                 let json = JSON(data)
                 if json["status"].stringValue == "success" {
-                    SceneDelegate.usernameToDelegate.first?.value.splitVC.makeAutoAlert(message: "成功更换", detail: nil, showTime: 0.5, completion: nil)
+                    if #available(iOS 13.0, *) {
+                        SceneDelegate.usernameToDelegate.first?.value.splitVC.makeAutoAlert(message: "成功更换", detail: nil, showTime: 0.5, completion: nil)
+                    } else {
+                        AppDelegateUI.shared.navController.makeAutoAlert(message: "成功更换", detail: nil, showTime: 0.5, completion: nil)
+                    }
                     let avatarURL = json["avatarUrl"].stringValue
                     if append != nil {
                         if let friend = manager.httpsManager.friends.first(where: { $0.userID == self.friend.userID } ) {
@@ -181,6 +193,7 @@ extension EmojiSelectView: UICollectionViewDataSource, UICollectionViewDelegateF
         return cell
     }
     
+    @available(iOS 13.0, *)
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
         if !isMac() { return nil }
         let identifier = "\(indexPath.row)" as NSString

@@ -30,7 +30,11 @@ class DogeChatViewController: UIViewController, UIPopoverPresentationControllerD
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.view.backgroundColor = .systemBackground
+        if #available(iOS 13.0, *) {
+            self.view.backgroundColor = .systemBackground
+        } else {
+            self.view.backgroundColor = .white
+        }
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
             guard let self = self else { return }
             NotificationCenter.default.addObserver(self, selector: #selector(self.immersive(noti:)), name: .immersive, object: nil)
@@ -46,7 +50,9 @@ class DogeChatViewController: UIViewController, UIPopoverPresentationControllerD
     }
         
     func recoverBackgroundColor() {
+        if #available(iOS 13.0, *) {
             self.view.backgroundColor = .systemBackground
+        }
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -108,6 +114,12 @@ class DogeChatViewController: UIViewController, UIPopoverPresentationControllerD
 }
 
 func makeBlurViewForViewController(_ vc: UIViewController, blurView: inout UIImageView!, needAnimation: Bool = true, addToThisView: UIView? = nil, username: String? = nil) {
+    var username = username
+    if #available(iOS 13.0, *) {
+        if (username == nil || (username ?? "").isEmpty) && SceneDelegate.usernameToDelegate.count == 1 {
+            username = SceneDelegate.usernameToDelegate.keys.first
+        }
+    }
     var targetImage: UIImage?
     if UserDefaults.standard.bool(forKey: "immersive") && PlayerManager.shared.nowAlbumImage != nil && PlayerManager.shared.isPlaying {
         targetImage = PlayerManager.shared.nowAlbumImage
@@ -121,20 +133,32 @@ func makeBlurViewForViewController(_ vc: UIViewController, blurView: inout UIIma
     }
     let interfaceStyle: UIUserInterfaceStyle
     if UserDefaults.standard.bool(forKey: "forceDarkMode") {
-        interfaceStyle = .dark
+        if #available(iOS 13, *) {
+            interfaceStyle = .dark
+        } else {
+            interfaceStyle = .light
+        }
     } else {
         interfaceStyle = .unspecified
     }
-    vc.navigationController?.overrideUserInterfaceStyle = interfaceStyle
-    vc.splitViewController?.overrideUserInterfaceStyle = interfaceStyle
-    vc.tabBarController?.overrideUserInterfaceStyle = interfaceStyle
-    vc.overrideUserInterfaceStyle = interfaceStyle
-    SceneDelegate.usernameToDelegate[username ?? ""]?.window?.overrideUserInterfaceStyle = interfaceStyle
+    if #available(iOS 13.0, *) {
+        vc.navigationController?.overrideUserInterfaceStyle = interfaceStyle
+        vc.splitViewController?.overrideUserInterfaceStyle = interfaceStyle
+        vc.tabBarController?.overrideUserInterfaceStyle = interfaceStyle
+        vc.overrideUserInterfaceStyle = interfaceStyle
+        SceneDelegate.usernameToDelegate[username ?? ""]?.window?.overrideUserInterfaceStyle = interfaceStyle
+    } else {
+        // Fallback on earlier versions
+    }
     vc.view.backgroundColor = .clear
     vc.view.backgroundColor = .clear
     var style: UIBlurEffect.Style = .regular
     if UserDefaults.standard.bool(forKey: "forceDarkMode") {
-        style = .dark
+        if #available(iOS 13, *) {
+            style = .dark
+        } else {
+            style = .extraLight
+        }
     } else {
         style = .regular
     }
@@ -194,13 +218,17 @@ func makeBlurViewForViewController(_ vc: UIViewController, blurView: inout UIIma
 }
 
 func recoverVC(_ vc: UIViewController, blurView: inout UIImageView!) {
-    vc.view.backgroundColor = .systemBackground
-    vc.navigationController?.overrideUserInterfaceStyle = .unspecified
-    vc.splitViewController?.overrideUserInterfaceStyle = .unspecified
-    vc.tabBarController?.overrideUserInterfaceStyle = .unspecified
-    vc.overrideUserInterfaceStyle = .unspecified
-    vc.splitViewController?.view.backgroundColor = .systemBackground
-    vc.view.window?.overrideUserInterfaceStyle = .unspecified
+    if #available(iOS 13.0, *) {
+        vc.view.backgroundColor = .systemBackground
+        vc.navigationController?.overrideUserInterfaceStyle = .unspecified
+        vc.splitViewController?.overrideUserInterfaceStyle = .unspecified
+        vc.tabBarController?.overrideUserInterfaceStyle = .unspecified
+        vc.overrideUserInterfaceStyle = .unspecified
+        vc.splitViewController?.view.backgroundColor = .systemBackground
+        vc.view.window?.overrideUserInterfaceStyle = .unspecified
+    } else {
+        vc.view.backgroundColor = .white
+    }
     UIView.animate(withDuration: 0.5) { [weak blurView] in
         blurView?.alpha = 0
     } completion: { [weak blurView] _ in

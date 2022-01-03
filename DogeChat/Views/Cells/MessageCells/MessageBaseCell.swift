@@ -12,10 +12,6 @@ let avatarWidth: CGFloat = 40
 let avatarMargin: CGFloat = 5
 var hapticIndex = 0
 
-protocol DownloadUploadProgressDelegate: AnyObject {
-    func downloadProgressUpdate(progress: Double, messages: [Message])
-}
-
 protocol MessageTableViewCellDelegate: DownloadUploadProgressDelegate {
     func mediaViewTapped(_ cell: MessageBaseCell, path: String, isAvatar: Bool)
     func emojiOutBounds(from cell: MessageBaseCell, gesture: UIGestureRecognizer)
@@ -29,10 +25,6 @@ protocol MessageTableViewCellDelegate: DownloadUploadProgressDelegate {
     func textCellDoubleTap(_ cell: MessageBaseCell)
     func textCellSingleTap(_ cell: MessageBaseCell)
     func mapViewTap(_ cell: MessageBaseCell, latitude: Double, longitude: Double)
-}
-
-protocol ContactDataSource: AnyObject {
-    var friends: [Friend] { get }
 }
 
 class MessageBaseCell: DogeChatTableViewCell {
@@ -378,25 +370,29 @@ class MessageBaseCell: DogeChatTableViewCell {
             }
             rowHeight = min(screenHeight * 0.6, rowHeight)
         case .draw:
-            rowHeight = nameHeight + pkViewHeight
-            let block: (CGRect) -> CGFloat = { bounds in
-                let maxWidth = screenWidth * 0.8
-                if bounds.maxX > maxWidth {
-                    let ratio = maxWidth / bounds.maxX
-                    return bounds.height * ratio + nameHeight + bounds.origin.y * ratio + 30
-                } else {
-                    return nameHeight + bounds.maxY + 30
+            if #available(iOS 13, *) {
+                rowHeight = nameHeight + pkViewHeight
+                let block: (CGRect) -> CGFloat = { bounds in
+                    let maxWidth = screenWidth * 0.8
+                    if bounds.maxX > maxWidth {
+                        let ratio = maxWidth / bounds.maxX
+                        return bounds.height * ratio + nameHeight + bounds.origin.y * ratio + 30
+                    } else {
+                        return nameHeight + bounds.maxY + 30
+                    }
                 }
-            }
-            if let bounds = message.drawBounds {
-                rowHeight = block(bounds)
-            } else if let bounds = boundsForDraw(message) {
-                rowHeight = block(bounds)
-            } else if let pkDrawing = getPKDrawing(message: message) as? PKDrawing {
-                let bounds = pkDrawing.bounds
-                rowHeight = block(bounds)
+                if let bounds = message.drawBounds {
+                    rowHeight = block(bounds)
+                } else if let bounds = boundsForDraw(message) {
+                    rowHeight = block(bounds)
+                } else if let pkDrawing = getPKDrawing(message: message) as? PKDrawing {
+                    let bounds = pkDrawing.bounds
+                    rowHeight = block(bounds)
+                } else {
+                    rowHeight = 350
+                }
             } else {
-                rowHeight = 350
+                rowHeight = 0
             }
         case .track:
             rowHeight = 120

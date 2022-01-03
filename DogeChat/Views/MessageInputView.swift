@@ -34,7 +34,13 @@ class MessageInputView: DogeChatStaticBlurView {
     
     weak var delegate: MessageInputDelegate?
     
-    static let largeConfig = UIImage.SymbolConfiguration(pointSize: 150, weight: .bold, scale: .large)
+    static let largeConfig: Any? = {
+        if #available(iOS 13.0, *) {
+            return UIImage.SymbolConfiguration(pointSize: 150, weight: .bold, scale: .large)
+        } else {
+            return nil
+        }
+    }()
 
     static var maxHeight: CGFloat {
         safeArea.bottom + 186
@@ -83,18 +89,41 @@ class MessageInputView: DogeChatStaticBlurView {
         emojiButton.translatesAutoresizingMaskIntoConstraints = false
         upArrowButton.translatesAutoresizingMaskIntoConstraints = false
         voiceButton.translatesAutoresizingMaskIntoConstraints = false
-        let largeConfig = Self.largeConfig
-        addButton.setImage(UIImage(systemName: "plus.circle.fill", withConfiguration: largeConfig), for: .normal)
-        locationButton.setImage(UIImage(systemName: "location.circle.fill", withConfiguration: largeConfig), for: .normal)
         recoverEmojiButton()
-        upArrowButton.setImage(UIImage(systemName: "arrow.up", withConfiguration: largeConfig), for: .normal)
-        voiceButton.setImage(UIImage(systemName: "mic.circle.fill", withConfiguration: largeConfig), for: .normal)
-        cameraButton.setImage(UIImage(systemName: "camera.circle.fill", withConfiguration: largeConfig), for: .normal)
-        photoButton.setImage(UIImage(named: "xiangce"), for: .normal)
-        livePhotoButton.setImage(UIImage(systemName: "livephoto", withConfiguration: largeConfig), for: .normal)
-        videoButton.setImage(UIImage(systemName: "video.circle.fill", withConfiguration: largeConfig), for: .normal)
-        drawButton.setImage(UIImage(systemName: "pencil.circle.fill", withConfiguration: largeConfig), for: .normal)
-        atButton.setImage(UIImage(systemName: "at.circle.fill", withConfiguration: largeConfig), for: .normal)
+        if #available(iOS 13, *) {
+            let largeConfig = Self.largeConfig as! UIImage.Configuration
+            addButton.setImage(UIImage(systemName: "plus.circle.fill", withConfiguration: largeConfig), for: .normal)
+            locationButton.setImage(UIImage(systemName: "location.circle.fill", withConfiguration: largeConfig), for: .normal)
+            upArrowButton.setImage(UIImage(systemName: "arrow.up", withConfiguration: largeConfig), for: .normal)
+            voiceButton.setImage(UIImage(systemName: "mic.circle.fill", withConfiguration: largeConfig), for: .normal)
+            cameraButton.setImage(UIImage(systemName: "camera.circle.fill", withConfiguration: largeConfig), for: .normal)
+            livePhotoButton.setImage(UIImage(systemName: "livephoto", withConfiguration: largeConfig), for: .normal)
+            videoButton.setImage(UIImage(systemName: "video.circle.fill", withConfiguration: largeConfig), for: .normal)
+            drawButton.setImage(UIImage(systemName: "pencil.circle.fill", withConfiguration: largeConfig), for: .normal)
+        } else {
+            addButton.setImage(UIImage(named: "add"), for: .normal)
+            upArrowButton.setImage(UIImage(named: "arrowUp"), for: .normal)
+            voiceButton.setImage(UIImage(named: "voice"), for: .normal)
+            cameraButton.setImage(UIImage(named: "camera"), for: .normal)
+            livePhotoButton.setImage(UIImage(named: "live"), for: .normal)
+            videoButton.setImage(UIImage(named: "video"), for: .normal)
+            locationButton.setImage(UIImage(named: "dingwei"), for: .normal)
+        }
+        if #available(iOS 13, *) {
+            photoButton.setImage(UIImage(named: "xiangce"), for: .normal)
+        } else {
+            photoButton.setImage(UIImage(named: "xiangce-2"), for: .normal)
+        }
+        
+        if #available(iOS 13, *) {} else {
+            drawButton.isHidden = true
+        }
+
+        if #available(iOS 14, *) {
+            atButton.setImage(UIImage(systemName: "at.circle.fill", withConfiguration: Self.largeConfig as? UIImage.Configuration), for: .normal)
+        } else {
+            atButton.setImage(UIImage(named: "huati"), for: .normal)
+        }
 
         addButton.addTarget(self, action: #selector(addButtonTapped), for: .touchUpInside)
         emojiButton.addTarget(self, action: #selector(emojiButtonTapped), for: .touchUpInside)
@@ -124,12 +153,22 @@ class MessageInputView: DogeChatStaticBlurView {
         }
         
         referView.alpha = 0
-                
-        toolStack.arrangedSubviews.forEach { button in
-            button.mas_makeConstraints { make in
-                make?.width.height().mas_lessThanOrEqualTo()(button == photoButton ? width - 3 : width)
+        
+        if #available(iOS 13, *) {
+            toolStack.arrangedSubviews.forEach { button in
+                button.mas_makeConstraints { make in
+                    make?.width.height().mas_lessThanOrEqualTo()(button == photoButton ? width - 3 : width)
+                }
+            }
+        } else {
+            toolStack.arrangedSubviews.forEach { button in
+                (button as? UIButton)?.imageView?.contentMode = .scaleAspectFit
+                button.mas_makeConstraints { make in
+                    make?.width.height().mas_lessThanOrEqualTo()(width - 5)
+                }
             }
         }
+                
         
         upArrowButton.isHidden = true
         upArrowButton.mas_makeConstraints { make in
@@ -212,7 +251,12 @@ class MessageInputView: DogeChatStaticBlurView {
     }
     
     func recoverEmojiButton() {
-        let image = UIImage(systemName: "smiley.fill", withConfiguration: MessageInputView.largeConfig)
+        var image: UIImage?
+        if #available(iOS 13.0, *) {
+            image = UIImage(systemName: "smiley.fill", withConfiguration: MessageInputView.largeConfig as? UIImage.Configuration)
+        } else {
+            image = UIImage(named: "emoji")
+        }
         image?.accessibilityIdentifier = "smiley"
         self.emojiButton.setImage(image, for: .normal)
         self.emojiButtonStatus = .normal

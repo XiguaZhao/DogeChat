@@ -33,7 +33,9 @@ class MediaBrowserViewController: UIViewController {
             scrollToIndex(targetIndex)
         }
         
-        view.backgroundColor = .systemBackground
+        if #available(iOS 13.0, *) {
+            view.backgroundColor = .systemBackground
+        }
         
         let swipeDownGesture = UISwipeGestureRecognizer(target: self, action: #selector(swipeDown))
         swipeDownGesture.direction = .down
@@ -67,8 +69,12 @@ class MediaBrowserViewController: UIViewController {
     }
     
     override var keyCommands: [UIKeyCommand]? {
-        return [UIKeyCommand(action: #selector(escapeAction(_:)), input: UIKeyCommand.inputEscape),
+        if #available(iOS 13.0, *) {
+            return [UIKeyCommand(action: #selector(escapeAction(_:)), input: UIKeyCommand.inputEscape),
                     UIKeyCommand(action: #selector(escapeAction(_:)), input: "\u{20}")]
+        } else {
+            return nil
+        }
     }
     
     deinit {
@@ -77,11 +83,13 @@ class MediaBrowserViewController: UIViewController {
 
     @objc func escapeAction(_ sender: Any) {
         self.dismiss(animated: true, completion: nil)
-        if let scene = self.view?.window?.windowScene, scene.delegate is MediaBrowserSceneDelegate {
-            let option = UIWindowSceneDestructionRequestOptions()
-            option.windowDismissalAnimation = .commit
-            UIApplication.shared.requestSceneSessionDestruction(scene.session, options: option, errorHandler: nil)
-        }
+        if #available(iOS 13.0, *) {
+            if let scene = self.view?.window?.windowScene, scene.delegate is MediaBrowserSceneDelegate {
+                let option = UIWindowSceneDestructionRequestOptions()
+                option.windowDismissalAnimation = .commit
+                UIApplication.shared.requestSceneSessionDestruction(scene.session, options: option, errorHandler: nil)
+            }
+        } 
     }
     
     func scrollToIndex(_ index: Int) {

@@ -27,13 +27,12 @@ extension ContactsTableViewController: ContactTableViewCellDelegate, UIContextMe
     }
     
     func setupMyAvatar() {
-        let label = UILabel()
-        label.font = .boldSystemFont(ofSize: 17)
-        label.text = self.username
+        nameLabel.font = .boldSystemFont(ofSize: 17)
+        nameLabel.text = self.username
         avatarImageView.contentMode = .scaleAspectFill
         avatarImageView.layer.masksToBounds = true
         avatarImageView.layer.cornerRadius = 22;
-        let stackView = UIStackView(arrangedSubviews: [avatarImageView, label])
+        let stackView = UIStackView(arrangedSubviews: [avatarImageView, nameLabel])
         stackView.spacing = 10
         avatarImageView.mas_updateConstraints { [weak self] make in
             make?.width.mas_equalTo()(self?.avatarImageView.mas_height)
@@ -69,6 +68,7 @@ extension ContactsTableViewController: ContactTableViewCellDelegate, UIContextMe
         playHaptic()
     }
     
+    @available(iOS 13.0, *)
     func contextMenuInteraction(_ interaction: UIContextMenuInteraction, configurationForMenuAtLocation location: CGPoint) -> UIContextMenuConfiguration? {
         return .init(identifier: nil) { [weak self] in
             guard let self = self, let manager = self.manager else { return nil }
@@ -109,12 +109,6 @@ extension ContactsTableViewController: ContactTableViewCellDelegate, UIContextMe
         if let index = self.friends.firstIndex(of: friend) {
             self.friends[index].avatarURL = friend.avatarURL
             tableView.reloadData()
-            for chatVC in findChatRoomVCs() {
-                for message in chatVC.messages where message.senderUserID == friend.userID {
-                    message.avatarUrl = friend.avatarURL
-                }
-                chatVC.tableView.reloadData()
-            }
         }
     }
     

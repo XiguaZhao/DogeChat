@@ -44,7 +44,11 @@ class MessageTrackCell: MessageBaseCell {
         }
         let tap = UITapGestureRecognizer(target: self, action: #selector(bgImageTapAction(_:)))
         bgImageView.addGestureRecognizer(tap)
-        playButton.setImage(UIImage(systemName: "play.circle.fill"), for: .normal)
+        if #available(iOS 13.0, *) {
+            playButton.setImage(UIImage(systemName: "play.circle.fill"), for: .normal)
+        } else {
+            // Fallback on earlier versions
+        }
         let stackView = UIStackView(arrangedSubviews: [firstLineLabel, secondLineLabel])
         firstLineLabel.font = .systemFont(ofSize: 15)
         secondLineLabel.font = .systemFont(ofSize: 12)
@@ -92,7 +96,11 @@ class MessageTrackCell: MessageBaseCell {
     }
     
     func setButtonImage() {
-        playButton.setImage(UIImage(systemName: message.isPlaying ? "pause.circle.fill" : "play.circle.fill"), for: .normal)
+        if #available(iOS 13.0, *) {
+            playButton.setImage(UIImage(systemName: message.isPlaying ? "pause.circle.fill" : "play.circle.fill"), for: .normal)
+        } else {
+            // Fallback on earlier versions
+        }
     }
     
     override func apply(message: Message) {

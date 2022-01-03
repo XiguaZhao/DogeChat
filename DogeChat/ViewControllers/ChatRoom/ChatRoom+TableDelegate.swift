@@ -141,6 +141,7 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
     }
         
     //MARK: ContextMune
+    @available(iOS 13.0, *)
     func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
         let cell = tableView.cellForRow(at: indexPath) as! MessageBaseCell
         let identifier = "\(indexPath.row)" as NSString
@@ -148,10 +149,7 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
             guard let self = self, let cell = cell else { return nil }
             self.activeMenuCell = cell
             let copyAction = UIAction(title: "复制") { (_) in
-                if let textCell = cell as? MessageTextCell {
-                    let text = textCell.messageLabel.text
-                    UIPasteboard.general.string = text
-                }
+                self.makePasteFor(message: self.messages[indexPath.row])
             }
             var revokeAction: UIAction?
             var starEmojiAction: UIAction?
@@ -219,6 +217,7 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
         return UIContextMenuConfiguration(identifier: identifier, previewProvider: nil, actionProvider: actionProvider)
     }
     
+    @available(iOS 13.0, *)
     func tableView(_ tableView: UITableView, willPerformPreviewActionForMenuWith configuration: UIContextMenuConfiguration, animator: UIContextMenuInteractionCommitAnimating) {
         if let vc = animator.previewViewController {
             DispatchQueue.main.async {
@@ -378,7 +377,11 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
         if messageInputBar.emojiButtonStatus == .normal {
             messageInputBar.textViewResign()
         }
-        UIMenuController.shared.hideMenu()
+        if #available(iOS 13.0, *) {
+            UIMenuController.shared.hideMenu()
+        } else {
+            UIMenuController.shared.setMenuVisible(false, animated: true)
+        }
     }
     
     func needReload(indexPath: [IndexPath]) {
