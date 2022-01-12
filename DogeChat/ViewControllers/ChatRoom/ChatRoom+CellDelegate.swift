@@ -9,15 +9,31 @@
 import Foundation
 import DogeChatUniversal
 import UIKit
+import PencilKit
+import DogeChatCommonDefines
 
 extension ChatRoomViewController: MessageTableViewCellDelegate {
     
-    func downloadProgressUpdate(progress: Double, message: Message) {
+    func longPressAvatar(_ cell: MessageBaseCell, ges: UILongPressGestureRecognizer!) {
+        guard let group = self.friend as? Group, let manager = self.manager else { return }
+        if let index = tableView.indexPath(for: cell)?.row {
+            let message = messages[index]
+            findGroupMember(userID: message.senderUserID) { [weak self] targetMember in
+                if let friend = targetMember {
+                    self?.atFriends([friend])
+                }
+            }
+        }
+    }
+    
+    func downloadProgressUpdate(progress: Double, messages: [Message]) {
         syncOnMainThread {
-            if let index = self.messages.firstIndex(where: { $0.uuid == message.uuid }) {
-                let hud = (self.tableView.cellForRow(at: IndexPath(row: index, section: 0)) as? MessageBaseCell)?.progress
-                hud?.isHidden = progress >= 1
-                hud?.setProgress(CGFloat(progress), animated: false)
+            for message in messages {
+                if let index = self.messages.firstIndex(where: { $0.uuid == message.uuid }) {
+                    let hud = (self.tableView.cellForRow(at: IndexPath(row: index, section: 0)) as? MessageBaseCell)?.progress
+                    hud?.isHidden = progress >= 1
+                    hud?.setProgress(CGFloat(progress), animated: false)
+                }
             }
         }
     }
@@ -32,53 +48,122 @@ extension ChatRoomViewController: MessageTableViewCellDelegate {
             cell.setNeedsLayout()
         }
     }
+    
+    func mapViewTap(_ cell: MessageBaseCell, latitude: Double, longitude: Double) {
+        let vc = LocationVC()
+        vc.apply(name: (cell as! MessageLocationCell).locationLabel.text ?? "", latitude: latitude, longitude: longitude, avatarURL: friend.avatarURL)
+        self.navigationController?.pushViewController(vc, animated: true)
+    }
+    
+    func textCellDoubleTap(_ cell: MessageBaseCell) {
+        if let text = cell.message?.text {
+            let vc = TextBrowerVC()
+            vc.setText(text)
+            self.navigationController?.pushViewController(vc, animated: true)
+        }
+    }
+    
+    func textCellSingleTap(_ cell: MessageBaseCell) {
+        if let text = cell.message?.text {
+            guard let textURL = text.webUrlify() else { return }
+            if isPad() {
+                if !isMac() {
+                    let userActivity = wrapMediaBrowserUserActivity(paths: nil, url: textURL, targetIndex: nil)
+                    if #available(iOS 13.0, *) {
+                        let option = UIScene.ActivationRequestOptions()
+                        option.requestingScene = self.view.window?.windowScene
+                        UIApplication.shared.requestSceneSessionActivation(nil, userActivity: userActivity, options: option, errorHandler: nil)
+                    }
+                } else {
+                    if let url = URL(string: textURL) {
+                        UIApplication.shared.open(url, options: [:], completionHandler: nil)
+                    }
+                }
+            } else if isPhone() {
+                let vc = WebViewController()
+                vc.apply(url: textURL)
+                self.navigationController?.present(vc, animated: true, completion: nil)
+            }
+        }
+    }
         
     func mediaViewTapped(_ cell: MessageBaseCell, path: String, isAvatar: Bool) {
         messageInputBar.textViewResign()
         let browser = MediaBrowserViewController()
+        let paths: [String]
+        var targetIndex = 0
         if !isAvatar {
-            let paths = (self.messages.filter { $0.messageType == .image || $0.messageType == .livePhoto || $0.messageType == .video }).map { $0.text }
+            paths = (self.messages.filter { $0.messageType == .image || $0.messageType == .livePhoto || $0.messageType == .video }).map { $0.text }
             browser.imagePaths = paths
             if let index = paths.firstIndex(of: path) {
                 browser.targetIndex = index
+                targetIndex = index
             }
         } else {
+            paths = [path]
             browser.imagePaths = [path]
         }
         browser.modalPresentationStyle = .fullScreen
-        self.navigationController?.present(browser, animated: true, completion: nil)
+        if !isMac() {
+            self.navigationController?.present(browser, animated: true, completion: nil)
+        } else {
+            if #available(iOS 13.0, *) {
+                let option = UIScene.ActivationRequestOptions()
+                option.requestingScene = self.view.window?.windowScene
+                UIApplication.shared.requestSceneSessionActivation(nil, userActivity: self.wrapMediaBrowserUserActivity(paths: paths, targetIndex: targetIndex), options: option, errorHandler: nil)
+            }
+        }
+    }
+    
+    func wrapMediaBrowserUserActivity(paths: [String]?, url: String? = nil, targetIndex: Int? = 0) -> NSUserActivity {
+        let userActivity = NSUserActivity(activityType: userActivityID)
+        userActivity.title = AppDelegate.mediaBrowserWindow
+        var userInfo = [String: Any]()
+        if let paths = paths {
+            userInfo["paths"] = paths
+        }
+        if let targetIndex = targetIndex {
+            userInfo["index"] = targetIndex
+        }
+        if let url = url {
+            userInfo["url"] = url
+        }
+        userActivity.userInfo = userInfo
+        return userActivity
     }
 
     //MARK: PKView手写
     func pkViewTapped(_ cell: MessageBaseCell, pkView: UIView!) {
-        if messageInputBar.isActive {
-            messageInputBar.textViewResign()
-            return
-        }
-        if let lastActive = activePKView {
-            lastActive.isUserInteractionEnabled = false
-            lastActive.resignFirstResponder()
-        }
-        activePKView = pkView
-        if let indexPath = tableView.indexPath(for: cell) {
-            drawingIndexPath = indexPath
-        }
+        if #available(iOS 13, *) {
+            if messageInputBar.isActive {
+                messageInputBar.textViewResign()
+                return
+            }
+            if let lastActive = activePKView {
+                lastActive.isUserInteractionEnabled = false
+                lastActive.resignFirstResponder()
+            }
+            activePKView = pkView
+            guard let indexPath = tableView.indexPath(for: cell) else {
+                return
+            }
 
-        let drawVC = DrawViewController()
-        drawVC.username = username
-        guard let pkView = pkView as? PKCanvasView else { return }
-        let message = messages[drawingIndexPath.item]
-        drawVC.message = message
-        drawVC.pkView.drawing = pkView.drawing.transformed(using: CGAffineTransform(scaleX: 1/message.drawScale, y: 1/message.drawScale))
-        drawVC.pkViewDelegate.dataChangedDelegate = self
-        drawVC.modalPresentationStyle = .fullScreen
-        drawVC.chatRoomVC = self
-        self.navigationController?.present(drawVC, animated: true, completion: nil)
+            let drawVC = DrawViewController()
+            drawVC.username = username
+            guard let pkView = pkView as? PKCanvasView else { return }
+            let message = messages[indexPath.item]
+            drawVC.message = message
+            drawVC.pkView.drawing = pkView.drawing.transformed(using: CGAffineTransform(scaleX: 1/message.drawScale, y: 1/message.drawScale))
+            drawVC.pkViewDelegate.dataChangeDelegate = self
+            drawVC.modalPresentationStyle = .fullScreen
+            drawVC.chatRoomVC = self
+            self.navigationController?.present(drawVC, animated: true, completion: nil)
+        }
     }
 
     func emojiOutBounds(from cell: MessageBaseCell, gesture: UIGestureRecognizer) {
         let point = gesture.location(in: tableView)
-        guard let oldIndexPath = cell.indexPath else { return }
+        guard let manager = manager, let oldIndexPath = cell.indexPath else { return }
         guard let newIndexPath = tableView.indexPathForRow(at: point) else {
             needReload(indexPath: [oldIndexPath])
             return
@@ -89,9 +174,9 @@ extension ChatRoomViewController: MessageTableViewCellDelegate {
             messages[oldIndexPath.item].emojisInfo.remove(at: messageIndex)
             let newPoint = gesture.location(in: tableView.cellForRow(at: newIndexPath)?.contentView)
             emojiInfo.x = newPoint.x / UIScreen.main.bounds.width
-            emojiInfo.y = newPoint.y / MessageBaseCell.height(for: messages[newIndexPath.item], username: username)
+            emojiInfo.y = newPoint.y / MessageBaseCell.height(for: messages[newIndexPath.item], tableViewSize: tableView.frame.size)
             emojiInfo.lastModifiedBy = manager.messageManager.myName
-            emojiInfo.lastModifiedUserId = manager.myInfo.userID
+            emojiInfo.lastModifiedUserId = manager.myInfo.userID ?? ""
             messages[newIndexPath.item].emojisInfo.append(emojiInfo)
             needReload(indexPath: [newIndexPath, oldIndexPath])
             manager.sendEmojiInfos([messages[oldIndexPath.item], messages[newIndexPath.item]])
@@ -99,12 +184,40 @@ extension ChatRoomViewController: MessageTableViewCellDelegate {
     }
     
     func emojiInfoDidChange(from oldInfo: EmojiInfo?, to newInfo: EmojiInfo?, cell: MessageBaseCell) {
-        if let indexPahth = tableView.indexPath(for: cell) {
+        if let manager = manager, let indexPahth = tableView.indexPath(for: cell) {
             needReload(indexPath: [indexPahth])
             newInfo?.lastModifiedBy = manager.myName
-            newInfo?.lastModifiedUserId = manager.myInfo.userID
+            newInfo?.lastModifiedUserId = manager.myInfo.userID ?? ""
             manager.sendEmojiInfos([messages[indexPahth.item]])
         }
+    }
+    
+    @objc func playToEnd(_ noti: Notification) {
+        guard let _index = MessageAudioCell.index else { return }
+        tableView.reloadRows(at: [IndexPath(row: _index, section: 0)], with: .none)
+        var nextIndex: Int?
+        for (index, message) in self.messages.enumerated() {
+            if index > _index && message.messageType == .voice {
+                nextIndex = index
+                break
+            }
+        }
+        if let nextIndex = nextIndex {
+            let message = self.messages[nextIndex]
+            if let path = message.voiceURL, let url = fileURLAt(dirName: voiceDir, fileName: path.fileName) {
+                let player = MessageAudioCell.voicePlayer
+                let item = AVPlayerItem(url: url)
+                player.replaceCurrentItem(with: item)
+                player.seek(to: .zero)
+                player.play()
+                message.isPlaying = true
+                MessageAudioCell.index = nextIndex
+            }
+        } else {
+            MessageAudioCell.index = nil
+            MessageAudioCell.isPlaying = false
+        }
+        return
     }
     
     func sharedTracksTap(_ cell: MessageBaseCell, tracks: [Track]) {
@@ -123,7 +236,7 @@ extension ChatRoomViewController: MessageTableViewCellDelegate {
     }
     
     func longPressCell(_ cell: MessageBaseCell, ges: UILongPressGestureRecognizer!) {
-        guard ges.state == .ended, cell.message.messageType != .join else { return }
+        guard purpose == .chat, ges.state == .ended, cell.message.messageType != .join else { return }
         let controller = UIMenuController.shared
         guard let targetView = cell.indicationNeighborView else { return }
         if !messageInputBar.textView.isFirstResponder {
@@ -150,7 +263,14 @@ extension ChatRoomViewController: MessageTableViewCellDelegate {
         controller.menuItems = items
         let rect = CGRect(x: targetView.bounds.width/2, y: 5, width: 0, height: 0)
         messageInputBar.textView.ignoreActions = true
-        controller.showMenu(from: targetView, rect: rect)
+        if #available(iOS 13.0, *) {
+            controller.showMenu(from: targetView, rect: rect)
+        } else {
+            if let targetView = cell.indicationNeighborView {
+                controller.setTargetRect(CGRect(x: targetView.bounds.width / 2, y: 0, width: 100, height: 100), in: targetView)
+                controller.setMenuVisible(true, animated: true)
+            }
+        }
         messageInputBar.textView.ignoreActions = false
     }
     
@@ -163,8 +283,15 @@ extension ChatRoomViewController: MessageTableViewCellDelegate {
         menuItemDone()
         guard let cell = activeMenuCell,
               let index = tableView.indexPath(for: cell)?.row else { return }
-        let text = messages[index].text
-        UIPasteboard.general.string = text
+        let message = messages[index]
+        makePasteFor(message: message)
+    }
+    
+    func makePasteFor(message: Message) {
+        if let index = self.messages.firstIndex(of: message) {
+            let items = wrapItmesWithIndexPath(IndexPath(row: index, section: 0))
+            UIPasteboard.general.itemProviders = items.map({ $0.itemProvider })
+        }
     }
     
     @objc func revokeMenuItemAction(sender: UIMenuController) {
@@ -174,7 +301,7 @@ extension ChatRoomViewController: MessageTableViewCellDelegate {
         revoke(message: messages[index])
     }
     
-    @objc func sendToOthersMenuItemAction(sender: UIMenuController) {
+    @objc func sendToOthersMenuItemAction(sender: UIMenuController?) {
         menuItemDone()
         guard let cell = activeMenuCell,
               let indexPath = tableView.indexPath(for: cell) else { return }
@@ -190,7 +317,7 @@ extension ChatRoomViewController: MessageTableViewCellDelegate {
         guard let cell = activeMenuCell else { return }
         if let imageUrl = cell.message.imageURL, cell.message.sendStatus == .success {
             let isGif = imageUrl.hasSuffix(".gif")
-            self.manager.starAndUploadEmoji(filePath: imageUrl, isGif: isGif)
+            self.manager?.starAndUploadEmoji(filePath: imageUrl, isGif: isGif)
         }
     }
     

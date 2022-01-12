@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="19529" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19519"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="HistoryFilterVC" customModule="DogeChat" customModuleProvider="target">
+            <connections>
+                <outlet property="datePicker" destination="IdX-Yy-LoP" id="wPz-mp-sXi"/>
+                <outlet property="keywordTF" destination="yAb-CN-CyV" id="ruy-eT-ZBf"/>
+                <outlet property="typePicker" destination="VeK-Rn-yvh" id="zyy-jS-dvc"/>
+                <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="i5M-Pr-FkT">
+            <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="52" translatesAutoresizingMaskIntoConstraints="NO" id="dBg-Nv-PYK">
+                    <rect key="frame" x="109" y="306.5" width="196" height="283"/>
+                    <subviews>
+                        <stackView opaque="NO" contentMode="scaleToFill" spacing="30" translatesAutoresizingMaskIntoConstraints="NO" id="haY-Gc-H7f">
+                            <rect key="frame" x="0.0" y="0.0" width="196" height="34"/>
+                            <subviews>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="关键词" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fre-cF-iUI">
+                                    <rect key="frame" x="0.0" y="0.0" width="52" height="34"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                    <nil key="textColor"/>
+                                    <nil key="highlightedColor"/>
+                                </label>
+                                <textField opaque="NO" contentMode="scaleToFill" verticalCompressionResistancePriority="751" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="请输入关键词" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="yAb-CN-CyV">
+                                    <rect key="frame" x="82" y="0.0" width="114" height="34"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                    <textInputTraits key="textInputTraits"/>
+                                </textField>
+                            </subviews>
+                        </stackView>
+                        <stackView opaque="NO" contentMode="scaleToFill" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="J0k-VR-QIX">
+                            <rect key="frame" x="0.0" y="86" width="196" height="31"/>
+                            <subviews>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="751" text="消息类型" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Waf-NU-rOH">
+                                    <rect key="frame" x="0.0" y="5.5" width="147" height="20.5"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                    <nil key="textColor"/>
+                                    <nil key="highlightedColor"/>
+                                </label>
+                                <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="NqY-LV-sEY">
+                                    <rect key="frame" x="147" y="0.0" width="51" height="31"/>
+                                    <connections>
+                                        <action selector="typeSwicher:" destination="-1" eventType="valueChanged" id="tJS-Oo-bK9"/>
+                                    </connections>
+                                </switch>
+                                <pickerView hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="VeK-Rn-yvh">
+                                    <rect key="frame" x="196" y="-92.5" width="0.0" height="216"/>
+                                </pickerView>
+                            </subviews>
+                        </stackView>
+                        <stackView opaque="NO" contentMode="scaleToFill" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="yx2-pe-nc0">
+                            <rect key="frame" x="0.0" y="169" width="196" height="31"/>
+                            <subviews>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="751" text="开始日期" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lSB-9V-6ae">
+                                    <rect key="frame" x="0.0" y="5.5" width="147" height="20.5"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                    <nil key="textColor"/>
+                                    <nil key="highlightedColor"/>
+                                </label>
+                                <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="rhz-Xw-0AJ">
+                                    <rect key="frame" x="147" y="0.0" width="51" height="31"/>
+                                    <connections>
+                                        <action selector="dateSwitcher:" destination="-1" eventType="valueChanged" id="uii-mp-5ym"/>
+                                    </connections>
+                                </switch>
+                                <datePicker hidden="YES" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" datePickerMode="date" style="wheels" translatesAutoresizingMaskIntoConstraints="NO" id="IdX-Yy-LoP">
+                                    <rect key="frame" x="196" y="-92.5" width="0.0" height="216"/>
+                                    <locale key="locale" localeIdentifier="zh_CN"/>
+                                </datePicker>
+                            </subviews>
+                        </stackView>
+                        <stackView opaque="NO" contentMode="scaleToFill" spacing="52" translatesAutoresizingMaskIntoConstraints="NO" id="VNW-cs-S0T">
+                            <rect key="frame" x="0.0" y="252" width="196" height="31"/>
+                            <subviews>
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ThM-kb-J8I">
+                                    <rect key="frame" x="0.0" y="0.0" width="72" height="31"/>
+                                    <state key="normal" title="Button"/>
+                                    <buttonConfiguration key="configuration" style="plain" title="确认"/>
+                                    <connections>
+                                        <action selector="confirm:" destination="-1" eventType="touchUpInside" id="Sqq-4E-D9w"/>
+                                    </connections>
+                                </button>
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gf4-vt-TNS">
+                                    <rect key="frame" x="124" y="0.0" width="72" height="31"/>
+                                    <state key="normal" title="Button"/>
+                                    <buttonConfiguration key="configuration" style="plain" title="取消"/>
+                                    <connections>
+                                        <action selector="cancel:" destination="-1" eventType="touchUpInside" id="obu-vz-dxR"/>
+                                    </connections>
+                                </button>
+                            </subviews>
+                        </stackView>
+                    </subviews>
+                </stackView>
+            </subviews>
+            <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
+            <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+            <constraints>
+                <constraint firstItem="dBg-Nv-PYK" firstAttribute="centerY" secondItem="i5M-Pr-FkT" secondAttribute="centerY" id="GLz-IT-nsM"/>
+                <constraint firstItem="dBg-Nv-PYK" firstAttribute="top" relation="greaterThanOrEqual" secondItem="fnl-2z-Ty3" secondAttribute="top" constant="50" id="TYR-Rg-JXC"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="dBg-Nv-PYK" secondAttribute="bottom" constant="50" id="Wzf-Lt-cMt"/>
+                <constraint firstItem="dBg-Nv-PYK" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="12" id="ZKF-hc-ef8"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="dBg-Nv-PYK" secondAttribute="trailing" constant="12" id="eQb-fz-Xhq"/>
+                <constraint firstItem="dBg-Nv-PYK" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="skW-uG-GK9"/>
+            </constraints>
+            <point key="canvasLocation" x="139" y="93"/>
+        </view>
+    </objects>
+    <resources>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
+</document>

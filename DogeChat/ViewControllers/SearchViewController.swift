@@ -8,7 +8,7 @@
 
 import UIKit
 import DogeChatNetwork
-import DogeChatUniversal
+import DogeChatCommonDefines
 
 protocol AddContactDelegate: AnyObject {
     func addSuccess()
@@ -25,7 +25,7 @@ class SearchViewController: DogeChatViewController, DogeChatVCTableDataSource {
     var tableView = DogeChatTableView()
     
     var friends: [Friend] = []
-    var manager: WebSocketManager {
+    var manager: WebSocketManager? {
         return socketForUsername(username)
     }
     var status: Status = .accept
@@ -36,36 +36,21 @@ class SearchViewController: DogeChatViewController, DogeChatVCTableDataSource {
         setupUI()
         lookupAddRequest()
     }
-    
-    override var keyCommands: [UIKeyCommand]? {
-        return [UIKeyCommand(action: #selector(escapeAction(_:)), input: UIKeyCommand.inputEscape)]
-    }
-    
+        
     @objc func escapeAction(_ sender: Any) {
         self.dismiss(animated: true, completion: nil)
     }
     
     private func setupUI() {
-        view.addSubview(searchBar)
         view.addSubview(tableView)
         
-        tableView.rowHeight = ContactTableViewCell.cellHeight
+        tableView.rowHeight = UITableView.automaticDimension
         searchBar.becomeFirstResponder()
         
-        searchBar.translatesAutoresizingMaskIntoConstraints = false
         tableView.translatesAutoresizingMaskIntoConstraints = false
         
-        NSLayoutConstraint.activate([
-            searchBar.topAnchor.constraint(equalTo: view.topAnchor),
-            searchBar.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            searchBar.trailingAnchor.constraint(equalTo: view.trailingAnchor)])
-        
-        NSLayoutConstraint.activate([
-            tableView.topAnchor.constraint(equalTo: searchBar.bottomAnchor),
-            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
-        ])
+        self.navigationItem.titleView = searchBar
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "取消", style: .plain, target: self, action: #selector(swipeAction))
         
         searchBar.delegate = self
         tableView.delegate = self
@@ -75,6 +60,11 @@ class SearchViewController: DogeChatViewController, DogeChatVCTableDataSource {
         let swipeDown = UISwipeGestureRecognizer(target: self, action: #selector(swipeAction))
         swipeDown.direction = .down
         view.addGestureRecognizer(swipeDown)
+    }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        self.tableView.frame = self.view.bounds
     }
     
     @objc func swipeAction() {
@@ -90,21 +80,21 @@ extension SearchViewController: UITableViewDataSource, UITableViewDelegate, UISe
         switch status {
         case .search:
             let friend = friends[indexPath.row]
-            if manager.friendsDict[friend.userID] != nil {
+            if manager?.friendsDict[friend.userID] != nil {
                 self.makeAutoAlert(message: "已经是你的好友！", detail: nil, showTime: 1, completion: nil)
                 return
             }
-            manager.applyAdd(friend: self.friends[indexPath.row]) { (success) in
+            manager?.applyAdd(friend: self.friends[indexPath.row]) { (success) in
                 self.makeAutoAlert(message: success ? "已发送申请" : "请求失败", detail: nil, showTime: 1, completion: nil)
             }
         case .accept:
             let friend = self.friends[indexPath.row]
-            if manager.friendsDict[friend.userID] != nil {
+            if manager?.friendsDict[friend.userID] != nil {
                 self.makeAutoAlert(message: "已经是你好友！", detail: nil, showTime: 1, completion: nil)
             } else {
                 let alert = UIAlertController(title: "接受申请？", message: nil, preferredStyle: .alert)
                 alert.addAction(UIAlertAction(title: "确定", style: .default, handler: { _ in
-                    self.manager.acceptQuery(requestId: (friend as! RequestFriend).requestID!) { success in
+                    self.manager?.acceptQuery(requestId: (friend as! RequestFriend).requestID!) { success in
                         self.makeAutoAlert(message: success ? "添加成功" : "失败", detail: nil, showTime: 1, completion: nil)
                         self.delegate?.addSuccess()
                     }
@@ -137,7 +127,7 @@ extension SearchViewController: UITableViewDataSource, UITableViewDelegate, UISe
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         status = .search
         guard let input = searchBar.text else { return }
-        manager.search(username: input) { userInfos in
+        manager?.search(username: input) { userInfos in
             self.friends = userInfos
             self.tableView.reloadData()
         }
@@ -145,7 +135,11 @@ extension SearchViewController: UITableViewDataSource, UITableViewDelegate, UISe
     
     func lookupAddRequest() {
         status = .accept
-        manager.inspectQuery { friends in
+        if var accounInfo = manager?.httpsManager.accountInfo {
+            accounInfo.lastOpenRequestTime = Date().timeIntervalSince1970
+            manager?.httpsManager.accountInfo = accounInfo
+        }
+        manager?.inspectQuery { friends in
             self.friends = friends
             self.tableView.reloadData()
         }

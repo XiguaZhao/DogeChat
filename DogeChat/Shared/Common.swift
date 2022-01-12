@@ -8,6 +8,13 @@
 
 import UIKit
 import DogeChatUniversal
+import CoreGraphics
+import DogeChatCommonDefines
+
+let videoIdentifier = "public.movie"
+let gifIdentifier = "com.compuserve.gif"
+let fileIdentifier = "public.file-url"
+let audioIdentifier = "public.audio"
 
 let livePhotoDir = "livephotos"
 let videoDir = "videos"
@@ -15,10 +22,16 @@ let voiceDir = "voice"
 let drawDir = "draws"
 let pasteDir = "paste"
 let photoDir = "photos"
+let contactsDir = "contacts"
+let audioDir = "audios"
 
-var maxID: Int {
-    (UserDefaults.standard.value(forKey: "maxID") as? Int) ?? 0
-}
+let maxTextHeight: CGFloat = 2000
+let tableViewCellTopBottomPadding: CGFloat = 5
+var fontSizeScale: CGFloat = 1
+let maxFontSize: CGFloat = 60
+
+let debugUsers = ["赵锡光", "username2", "username", "Pino", "靓仔2号", "靓仔三号", "西瓜", "仙城最靓的仔", "最强王者"]
+
 
 public func syncOnMainThread(block: () -> Void) {
     if Thread.isMainThread {
@@ -30,51 +43,6 @@ public func syncOnMainThread(block: () -> Void) {
     }
 }
 
-func createDir(name: String) -> URL {
-    let url = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
-        .appendingPathComponent(name)
-    try? FileManager.default.createDirectory(at: url, withIntermediateDirectories: true, attributes: nil)
-    return url
-}
-
-public func fileURLAt(dirName: String, fileName: String) -> URL? {
-    let url = try! FileManager.default.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
-        .appendingPathComponent(dirName)
-        .appendingPathComponent(fileName)
-    let path = (url.absoluteString as NSString).substring(from: 7)
-    if FileManager.default.fileExists(atPath: path) {
-        return url
-    } else {
-        return nil
-    }
-}
-
-public func saveFileToDisk(dirName: String, fileName: String, data: Data) {
-    let folderName = dirName
-    let fileManager = FileManager.default
-    let documentsFolder = try! fileManager.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
-    let folderURL = documentsFolder.appendingPathComponent(folderName)
-    let folderExists = (try? folderURL.checkResourceIsReachable()) ?? false
-    do {
-        if !folderExists {
-            try fileManager.createDirectory(at: folderURL, withIntermediateDirectories: false)
-        }
-        let fileURL = folderURL.appendingPathComponent(fileName)
-        try data.write(to: fileURL)
-        
-    } catch {
-        print(error)
-    }
-}
-
-public func deleteFile(dirName: String, fileName: String) {
-    let folderName = dirName
-    let fileManager = FileManager.default
-    let documentsFolder = try! fileManager.url(for: .documentDirectory, in: .userDomainMask, appropriateFor: nil, create: false)
-    let folderURL = documentsFolder.appendingPathComponent(folderName)
-    let fileURL = folderURL.appendingPathComponent(fileName)
-    try? fileManager.removeItem(at: fileURL)
-}
 
 extension String {
     var fileURL: URL {
@@ -98,6 +66,70 @@ extension String {
     var isGif: Bool {
         self.hasSuffix(".gif")
     }
+    
+    var isVideo: Bool {
+        let lowerCased = self.lowercased()
+        return lowerCased.hasSuffix(".mov") || lowerCased.hasSuffix(".mp4")
+    }
+    
+    var isImage: Bool {
+        let lowerCased = self.lowercased()
+        return lowerCased.hasSuffix(".jpeg") || lowerCased.hasSuffix(".jpg") || lowerCased.hasSuffix(".png")
+    }
+    
+    var isWebURL: Bool {
+        self.webUrlify() != nil
+    }
+    
+    func webUrlify() -> String? {
+        if var res = self.webUrlifyWithountChange()?.str {
+            if !res.hasPrefix("http") {
+                res = "https://" + res
+            }
+            return res
+        }
+        return nil
+    }
+    
+    func webUrlifyWithountChange() -> (str: String, range: NSRange)? {
+        if let dataDetector = try? NSDataDetector(types: NSTextCheckingResult.CheckingType.link.rawValue) {
+            if let match = dataDetector.matches(in: self, options: [], range: NSRange(location: 0, length: self.utf16.count)).first, let range = Range(match.range, in: self) {
+                let res = String(self[range])
+                return (res, NSRange.init(range, in: self))
+            }
+        }
+        return nil
+    }
+    
+    func getParams() -> [String : String] {
+        var res = [String: String]()
+        let components = self.components(separatedBy: "&")
+        for component in components {
+            let keyValue = component.components(separatedBy: "=")
+            if keyValue.count == 2 {
+                res[keyValue[0]] = keyValue[1]
+            }
+        }
+        return res
+    }
+    
+    func getRange() -> NSRange? {
+        let params = self.getParams()
+        if let location = Int(params["location"] ?? ""),
+           let length = Int(params["length"] ?? "") {
+            return NSRange(location: location, length: length)
+        }
+        return nil
+    }
+    
+    func toNSRange(_ range: Range<String.Index>) -> NSRange {
+        guard let from = range.lowerBound.samePosition(in: self.utf16),
+              let to = range.upperBound.samePosition(in: self.utf16) else {
+                  return NSRange(location: 0, length: 0)
+              }
+        return NSMakeRange(utf16.distance(from: utf16.startIndex, to: from), utf16.distance(from: from, to: to))
+    }
+
 }
 
 enum ImageWidth: CGFloat {
@@ -128,6 +160,11 @@ extension UIImage {
         UIGraphicsEndImageContext()
         return image ?? self
     }
+    
+    public func isTransparent() -> Bool {
+      guard let alpha: CGImageAlphaInfo = self.cgImage?.alphaInfo else { return false }
+      return alpha == .first || alpha == .last || alpha == .premultipliedFirst || alpha == .premultipliedLast
+    }
 }
 
 extension CGRect {
@@ -148,21 +185,24 @@ extension Dictionary where Key == String {
     
 }
 
-func compressEmojis(_ image: UIImage, imageWidth: ImageWidth = .width100) -> Data {
+func compressEmojis(_ image: UIImage, imageWidth: ImageWidth = .width100, isGIF: Bool = false, data: Data? = nil, scale: CGFloat? = nil) -> Data {
     if imageWidth == .original {
-        return image.jpegData(compressionQuality: 0.5)!
+        return image.jpegData(compressionQuality: 0.3) ?? Data()
     }
     let width = imageWidth.rawValue
     var size = CGSize(width: width, height: floor(image.size.height * (width / image.size.width)))
     if image.size.width < width {
         size = image.size
     }
+    let rect = CGRect(origin: .zero, size: size)
+    var res: UIImage?
     UIGraphicsBeginImageContextWithOptions(size, false, 0.0)
-    image.draw(in: CGRect(x: 0, y: 0, width: size.width, height: size.height))
-    let image = UIGraphicsGetImageFromCurrentImageContext()
+    image.draw(in: rect)
+    res = UIGraphicsGetImageFromCurrentImageContext()
     UIGraphicsEndImageContext()
-    return image?.jpegData(compressionQuality: 0.5) ?? Data()
+    return res?.jpegData(compressionQuality: 0.3) ?? Data()
 }
+
 
 func boundsForDraw(_ message: Message) -> CGRect? {
     if let str = message.pkDataURL {
@@ -202,4 +242,29 @@ func sizeFromStr(_ str: String) -> CGSize? {
         return CGSize(width: width, height: height)
     }
     return nil
+}
+
+public func getTimestampFromStr(_ str: String) -> TimeInterval {
+    let dfmatter = DateFormatter()
+    dfmatter.dateFormat="yyyy-MM-dd HH:mm:ss"
+    let date = dfmatter.date(from: str)
+    
+    let dateStamp = date?.timeIntervalSince1970
+    return dateStamp ?? 0
+}
+
+public func dirNameForType(_ type: MessageType) -> String {
+    switch type {
+    case .image:
+        return photoDir
+    case .video:
+        return videoDir
+    case .livePhoto:
+        return livePhotoDir
+    case .draw:
+        return drawDir
+    case .voice:
+        return audioDir
+    default: return ""
+    }
 }

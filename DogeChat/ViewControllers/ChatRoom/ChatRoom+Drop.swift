@@ -8,47 +8,47 @@
 import DogeChatNetwork
 import DogeChatUniversal
 import PencilKit
+import Foundation
+import AVFoundation
+import DogeChatCommonDefines
 
 extension ChatRoomViewController: UITableViewDropDelegate {
     func tableView(_ tableView: UITableView, performDropWith coordinator: UITableViewDropCoordinator) {
-        if let item = coordinator.items.first,
-              let passedObject = item.dragItem.localObject as? [Any?],
-              let imageLink = passedObject[0] as? String { // 这是拖拽表情包
-            if let destinationIndexPath = coordinator.destinationIndexPath {
-                coordinator.session.loadObjects(ofClass: UIImage.self) { (images) in
-                    for _image in images {
-                        let image = _image as! UIImage
-                        if let cell = tableView.cellForRow(at: destinationIndexPath) as? MessageBaseCell {
-                            cell.didDrop(imageLink: imageLink, image: image, point: coordinator.session.location(in: cell.contentView))
+        for item in coordinator.items {
+            if let passedObject = item.dragItem.localObject as? [String : Any?],
+                  let imageLink = passedObject["emojiURL"] as? String { // 这是拖拽表情包
+                if let destinationIndexPath = coordinator.destinationIndexPath {
+                    coordinator.session.loadObjects(ofClass: UIImage.self) { (images) in
+                        for _image in images {
+                            let image = _image as! UIImage
+                            if let cell = tableView.cellForRow(at: destinationIndexPath) as? MessageBaseCell {
+                                cell.didDrop(imageLink: imageLink, image: image, point: coordinator.session.location(in: cell.contentView))
+                            }
                         }
                     }
                 }
-            }
-        } else if let local = coordinator.items.first?.dragItem.localObject as? String, local == "local" {
-            
-        } else { //这是从别的app拖过来的
-            var textMessages = [Message]()
-            var imageItems = [NSItemProvider]()
-            let imageCount = coordinator.items.filter( { $0.dragItem.itemProvider.canLoadObject(ofClass: UIImage.self) }).count
-            let strCount = coordinator.items.filter( { $0.dragItem.itemProvider.canLoadObject(ofClass: String.self) }).count
-            for item in coordinator.items {
-                if item.dragItem.itemProvider.canLoadObject(ofClass: UIImage.self) {
-                    imageItems.append(item.dragItem.itemProvider)
-                    if imageItems.count == imageCount {
-                        self.processItemProviders(imageItems)
-                    }
-                } else if item.dragItem.itemProvider.canLoadObject(ofClass: String.self) {
+            } else if let info = item.dragItem.localObject as? [String : Any], let userID = info["userID"] as? String {
+                if userID != friend.userID, let message = info["message"] as? Message {
+                    Self.transferMessages([message], to: [self.friend], manager: self.manager)
+                }
+            } else { //这是从别的app拖过来的
+                var textMessages = [Message]()
+                let itemProvider = item.dragItem.itemProvider
+                if itemProvider.canLoadObject(ofClass: UIImage.self) {
+                    self.processItemProviders([item.dragItem.itemProvider])
+                } else if itemProvider.hasItemConformingToTypeIdentifier(videoIdentifier) || itemProvider.hasItemConformingToTypeIdentifier(audioIdentifier) {
+                    self.processItemProviders([itemProvider])
+                } else if itemProvider.canLoadObject(ofClass: String.self) {
                     _ = item.dragItem.itemProvider.loadObject(ofClass: String.self) { [weak self] str, error in
                         guard let self = self, let str = str else {
                             return
                         }
-                        let message = self.processMessageString(for: str, type: .text, imageURL: nil, videoURL: nil)
-                        textMessages.append(message)
-                        if textMessages.count == strCount {
-                            self.insertNewMessageCell(textMessages)
-                            for newMessage in textMessages {
-                                socketForUsername(self.username).commonWebSocket.sendWrappedMessage(newMessage)
-                            }
+                        if let message = self.processMessageString(for: str, type: .text, imageURL: nil, videoURL: nil) {
+                            textMessages.append(message)
+                        }
+                        self.insertNewMessageCell(textMessages)
+                        for newMessage in textMessages {
+                            socketForUsername(self.username)?.commonWebSocket.sendWrappedMessage(newMessage)
                         }
                     }
                 }
@@ -57,7 +57,11 @@ extension ChatRoomViewController: UITableViewDropDelegate {
     }
     
     func tableView(_ tableView: UITableView, canHandle session: UIDropSession) -> Bool {
-        return session.canLoadObjects(ofClass: UIImage.self) || session.canLoadObjects(ofClass: String.self)
+        guard purpose == .chat else { return false }
+        var res = session.canLoadObjects(ofClass: UIImage.self) || session.canLoadObjects(ofClass: String.self)
+        res = res || session.hasItemsConforming(toTypeIdentifiers: [videoIdentifier])
+        res = res || session.hasItemsConforming(toTypeIdentifiers: [audioIdentifier])
+        return res
     }
         
     func tableView(_ tableView: UITableView, dropSessionDidUpdate session: UIDropSession, withDestinationIndexPath destinationIndexPath: IndexPath?) -> UITableViewDropProposal {

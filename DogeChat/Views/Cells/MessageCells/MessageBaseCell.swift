@@ -5,6 +5,8 @@ import DogeChatNetwork
 import DogeChatUniversal
 import PhotosUI
 import DACircularProgress
+import PencilKit
+import DogeChatCommonDefines
 
 let nameLabelStartX: CGFloat = 40 + 5 + 5
 let nameLabelStartY: CGFloat = 10
@@ -12,31 +14,30 @@ let avatarWidth: CGFloat = 40
 let avatarMargin: CGFloat = 5
 var hapticIndex = 0
 
-protocol MessageTableViewCellDelegate: AnyObject {
+protocol MessageTableViewCellDelegate: DownloadUploadProgressDelegate {
     func mediaViewTapped(_ cell: MessageBaseCell, path: String, isAvatar: Bool)
     func emojiOutBounds(from cell: MessageBaseCell, gesture: UIGestureRecognizer)
     func emojiInfoDidChange(from oldInfo: EmojiInfo?, to newInfo: EmojiInfo?, cell: MessageBaseCell)
     func pkViewTapped(_ cell: MessageBaseCell, pkView: UIView!)
     func avatarDoubleTap(_ cell: MessageBaseCell)
     func sharedTracksTap(_ cell: MessageBaseCell, tracks: [Track])
-    func downloadProgressUpdate(progress: Double, message: Message)
     func downloadSuccess(_ cell: MessageBaseCell?, message: Message)
     func longPressCell(_ cell: MessageBaseCell, ges: UILongPressGestureRecognizer!)
-}
-
-protocol ContactDataSource: AnyObject {
-    var friends: [Friend] { get }
+    func longPressAvatar(_ cell: MessageBaseCell, ges: UILongPressGestureRecognizer!)
+    func textCellDoubleTap(_ cell: MessageBaseCell)
+    func textCellSingleTap(_ cell: MessageBaseCell)
+    func mapViewTap(_ cell: MessageBaseCell, latitude: Double, longitude: Double)
 }
 
 class MessageBaseCell: DogeChatTableViewCell {
     var cookie: String {
-        socketForUsername(username).cookie
+        socketForUsername(username)?.cookie ?? ""
     }
-    var manager: WebSocketManager {
+    var manager: WebSocketManager? {
         return socketForUsername(username)
     }
-    var session: AFHTTPSessionManager {
-        return manager.commonWebSocket.httpRequestsManager.session
+    var session: AFHTTPSessionManager? {
+        return manager?.commonWebSocket.httpRequestsManager.session
     }
     weak var delegate: MessageTableViewCellDelegate?
     var message: Message!
@@ -52,11 +53,12 @@ class MessageBaseCell: DogeChatTableViewCell {
     }
     var username = ""
     var activeEmojiView: UIView?
-    static let emojiWidth: CGFloat = 80
+    static let emojiWidth: CGFloat = 130
     static let pkViewHeight: CGFloat = 100
     lazy var longPressGes: UILongPressGestureRecognizer = {
         return UILongPressGestureRecognizer(target: self, action: #selector(onLongPress(_:)))
     }()
+    var avatarLongPress: UILongPressGestureRecognizer!
     var indicationNeighborView: UIView? {
         didSet {
             indicationNeighborView?.isUserInteractionEnabled = true
@@ -88,6 +90,8 @@ class MessageBaseCell: DogeChatTableViewCell {
         avatarImageView.layer.masksToBounds = true
         avatarImageView.layer.cornerRadius = avatarWidth / 2
         avatapSingleTapGes.addTarget(self, action: #selector(tapAvatarAction(_:)))
+        avatarLongPress = UILongPressGestureRecognizer(target: self, action: #selector(onAvatarLongPress(_:)))
+        avatarImageView.addGestureRecognizer(avatarLongPress)
         avatarImageView.addGestureRecognizer(avatapSingleTapGes)
         avatarImageView.isUserInteractionEnabled = true
         addDoubleTapForAvatar()
@@ -176,7 +180,15 @@ class MessageBaseCell: DogeChatTableViewCell {
         delegate?.longPressCell(self, ges: ges)
     }
     
+    @objc func onAvatarLongPress(_ ges: UILongPressGestureRecognizer) {
+        guard ges.state == .ended else { return }
+        delegate?.longPressAvatar(self, ges: ges)
+    }
+    
     func layoutEmojis() {
+        guard let manager = manager else {
+            return
+        }
         for (emojiInfo, imageView) in emojis {
             let emojiSize = sizeFromStr(emojiInfo.imageLink)
             let width = emojiInfo.scale * MessageBaseCell.emojiWidth
@@ -185,7 +197,20 @@ class MessageBaseCell: DogeChatTableViewCell {
             if let emojiSize = emojiSize {
                 size = CGSize(width: width, height: width / emojiSize.width * emojiSize.height)
             }
-            let origin = CGPoint(x: emojiInfo.x * contentSize.width - size.width / 2, y: max(0, emojiInfo.y) * contentSize.height - size.height / 2)
+            var x = emojiInfo.x
+            let y = emojiInfo.y
+            let myID = manager.myID
+            if message.option == .toOne { // 私聊
+                if (emojiInfo.lastModifiedUserId != myID && message.messageSender == .someoneElse) || (message.messageSender == .ourself && emojiInfo.lastModifiedUserId != myID) {
+                    x = 1 - x
+                }
+            } else { // 群聊
+                if (message.messageSender == .ourself && emojiInfo.lastModifiedUserId != myID) || (message.senderUserID == emojiInfo.lastModifiedUserId && message.senderUserID != myID) {
+                    x = 1 - x
+                }
+            }
+
+            let origin = CGPoint(x: x * contentSize.width - size.width / 2, y: max(0, y) * contentSize.height - size.height / 2)
             imageView.frame = CGRect(origin: origin, size: size)
             imageView.layer.masksToBounds = true
             imageView.layer.cornerRadius = min(size.width, size.height) / 10
@@ -200,8 +225,8 @@ class MessageBaseCell: DogeChatTableViewCell {
             referView.apply(message: refer)
         } 
         var name = message.senderUsername
-        if !message.friend.isGroup {
-            if let nickname = manager.friendsDict[message.senderUserID]?.nickName, !nickname.isEmpty {
+        if let friend = message.friend, !friend.isGroup {
+            if let nickname = manager?.friendsDict[message.senderUserID]?.nickName, !nickname.isEmpty {
                 name = nickname
             }
         }
@@ -234,6 +259,9 @@ class MessageBaseCell: DogeChatTableViewCell {
     }
     
     @objc func tapAvatarAction(_ ges: UITapGestureRecognizer) {
+        guard let manager = manager else {
+            return
+        }
         let userID = message.senderUserID
         var url: String?
         if message.messageSender == .ourself {
@@ -257,6 +285,9 @@ class MessageBaseCell: DogeChatTableViewCell {
     
     
     private func _loadAvatar() {
+        guard let manager = manager else {
+            return
+        }
         let block: (String) -> Void = { [self] url in
             let isGif = url.hasSuffix(".gif")
             let captured = message
@@ -311,62 +342,76 @@ class MessageBaseCell: DogeChatTableViewCell {
     
     
     // 计算高度
-    class func height(for message: Message, username: String) -> CGFloat {
-        let maxSize = CGSize(width: 2*(AppDelegate.shared.widthFor(side: .right, username: username)/3), height: CGFloat.greatestFiniteMagnitude)
+    class func height(for message: Message, tableViewSize: CGSize) -> CGFloat {
+        let screenWidth = tableViewSize.width
+        let screenHeight = tableViewSize.height
+        let maxSize = CGSize(width: 2*(screenWidth/3), height: CGFloat.greatestFiniteMagnitude)
         let nameHeight = message.messageSender == .ourself ? 0 : (height(forText: message.senderUsername, fontSize: 10, maxSize: maxSize) + 4 )
-        let messageHeight = height(forText: message.text, fontSize: message.fontSize, maxSize: maxSize)
-        var height: CGFloat
-        let screenWidth = AppDelegate.shared.widthFor(side: .right, username: username)
-        let screenHeight = AppDelegate.shared.heightFor(side: .right, username: username)
-        switch message.messageType {
+        var rowHeight: CGFloat
+        let type = message.messageType
+        switch type {
         case .join, .text, .voice:
-            height = nameHeight + messageHeight + 32 + 16
+            let computer: (String) -> CGFloat = { text in
+                return height(forText: text, fontSize: min(maxFontSize, type == .join ? 10 : message.fontSize * fontSizeScale) + (isMac() ? 3 : 0), maxSize: maxSize)
+            }
+            let text = message.messageType == .voice ? "  " : message.text
+            let messageHeight = computer(text)
+            rowHeight = nameHeight + messageHeight + 32 + 2 * Label.verticalPadding
+            rowHeight = min(rowHeight, maxTextHeight)
         case .image, .livePhoto, .video:
+            let minHeight: CGFloat = 35
             if let size = sizeForImageOrVideo(message) {
                 let scale: CGFloat = message.messageType == .image ? 0.5 : 0.65
                 if screenWidth < screenHeight {
-                    let width = min(screenWidth * scale, size.width)
-                    height = size.height * width / size.width + nameHeight + 30
+                    let width = max(minHeight, min(screenWidth * scale, size.width))
+                    rowHeight = size.height * width / size.width
                 } else {
-                    height = min(screenHeight * scale, size.height) + nameHeight + 30
+                    rowHeight = max(minHeight, min(screenHeight * scale, size.height))
                 }
                 message.imageSize = size
+                rowHeight += nameHeight + 30
             } else {
-                height = nameHeight + 150
+                rowHeight = nameHeight + 150
             }
-            height = min(screenHeight * 0.6, height)
+            rowHeight = min(screenHeight * 0.6, rowHeight)
         case .draw:
-            height = nameHeight + pkViewHeight
-            let block: (CGRect) -> CGFloat = { bounds in
-                let maxWidth = screenWidth * 0.8
-                if bounds.maxX > maxWidth {
-                    let ratio = maxWidth / bounds.maxX
-                    return bounds.height * ratio + nameHeight + bounds.origin.y * ratio + 30
-                } else {
-                    return nameHeight + bounds.maxY + 30
+            if #available(iOS 13, *) {
+                rowHeight = nameHeight + pkViewHeight
+                let block: (CGRect) -> CGFloat = { bounds in
+                    let maxWidth = screenWidth * 0.8
+                    if bounds.maxX > maxWidth {
+                        let ratio = maxWidth / bounds.maxX
+                        return bounds.height * ratio + nameHeight + bounds.origin.y * ratio + 30
+                    } else {
+                        return nameHeight + bounds.maxY + 30
+                    }
                 }
-            }
-            if let bounds = message.drawBounds {
-                height = block(bounds)
-            } else if let bounds = boundsForDraw(message) {
-                height = block(bounds)
-            } else if let pkDrawing = getPKDrawing(message: message) as? PKDrawing {
-                let bounds = pkDrawing.bounds
-                height = block(bounds)
+                if let bounds = message.drawBounds {
+                    rowHeight = block(bounds)
+                } else if let bounds = boundsForDraw(message) {
+                    rowHeight = block(bounds)
+                } else if let pkDrawing = getPKDrawing(message: message) as? PKDrawing {
+                    let bounds = pkDrawing.bounds
+                    rowHeight = block(bounds)
+                } else {
+                    rowHeight = 350
+                }
             } else {
-                height = 350
+                rowHeight = 0
             }
         case .track:
-            height = 120
+            rowHeight = 120
+        case .location:
+            rowHeight = 300
         }
-        var wholeFrame = CGRect(x: 0, y: 0, width: screenWidth, height: max(0, height))
+        var wholeFrame = CGRect(x: 0, y: 0, width: screenWidth, height: max(0, rowHeight))
         for emojiInfo in message.emojisInfo {
             var emojiHeight = emojiWidth
             if let size = sizeFromStr(emojiInfo.imageLink) {
                 emojiHeight = size.height * emojiWidth / size.width
             }
             let size = CGSize(width: emojiWidth * emojiInfo.scale, height: emojiHeight * emojiInfo.scale)
-            let point = CGPoint(x: screenWidth * emojiInfo.x - size.width / 2, y: height * emojiInfo.y - size.height / 2)
+            let point = CGPoint(x: screenWidth * emojiInfo.x - size.width / 2, y: rowHeight * emojiInfo.y - size.height / 2)
             let frame = CGRect(origin: point, size: size)
             wholeFrame = wholeFrame.union(frame)
         }
@@ -375,9 +420,19 @@ class MessageBaseCell: DogeChatTableViewCell {
     }
     
     class func height(forText text: String, fontSize: CGFloat, maxSize: CGSize) -> CGFloat {
+        var text = text
+        var length = MessageTextCell.iosMaxTextLength
+        #if targetEnvironment(macCatalyst)
+        length = MessageTextCell.macCatalystMaxTextLength
+        #endif
+        if text.count > length {
+            text = (text as NSString).substring(to: length) + "..."
+        }
+        let fontSize = fontSize
         let font = UIFont(name: "Helvetica", size: fontSize)!
-        let attrString = NSAttributedString(string: text, attributes:[NSAttributedString.Key.font: font,
-                                                                      NSAttributedString.Key.foregroundColor: UIColor.white])
+        let attrString = NSAttributedString(string: text, attributes:[.font: font,
+                                                                      .paragraphStyle: MessageTextCell.paraStyle
+                        ])
         let textHeight = attrString.boundingRect(with: maxSize, options: .usesLineFragmentOrigin, context: nil).size.height
         
         return textHeight
@@ -393,7 +448,10 @@ class MessageBaseCell: DogeChatTableViewCell {
 extension MessageBaseCell {
     func didDrop(imageLink: String, image: UIImage, point: CGPoint) {
         playHaptic()
-        let emojiInfo = EmojiInfo(x: max(0, point.x/self.contentSize.width), y: max(0, point.y/self.contentSize.height), rotation: 0, scale: 1, imageLink: imageLink, lastModifiedBy: manager.myInfo.username, lastModifiedUserId: manager.myInfo.userID)
+        guard let manager = manager else {
+            return
+        }
+        let emojiInfo = EmojiInfo(x: max(0, point.x/self.contentSize.width), y: max(0, point.y/self.contentSize.height), rotation: 0, scale: 1, imageLink: imageLink, lastModifiedBy: manager.myInfo.username, lastModifiedUserId: manager.myInfo.userID ?? "")
         message.emojisInfo.append(emojiInfo)
         delegate?.emojiInfoDidChange(from: nil, to: emojiInfo, cell: self)
     }
@@ -457,11 +515,15 @@ extension MessageBaseCell {
     
     @objc func beginReceiveGes(_ ges: UITapGestureRecognizer) {
         playHaptic()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) { [weak self] in
+            self?.tableView?.dragInteractionEnabled = true
+        }
         if let view = ges.view, let gestures = view.gestureRecognizers {
             activeEmojiView = view
             for gesture in gestures {
                 if gesture.isKind(of: UIPanGestureRecognizer.self) {
                     gesture.isEnabled = true
+                    self.tableView?.dragInteractionEnabled = false
                     if let gesturesOfContentView = contentView.gestureRecognizers {
                         for gestureOfContentView in gesturesOfContentView {
                             if gestureOfContentView.isKind(of: UIPinchGestureRecognizer.self) {
@@ -528,7 +590,7 @@ extension MessageBaseCell {
             if let (_emojiInfo, _, _) = getIndex(for: ges),
                let emojiInfo = _emojiInfo {
                 guard let copy = emojiInfo.copy() as? EmojiInfo else { return }
-                emojiInfo.x = point.x / AppDelegate.shared.widthFor(side: .right, username: username)
+                emojiInfo.x = point.x / self.contentView.frame.width
                 emojiInfo.y = point.y / contentSize.height
                 delegate?.emojiInfoDidChange(from: copy, to: emojiInfo, cell: self)
             }

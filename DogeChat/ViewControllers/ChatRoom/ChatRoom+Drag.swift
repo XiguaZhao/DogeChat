@@ -7,10 +7,21 @@
 //
 
 import UIKit
+import DogeChatUniversal
+import PencilKit
+import DogeChatCommonDefines
 
 extension ChatRoomViewController: UITableViewDragDelegate {
     
+    func tableView(_ tableView: UITableView, itemsForAddingTo session: UIDragSession, at indexPath: IndexPath, point: CGPoint) -> [UIDragItem] {
+        return wrapItmesWithIndexPath(indexPath)
+    }
+    
     func tableView(_ tableView: UITableView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
+        return wrapItmesWithIndexPath(indexPath)
+    }
+        
+    func wrapItmesWithIndexPath(_ indexPath: IndexPath) -> [UIDragItem] {
         let message = messages[indexPath.row]
         guard message.messageType == .image || message.messageType == .text || message.messageType == .draw || message.messageType == .voice || message.messageType == .video else { return [] }
         var items = [UIDragItem]()
@@ -33,15 +44,17 @@ extension ChatRoomViewController: UITableViewDragDelegate {
                 items.append(item)
             }
         } else if message.messageType == .draw {
-            if let url = fileURLAt(dirName: drawDir, fileName: (message.pkDataURL ?? "").components(separatedBy: "/").last ?? ""), let data = try? Data(contentsOf: url), let draw = try? PKDrawing(data: data) {
+            if #available(iOS 13.0, *) {
+                if let url = fileURLAt(dirName: drawDir, fileName: (message.pkDataURL ?? "").components(separatedBy: "/").last ?? ""), let data = try? Data(contentsOf: url), let draw = try? PKDrawing(data: data) {
 #if !targetEnvironment(macCatalyst)
-                let image = draw.image(from: draw.bounds, scale: UIScreen.main.scale)
-                let item = UIDragItem(itemProvider: NSItemProvider(object: image))
-                items.append(item)
+                    let image = draw.image(from: draw.bounds, scale: UIScreen.main.scale)
+                    let item = UIDragItem(itemProvider: NSItemProvider(object: image))
+                    items.append(item)
 #endif
-            }
+                }
+            } 
         }
-        items.forEach( { $0.localObject = "local" })
+        items.forEach( { $0.localObject = ["userID" : self.friend.userID, "message" : message] })
         return items
     }
     

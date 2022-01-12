@@ -9,7 +9,7 @@ import UIKit
 import DogeChatNetwork
 
 private let offsetPush: CGFloat = 5
-private let durationPush: TimeInterval = 0.8
+private let durationPush: TimeInterval = 0.6
 private let pushExistTime: TimeInterval = 3
 private let durationAlwaysDisplay:  TimeInterval = 0.5
 
@@ -31,24 +31,27 @@ class NestedViewController: UIViewController {
     var endLabel: UILabel!
     var timerForTapAlwaysDisplay: Timer?
     weak var delegate: FloatWindowTouchDelegate?
+    weak var targetView: UIView?
         
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.view.backgroundColor = .systemBackground
+        if #available(iOS 13.0, *) {
+            self.view.backgroundColor = .systemBackground
+        } 
         let tap = UITapGestureRecognizer(target: self, action: #selector(tapped(_:)))
         self.view.addGestureRecognizer(tap)
     }
     
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard type == .alwaysDisplay else { return }
-        if let point = touches.first?.location(in: nil) {
+        if let point = touches.first?.location(in: targetView) {
             self.window?.center = point
         }
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard type == .alwaysDisplay else { return }
-        if var point = touches.first?.location(in: nil) {
+        if var point = touches.first?.location(in: targetView) {
             let isLeft = point.x < UIScreen.main.bounds.width / 2
             guard let window = window else { return }
             if isLeft {

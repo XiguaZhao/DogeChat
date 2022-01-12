@@ -9,8 +9,42 @@
 import UIKit
 import FLAnimatedImage
 import DogeChatUniversal
+import DogeChatCommonDefines
 
 extension ChatRoomViewController {
+    
+    @available(iOS 13.0, *)
+    func addItemForSingle() {
+        if self.sceneType == .single {
+            let item = UIBarButtonItem(title: "关闭", style: .done, target: self, action: #selector(doneWithSingle))
+            self.navigationItem.leftBarButtonItem = item
+        }
+        if self.sceneType == .normal && UIApplication.shared.supportsMultipleScenes {
+            let item = UIBarButtonItem(image: UIImage(systemName: "rectangle.portrait.split.2x1"), style: .plain, target: self, action: #selector(openNewScene))
+            var items = [item]
+            if let detailItem = self.navigationItem.rightBarButtonItem {
+                items.insert(detailItem, at: 0)
+            }
+            self.navigationItem.setRightBarButtonItems(items, animated: true)
+        }
+    }
+    
+    @available(iOS 13.0, *)
+    @objc func openNewScene() {
+        let option = UIScene.ActivationRequestOptions()
+        option.requestingScene = self.view.window?.windowScene
+        UIApplication.shared.requestSceneSessionActivation(nil, userActivity: self.contactVC?.wrapUserActivity(for: self.friend), options: option, errorHandler: nil)
+    }
+    
+    
+    @available(iOS 13.0, *)
+    @objc func doneWithSingle() {
+        if let session = self.view.window?.windowScene?.session {
+            let option = UIWindowSceneDestructionRequestOptions()
+            option.windowDismissalAnimation = .commit
+            UIApplication.shared.requestSceneSessionDestruction(session, options: option, errorHandler: nil)
+        }
+    }
     
     func setupToolBar() {
         let cancle = UIBarButtonItem(title: "取消", style: .plain, target: self, action: #selector(self.cancelItemAction))
@@ -50,7 +84,7 @@ extension ChatRoomViewController {
                 titleAvatar.image = UIImage(data: data)
             }
         }
-        MediaLoader.shared.requestImage(urlStr: friend.avatarURL, type: .image, cookie: self.manager.cookie, syncIfCan: true, completion: { _, data, _ in
+        MediaLoader.shared.requestImage(urlStr: friend.avatarURL, type: .image, cookie: self.manager?.cookie, syncIfCan: true, completion: { _, data, _ in
             if let data = data {
                 block(data)
             }

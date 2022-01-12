@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import DogeChatUniversal
+import DogeChatCommonDefines
 import DogeChatNetwork
 
 class SearchMusicViewController: DogeChatViewController, DogeChatVCTableDataSource {
@@ -94,10 +94,6 @@ extension SearchMusicViewController: UISearchBarDelegate, UITableViewDelegate, U
     
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         searchBar.resignFirstResponder()
-    }
-    
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 60
     }
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {

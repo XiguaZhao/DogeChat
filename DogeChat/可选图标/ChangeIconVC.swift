@@ -10,18 +10,14 @@ import UIKit
 
 class ChangeIconVC: DogeChatViewController {
     
-    let icons = ["__海贼王",
-                 "_哆啦A梦",
-                 "_小黄人",
-                 "_小黄人2",
-                 "_海贼王2",
-                 "_蜡笔小新",
-                 "猫咪2"]
-
+    let icons = ["cat", "dog"]
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         // Do any additional setup after loading the view.
+        let recover = UIBarButtonItem(title: "恢复默认", style: .plain, target: self, action: #selector(recover))
+        navigationItem.rightBarButtonItem = recover
     }
 
     @IBAction func tapAction(_ sender: UITapGestureRecognizer) {
@@ -33,10 +29,9 @@ class ChangeIconVC: DogeChatViewController {
             }
         })
     }
-    
-    @IBAction func recoverAction(_ sender: Any) {
+        
+    @objc func recover() {
         UIApplication.shared.setAlternateIconName(nil, completionHandler: nil)
     }
-    
 
 }

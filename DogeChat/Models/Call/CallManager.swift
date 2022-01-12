@@ -8,6 +8,7 @@
 
 import CallKit
 import DogeChatNetwork
+import DogeChatCommonDefines
 
 class CallManager: NSObject {
     
@@ -44,6 +45,7 @@ class CallManager: NSObject {
         callsChangedHandler?()
     }
     
+    @available(iOS 13.0, *)
     func startCall(handle: String, uuid: String) {
         guard let uuid = UUID(uuidString: uuid) else { return }
         let handle = CXHandle(type: .generic, value: handle)
@@ -51,7 +53,7 @@ class CallManager: NSObject {
         startCallAction.isVideo = false
         var callWindow: FloatWindow?
         var switcherWindow: FloatWindow?
-        if let username = UserDefaults.standard.value(forKey: "lastUsername") as? String {
+        if let username = UserDefaults(suiteName: groupName)?.value(forKey: "sharedUsername") as? String {
             callWindow = SceneDelegate.usernameToDelegate[username]?.callWindow
             switcherWindow = SceneDelegate.usernameToDelegate[username]?.switcherWindow
         }

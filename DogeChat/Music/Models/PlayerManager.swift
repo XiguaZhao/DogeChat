@@ -9,6 +9,7 @@
 import DogeChatUniversal
 import MediaPlayer
 import DogeChatNetwork
+import DogeChatCommonDefines
 
 enum BlurImageSource {
     case customBlur
@@ -25,14 +26,15 @@ enum PlayerType {
 class PlayerManager: NSObject {
     
     static let shared = PlayerManager()
-    weak var activeSceneDelegate: SceneDelegate?
     var isMute = false
     var player = AVPlayer()
     var playMode: PlayMode = .normal
     var playerTypes = Set<PlayerType>() {
         didSet {
             if playerTypes.isEmpty {
-                try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+                DispatchQueue.global().async {
+                    try? AVAudioSession.sharedInstance().setActive(false, options: .notifyOthersOnDeactivation)
+                }
             }
         }
     }
@@ -311,6 +313,7 @@ class PlayerManager: NSObject {
     }
     
     @objc func trackPlayToEndNoti(_ noti: Notification) {
+        guard self.playerTypes.contains(.track) else { return }
         if isPlaying {
             playNextTrack() { [weak self] success in
                 if !success {

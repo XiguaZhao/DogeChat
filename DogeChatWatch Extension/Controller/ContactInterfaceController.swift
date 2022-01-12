@@ -10,6 +10,7 @@ import WatchKit
 import Foundation
 import DogeChatUniversal
 import WatchConnectivity
+import DogeChatCommonDefines
 
 var isLogin = false
 var url_pre: String {
@@ -22,7 +23,7 @@ class ContactInterfaceController: WKInterfaceController {
     
     @IBOutlet weak var table: WKInterfaceTable!
     let manager = SocketManager.shared
-    
+    var username: String = ""
     var friends: [Friend] = []
     var usernames: [String] {
         friends.map { $0.username }
@@ -31,6 +32,7 @@ class ContactInterfaceController: WKInterfaceController {
     var loginCount = 0
     
     override func awake(withContext context: Any?) {
+        ExtensionDelegate.shared.contactVC = self
         Self.shared = self
         NotificationCenter.default.addObserver(self, selector: #selector(canGetContacts), name: NSNotification.Name("canGetContacts"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(getWCSessionMessage(_:)), name: .wcSessionMessage, object: nil)
@@ -39,7 +41,7 @@ class ContactInterfaceController: WKInterfaceController {
             self?.setTitle("正在连接...")
         }
         NotificationCenter.default.addObserver(forName: .connected, object: nil, queue: .main) { [weak self] _ in
-            self?.setTitle(SocketManager.shared.messageManager.myName)
+            self?.setTitle(self?.username)
         }
         NotificationCenter.default.addObserver(forName: .logining, object: nil, queue: .main) { [weak self] _ in
             self?.setTitle("正在登录...")
@@ -47,13 +49,16 @@ class ContactInterfaceController: WKInterfaceController {
         }
         NotificationCenter.default.addObserver(forName: .logined, object: nil, queue: .main) { _ in
             isLogin = true
-            MediaLoader.shared.cookie = SocketManager.shared.httpManager.cookie
         }
         NotificationCenter.default.addObserver(forName: .friendListChange, object: nil, queue: .main) { [weak self] _ in
             self?.showContacts(SocketManager.shared.commonSocket.httpRequestsManager.friends)
         }
         NotificationCenter.default.addObserver(forName: .refreshingContacts, object: nil, queue: .main) { [weak self] _ in
             self?.setTitle("获取联系人...")
+        }
+        NotificationCenter.default.addObserver(self, selector: #selector(refreshContactNoti(_:)), name: .refreshContacts, object: nil)
+        NotificationCenter.default.addObserver(forName: .hasUnknownFriend, object: nil, queue: .main) { [weak self] _ in
+            self?.canGetContacts()
         }
     }
     
@@ -80,6 +85,11 @@ class ContactInterfaceController: WKInterfaceController {
         }
     }
     
+    @objc func refreshContactNoti(_ noti: Notification) {
+        guard let friends = noti.userInfo?["contacts"] as? [Friend] else { return }
+        self.showContacts(friends)
+    }
+    
     @objc func getWCSessionMessage(_ noti: Notification) {
         guard let info = noti.userInfo as? [String: String],
               let username = info["username"],
@@ -94,26 +104,41 @@ class ContactInterfaceController: WKInterfaceController {
     }
     
     func login() {
-        if needRelogin() {
-            if let username = UserDefaults.standard.value(forKey: "username") as? String, let password = UserDefaults.standard.value(forKey: "password") as? String {
+        var isValid = false
+        var password: String?
+        if let username = UserDefaults.standard.value(forKey: "username") as? String {
+            if let accountInfo = accountInfo(username: username) {
+                if let cookie = accountInfo.cookieInfo, cookie.isValid {
+                    isValid = true
+                } else if let _password = accountInfo.password {
+                    password = _password
+                    isValid = true
+                }
+                let userID = accountInfo.userID ?? SocketManager.shared.httpManager.myId
+                if self.friends.isEmpty, !userID.isEmpty, let friends = getContacts(userID: userID) {
+                    SocketManager.shared.httpManager.friends = friends
+                    self.showContacts(friends)
+                    SocketManager.shared.httpManager.getContacts(completion: nil)
+                    SocketManager.shared.connect()
+                }
+            }
+            if isValid {
                 login(username: username, password: password)
             } else {
-                if WKExtension.shared().visibleInterfaceController is LoginInterfaceController {
-                    return
-                }
-                self.pushController(withName: "login", context: nil)
+                pushController(withName: "login", context: nil)
             }
         } else {
-            SocketManager.shared.commonSocket.connect()
+            pushController(withName: "login", context: nil)
         }
     }
     
     func needRelogin() -> Bool {
         let nowTime = Date().timeIntervalSince1970
-        return nowTime - SocketManager.shared.commonSocket.httpRequestsManager.cookieTime >= 2 * 24 * 60 * 60 // 2天
+        return nowTime - SocketManager.shared.commonSocket.httpRequestsManager.cookieTime >= cookieDuration // 2天
     }
     
-    func login(username: String, password: String) {
+    func login(username: String, password: String?) {
+        self.username = username
         SocketManager.shared.commonSocket.loginAndConnect(username: username, password: password, needContact: friends.isEmpty) { success in
             if success {
                 UserDefaults.standard.set(username, forKey: "username")
@@ -157,14 +182,15 @@ class ContactInterfaceController: WKInterfaceController {
     func updateRowAvatar(friend: Friend, row: ContactsRowController) {
         let urlStr = friend.avatarURL
         row.usernameLabel.setText(friend.username)
-        row.latestMessageLabel.setText(contentForSpecialType(friend.latestMessage));
+        let text = contentForSpecialType(friend.latestMessage) ?? friend.getLatestMessageStr()
+        row.latestMessageLabel.setText(text);
         MediaLoader.shared.requestImage(urlStr: urlStr, type: .image, syncIfCan: false, imageWidth: .width40, needStaticGif: true, completion: { image, data, _ in
             row.avatarImageView?.setImageData(data)
         }, progress: nil)
     }
     
     func showContacts(_ usersInfos: [Friend]) {
-        self.setTitle(SocketManager.shared.messageManager.myName)
+        self.setTitle(self.username)
         self.friends = usersInfos
         self.table.setNumberOfRows(usersInfos.count, withRowType: "contact")
         for (index, info) in usersInfos.enumerated() {
@@ -176,8 +202,8 @@ class ContactInterfaceController: WKInterfaceController {
         let friend = friends[rowIndex]
         var messages = friend.messages
         var messagesUUIDs: Set<String> = friend.messageUUIDs
-        if messages.count > 20 {
-            messages.removeSubrange(0..<messages.count-20)
+        if messages.count > 50 {
+            messages.removeSubrange(0..<messages.count-50)
             messagesUUIDs = Set(messages.map { $0.uuid })
         }
         let context = ["friend": friend, "messages": messages, "messagesUUIDs": messagesUUIDs] as [String : Any]
@@ -221,18 +247,37 @@ extension ContactInterfaceController: MessageDelegate {
         
     }
     
-    func updateLatestMessage(_ message: Message) {
-        let friend = message.friend!
-        let needUpdate: Bool = friend.latestMessage?.id ?? 0 < message.id
-        if needUpdate, let index = self.friends.firstIndex(of: friend) {
-            self.friends[index].latestMessage = message
-            if index != 0 {
-                let removed = self.friends.remove(at: index)
-                table.removeRows(at: IndexSet(integer: index))
-                self.friends.insert(removed, at: 0)
-                table.insertRows(at: IndexSet(integer: 0), withRowType: "contact")
+    func updateLatestMessages(_ messages: [Message]) {
+        var friendDict = [String : [Message]]()
+        for message in messages {
+            if let friendID = message.friend?.userID {
+                friendDict.add(message, for: friendID)
             }
-            update(index: 0, updateAvatar: index != 0)
+        }
+        let sortedDict = friendDict.sorted(by: { first, second in
+            return first.value.last?.timestamp ?? 0 > second.value.last?.timestamp ?? 0
+        })
+        var indexPathsToReload = [IndexPath]()
+        var locations = [(from: Int, to: Int)]()
+        for friend in sortedDict {
+            if let index = self.friends.firstIndex(where: { $0.userID == friend.key }) {
+                indexPathsToReload.append(IndexPath(row: index, section: 0))
+                self.friends[index].latestMessage = friend.value.last
+                locations.append((from: index, to: locations.count))
+            }
+        }
+        locations.sort(by: { $0.from > $1.from })
+        let removals = IndexSet(locations.map { $0.from })
+        let insertions = IndexSet(locations.map { $0.to })
+        var removed = Array<Friend?>(repeating: nil, count: locations.count)
+        for location in locations {
+            removed[location.to] = self.friends.remove(at: location.from)
+        }
+        self.friends.insert(contentsOf: removed.compactMap({ $0 }), at: 0)
+        table.removeRows(at: removals)
+        table.insertRows(at: insertions, withRowType: "contact")
+        for insertion in insertions {
+            update(index: insertion, updateAvatar: true)
         }
     }
     
@@ -242,8 +287,9 @@ extension ContactInterfaceController: MessageDelegate {
         }
         var friendDict = [String : [Message]]()
         for message in messages {
-            let friendID = message.friend.userID
-            friendDict.add(message, for: friendID)
+            if let friendID = message.friend?.userID {
+                friendDict.add(message, for: friendID)
+            }
         }
         for (friendID, newMessages) in friendDict {
             if let index = self.friends.firstIndex(where: { $0.userID == friendID }) {

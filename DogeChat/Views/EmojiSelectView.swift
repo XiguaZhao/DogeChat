@@ -10,6 +10,8 @@ import UIKit
 import DogeChatNetwork
 import SwiftyJSON
 import DogeChatUniversal
+import Foundation
+import DogeChatCommonDefines
 
 @objc protocol EmojiViewDelegate: AnyObject {
     @objc optional func didSelectEmoji(filePath: String)
@@ -33,7 +35,7 @@ class EmojiSelectView: DogeChatStaticBlurView {
     static var emojiPathToId: [String: String] = [:]
     var username = ""
     var friend: Friend!
-    var manager: WebSocketManager {
+    var manager: WebSocketManager? {
         socketForUsername(username)
     }
     
@@ -79,14 +81,21 @@ extension EmojiSelectView: UICollectionViewDataSource, UICollectionViewDelegateF
         let avatarMenuItem = UIMenuItem(title: "设为自己头像", action: #selector(useAsAvatar(sender:)))
         let deleteMenuItem = UIMenuItem(title: "删除", action: #selector(deleteMenuItemAction(sender:)))
         let controller = UIMenuController.shared
-        var items = [avatarMenuItem, deleteMenuItem]
+        var items = [avatarMenuItem]
+        if debugUsers.contains(self.username) {
+            items.append(deleteMenuItem)
+        }
         if friend.isGroup {
             items.append(UIMenuItem(title: "设为群聊头像", action: #selector(useAsGroupAvatar(sender:))))
         }
         controller.menuItems = items
         cell.becomeFirstResponder()
         let rect = CGRect(x: cell.bounds.width/2, y: 10, width: 0, height: 0)
-        controller.showMenu(from: cell, rect: rect)
+        if #available(iOS 13.0, *) {
+            controller.showMenu(from: cell, rect: rect)
+        } else {
+            controller.setMenuVisible(true, animated: true)
+        }
     }
     
     func updateDownloadProgress(_ cell: EmojiCollectionViewCell, progress: Double, path: String) {
@@ -110,12 +119,16 @@ extension EmojiSelectView: UICollectionViewDataSource, UICollectionViewDelegateF
             self.deleteEmoji(cell: cell)
         }))
         confirmAlert.addAction(UIAlertAction(title: "取消", style: .cancel, handler: nil))
-        SceneDelegate.usernameToDelegate[username]?.navigationController.present(confirmAlert, animated: true, completion: nil)
+        if #available(iOS 13.0, *) {
+            SceneDelegate.usernameToDelegate[username]?.navigationController.present(confirmAlert, animated: true, completion: nil)
+        } else {
+            AppDelegateUI.shared.navController.present(confirmAlert, animated: true, completion: nil)
+        }
     }
 
     func deleteEmoji(cell: EmojiCollectionViewCell) {
-        if let indexPath = cell.indexPath, let id = EmojiSelectView.emojiPathToId[emojis[indexPath.item]] {
-            manager.deleteEmoji(emojis[indexPath.item], id: id) { [self] in
+        if let manager = manager, let indexPath = cell.indexPath, let id = EmojiSelectView.emojiPathToId[emojis[indexPath.item]] {
+            manager.deleteEmoji(emojis[indexPath.item], id: id) { 
                 manager.getEmojis { _ in
                     
                 }
@@ -124,7 +137,7 @@ extension EmojiSelectView: UICollectionViewDataSource, UICollectionViewDelegateF
     }
     
     func useAsSelfAvatar(cell: EmojiCollectionViewCell, append: String? = nil) {
-        if let index = cell.indexPath?.item {
+        if let manager = manager, let index = cell.indexPath?.item {
             var path = (emojis[index] as NSString).replacingOccurrences(of: url_pre, with: "")
             if let append = append {
                 path += append
@@ -133,14 +146,19 @@ extension EmojiSelectView: UICollectionViewDataSource, UICollectionViewDelegateF
                 guard let data = data else { return }
                 let json = JSON(data)
                 if json["status"].stringValue == "success" {
+                    if #available(iOS 13.0, *) {
+                        SceneDelegate.usernameToDelegate.first?.value.splitVC.makeAutoAlert(message: "成功更换", detail: nil, showTime: 0.5, completion: nil)
+                    } else {
+                        AppDelegateUI.shared.navController.makeAutoAlert(message: "成功更换", detail: nil, showTime: 0.5, completion: nil)
+                    }
                     let avatarURL = json["avatarUrl"].stringValue
                     if append != nil {
-                        if let friend = socketForUsername(username).httpsManager.friends.first(where: { $0.userID == self.friend.userID } ) {
+                        if let friend = manager.httpsManager.friends.first(where: { $0.userID == self.friend.userID } ) {
                             friend.avatarURL = avatarURL
                             NotificationCenter.default.post(name: .friendChangeAvatar, object: username, userInfo: ["friend": friend])
                         }
                     } else {
-                        self.manager.messageManager.myAvatarUrl = url_pre + JSON(data)["avatarUrl"].stringValue
+                        manager.httpsManager.accountInfo.avatarURL = JSON(data)["avatarUrl"].stringValue
                     }
                 }
             }
@@ -179,11 +197,36 @@ extension EmojiSelectView: UICollectionViewDataSource, UICollectionViewDelegateF
         return cell
     }
     
-#if targetEnvironment(macCatalyst)
+    @available(iOS 13.0, *)
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
-        return nil
+        if !isMac() { return nil }
+        let identifier = "\(indexPath.row)" as NSString
+        let cell = collectionView.cellForItem(at: indexPath)
+        return UIContextMenuConfiguration(identifier: identifier, previewProvider: nil) { [weak self] elements -> UIMenu? in
+            let avatarMenuItem = UIAction(title: "设为自己头像") { [weak self, weak cell] _ in
+                if let cell = cell as? EmojiCollectionViewCell {
+                    self?.useAsSelfAvatar(cell: cell)
+                }
+            }
+            let deleteMenuItem = UIAction(title: "删除") { [weak self, weak cell] _ in
+                if let cell = cell as? EmojiCollectionViewCell {
+                    self?.deleteEmoji(cell: cell)
+                }
+            }
+            var items = [avatarMenuItem]
+            if debugUsers.contains(self?.username ?? "") {
+                items.append(deleteMenuItem)
+            }
+            if let self = self, self.friend.isGroup {
+                items.append(UIAction(title: "设为群聊头像") { [weak self, weak cell] _ in
+                    if let self = self, let cell = cell as? EmojiCollectionViewCell {
+                        self.useAsSelfAvatar(cell: cell, append: "&groupId=\(self.friend.userID)")
+                    }
+                })
+            }
+            return UIMenu(title: "", image: nil, children: items)
+        }
     }
-#endif
     
 }
 
@@ -194,7 +237,7 @@ extension EmojiSelectView: UICollectionViewDragDelegate {
         weak var weakCell = collectionView.cellForItem(at: indexPath) as? EmojiCollectionViewCell
         guard let cell = weakCell, let image = cell.emojiView.image else { return [] }
         let dragItem = UIDragItem(itemProvider: NSItemProvider(object: image))
-        dragItem.localObject = [cell.url?.absoluteString ?? ""]
+        dragItem.localObject = ["emojiURL": cell.url?.absoluteString]
         playHaptic()
         return [dragItem]
     }

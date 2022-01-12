@@ -8,6 +8,7 @@
 
 import Foundation
 import DogeChatUniversal
+import DogeChatCommonDefines
 
 extension ChatRoomViewController: ReferViewDelegate {
     
@@ -38,6 +39,33 @@ extension ChatRoomViewController: ReferViewDelegate {
 
     }
     
+    func atAction(_ referView: ReferView) {
+        if let message = referView.message {
+            findGroupMember(userID: message.senderUserID) { [weak self] friend in
+                if let friend = friend {
+                    self?.atFriends([friend])
+                }
+            }
+        }
+    }
+    
+    func findGroupMember(userID: String, completion:((Friend?) -> Void)?) {
+        if let friend = self.groupMembers?.first(where: { $0.userID == userID }) {
+            completion?(friend)
+        } else if let group = self.friend as? Group {
+            manager?.httpsManager.getGroupMembers(group: group, completion: { members in
+                self.groupMembers = members
+                if let friend = members.first(where: { $0.userID == userID }) {
+                    completion?(friend)
+                } else {
+                    completion?(nil)
+                }
+            })
+        } else {
+            completion?(nil)
+        }
+    }
+    
     func referViewTapAction(_ referView: ReferView, message: Message?) {
         guard let message = message else {
             return
@@ -45,6 +73,9 @@ extension ChatRoomViewController: ReferViewDelegate {
         if message.messageType == .image || message.messageType == .livePhoto || message.messageType == .video {
             let browser = MediaBrowserViewController()
             browser.imagePaths = [message.text]
+            if isMac() {
+                browser.modalPresentationStyle = .fullScreen
+            }
             present(browser, animated: true, completion: nil)
         } else if let index = self.messages.firstIndex(of: message) {
             let indexPath = IndexPath(row: index, section: 0)
@@ -53,30 +84,35 @@ extension ChatRoomViewController: ReferViewDelegate {
                 tableView.deselectRow(at: indexPath, animated: true)
             }
         } else {
-            let vc = HistoryVC(type: .referView, username: username)
+            let vc = HistoryVC(purpose: .referView)
             let message = message.copied()
             vc.messages = [message]
             vc.friend = friend
+            if isMac() {
+                vc.modalPresentationStyle = .fullScreen
+            }
             navigationController?.pushViewController(vc, animated: true)
         }
     }
     
     func cancleAction(_ referView: ReferView) {
         guard referView.type == .inputView else { return }
-        messageInputBar.layoutIfNeeded()
-        var inset = tableView.contentInset
-        inset.bottom -= ReferView.height
-        var offset = tableView.contentOffset
-        offset.y -= ReferView.height
-        UIView.animate(withDuration: 0.4, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 2) { [self] in
-            messageInputBar.referView.alpha = 0
-            messageInputBar.referViewBottomContraint.constant = ReferView.height
-            messageInputBar.topConstraint.constant = 0
+        syncOnMainThread {
             messageInputBar.layoutIfNeeded()
-            tableView.contentInset = inset
-            tableView.contentOffset = offset
-        } completion: { _ in
-            
+            var inset = tableView.contentInset
+            inset.bottom -= ReferView.height
+            var offset = tableView.contentOffset
+            offset.y -= ReferView.height
+            UIView.animate(withDuration: 0.4, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 2) { [self] in
+                messageInputBar.referView.alpha = 0
+                messageInputBar.referViewBottomContraint.constant = ReferView.height
+                messageInputBar.topConstraint.constant = 0
+                messageInputBar.layoutIfNeeded()
+                tableView.contentInset = inset
+                tableView.contentOffset = offset
+            } completion: { _ in
+                
+            }
         }
     }
     

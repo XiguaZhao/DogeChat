@@ -9,9 +9,10 @@
 import UIKit
 import DogeChatNetwork
 import DogeChatUniversal
+import DogeChatCommonDefines
 
 enum SettingType: String {
-    case shortcut = "快捷操作"
+    case shortcut = "多账号管理"
     case changeIcon = "修改图标"
     case doNotDisturb = "勿扰模式"
     case selectHost = "自定义host"
@@ -24,14 +25,13 @@ enum SettingType: String {
     case browseFiles = "查看文件"
 }
 
-class SettingViewController: DogeChatViewController, DatePickerChangeDelegate, UITableViewDataSource, UITableViewDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, DogeChatVCTableDataSource {
+class SettingViewController: DogeChatViewController, DatePickerChangeDelegate, UITableViewDataSource, UITableViewDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, DogeChatVCTableDataSource, TrailingViewProtocol {
     
     var logoutButton: UIBarButtonItem!
     
     var settingTypes: [SettingType] = [.shortcut, .changeIcon, .forceDarkMode, .switchImmersive, .customBlur, .doNotDisturb, .browseFiles, .logout]
     var tableView = DogeChatTableView()
-    var customBlurSwitcher: UISwitch!
-    var manager: WebSocketManager {
+    var manager: WebSocketManager? {
         socketForUsername(username)
     }
 
@@ -45,9 +45,12 @@ class SettingViewController: DogeChatViewController, DatePickerChangeDelegate, U
         tableView.mas_makeConstraints { [weak self] make in
             make?.edges.equalTo()(self?.view)
         }
+        tableView.rowHeight = UITableView.automaticDimension
+        tableView.estimatedRowHeight = 60
+        
         tableView.separatorStyle = .none
         tableView.backgroundColor = .clear
-        tableView.register(DogeChatTableViewCell.self, forCellReuseIdentifier: DogeChatTableViewCell.cellID())
+        tableView.register(CommonTableCell.self, forCellReuseIdentifier: CommonTableCell.cellID)
         tableView.delegate = self
         tableView.dataSource = self
     }
@@ -58,16 +61,21 @@ class SettingViewController: DogeChatViewController, DatePickerChangeDelegate, U
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-//        miniPlayerView.processHidden(for: self)
+        updateBlurSwitch()
     }
 
     @objc func logout() {
         NotificationCenter.default.post(name: .logout, object: username)
-        if let sceneDelegate = self.view.window?.windowScene?.delegate as? SceneDelegate {
-            if let contactVCNav = sceneDelegate.contactVC?.navigationController {
-                contactVCNav.setViewControllers([JoinChatViewController()], animated: true)
+        if #available(iOS 13.0, *) {
+            if let sceneDelegate = self.view.window?.windowScene?.delegate as? SceneDelegate {
+                if let contactVCNav = sceneDelegate.contactVC?.navigationController {
+                    contactVCNav.setViewControllers([JoinChatViewController()], animated: true)
+                }
             }
+        } else {
+            AppDelegateUI.shared.makeLogininVC()
         }
+        removeSocketForUsername(username, removeScene: false)
         self.tabBarController?.selectedIndex = 0
     }
     
@@ -107,11 +115,15 @@ class SettingViewController: DogeChatViewController, DatePickerChangeDelegate, U
         }
         switch settingTypes[indexPath.row] {
         case .shortcut:
-            navigationController?.pushViewController(SelectShortcutTVC(), animated: true)
+            self.navigationController?.setViewControllersForSplitVC(vcs: [self, SelectShortcutTVC()], firstAnimated: false, secondAnimated: false)
         case .doNotDisturb:
             let pickerVC = DatePickerViewController()
             pickerVC.delegate = self
-            self.present(pickerVC, animated: true, completion: nil)
+            if let split = self.splitViewController, split.isCollapsed {
+                self.present(pickerVC, animated: true, completion: nil)
+            } else {
+                self.navigationController?.setViewControllersForSplitVC(vcs: [self, pickerVC], firstAnimated: false, secondAnimated: false)
+            }
         case .selectHost:
             customizedAddress(.selectHost)
         case .wsAddress:
@@ -129,48 +141,45 @@ class SettingViewController: DogeChatViewController, DatePickerChangeDelegate, U
         case .logout:
             logout()
         case .browseFiles:
-            navigationController?.pushViewController(FileBrowerVC(), animated: true)
+            self.navigationController?.setViewControllersForSplitVC(vcs: [self, FileBrowerVC()])
         case .changeIcon:
-            navigationController?.pushViewController(ChangeIconVC(), animated: true)
+            self.navigationController?.setViewControllersForSplitVC(vcs: [self, ChangeIconVC()])
         }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: DogeChatTableViewCell.cellID()) as! DogeChatTableViewCell
-        cell.backgroundColor = .clear
-        cell.textLabel?.text = settingTypes[indexPath.row].rawValue
-        cell.accessoryView = nil
+        let cell = tableView.dequeueReusableCell(withIdentifier: CommonTableCell.cellID) as! CommonTableCell
+        var type: CommonTableCell.TrailingViewType?
+        var isOn: Bool?
+        let text = settingTypes[indexPath.row].rawValue
         if settingTypes[indexPath.row] == .switchImmersive {
-            let switcher = UISwitch()
-            switcher.addTarget(self, action: #selector(immersiveSwitchAction(_:)), for: .valueChanged)
-            switcher.isOn = UserDefaults.standard.bool(forKey: "immersive")
-            cell.accessoryView = switcher
+            isOn = UserDefaults.standard.bool(forKey: "immersive")
+            type = .switcher
         }
         if settingTypes[indexPath.row] == .customBlur {
-            let switcher = UISwitch()
-            customBlurSwitcher = switcher
-            switcher.addTarget(self, action: #selector(customBlur(_:)), for: .valueChanged)
-            switcher.isOn = fileURLAt(dirName: "customBlur", fileName: userID) != nil
-            cell.accessoryView = switcher
+            isOn = fileURLAt(dirName: "customBlur", fileName: userID) != nil
+            type = .switcher
         }
         if settingTypes[indexPath.row] == .forceDarkMode {
-            let switcher = UISwitch()
-            switcher.addTarget(self, action: #selector(forceDarkModeAction(sender:)), for: .valueChanged)
-            switcher.isOn = UserDefaults.standard.bool(forKey: "forceDarkMode")
-            cell.accessoryView = switcher
+            isOn = UserDefaults.standard.bool(forKey: "forceDarkMode")
+            type = .switcher
+
         }
+        cell.delegate = self
+        cell.apply(title: text, subTitle: nil, imageURL: nil, trailingViewType: type, trailingText: nil, switchOn: isOn)
         return cell
     }
     
-    @objc func forceDarkModeAction(sender: UISwitch) {
-        UserDefaults.standard.setValue(sender.isOn, forKey: "forceDarkMode")
+    func forceDarkModeAction(isOn: Bool) {
+        UserDefaults.standard.setValue(isOn, forKey: "forceDarkMode")
         NotificationCenter.default.post(name: .immersive, object: AppDelegate.shared.immersive)
     }
     
-    @objc func customBlur(_ sender: UISwitch) {
-        if !sender.isOn {
+    func customBlur(isOn: Bool) {
+        if !isOn {
             deleteFile(dirName: "customBlur", fileName: userID)
             PlayerManager.shared.customImage = nil
+            manager?.httpsManager.saveTracks(nil, andBlurImage: "", completion: nil)
             return
         }
         showPicker()
@@ -185,30 +194,42 @@ class SettingViewController: DogeChatViewController, DatePickerChangeDelegate, U
     
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         guard let image = info[.originalImage] as? UIImage else { return }
-        let compress = compressEmojis(image, imageWidth: .width400)
+        let compress = compressImage(image)
         if let userID = userIDFor(username: username) {
-            saveFileToDisk(dirName: "customBlur", fileName: userID, data: compress)
-            customBlurSwitcher.isOn = fileURLAt(dirName: "customBlur", fileName: userID) != nil
+            saveFileToDisk(dirName: "customBlur", fileName: userID, data: compress.image.jpegData(compressionQuality: 0.5)!)
+            updateBlurSwitch()
         }
         PlayerManager.shared.blurSource = .customBlur
-        PlayerManager.shared.customImage = image
+        PlayerManager.shared.customImage = compress.image
         picker.modalPresentationStyle = .fullScreen
         picker.dismiss(animated: true, completion: nil)
+        if let url = fileURLAt(dirName: "customBlur", fileName: userID) {
+            manager?.httpsManager.uploadPhoto(imageUrl: url, type: .image, size: compress.size, isBlurImage: false, uploadProgress: nil, success: { [weak self] path in
+                print(path)
+                self?.manager?.httpsManager.saveTracks(nil, andBlurImage: path, completion: nil)
+            }, fail: nil)
+        }
     }
     
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
         picker.dismiss(animated: true, completion: nil)
-        customBlurSwitcher.isOn = fileURLAt(dirName: "customBlur", fileName: userID) != nil
+        updateBlurSwitch()
     }
     
-    @objc func immersiveSwitchAction(_ sender: UISwitch) {
-        UserDefaults.standard.setValue(sender.isOn, forKey: "immersive")
+    func updateBlurSwitch() {
+        if let index = settingTypes.firstIndex(of: .customBlur), let cell = tableView.cellForRow(at: IndexPath(row: index, section: 0)) as? CommonTableCell {
+            cell.switcher.isOn = fileURLAt(dirName: "customBlur", fileName: userID) != nil
+        }
+    }
+    
+    func immersiveSwitchAction(isOn: Bool) {
+        UserDefaults.standard.setValue(isOn, forKey: "immersive")
         NotificationCenter.default.post(name: .immersive, object: AppDelegate.shared.immersive)
     }
     
     @objc func doNotDisturbSwitched(_ switcher: UISwitch) {
         if !switcher.isOn {
-            manager.doNotDisturb(for: "", hour: 0) {
+            manager?.doNotDisturb(for: "", hour: 0) {
             }
         } else {
             let pickerVC = DatePickerViewController()
@@ -219,8 +240,25 @@ class SettingViewController: DogeChatViewController, DatePickerChangeDelegate, U
 
     func datePickerConfirmed(_ picker: UIDatePicker) {
         let hour = Int(picker.countDownDuration / 60 / 60)
-        manager.doNotDisturb(for: "", hour: hour) {
+        manager?.doNotDisturb(for: "", hour: hour) {
         }
+    }
+    
+    func didSwitch(cell: CommonTableCell, isOn: Bool) {
+        if let indexPath = tableView.indexPath(for: cell) {
+            let type = settingTypes[indexPath.row]
+            if type == .switchImmersive {
+                immersiveSwitchAction(isOn: isOn)
+            } else if type == .customBlur {
+                customBlur(isOn: isOn)
+            } else if type == .forceDarkMode {
+                forceDarkModeAction(isOn: isOn)
+            }
+        }
+    }
+    
+    func textFieldDidEndInputing(cell: CommonTableCell, text: String) {
+        
     }
     
 }

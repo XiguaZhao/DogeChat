@@ -7,8 +7,9 @@
 //
 
 import WatchKit
+import AuthenticationServices
 
-class LoginInterfaceController: WKInterfaceController {
+class LoginInterfaceController: WKInterfaceController, ASAuthorizationControllerDelegate {
 
     @IBOutlet weak var usernameTF: WKInterfaceTextField!
     @IBOutlet weak var passwordTF: WKInterfaceTextField!
@@ -35,9 +36,10 @@ class LoginInterfaceController: WKInterfaceController {
         guard !username.isEmpty && !password.isEmpty else {
             return
         }
-        SocketManager.shared.httpManager.login(username: username, password: password) { success in
+        SocketManager.shared.httpManager.login(username: username, password: password) { success, _ in
             if success {
                 isLogin = true
+                ExtensionDelegate.shared.contactVC.username = self.username
                 NotificationCenter.default.post(name: NSNotification.Name("canGetContacts"), object: nil)
                 UserDefaults.standard.setValue(self.username, forKey: "username")
                 UserDefaults.standard.setValue(self.password, forKey: "password")
@@ -47,6 +49,31 @@ class LoginInterfaceController: WKInterfaceController {
                     
                 }
                 self.presentAlert(withTitle: "登录失败", message: "", preferredStyle: .alert, actions: [confirm])
+            }
+        }
+    }
+    
+    @IBAction func signInWithApple() {
+        let appleIDProvider = ASAuthorizationAppleIDProvider()
+        let request = appleIDProvider.createRequest()
+        request.requestedScopes = [.email]
+        
+        let authorizationController = ASAuthorizationController(authorizationRequests: [request])
+        authorizationController.delegate = self
+        authorizationController.performRequests()
+    }
+    
+    func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
+        if let credential = authorization.credential as? ASAuthorizationAppleIDCredential, let data = credential.identityToken, let token = String(data: data, encoding: .utf8) {
+            self.setTitle("正在登录")
+            SocketManager.shared.httpManager.login(username: nil, password: nil, email: nil, token: token) { success, res in
+                if success {
+                    isLogin = true
+                    ExtensionDelegate.shared.contactVC.username = SocketManager.shared.httpManager.myName
+                    UserDefaults.standard.setValue(SocketManager.shared.httpManager.myName, forKey: "username")
+                    NotificationCenter.default.post(name: NSNotification.Name("canGetContacts"), object: nil)
+                    self.popToRootController()
+                }
             }
         }
     }

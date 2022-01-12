@@ -8,61 +8,65 @@
 
 import UserNotifications
 import PencilKit
-import DogeChatUniversal
+import WidgetKit
+import DogeChatCommonDefines
 
 class NotificationService: UNNotificationServiceExtension {
-
+    
     var contentHandler: ((UNNotificationContent) -> Void)?
     var bestAttemptContent: UNMutableNotificationContent?
     
-    let manager = HttpRequestsManager()
-    
+    var loadMedia = false
+        
     func complete() {
         if let bestAttemptContent = bestAttemptContent {
             contentHandler?(bestAttemptContent)
         }
     }
-
+    
     override func didReceive(_ request: UNNotificationRequest, withContentHandler contentHandler: @escaping (UNNotificationContent) -> Void) {
         self.contentHandler = contentHandler
         bestAttemptContent = (request.content.mutableCopy() as? UNMutableNotificationContent)
-
+        
         UNUserNotificationCenter.current().getDeliveredNotifications { [self] delivered in
             bestAttemptContent?.badge = NSNumber(value: delivered.count + 1)
             
-            if UserDefaults(suiteName: "group.dogechat.zhaoxiguang")?.bool(forKey: "hostActive") == true {
-                complete()
-                return
-            }
+            processRevoke(request: request, delivered: delivered)
             
-            if let aps = request.content.userInfo["aps"] as? [String : Any],
-               var path = aps["url"] as? String, !path.isEmpty {
-                guard let type = aps["type"] as? String else {
+            if loadMedia {
+                if UserDefaults(suiteName: groupName)?.bool(forKey: "hostActive") == true {
                     complete()
                     return
                 }
-                if type == "livePhoto" {
-                    if let imagePath = path.components(separatedBy: " ").first {
-                        path = imagePath
-                    }
-                }
-                let wholePath = "https://121.5.152.193" + path
-                if let _ = URL(string: wholePath) {
-                    guard !path.hasSuffix(".gif") else {
+                
+                if let aps = request.content.userInfo["aps"] as? [String : Any],
+                   var path = aps["url"] as? String, !path.isEmpty {
+                    guard let type = aps["type"] as? String else {
                         complete()
                         return
                     }
-                    if type == "video" {
-                        self.bestAttemptContent?.body = "[视频]"                        
-                    }
                     if type == "livePhoto" {
-                        self.bestAttemptContent?.body = "[Live Photo]"
+                        if let imagePath = path.components(separatedBy: " ").first {
+                            path = imagePath
+                        }
                     }
-                    guard let username = UserDefaults(suiteName: "group.dogechat.zhaoxiguang")?.value(forKey: "sharedUsername") as? String,
-                          let password = UserDefaults(suiteName: "group.dogechat.zhaoxiguang")?.value(forKey: "sharedPassword") as? String else { return }
-                    manager.login(username: username, password: password) { success in
-                        guard success, !manager.cookie.isEmpty else { return }
-                        MediaLoader.shared.cookie = manager.cookie
+                    let wholePath = "https://121.5.152.193" + path
+                    if let _ = URL(string: wholePath) {
+                        guard !path.hasSuffix(".gif") else {
+                            complete()
+                            return
+                        }
+                        if type == "video" {
+                            self.bestAttemptContent?.body = "[视频]"
+                        }
+                        if type == "livePhoto" {
+                            self.bestAttemptContent?.body = "[Live Photo]"
+                        }
+                        guard let cookie = UserDefaults(suiteName: groupName)?.value(forKey: "sharedCookie") as? String, !cookie.isEmpty else {
+                            complete()
+                            return
+                        }
+                        MediaLoader.shared.cookie = cookie
                         MediaLoader.shared.type = .defaultSession
                         MediaLoader.shared.requestImage(urlStr: path, type: .voice, syncIfCan: false, needCache: false, completion: { _, data, localURL in
                             var localURL = localURL
@@ -87,19 +91,56 @@ class NotificationService: UNNotificationServiceExtension {
                             }
                             complete()
                         }, progress: nil)
+                    } else {
+                        complete()
                     }
                 } else {
                     complete()
                 }
-            } else {
-                complete()
             }
-
         }
-
+        
         
     }
     
+    func processRevoke(request: UNNotificationRequest, delivered: [UNNotification]) {
+        guard let aps = request.content.userInfo["aps"] as? [String : Any] else {
+            complete()
+            return
+        }
+        if aps["loadMedia"] != nil {
+            self.loadMedia = true
+        }
+        guard let uuid = aps["uuid"] as? String, let status = aps["messageStatus"] as? Int, status == -1 else {
+            if !self.loadMedia {
+                complete()
+            }
+            return
+        }
+        if let senderID = aps["senderId"] as? String,
+           let receiverID = aps["receiverId"] as? String,
+           let isGroup = (aps["isGroup"] as? NSString)?.boolValue {
+            let revoke = RemoteMessage(isGroup: isGroup, senderID: senderID, receiverID: receiverID, uuid: uuid)
+            var newRevokes: [RemoteMessage]
+            if let data = UserDefaults(suiteName: groupName)?.value(forKey: "revokedMessages") as? Data, let revokes = try? JSONDecoder().decode([RemoteMessage].self, from: data) {
+                newRevokes = revokes + [revoke]
+            } else {
+                newRevokes = [revoke]
+            }
+            if let data = try? JSONEncoder().encode(newRevokes) {
+                UserDefaults(suiteName: groupName)?.set(data, forKey: "revokedMessages")
+            }
+        }
+        let deliveredUUIDs = delivered.compactMap({ ($0.request.content.userInfo["aps"] as? [String : Any])?["uuid"] as? String })
+        if let index = deliveredUUIDs.firstIndex(of: uuid) {
+            UNUserNotificationCenter.current().removeDeliveredNotifications(withIdentifiers: [delivered[index].request.identifier])
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                self.complete()
+            }
+        } else {
+            complete()
+        }
+    }
     
     override func serviceExtensionTimeWillExpire() {
         // Called just before the extension will be terminated by the system.
@@ -108,6 +149,6 @@ class NotificationService: UNNotificationServiceExtension {
             contentHandler(bestAttemptContent)
         }
     }
-
+    
 }
 

@@ -8,11 +8,13 @@
 
 import UIKit
 import DogeChatUniversal
-
+import DogeChatCommonDefines
 
 class DogeChatTabBarController: UITabBarController, UITabBarControllerDelegate {
 
     var miniPlayerView: MiniPlayerView!
+    
+    var doubleTapGes: UITapGestureRecognizer!
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -22,6 +24,12 @@ class DogeChatTabBarController: UITabBarController, UITabBarControllerDelegate {
         setupMiniPlayer()
         NotificationCenter.default.addObserver(self, selector: #selector(nowPlayingTrackChangedNoti(_:)), name: .nowPlayingTrackChanged, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(nowPlayingListChangedNoti(_:)), name: .nowPlayingListChanged, object: nil)
+        if let first = getFirstButton() {
+            let doubleTap = UITapGestureRecognizer(target: self, action: #selector(doubleTap(_:)))
+            doubleTap.numberOfTapsRequired = 2
+            first.addGestureRecognizer(doubleTap)
+            self.doubleTapGes = doubleTap
+        }
     }
     
     @objc func nowPlayingListChangedNoti(_ noti: Notification) {
@@ -60,8 +68,45 @@ class DogeChatTabBarController: UITabBarController, UITabBarControllerDelegate {
     }
     
     func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
+        self.doubleTapGes.isEnabled = tabBarController.selectedIndex == 0
         if PlayerManager.shared.nowPlayingTrack != nil {
             miniPlayerView.isHidden = false
         }
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+    }
+    
+    @objc func doubleTap(_ ges: UIGestureRecognizer) {
+        NotificationCenter.default.post(name: NSNotification.Name("doubleTapBadge"), object: nil)
+    }
+    
+    func getAllButton() -> [UIView] {
+        let tabBar = self.tabBar
+        var res: [UIView] = []
+        if let className = NSClassFromString("UITabBarButton") {
+            for subview in tabBar.subviews {
+                if subview.isKind(of: className) {
+                    res.append(subview)
+                }
+            }
+        }
+        return res.sorted(by: { $0.frame.minX < $1.frame.minX })
+    }
+    
+    func getFirstButton() -> UIView? {
+        return getAllButton().first
+    }
+    
+    func getBadge() -> UIView? {
+        if let firstButton = getFirstButton(), let badgeClass = NSClassFromString("_UIBadgeView") {
+            for subview in firstButton.subviews {
+                if subview.isKind(of: badgeClass) {
+                    return subview
+                }
+            }
+        }
+        return nil
     }
 }

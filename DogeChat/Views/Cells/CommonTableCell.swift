@@ -31,31 +31,34 @@ class CommonTableCell: DogeChatTableViewCell, UITextFieldDelegate {
     
     let titleLabel = UILabel()
     let subTitleLabel = UILabel()
-    let leaingImageView = FLAnimatedImageView()
+    let leadingImageView = FLAnimatedImageView()
     let textField = UITextField()
     let switcher = UISwitch()
     let trailingLabel = UILabel()
+    var stackView: UIStackView!
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
-        trailingLabel.font = .systemFont(ofSize: 15)
-        textField.font = .systemFont(ofSize: 15)
+        trailingLabel.font = .preferredFont(forTextStyle: .footnote)
+        trailingLabel.numberOfLines = 0
+        textField.font = .preferredFont(forTextStyle: .footnote)
         trailingLabel.textAlignment = .right
         textField.textAlignment = .right
         
         let middleStack = UIStackView(arrangedSubviews: [titleLabel, subTitleLabel])
-        titleLabel.font = .boldSystemFont(ofSize: 15)
-        subTitleLabel.font = .systemFont(ofSize: 12)
+        titleLabel.font = .preferredFont(forTextStyle: .body)
+        subTitleLabel.font = .preferredFont(forTextStyle: .footnote)
         middleStack.spacing = 5
         middleStack.axis = .vertical
         
         let rightStack = UIStackView(arrangedSubviews: [trailingLabel, textField, switcher])
-        textField.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
-        trailingLabel.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        textField.setContentCompressionResistancePriority(.required, for: .horizontal)
+        trailingLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
 
-        let stack = UIStackView(arrangedSubviews: [leaingImageView, middleStack, rightStack])
-        stack.setCustomSpacing(8, after: leaingImageView)
+        let stack = UIStackView(arrangedSubviews: [leadingImageView, middleStack, rightStack])
+        self.stackView = stack
+        stack.setCustomSpacing(8, after: leadingImageView)
         stack.setCustomSpacing(20, after: middleStack)
         stack.distribution = .fill
         stack.alignment = .center
@@ -65,8 +68,16 @@ class CommonTableCell: DogeChatTableViewCell, UITextFieldDelegate {
             let offset: CGFloat = 16
             make?.leading.equalTo()(self.contentView)?.offset()(offset)
             make?.trailing.equalTo()(self.contentView)?.offset()(-offset)
-            make?.center.equalTo()(self.contentView)
+            make?.top.equalTo()(self.contentView)?.offset()(tableViewCellTopBottomPadding)
+            make?.bottom.equalTo()(self.contentView)?.offset()(-tableViewCellTopBottomPadding)
+            make?.height.mas_greaterThanOrEqualTo()(40)
         }
+        leadingImageView.mas_makeConstraints { make in
+            make?.width.height().mas_equalTo()(40)
+        }
+        leadingImageView.layer.cornerRadius = 20
+        leadingImageView.layer.masksToBounds = true
+        leadingImageView.contentMode = .scaleAspectFill
         textField.delegate = self
         switcher.addTarget(self, action: #selector(switcherAction(_:)), for: .valueChanged)
     }
@@ -82,25 +93,45 @@ class CommonTableCell: DogeChatTableViewCell, UITextFieldDelegate {
     override func prepareForReuse() {
         super.prepareForReuse()
         self.accessoryView = .none
-        leaingImageView.image = nil
-        leaingImageView.animatedImage = nil
+        leadingImageView.image = nil
+        leadingImageView.animatedImage = nil
     }
     
-    func apply(title: String, subTitle: String?, imageURL: String?, trailingViewType: TrailingViewType?, trailingText: String?) {
+    func apply(title: String, subTitle: String?, imageURL: String?, trailingViewType: TrailingViewType?, trailingText: String?, switchOn: Bool? = nil, imageIsLeft: Bool = true) {
         self.trailingType = trailingViewType
         titleLabel.text = title
         subTitleLabel.text = subTitle
-        leaingImageView.isHidden = imageURL == nil
+        leadingImageView.isHidden = imageURL == nil
         subTitleLabel.isHidden = subTitle == nil
         switcher.isHidden = trailingType != .switcher
         trailingLabel.isHidden = trailingType != .label
         textField.isHidden = trailingType != .textField
-        if let type = trailingViewType, let text = trailingText {
-            if type == .textField {
-                textField.text = text
-            } else if type == .label {
-                trailingLabel.text = text
+        if let type = trailingViewType {
+            if let text = trailingText {
+                if type == .textField {
+                    textField.text = text
+                } else if type == .label {
+                    trailingLabel.text = text
+                }
+            } else if let switchOn = switchOn {
+                switcher.isOn = switchOn
             }
+        }
+        if let imageURL = imageURL {
+            if imageIsLeft {
+                stackView.removeArrangedSubview(leadingImageView)
+                stackView.insertArrangedSubview(leadingImageView, at: 0)
+            } else {
+                stackView.removeArrangedSubview(leadingImageView)
+                stackView.addArrangedSubview(leadingImageView)
+            }
+            MediaLoader.shared.requestImage(urlStr: imageURL, type: .image, completion: { [weak self] image, data, _ in
+                if imageURL.isGif {
+                    self?.leadingImageView.animatedImage = FLAnimatedImage(gifData: data)
+                } else {
+                    self?.leadingImageView.image = image
+                }
+            }, progress: nil)
         }
     }
     

@@ -61,8 +61,10 @@ class Call: NSObject {
         manager?.responseVoiceChat(to: handle, uuid: uuid.uuidString, response: "accept")
         manager?.nowCallUUID = uuid
         AppDelegate.shared.nowCallUUID = uuid
-        SceneDelegate.usernameToDelegate.first?.value.callWindow.assignValueForAlwaysDisplay(name: handle)
-        SceneDelegate.usernameToDelegate.first?.value.switcherWindow.assignValueForAlwaysDisplay(name: "内/外放")
+        if #available(iOS 13.0, *) {
+            SceneDelegate.usernameToDelegate.first?.value.callWindow.assignValueForAlwaysDisplay(name: handle)
+            SceneDelegate.usernameToDelegate.first?.value.switcherWindow.assignValueForAlwaysDisplay(name: "内/外放")
+        }
         state = .active
         rejectBySelf = false
     }
@@ -76,8 +78,10 @@ class Call: NSObject {
     func end() {
         Recorder.sharedInstance().stopRecordAndPlay()
         manager?.endCall(uuid: uuid.uuidString, with: handle)
-        SceneDelegate.usernameToDelegate.first?.value.callWindow.nestedVC.tapped(nil)
-        SceneDelegate.usernameToDelegate.first?.value.switcherWindow.isHidden = true
+        if #available(iOS 13.0, *) {
+            SceneDelegate.usernameToDelegate.first?.value.callWindow.nestedVC.tapped(nil)
+            SceneDelegate.usernameToDelegate.first?.value.switcherWindow.isHidden = true
+        } 
         state = .ended
     }
     

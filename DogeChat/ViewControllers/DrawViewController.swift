@@ -8,14 +8,16 @@
 
 import UIKit
 import DogeChatNetwork
-import DogeChatUniversal
+import DogeChatCommonDefines
+import PencilKit
 
+@available(iOS 13.0, *)
 class DrawViewController: UIViewController, PKViewAutoOffsetDelegate {
     
     var username = ""
     var pkView = PKCanvasView()
     let pkViewDelegate = PKViewDelegate()
-    var message: Message!
+    var message: Message?
     lazy var toolPicker: PKToolPicker? = {
         if #available(iOS 14.0, *) {
             return PKToolPicker()
@@ -53,10 +55,10 @@ class DrawViewController: UIViewController, PKViewAutoOffsetDelegate {
         let realTimeLabel = UILabel()
         realTimeLabel.text = "实时"
         let realTimeSwitcher = UISwitch()
-        let stackView = UIStackView(arrangedSubviews: [realTimeLabel, realTimeSwitcher])
-        stackView.spacing = 15
-        let switcherBarItem = UIBarButtonItem(customView: stackView)
-        realTimeSwitcher.isOn = message.needRealTimeDraw
+        let realtimeStackView = UIStackView(arrangedSubviews: [realTimeLabel, realTimeSwitcher])
+        realtimeStackView.spacing = 15
+        let switcherBarItem = UIBarButtonItem(customView: realtimeStackView)
+        realTimeSwitcher.isOn = message?.needRealTimeDraw ?? false
         realTimeSwitcher.addTarget(self, action: #selector(realTimerSwitchAction(_:)), for: .valueChanged)
         let cancleButton = UIBarButtonItem(title: "取消", style: .done, target: self, action: #selector(cancelTapAction(_:)))
         let confirmButton = UIBarButtonItem(title: "确认", style: .done, target: self, action: #selector(confirmTapAction(_:)))
@@ -65,18 +67,19 @@ class DrawViewController: UIViewController, PKViewAutoOffsetDelegate {
         var items = [cancleButton, previewBarItem, switcherBarItem, returnBarItem, confirmButton]
         if #available(iOS 14.0, *) {
             let flex = UIBarButtonItem(systemItem: .flexibleSpace)
-            items = [cancleButton, flex, previewBarItem, flex, switcherBarItem, flex, returnBarItem, flex, confirmButton]
+            for i in 1..<items.count {
+                items.insert(flex, at: i * 2 - 1)
+            }
         }
         
         toolBar.setItems(items, animated: true)
         view.addSubview(pkView)
         pkView.contentInsetAdjustmentBehavior = .never
-        pkView.backgroundColor = .gray
         pkView.delegate = pkViewDelegate
         pkView.contentSize = CGSize(width: 2000, height: 2000)
         pkViewDelegate.pkView = pkView
         pkViewDelegate.autoOffsetDelegate = self
-        pkViewDelegate.message = message as Any
+        pkViewDelegate.message = message
         pkView.mas_makeConstraints { [weak self] make in
             guard let self = self else { return }
             make?.top.equalTo()(self.toolBar.mas_bottom)
@@ -92,7 +95,13 @@ class DrawViewController: UIViewController, PKViewAutoOffsetDelegate {
         let forwardImage = UIImage(systemName: "forward", withConfiguration: largeConfig)
         forwardButton.setImage(forwardImage, for: .normal)
         forwardButton.addTarget(self, action: #selector(forwardTapAction(_:)), for: .touchUpInside)
+        if #available(iOS 14, *) {
+            toolPicker?.setVisible(true, forFirstResponder: pkView)
+            toolPicker?.addObserver(pkViewDelegate)
+            pkView.becomeFirstResponder()
+        }
     }
+    
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
@@ -102,11 +111,20 @@ class DrawViewController: UIViewController, PKViewAutoOffsetDelegate {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        toolPicker?.setVisible(true, forFirstResponder: pkView)
-        toolPicker?.addObserver(pkViewDelegate)
-        pkView.becomeFirstResponder()
+        if #available(iOS 14, *) {} else {
+            if let toolPicker = toolPicker {
+                toolPicker.setVisible(true, forFirstResponder: pkView)
+                toolPicker.addObserver(pkViewDelegate)
+                pkView.becomeFirstResponder()
+                pkViewDelegate.toolPickerSelectedToolDidChange(toolPicker)
+            }
+        }
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+    }
+        
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         if isPhone() {
@@ -115,10 +133,10 @@ class DrawViewController: UIViewController, PKViewAutoOffsetDelegate {
     }
         
     @objc func realTimerSwitchAction(_ switcher: UISwitch) {
-        message.needRealTimeDraw = switcher.isOn
+        message?.needRealTimeDraw = switcher.isOn
         if switcher.isOn && !didSendNeedRealTime {
             if let message = self.message {
-                socketForUsername(username).sendDrawMessage(message)
+                socketForUsername(username)?.sendDrawMessage(message)
             }
             didSendNeedRealTime = true
         }
@@ -128,27 +146,32 @@ class DrawViewController: UIViewController, PKViewAutoOffsetDelegate {
         toolPicker?.setVisible(pickerSwitcher.isOn, forFirstResponder: pkView)
     }
     
+    @objc func toolPickerSwitchAction(_ switcher: UISwitch) {
+        toolPicker?.setVisible(switcher.isOn, forFirstResponder: pkView)
+    }
+    
     
     @objc func confirmTapAction(_ sender: UIBarButtonItem) {
         self.dismiss(animated: true) { [self] in
             if #available(iOS 14.0, *) {
                 if !pkView.drawing.strokes.isEmpty {
-                    pkViewDelegate.dataChangedDelegate?.pkViewDidFinishDrawing(pkView, message: message as Any)
+                    pkViewDelegate.dataChangeDelegate?.pkViewDidFinishDrawing(pkView: pkView, message: message)
                 }
             } else {
-                pkViewDelegate.dataChangedDelegate?.pkViewDidFinishDrawing(pkView, message: message as Any)
+                pkViewDelegate.dataChangeDelegate?.pkViewDidFinishDrawing(pkView: pkView, message: message)
             }
         }
     }
     
     @objc func returnTapAction(_ sender: UIBarButtonItem) {
         let bounds = pkView.drawing.bounds
+        guard !bounds.isNull && !bounds.isEmpty else { return }
         let offset = CGPoint(x: 0, y: bounds.maxY)
         pkView.setContentOffset(offset, animated: true)
     }
     
     @objc func cancelTapAction(_ sender: UIBarButtonItem) {
-        pkViewDelegate.dataChangedDelegate?.pkViewDidCancelDrawing(pkView, message: message)
+        pkViewDelegate.dataChangeDelegate?.pkViewDidCancelDrawing(pkView: pkView, message: message)
         self.dismiss(animated: true, completion: nil)
     }
     
@@ -157,6 +180,7 @@ class DrawViewController: UIViewController, PKViewAutoOffsetDelegate {
         if isPreview { cachedOffset = pkView.contentOffset }
         pkView.minimumZoomScale = isPreview ? 0.3 : 1
         let bounds = pkView.drawing.bounds
+        guard !bounds.isNull && !bounds.isEmpty else { return }
         let scaleX = pkView.bounds.width / bounds.maxX
         let scaleY = pkView.bounds.height / bounds.maxY
         let scale = max(min(scaleX, scaleY) - 0.01, pkView.minimumZoomScale)
@@ -169,9 +193,9 @@ class DrawViewController: UIViewController, PKViewAutoOffsetDelegate {
         toolPicker?.setVisible(!isPreview, forFirstResponder: pkView)
         sender.title = isPreview ? "继续" : "预览"
     }
-    
-    func shoudAutoOffset(_ shouldAutoOffset: Bool) {
-        forwardButton.isHidden = !shouldAutoOffset
+        
+    func shouldAutoOffset(_ should: Bool) {
+        forwardButton.isHidden = !should
     }
     
     @objc func forwardTapAction(_ sender: UIButton) {

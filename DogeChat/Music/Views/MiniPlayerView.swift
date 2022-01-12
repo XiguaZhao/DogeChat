@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import DogeChatUniversal
+import DogeChatCommonDefines
 
 class MiniPlayerView: UIView, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UIPopoverPresentationControllerDelegate {
 
@@ -25,14 +25,20 @@ class MiniPlayerView: UIView, UICollectionViewDataSource, UICollectionViewDelega
         configureCollectionView()
         self.layer.masksToBounds = true
         let blurView: UIVisualEffectView
-        blurView = UIVisualEffectView(effect: UIBlurEffect(style: .systemChromeMaterial))
+        if #available(iOS 13.0, *) {
+            blurView = UIVisualEffectView(effect: UIBlurEffect(style: .systemChromeMaterial))
+        } else {
+            blurView = UIVisualEffectView(effect: UIBlurEffect(style: .light))
+        }
         self.addSubview(blurView)
         self.sendSubviewToBack(blurView)
         blurView.mas_makeConstraints { [weak self] make in
             make?.edges.equalTo()(self)
         }
-        toggleButton.setImage(UIImage(systemName: "pause.circle.fill"), for: .normal)
-        playListButton.setImage(UIImage(systemName: "list.bullet"), for: .normal)
+        if #available(iOS 13.0, *) {
+            toggleButton.setImage(UIImage(systemName: "pause.circle.fill"), for: .normal)
+            playListButton.setImage(UIImage(systemName: "list.bullet"), for: .normal)
+        }
         toggleButton.addTarget(self, action: #selector(toggleButtonAction(_:)), for: .touchUpInside)
         playListButton.addTarget(self, action: #selector(playListButtonAction(_:)), for: .touchUpInside)
         let buttonStack = UIStackView(arrangedSubviews: [toggleButton, playListButton])
@@ -53,27 +59,27 @@ class MiniPlayerView: UIView, UICollectionViewDataSource, UICollectionViewDelega
     @objc func tapAction(_ ges: UITapGestureRecognizer) {
         let vc = LyricViewController()
         vc.modalPresentationStyle = .fullScreen
-        vc.track = PlayerManager.shared.nowPlayingTrack
+//        vc.track = PlayerManager.shared.nowPlayingTrack
     }
     
     func reloadData(justScroll: Bool = false) {
         if !justScroll {
             collectionView.reloadData()
         }
-        if let nowTrack = PlayerManager.shared.nowPlayingTrack, let index = tracks.firstIndex(where: { $0.id == nowTrack.id }) {
-            collectionView.isPagingEnabled = false
-            collectionView.scrollToItem(at: IndexPath(item: index, section: 0), at: .left, animated: false)
-            collectionView.isPagingEnabled = true
-        }
+//        if let nowTrack = PlayerManager.shared.nowPlayingTrack, let index = tracks.firstIndex(where: { $0.id == nowTrack.id }) {
+//            collectionView.isPagingEnabled = false
+//            collectionView.scrollToItem(at: IndexPath(item: index, section: 0), at: .left, animated: false)
+//            collectionView.isPagingEnabled = true
+//        }
     }
     
     @objc func toggleButtonAction(_ sender: UIButton) {
-        PlayerManager.shared.toggle()
+//        PlayerManager.shared.toggle()
         changePlayPauseButton()
     }
     
     func changePlayPauseButton() {
-        toggleButton.setImage(UIImage(systemName: PlayerManager.shared.isPlaying ? "pause.circle.fill" : "play.circle.fill"), for: .normal)
+//        toggleButton.setImage(UIImage(systemName: PlayerManager.shared.isPlaying ? "pause.circle.fill" : "play.circle.fill"), for: .normal)
     }
     
     func processHidden(for vc: UIViewController) {
@@ -81,14 +87,14 @@ class MiniPlayerView: UIView, UICollectionViewDataSource, UICollectionViewDelega
         if let count = vc.navigationController?.viewControllers.count, count == 1 {
             shouldShow = true
         }
-        shouldShow = shouldShow && PlayerManager.shared.nowPlayingTrack != nil
+//        shouldShow = shouldShow && PlayerManager.shared.nowPlayingTrack != nil
         self.isHidden = !shouldShow
     }
     
     @objc func playListButtonAction(_ sender: UIButton) {
         let vc = PlayListViewController()
         vc.type = .miniPlayer
-        vc.tracks = PlayerManager.shared.playingList
+//        vc.tracks = PlayerManager.shared.playingList
         vc.modalPresentationStyle = .popover
         let popover = vc.popoverPresentationController
         popover?.sourceView = sender
@@ -127,7 +133,7 @@ class MiniPlayerView: UIView, UICollectionViewDataSource, UICollectionViewDelega
         guard scrollView.contentOffset.x != contentOffsetX else { return }
         DispatchQueue.main.async { [self] in 
             if let cell = (collectionView.visibleCells.first as? MiniPlayerCell) {
-                PlayerManager.shared.playTrack(cell.track)
+//                PlayerManager.shared.playTrack(cell.track)
                 cell.updateRotation()
             }
         }

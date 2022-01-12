@@ -16,21 +16,23 @@ PODS:
     - AFNetworking/NSURLSession
   - DACircularProgress (2.3.1)
   - DataCompression (3.6.0)
+  - DogeChatCommonDefines (0.1.0)
   - DogeChatNetwork (0.1.0):
     - AFNetworking
+    - DogeChatCommonDefines
     - DogeChatUniversal
     - SDWebImage
     - Starscream
     - SwiftyJSON
   - DogeChatUniversal (0.1.0):
     - AFNetworking
+    - DogeChatCommonDefines
     - SwiftyJSON
+  - DogeChatVideoCompression (0.1.0)
   - FLAnimatedImage (1.0.16)
-  - GzipSwift (5.1.1)
-  - LookinServer (1.0.2)
+  - LookinServer (1.0.4)
   - Masonry (1.1.0)
   - MJRefresh (3.7.2)
-  - ReachabilitySwift (5.0.0)
   - RSAiOSWatchOS (0.1.0):
     - SwiftyRSA
   - SDWebImage (5.10.2):
@@ -46,14 +48,14 @@ DEPENDENCIES:
   - AFNetworking
   - DACircularProgress
   - DataCompression
+  - DogeChatCommonDefines (from `/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/DogeChatCommonDefines`)
   - DogeChatNetwork (from `/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/DogeChatNetwork`)
   - DogeChatUniversal (from `/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/DogeChatUniversal`)
+  - DogeChatVideoCompression (from `/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/DogeChatVideoCompression`)
   - FLAnimatedImage (from `/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/FLAnimatedImage`)
-  - GzipSwift
   - LookinServer
   - Masonry
   - MJRefresh
-  - ReachabilitySwift
   - RSAiOSWatchOS (from `/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/RSAiOSWatchOS`)
   - SDWebImage
   - SwiftyJSON (from `https://github.com/SwiftyJSON/SwiftyJSON.git`, commit `2b6054efa051565954e1d2b9da831680026cd768`)
@@ -63,21 +65,23 @@ SPEC REPOS:
   https://github.com/CocoaPods/Specs.git:
     - AFNetworking
     - DACircularProgress
-    - LookinServer
-    - Masonry
-    - ReachabilitySwift
     - SDWebImage
     - Starscream
   trunk:
     - DataCompression
-    - GzipSwift
+    - LookinServer
+    - Masonry
     - MJRefresh
 
 EXTERNAL SOURCES:
+  DogeChatCommonDefines:
+    :path: "/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/DogeChatCommonDefines"
   DogeChatNetwork:
     :path: "/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/DogeChatNetwork"
   DogeChatUniversal:
     :path: "/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/DogeChatUniversal"
+  DogeChatVideoCompression:
+    :path: "/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/DogeChatVideoCompression"
   FLAnimatedImage:
     :path: "/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/FLAnimatedImage"
   RSAiOSWatchOS:
@@ -97,20 +101,20 @@ SPEC CHECKSUMS:
   AFNetworking: 7864c38297c79aaca1500c33288e429c3451fdce
   DACircularProgress: 4dd437c0fc3da5161cb289e07ac449493d41db71
   DataCompression: 06628f9c807b6f152e0da37635633f62fc51dc77
-  DogeChatNetwork: 27f770e7f08cb0cff614e5658506aba2d4aa4bfb
-  DogeChatUniversal: 3901d42c8cc1108179a4986679e23f323f528e8a
+  DogeChatCommonDefines: c248ce4818df571745b822c563d0e4ee71499dc5
+  DogeChatNetwork: dc9612adf2921d46a61b49c23fe7b4c89668849c
+  DogeChatUniversal: 75b00cf6d15a88e719310b9ba75257382977866a
+  DogeChatVideoCompression: 5593abc15c98fe4cc7327a0875cb73606bc2d855
   FLAnimatedImage: 8f3e854ebf9680b71f0b6e700939687fc4d82b4b
-  GzipSwift: 893f3e48e597a1a4f62fafcb6514220fcf8287fa
-  LookinServer: d6874df8b58096c8d463817b6baaa3abc21d31f7
+  LookinServer: 743c1681771d0a8dcc38825325a080c3186404a5
   Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
   MJRefresh: 30997d30b347c8e9508a4db11e3a690da0c9b85a
-  ReachabilitySwift: 985039c6f7b23a1da463388634119492ff86c825
   RSAiOSWatchOS: b1e0f34d74ea956f6c9bbb1638189d028d4f8372
   SDWebImage: b969dcfc02c40a5da71eac0b03b8f1a0c794a86f
   Starscream: 5178aed56b316f13fa3bc55694e583d35dd414d9
   SwiftyJSON: 4e107719275086d9d9111e1a7ca6c484b6664574
   SwiftyRSA: 3b9c9179744217951facc6a3e9ae8d8c97061ffa
 
-PODFILE CHECKSUM: f8973dbe5f8bc14950890a10e2a7d4d78b4d7fbb
+PODFILE CHECKSUM: 43ce2eee71b4fdaa2c3110835c95a587bd8c80e8
 
 COCOAPODS: 1.11.0

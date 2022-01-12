@@ -37,6 +37,8 @@ typedef NS_ENUM(NSUInteger, AudioRoute) {
 - (void)startRecordAndPlay;  //开始通话
 - (void)stopRecordAndPlay;   //结束通话
 
+- (void)initAudioSession;
+
 - (void)setRouteToOption:(AudioRoute)route;
 
 + (int)intWithData:(NSData *)data;

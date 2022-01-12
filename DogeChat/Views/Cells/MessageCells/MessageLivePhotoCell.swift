@@ -9,8 +9,9 @@
 import UIKit
 import DogeChatUniversal
 import PhotosUI
+import DogeChatCommonDefines
 
-class MessageLivePhotoCell: MessageBaseCell, PHLivePhotoViewDelegate {
+class MessageLivePhotoCell: MessageImageKindCell, PHLivePhotoViewDelegate {
 
     static let cellID = "MessageLivePhotoCell"
     
@@ -60,12 +61,7 @@ class MessageLivePhotoCell: MessageBaseCell, PHLivePhotoViewDelegate {
     override func layoutSubviews() {
         super.layoutSubviews()
         guard message != nil else { return }
-        let maxSize = CGSize(width: 2*(AppDelegate.shared.widthFor(side: .right, username: username, view: self)/3), height: CGFloat.greatestFiniteMagnitude)
-        let nameHeight = message.messageSender == .ourself ? 0 : (MessageBaseCell.height(forText: message.senderUsername, fontSize: 10, maxSize: maxSize) + 4 )
-        let height = contentView.bounds.height - 30 - nameHeight - (message.referMessage == nil ? 0 : ReferView.height + ReferView.margin)
-        let width = message.imageSize.width * height / message.imageSize.height
-        livePhotoView.bounds = CGRect(x: 0, y: 0, width: width, height: height)
-        livePhotoView.layer.cornerRadius = min(width, height) / 12
+        layoutImageKindView(livePhotoView)
         layoutIndicatorViewAndMainView()
     }
     
@@ -91,13 +87,13 @@ class MessageLivePhotoCell: MessageBaseCell, PHLivePhotoViewDelegate {
                 }
             }
         }
-        let size = sizeForImageOrVideo(message)
+        let size = sizeForImageOrVideo(message) ?? CGSize(width: 100, height: 100)
         let livePhotoLoadBlock: (URL, URL, Bool) -> Void = { [weak self] localImageURL, localVideoURL, playNow in
             guard let self = self else { return }
-            let width = AppDelegate.shared.widthFor(side: .right, username: self.username, view: self) * 0.5
+            let width = self.tableView!.frame.width
             PHLivePhoto.request(withResourceFileURLs: [
                 localImageURL, localVideoURL]
-                                , placeholderImage: nil, targetSize: size == nil ? .zero : CGSize(width: width, height: width / size!.width * size!.height), contentMode: .aspectFit) { live, info in
+                                , placeholderImage: nil, targetSize: CGSize(width: width, height: width / size.width * size.height), contentMode: .aspectFit) { live, info in
                 if let livePhoto = live, info[PHLivePhotoInfoErrorKey] == nil {
                     if let degrade = info[PHLivePhotoInfoIsDegradedKey] as? Int, degrade == 1 {
                         return
@@ -109,22 +105,20 @@ class MessageLivePhotoCell: MessageBaseCell, PHLivePhotoViewDelegate {
                 }
             }
         }
-        let imageName = message.imageURL!.components(separatedBy: "/").last!
-        let videoName = message.videoURL!.components(separatedBy: "/").last!
+        guard let imagePath = message.imageURL,
+              let videoPath = message.videoURL, !imagePath.isEmpty, !videoPath.isEmpty else { return }
         if let live = message.livePhoto as? PHLivePhoto, message.sendStatus == .fail {
             block(live, false)
-        } else if let localImageURL = fileURLAt(dirName: livePhotoDir, fileName: imageName), let localVideoURL = fileURLAt(dirName: livePhotoDir, fileName: videoName) {
+        } else if let localImageURL = fileURLAt(dirName: livePhotoDir, fileName: imagePath.fileName), let localVideoURL = fileURLAt(dirName: livePhotoDir, fileName: videoPath.fileName) {
             livePhotoLoadBlock(localImageURL, localVideoURL, false)
         } else {
-            let imageURL = URL(string: url_pre + message.imageURL!)!
-            let videoURL = URL(string: url_pre + message.videoURL!)!
-            MediaLoader.shared.requestImage(urlStr: imageURL.absoluteString, type: .livePhoto, cookie: cookie, syncIfCan: true) { _, _, localPathImage in
+            MediaLoader.shared.requestImage(urlStr: imagePath, type: .livePhoto, cookie: cookie, syncIfCan: true) { _, _, localPathImage in
                 print("liveImageDone")
-                MediaLoader.shared.requestImage(urlStr: videoURL.absoluteString, type: .livePhoto, cookie: self.cookie, syncIfCan: true) { [weak self] _, _, localPathVideo in
+                MediaLoader.shared.requestImage(urlStr: videoPath, type: .livePhoto, cookie: self.cookie, syncIfCan: true) { [weak self] _, _, localPathVideo in
                     self?.delegate?.downloadSuccess(self, message: capturedMessage!)
                     NotificationCenter.default.post(name: .mediaDownloadFinished, object: capturedMessage?.text, userInfo: nil)
                 } progress: { [weak self] progress in
-                    self?.delegate?.downloadProgressUpdate(progress: progress, message: capturedMessage!)
+                    self?.delegate?.downloadProgressUpdate(progress: progress, messages: [capturedMessage!])
                 }
                 
             } progress: { _ in

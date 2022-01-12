@@ -9,6 +9,8 @@ enum InputViewToolButtonType {
     case video
     case draw
     case add
+    case location
+    case at
 }
 
 protocol MessageInputDelegate: AnyObject {
@@ -24,15 +26,32 @@ var messageBarHeight: CGFloat {
 }
 
 class MessageInputView: DogeChatStaticBlurView {
+    
+    enum EmojiButtonStatus {
+        case normal
+        case pin
+    }
+    
     weak var delegate: MessageInputDelegate?
     
+    static let largeConfig: Any? = {
+        if #available(iOS 13.0, *) {
+            return UIImage.SymbolConfiguration(pointSize: 150, weight: .bold, scale: .large)
+        } else {
+            return nil
+        }
+    }()
+
     static var maxHeight: CGFloat {
         safeArea.bottom + 186
     }
+    static let textViewMaxHeight: CGFloat = 160
     static let defaultHeight: CGFloat = 86
-    static let textViewDefaultFontSize: CGFloat = 16
+    static let textViewDefaultFontSize: CGFloat = 17
     static let ratioOfEmojiView: CGFloat = 0.45
     static let offset: CGFloat = 12
+    let width: CGFloat = 30
+    var emojiButtonStatus: EmojiButtonStatus = .normal
     let textView = DogeChatTextView()
     let addButton = UIButton()
     let emojiButton = UIButton()
@@ -47,6 +66,8 @@ class MessageInputView: DogeChatStaticBlurView {
     let livePhotoButton = UIButton()
     let videoButton = UIButton()
     let drawButton = UIButton()
+    let locationButton = UIButton()
+    let atButton = UIButton()
     let referView = ReferView(type: .inputView)
     var lastInset: UIEdgeInsets = .zero
     weak var referViewBottomContraint: NSLayoutConstraint!
@@ -57,8 +78,6 @@ class MessageInputView: DogeChatStaticBlurView {
     override init(frame: CGRect) {
         super.init(frame: frame)
                 
-        let width: CGFloat = 30
-
         textView.translatesAutoresizingMaskIntoConstraints = false
         textView.layer.cornerRadius = 8
         textView.layer.borderColor = UIColor(red: 200/255, green: 200/255, blue: 200/255, alpha: 0.6).cgColor
@@ -71,17 +90,42 @@ class MessageInputView: DogeChatStaticBlurView {
         emojiButton.translatesAutoresizingMaskIntoConstraints = false
         upArrowButton.translatesAutoresizingMaskIntoConstraints = false
         voiceButton.translatesAutoresizingMaskIntoConstraints = false
-        let largeConfig = UIImage.SymbolConfiguration(pointSize: 150, weight: .bold, scale: .large)
-        addButton.setImage(UIImage(systemName: "plus.circle.fill", withConfiguration: largeConfig), for: .normal)
-        emojiButton.setImage(UIImage(systemName: "smiley.fill", withConfiguration: largeConfig), for: .normal)
-        upArrowButton.setImage(UIImage(systemName: "arrow.up", withConfiguration: largeConfig), for: .normal)
-        voiceButton.setImage(UIImage(systemName: "mic.circle.fill", withConfiguration: largeConfig), for: .normal)
-        cameraButton.setImage(UIImage(systemName: "camera.circle.fill", withConfiguration: largeConfig), for: .normal)
-        photoButton.setImage(UIImage(named: "xiangce"), for: .normal)
-        livePhotoButton.setImage(UIImage(systemName: "livephoto", withConfiguration: largeConfig), for: .normal)
-        videoButton.setImage(UIImage(systemName: "video.circle.fill", withConfiguration: largeConfig), for: .normal)
-        drawButton.setImage(UIImage(systemName: "pencil.circle.fill", withConfiguration: largeConfig), for: .normal)
-                
+        recoverEmojiButton()
+        if #available(iOS 13, *) {
+            let largeConfig = Self.largeConfig as! UIImage.Configuration
+            addButton.setImage(UIImage(systemName: "plus.circle.fill", withConfiguration: largeConfig), for: .normal)
+            locationButton.setImage(UIImage(systemName: "location.circle.fill", withConfiguration: largeConfig), for: .normal)
+            upArrowButton.setImage(UIImage(systemName: "arrow.up", withConfiguration: largeConfig), for: .normal)
+            voiceButton.setImage(UIImage(systemName: "mic.circle.fill", withConfiguration: largeConfig), for: .normal)
+            cameraButton.setImage(UIImage(systemName: "camera.circle.fill", withConfiguration: largeConfig), for: .normal)
+            livePhotoButton.setImage(UIImage(systemName: "livephoto", withConfiguration: largeConfig), for: .normal)
+            videoButton.setImage(UIImage(systemName: "video.circle.fill", withConfiguration: largeConfig), for: .normal)
+            drawButton.setImage(UIImage(systemName: "pencil.circle.fill", withConfiguration: largeConfig), for: .normal)
+        } else {
+            addButton.setImage(UIImage(named: "add"), for: .normal)
+            upArrowButton.setImage(UIImage(named: "arrowUp"), for: .normal)
+            voiceButton.setImage(UIImage(named: "voice"), for: .normal)
+            cameraButton.setImage(UIImage(named: "camera"), for: .normal)
+            livePhotoButton.setImage(UIImage(named: "live"), for: .normal)
+            videoButton.setImage(UIImage(named: "video"), for: .normal)
+            locationButton.setImage(UIImage(named: "dingwei"), for: .normal)
+        }
+        if #available(iOS 13, *) {
+            photoButton.setImage(UIImage(named: "xiangce"), for: .normal)
+        } else {
+            photoButton.setImage(UIImage(named: "xiangce-2"), for: .normal)
+        }
+        
+        if #available(iOS 13, *) {} else {
+            drawButton.isHidden = true
+        }
+
+        if #available(iOS 14, *) {
+            atButton.setImage(UIImage(systemName: "at.circle.fill", withConfiguration: Self.largeConfig as? UIImage.Configuration), for: .normal)
+        } else {
+            atButton.setImage(UIImage(named: "huati"), for: .normal)
+        }
+
         addButton.addTarget(self, action: #selector(addButtonTapped), for: .touchUpInside)
         emojiButton.addTarget(self, action: #selector(emojiButtonTapped), for: .touchUpInside)
         voiceButton.addTarget(self, action: #selector(voiceButtonTapped(_:)), for: .touchUpInside)
@@ -90,8 +134,10 @@ class MessageInputView: DogeChatStaticBlurView {
         livePhotoButton.addTarget(self, action: #selector(livePhotoButtonTapped(_:)), for: .touchUpInside)
         videoButton.addTarget(self, action: #selector(videoButtonTapped(_:)), for: .touchUpInside)
         drawButton.addTarget(self, action: #selector(drawButtonTapped(_:)), for: .touchUpInside)
+        locationButton.addTarget(self, action: #selector(locationButtonTapped(_:)), for: .touchUpInside)
+        atButton.addTarget(self, action: #selector(atButtonTapped(_:)), for: .touchUpInside)
         
-        toolStack = UIStackView(arrangedSubviews: [voiceButton, cameraButton, photoButton, livePhotoButton, videoButton, drawButton, addButton])
+        toolStack = UIStackView(arrangedSubviews: [atButton, voiceButton, cameraButton, photoButton, livePhotoButton, videoButton, drawButton, locationButton, addButton])
         toolStack.alignment = .center
         toolStack.distribution = .equalSpacing
         
@@ -103,19 +149,27 @@ class MessageInputView: DogeChatStaticBlurView {
         addSubview(toolStack)
         addSubview(referView)
         
-        referView.alpha = 0
-        
-        if isCatalyst() {
-            livePhotoButton.isHidden = true
-            videoButton.isHidden = true
+        if isMac() {
             drawButton.isHidden = true
         }
         
-        toolStack.arrangedSubviews.forEach { button in
-            button.mas_makeConstraints { make in
-                make?.width.height().mas_lessThanOrEqualTo()(button == photoButton ? width - 3 : width)
+        referView.alpha = 0
+        
+        if #available(iOS 13, *) {
+            toolStack.arrangedSubviews.forEach { button in
+                button.mas_makeConstraints { make in
+                    make?.width.height().mas_lessThanOrEqualTo()(button == photoButton ? width - 3 : width)
+                }
+            }
+        } else {
+            toolStack.arrangedSubviews.forEach { button in
+                (button as? UIButton)?.imageView?.contentMode = .scaleAspectFit
+                button.mas_makeConstraints { make in
+                    make?.width.height().mas_lessThanOrEqualTo()(width - 5)
+                }
             }
         }
+                
         
         upArrowButton.isHidden = true
         upArrowButton.mas_makeConstraints { make in
@@ -129,14 +183,15 @@ class MessageInputView: DogeChatStaticBlurView {
         }
         
         NSLayoutConstraint.activate([
-            referView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: Self.offset),
-            referView.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -Self.offset),
+            referView.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: Self.offset),
+            referView.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -Self.offset),
             referView.heightAnchor.constraint(equalToConstant: ReferView.height)
         ])
         self.referViewBottomContraint = referView.bottomAnchor.constraint(equalTo: self.topAnchor, constant: ReferView.height)
         self.referViewBottomContraint.isActive = true
         
     }
+    
     
     override func safeAreaInsetsDidChange() {
         super.safeAreaInsetsDidChange()
@@ -172,8 +227,10 @@ class MessageInputView: DogeChatStaticBlurView {
         let inset: CGFloat = -20
         let edgeInsets = UIEdgeInsets(top: inset, left: inset, bottom: inset, right: inset)
         if self.referView.alpha > 0 {
-            if self.referView.cancleButton.bounds.inset(by: edgeInsets).contains(converted) {
+            if self.referView.cancleButton.frame.inset(by: edgeInsets).contains(converted) {
                 return referView.cancleButton
+            } else if self.referView.atButton.frame.inset(by: edgeInsets).contains(converted) {
+                return referView.atButton
             } else if self.referView.bounds.inset(by: edgeInsets).contains(converted) {
                 return referView.stackView
             }
@@ -189,10 +246,27 @@ class MessageInputView: DogeChatStaticBlurView {
     
     @objc func textViewResign() {
         textView.resignFirstResponder()
-        if self.frame.maxY == self.superview!.bounds.maxY {
+        if self.frame.maxY == self.superview?.bounds.maxY ?? 0 {
             return
         }
         frameDown()
+        recoverEmojiButton()
+    }
+    
+    func recoverEmojiButton() {
+        var image: UIImage?
+        if #available(iOS 13.0, *) {
+            image = UIImage(systemName: "smiley.fill", withConfiguration: MessageInputView.largeConfig as? UIImage.Configuration)
+        } else {
+            image = UIImage(named: "emoji")
+        }
+        image?.accessibilityIdentifier = "smiley"
+        self.emojiButton.setImage(image, for: .normal)
+        self.emojiButtonStatus = .normal
+    }
+    
+    @objc func locationButtonTapped(_ sender: UIButton) {
+        delegate?.toolButtonTap(sender, type: .location)
     }
     
     @objc func voiceButtonTapped(_ sender: UIButton) {
@@ -221,6 +295,10 @@ class MessageInputView: DogeChatStaticBlurView {
 
     @objc func addButtonTapped(_ sender: UIButton) {
         delegate?.toolButtonTap(sender, type: .add)
+    }
+    
+    @objc func atButtonTapped(_ sender: UIButton) {
+        delegate?.toolButtonTap(sender, type: .at)
     }
     
     @objc func upArrowTouch(_ ges: UIPanGestureRecognizer) {
@@ -283,6 +361,13 @@ class MessageInputView: DogeChatStaticBlurView {
     
     override func layoutSubviews() {
         super.layoutSubviews()
+        guard let toolStack = self.toolStack else { return }
+        let pendings = [cameraButton, locationButton]
+        let single: CGFloat = 1.6
+        let totalWidth = CGFloat(toolStack.arrangedSubviews.count - pendings.count) * width * single
+        let remain = (self.bounds.width - totalWidth) / width
+        cameraButton.isHidden = remain < single
+        locationButton.isHidden = remain < single * 2
     }
 }
 

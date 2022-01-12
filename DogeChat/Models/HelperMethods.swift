@@ -9,37 +9,43 @@
 import Foundation
 import DogeChatNetwork
 import DogeChatUniversal
+import UIKit
+import DogeChatCommonDefines
 
 func playHaptic(_ intensity: CGFloat = 1) {
-    HapticManager.shared.playHapticTransient(time: 0, intensity: Float(intensity), sharpness: 1)
+    if #available(iOS 13.0, *) {
+        HapticManager.shared.playHapticTransient(time: 0, intensity: Float(intensity), sharpness: 1)
+    } 
 }
 
 var url_pre: String {
     WebSocketManager.url_pre
 }
 
-func socketForUsername(_ username: String) -> WebSocketManager {
-    return WebSocketManager.usersToSocketManager[username]!
+func socketForUsername(_ username: String) -> WebSocketManager? {
+    if #available(iOS 13, *) {
+        return WebSocketManager.usersToSocketManager[username]
+    } else {
+        return WebSocketManager.shared
+    }
 }
 
-func removeSocketForUsername(_ username: String) {
+func removeSocketForUsername(_ username: String, removeScene: Bool = true) {
     if let index = WebSocketManager.usersToSocketManager.firstIndex(where: { $0.key == username }) {
-        WebSocketManager.usersToSocketManager.remove(at: index)
+        let socket = WebSocketManager.usersToSocketManager.remove(at: index)
+        socket.value.disconnect()
     }
     if let index = WebSocketManagerAdapter.usernameToAdapter.firstIndex(where: { $0.key == username }) {
         WebSocketManagerAdapter.usernameToAdapter.remove(at: index)
     }
-    _ = SceneDelegate.usernameToDelegate.remove(key: username)
+    if removeScene {
+        if #available(iOS 13.0, *) {
+            _ = SceneDelegate.usernameToDelegate.remove(key: username)
+        } 
+    }
 }
 
-var safeArea: UIEdgeInsets {
-    if ProcessInfo.processInfo.isMacCatalystApp {
-        return .zero
-    } else if #available(iOS 14, *), ProcessInfo.processInfo.isiOSAppOnMac {
-        return .zero
-    }
-    return UIApplication.shared.keyWindow?.safeAreaInsets ?? .zero
-}
+var safeArea: UIEdgeInsets = .zero
 
 func isLandscape() -> Bool {
     return UIDevice.current.orientation == .landscapeLeft || UIDevice.current.orientation == .landscapeRight
@@ -57,11 +63,19 @@ func isMac() -> Bool {
     if #available(iOS 14, *), ProcessInfo.processInfo.isiOSAppOnMac {
         return true
     }
-    return ProcessInfo.processInfo.isMacCatalystApp
+    if #available(iOS 13.0, *) {
+        return ProcessInfo.processInfo.isMacCatalystApp
+    } else {
+        return false
+    }
 }
 
 func isCatalyst() -> Bool {
-    return ProcessInfo.processInfo.isMacCatalystApp
+    if #available(iOS 13.0, *) {
+        return ProcessInfo.processInfo.isMacCatalystApp
+    } else {
+        return false
+    }
 }
 
 public extension UIViewController {
@@ -93,18 +107,79 @@ public extension String {
     
 }
 
-func windowForView(_ view: UIView) -> UIWindow? {
-    return (view.window?.windowScene?.delegate as? SceneDelegate)?.window
-}
-
-func sceneDelegate() -> Any? {
-    return UIApplication.shared.windows.first(where: { $0.isKeyWindow })?.windowScene?.delegate
-}
-
-func userIDFor(username: String) -> String? {
-    return (UserDefaults.standard.value(forKey: usernameToIdKey) as? [String : String])?[username]
-}
-
 func adapterFor(username: String) -> WebSocketManagerAdapter {
     return WebSocketManagerAdapter.usernameToAdapter[username]!
 }
+
+func updateUsernames(_ username: String) {
+    var splitVC: UISplitViewController?
+    if #available(iOS 13.0, *) {
+        if let sceneDelegate = SceneDelegate.usernameToDelegate[username], let _splitVC = sceneDelegate.splitVC {
+            splitVC = _splitVC
+        }
+    } else {
+        if let _splitVC = UIApplication.shared.keyWindow?.rootViewController as? UISplitViewController {
+            splitVC = _splitVC
+        }
+    }
+    if let splitVC = splitVC {
+        for vc in splitVC.viewControllers {
+            updateUsernameForVC(vc, username: username)
+        }
+    }
+}
+
+func updateUsernameForVC(_ vc: UIViewController, username: String) {
+    if let dogeChatVC = vc as? DogeChatViewController {
+        dogeChatVC.username = username
+    } else if let nav = vc as? UINavigationController {
+        for vc in nav.viewControllers {
+            updateUsernameForVC(vc, username: username)
+        }
+    } else if let tab = vc as? UITabBarController {
+        for vc in tab.viewControllers ?? [] {
+            updateUsernameForVC(vc, username: username)
+        }
+    }
+}
+
+func getUsernameForId(_ userID: String) -> String? {
+    if let info = accountInfo(userID: userID) {
+        return info.username
+    }
+    return nil
+}
+
+func getScaleForSizeCategory(_ sizeCategory: UIContentSizeCategory) -> CGFloat {
+    let fontSizeScale: CGFloat
+    switch sizeCategory {
+    case .accessibilityExtraExtraExtraLarge:
+        fontSizeScale = 3.1
+    case .accessibilityExtraExtraLarge:
+        fontSizeScale = 2.75
+    case .accessibilityExtraLarge:
+        fontSizeScale = 2.35
+    case .accessibilityLarge:
+        fontSizeScale = 1.9
+    case .accessibilityMedium:
+        fontSizeScale = 1.6
+    case .extraExtraExtraLarge:
+        fontSizeScale = 1.35
+    case .extraExtraLarge:
+        fontSizeScale = 1.2
+    case .extraLarge:
+        fontSizeScale = 1.1
+    case .large:
+        fontSizeScale = 1
+    case .medium:
+        fontSizeScale = 0.9
+    case .small:
+        fontSizeScale = 0.85
+    case .extraSmall:
+        fontSizeScale = 0.8
+    default:
+        fontSizeScale = 1
+    }
+    return fontSizeScale
+}
+

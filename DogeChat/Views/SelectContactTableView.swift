@@ -8,18 +8,24 @@
 
 import UIKit
 import DogeChatUniversal
+import DogeChatCommonDefines
 
 class SelectContactTableView: DogeChatTableView, UITableViewDataSource, UITableViewDelegate {
+    
+    var type: SelectContactsViewController.ContactsType = .all
 
     var contacts: [Friend]! = [] {
         didSet {
-            reloadData()
+            DispatchQueue.main.async {
+                self.reloadData()
+            }
         }
     }
 
     override init(frame: CGRect, style: UITableView.Style) {
         super.init(frame: frame, style: style)
-        self.rowHeight = ContactTableViewCell.cellHeight
+        self.estimatedRowHeight = 60
+        self.rowHeight = UITableView.automaticDimension
         self.register(ContactTableViewCell.self, forCellReuseIdentifier: ContactTableViewCell.cellID)
         self.dataSource = self
         
@@ -35,7 +41,12 @@ class SelectContactTableView: DogeChatTableView, UITableViewDataSource, UITableV
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: ContactTableViewCell.cellID) as! ContactTableViewCell
-        cell.apply(contacts[indexPath.row])
+        let contact = contacts[indexPath.row]
+        var titleMore: String?
+        if let nameInGroup = contact.nameInGroup {
+            titleMore = "(\(nameInGroup))"
+        }
+        cell.apply(contact, titleMore: titleMore, subTitle: nil, hasAt: false)
         return cell
     }
 

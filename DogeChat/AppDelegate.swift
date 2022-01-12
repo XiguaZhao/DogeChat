@@ -8,6 +8,7 @@ import DogeChatNetwork
 import RSAiOSWatchOS
 import DogeChatUniversal
 import WatchConnectivity
+import DogeChatCommonDefines
 
 @objc enum SplitVCSide: Int {
     case left, right
@@ -21,6 +22,10 @@ enum PushAction: String {
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
     
+    static let mediaBrowserWindow = "mediaBrowserWindow"
+    static let chatRoomWindow = "chatRoomWindow"
+    
+    var window: UIWindow?
     var deviceToken: String?
     var pushKitToken: String?
     var nowCallUUID: UUID?
@@ -28,7 +33,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var backgroundSessionCompletionHandler: (() -> Void)?
     let voipRegistry = PKPushRegistry(queue: DispatchQueue.main)
     var lastAppEnterBackgroundTime = NSDate().timeIntervalSince1970
-    var lastUserInterfaceStyle: UIUserInterfaceStyle = .unspecified
+    var latestRemoteNotiInfo: RemoteNotificationInfo? {
+        didSet {
+            if let latestRemoteNotiInfo = latestRemoteNotiInfo {
+                DispatchQueue.main.async {
+                    NotificationCenter.default.post(name: .remoteNotiInfoSet, object: latestRemoteNotiInfo)
+                }
+            }
+        }
+    }
     var immersive: Bool {
         fileURLAt(dirName: "customBlur", fileName: userID) != nil || (PlayerManager.shared.isPlaying && UserDefaults.standard.bool(forKey: "immersive"))
     }
@@ -40,20 +53,26 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        UserDefaults(suiteName: "group.dogechat.zhaoxiguang")?.set(true, forKey: "hostActive")
+        UserDefaults(suiteName: groupName)?.set(true, forKey: "hostActive")
         registerPushAction()
         if UserDefaults.standard.value(forKey: "forceDarkMode") == nil {
             UserDefaults.standard.setValue(true, forKey: "forceDarkMode")
         }
-        for session in UIApplication.shared.openSessions {
-            if session.stateRestorationActivity == nil {
-                UIApplication.shared.requestSceneSessionDestruction(session, options: nil, errorHandler: nil)
+        if #available(iOS 13.0, *) {
+            for session in UIApplication.shared.openSessions {
+                if session.stateRestorationActivity == nil {
+                    UIApplication.shared.requestSceneSessionDestruction(session, options: nil, errorHandler: { error in
+                        print(error)
+                    })
+                }
             }
         }
         let notificationOptions = launchOptions?[.remoteNotification]
         if let notification = notificationOptions as? [String: AnyObject],
            let aps = notification["aps"] as? [String: AnyObject] {
-            SceneDelegate.usernameToDelegate.first?.value.notificationManager.processRemoteNotification(aps)
+            if #available(iOS 13.0, *) {
+                SceneDelegate.usernameToDelegate.first?.value.notificationManager.processRemoteNotification(aps)
+            }
         }
         
         registerNotification()
@@ -73,7 +92,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             self?.backgroundSessionCompletionHandler?()
         }
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-            if UserDefaults.standard.value(forKey: "lastUsername") != nil {
+            if UserDefaults(suiteName: groupName)?.value(forKey: "sharedUsername") != nil {
                 INPreferences.requestSiriAuthorization { status in
                     print("授权状态")
                     print(status)
@@ -81,7 +100,30 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             }
         }
         
+        NotificationCenter.default.addObserver(self, selector: #selector(backgroundImageChangeNoti(_:)), name: .backgroundImageChanged, object: nil)
+        
+        if #available(iOS 13, *) {} else {
+            AppDelegateUI.shared.makeWindow()
+        }
         return true
+    }
+    
+    @objc func backgroundImageChangeNoti(_ noti: Notification) {
+        guard let url = noti.userInfo?["url"] as? String else { return }
+        if url.isEmpty {
+            deleteFile(dirName: "customBlur", fileName: userID)
+            PlayerManager.shared.customImage = nil
+            return
+        }
+        MediaLoader.shared.requestImage(urlStr: url, type: .image, completion: { image, data, _ in
+            if let data = data {
+                saveFileToDisk(dirName: "customBlur", fileName: userID, data: data)
+            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                PlayerManager.shared.blurSource = .customBlur
+                PlayerManager.shared.customImage = image
+            }
+        }, progress: nil)
     }
     
     func checkIfShouldRemoveCache() {
@@ -99,67 +141,69 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
     }
     
+    @available(iOS 13.0, *)
     func application(_ application: UIApplication, didDiscardSceneSessions sceneSessions: Set<UISceneSession>) {
-        
     }
     
     func applicationWillTerminate(_ application: UIApplication) {
-        UserDefaults(suiteName: "group.dogechat.zhaoxiguang")?.set(false, forKey: "hostActive")
+        UserDefaults(suiteName: groupName)?.set(false, forKey: "hostActive")
+        if #available(iOS 13.0, *) {
+            for sceneDelegate in SceneDelegate.usernameToDelegate.values {
+                if let friends = sceneDelegate.contactVC?.friends, !friends.isEmpty, let userID = sceneDelegate.socketManager?.myInfo.userID, !userID.isEmpty {
+                    saveFriendsToDisk(friends, userID: userID)
+                }
+            }
+            if let maxID = SceneDelegate.usernameToDelegate.first?.value.socketManager?.messageManager.maxId {
+                UserDefaults.standard.set(maxID, forKey: "maxID")
+            }
+        } else {
+            let friends = AppDelegateUI.shared.contactVC.friends
+            if !friends.isEmpty {
+                saveFriendsToDisk(friends, userID: WebSocketManager.shared.myID)
+            }
+            UserDefaults.standard.set(WebSocketManager.shared.messageManager.maxId, forKey: "maxID")
+        }
     }
     
+    @available(iOS 13.0, *)
     func application(_ application: UIApplication,
                      configurationForConnecting connectingSceneSession: UISceneSession,
                      options: UIScene.ConnectionOptions) -> UISceneConfiguration {
+        if options.userActivities.first?.title == Self.chatRoomWindow {
+            return UISceneConfiguration(name: "ChatRoom", sessionRole: connectingSceneSession.role)
+        } else if options.userActivities.first?.title == Self.mediaBrowserWindow {
+            return UISceneConfiguration(name: "MediaBrowser", sessionRole: connectingSceneSession.role)
+        }
         return UISceneConfiguration(name: "Default Configuration", sessionRole: connectingSceneSession.role)
     }
-        
-    private func sizeFor(side: SplitVCSide, username: String?, view: UIView? = nil) -> CGSize {
-        let splitViewController: UISplitViewController
-        if let username = username, !username.isEmpty, let sceneDelegate = SceneDelegate.usernameToDelegate[username] {
-            splitViewController = sceneDelegate.splitVC
-        } else if let splitVC = view?.window?.rootViewController as? DogeChatSplitViewController {
-            splitViewController = splitVC
-        } else {
-            return UIScreen.main.bounds.size
-        }
-        let height = splitViewController.view.bounds.height
-        if splitViewController.isCollapsed {
-            return splitViewController.view.bounds.size
-        } else {
-            let ratio = splitViewController.preferredPrimaryColumnWidthFraction
-            switch side {
-            case .left:
-                return CGSize(width:ratio * splitViewController.view.bounds.size.width, height: height)
-            case .right:
-                return CGSize(width: (1 - ratio) * splitViewController.view.bounds.width, height: height)
-            }
-        }
+    
+    func applicationDidEnterBackground(_ application: UIApplication) {
+        AppDelegateUI.shared.enterBackground()
     }
     
-    @objc func widthFor(side: SplitVCSide, username: String?, view: UIView? = nil) -> CGFloat {
-        return sizeFor(side: side, username: username, view: view).width
-    }
-    
-    @objc func heightFor(side: SplitVCSide, username: String?, view: UIView? = nil) -> CGFloat {
-        return sizeFor(side: side, username: username, view: view).height
-    }
-                
+                        
     func application(_ application: UIApplication, handleEventsForBackgroundURLSession identifier: String, completionHandler: @escaping () -> Void) {
         self.backgroundSessionCompletionHandler = completionHandler
     }
     
     func applicationWillEnterForeground(_ application: UIApplication) {
         //通知中心，控制中心，快捷访问都不会触发这里。重新登录的逻辑在这里可能更合适
+        AppDelegateUI.shared.enterForeground()
     }
         
     func applicationWillResignActive(_ application: UIApplication) {
-        
+        AppDelegateUI.shared.resignActive()
     }
     
     func applicationDidBecomeActive(_ application: UIApplication) {
         application.applicationIconBadgeNumber = 0
     }
-            
+    
+    func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        processRevoke(userInfo: notification.request.content.userInfo)
+        completionHandler([])
+    }
+                
     // app 在前台运行中收到通知会调用
     func application(
         _ application: UIApplication,
@@ -167,6 +211,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void
     ) {
         print(userInfo)
+    }
+    
+    func processRevoke(userInfo: [AnyHashable : Any]) {
+        if let aps = userInfo["aps"] as? [String: Any] {
+            if let status = aps["messageStatus"] as? Int, status == -1 {
+                if let senderID = aps["senderId"] as? String, let receiverID = aps["receiverId"] as? String,
+                   let isGroup = (aps["isGroup"] as? NSString)?.boolValue, let uuid = aps["uuid"] as? String {
+                    let revoke = RemoteMessage(isGroup: isGroup, senderID: senderID, receiverID: receiverID, uuid: uuid)
+                    NotificationCenter.default.post(name: .revokeMessage, object: [revoke])
+                }
+            }
+        }
     }
     
     func registerNotification() {
@@ -180,6 +236,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             } else {
                 print("请求通知权限被拒绝了")
             }
+        }
+        NotificationCenter.default.addObserver(forName: .init("NSWindowDidBecomeMainNotification"), object: nil, queue: nil) { _ in
+            NotificationManager.checkRevokeMessages()
         }
     }
     
@@ -197,14 +256,26 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         guard let userInfo = response.notification.request.content.userInfo as? [String: AnyObject],
               let aps = userInfo["aps"] as? [String: AnyObject] else { return }
-        SceneDelegate.usernameToDelegate.first?.value.notificationManager.processRemoteNotification(aps)
-        
+        if #available(iOS 13.0, *) {
+            SceneDelegate.usernameToDelegate.first?.value.notificationManager.processRemoteNotification(aps)
+        } else {
+            NotificationManager.shared.processRemoteNotification(aps)
+        }
+        self.latestRemoteNotiInfo = NotificationManager.getRemoteNotiInfo(aps)
         switch response.actionIdentifier {
         case "REPLY_ACTION":
-            if let textResponse = response as? UNTextInputNotificationResponse {
-                SceneDelegate.usernameToDelegate.first?.value.notificationManager.actionCompletionHandler = completionHandler
-                let input = textResponse.userText
-                SceneDelegate.usernameToDelegate.first?.value.notificationManager.processReplyAction(replyContent: input)
+            if let textResponse = response as? UNTextInputNotificationResponse,
+               let username = getUsernameAndPassword()?.username {
+                if #available(iOS 13.0, *) {
+                    if let sceneDelegate = SceneDelegate.usernameToDelegate[username] {
+                        let input = textResponse.userText
+                        sceneDelegate.notificationManager.actionCompletionHandler = completionHandler
+                        sceneDelegate.notificationManager.processReplyAction(replyContent: input)
+                    }
+                } else {
+                    NotificationManager.shared.actionCompletionHandler = completionHandler
+                    NotificationManager.shared.processReplyAction(replyContent: textResponse.userText)
+                }
             }
         case "DO_NOT_DISTURT_ACTION":
             break
@@ -225,31 +296,32 @@ extension AppDelegate: PKPushRegistryDelegate {
     
     func pushRegistry(_ registry: PKPushRegistry, didReceiveIncomingPushWith payload: PKPushPayload, for type: PKPushType, completion: @escaping () -> Void) {
         print("收到pushkit推送!")
-        
-        guard let aps = payload.dictionaryPayload["aps"] as? [String: Any],
-              let alert = aps["alert"] as? [String: Any],
-              let caller = alert["title"] as? String,
-              let uuid = alert["uuid"] as? String
-              else {
-                  ProviderDelegate(callManager: CallManager()).reportIncomingCall(uuid: UUID(), handle: "未知用户", completion: nil)
-                  completion()
-                  return
-              }
-        let sender = String(caller)
-        print(sender + "打电话来啦")
-        let wrappedUUID = UUID(uuidString: uuid)
-        let finalUUID = wrappedUUID ?? UUID()
-        self.nowCallUUID = finalUUID
-        if let sceneDelegate = SceneDelegate.usernameToDelegate.first?.value {
-            sceneDelegate.socketManager?.nowCallUUID = finalUUID
-            sceneDelegate.providerDelegate.reportIncomingCall(uuid: finalUUID, handle: sender) { (error) in
-                guard error == nil else { return }
-                sceneDelegate.notificationManager.prepareVoiceChat(caller: sender, uuid: finalUUID)
+        if #available(iOS 13, *) {
+            guard let aps = payload.dictionaryPayload["aps"] as? [String: Any],
+                  let alert = aps["alert"] as? [String: Any],
+                  let caller = alert["title"] as? String,
+                  let uuid = alert["uuid"] as? String
+                  else {
+                      ProviderDelegate(callManager: CallManager()).reportIncomingCall(uuid: UUID(), handle: "未知用户", completion: nil)
+                      completion()
+                      return
+                  }
+            let sender = String(caller)
+            print(sender + "打电话来啦")
+            let wrappedUUID = UUID(uuidString: uuid)
+            let finalUUID = wrappedUUID ?? UUID()
+            self.nowCallUUID = finalUUID
+            if let sceneDelegate = SceneDelegate.usernameToDelegate.first?.value {
+                sceneDelegate.socketManager?.nowCallUUID = finalUUID
+                sceneDelegate.providerDelegate.reportIncomingCall(uuid: finalUUID, handle: sender) { (error) in
+                    guard error == nil else { return }
+                    sceneDelegate.notificationManager.prepareVoiceChat(caller: sender, uuid: finalUUID)
+                }
+            } else {
+                ProviderDelegate(callManager: CallManager()).reportIncomingCall(uuid: UUID(), handle: "未知用户", completion: nil)
             }
-        } else {
-            ProviderDelegate(callManager: CallManager()).reportIncomingCall(uuid: UUID(), handle: "未知用户", completion: nil)
+            completion()
         }
-        completion()
     }
     
     func pushRegistry(_ registry: PKPushRegistry, didInvalidatePushTokenFor type: PKPushType) {

@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import DogeChatUniversal
+import DogeChatCommonDefines
 
 class TrackStore: NSObject, Codable {
     

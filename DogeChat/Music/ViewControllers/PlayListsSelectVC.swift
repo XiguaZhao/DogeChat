@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import DogeChatUniversal
+import DogeChatCommonDefines
 
 enum PlayListSelectType {
     case normal
@@ -111,7 +111,7 @@ extension PlayListsSelectVC: UITableViewDataSource, UITableViewDelegate {
                     allTracks += tracks
                     NotificationCenter.default.post(name: .tracksInfoChanged, object: nil)
                 }
-                saveTracksInfoToDisk(username: username)
+                saveTracksInfoToDisk(username: username, needUpload: false)
                 playListVC.reloadData()
                 if playListVC.tableView.isEditing {
                     playListVC.editAction(playListVC.editButton)

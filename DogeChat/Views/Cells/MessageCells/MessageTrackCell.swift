@@ -9,6 +9,7 @@
 import UIKit
 import DogeChatUniversal
 import DogeChatNetwork
+import DogeChatCommonDefines
 
 let sharedTracksImageCache = NSCache<NSString, NSData>()
 
@@ -44,7 +45,11 @@ class MessageTrackCell: MessageBaseCell {
         }
         let tap = UITapGestureRecognizer(target: self, action: #selector(bgImageTapAction(_:)))
         bgImageView.addGestureRecognizer(tap)
-        playButton.setImage(UIImage(systemName: "play.circle.fill"), for: .normal)
+        if #available(iOS 13.0, *) {
+            playButton.setImage(UIImage(systemName: "play.circle.fill"), for: .normal)
+        } else {
+            // Fallback on earlier versions
+        }
         let stackView = UIStackView(arrangedSubviews: [firstLineLabel, secondLineLabel])
         firstLineLabel.font = .systemFont(ofSize: 15)
         secondLineLabel.font = .systemFont(ofSize: 12)
@@ -92,7 +97,11 @@ class MessageTrackCell: MessageBaseCell {
     }
     
     func setButtonImage() {
-        playButton.setImage(UIImage(systemName: message.isPlaying ? "pause.circle.fill" : "play.circle.fill"), for: .normal)
+        if #available(iOS 13.0, *) {
+            playButton.setImage(UIImage(systemName: message.isPlaying ? "pause.circle.fill" : "play.circle.fill"), for: .normal)
+        } else {
+            // Fallback on earlier versions
+        }
     }
     
     override func apply(message: Message) {
@@ -103,7 +112,7 @@ class MessageTrackCell: MessageBaseCell {
         if !message.tracks.isEmpty {
             display()
         } else {
-            MediaLoader.shared.requestImage(urlStr: message.text, type: .draw, cookie: manager.cookie, syncIfCan: true) { [weak self] _, _, localURL in
+            MediaLoader.shared.requestImage(urlStr: message.text, type: .draw, cookie: manager?.cookie, syncIfCan: true) { [weak self] _, _, localURL in
                 if let data = try? Data(contentsOf: localURL),
                    let tracks = try? JSONDecoder().decode([Track].self, from: data) {
                     captured.tracks = tracks

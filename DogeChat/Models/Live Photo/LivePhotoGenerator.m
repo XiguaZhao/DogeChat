@@ -9,8 +9,8 @@
 #import "LivePhotoGenerator.h"
 #import <CoreServices/CoreServices.h>
 #import <AVFoundation/AVFoundation.h>
-#import "DogeChat-Swift.h"
 #import "LFAssetExportSession.h"
+@import DogeChatVideoCompression;
 
 #pragma GCC diagnostic ignored "-Wundeclared-selector"
 

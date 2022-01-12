@@ -8,6 +8,8 @@
 
 import UIKit
 import DogeChatNetwork
+import DogeChatUniversal
+import DogeChatCommonDefines
 
 enum SignUpVCType: Int {
     case signUp = 1
@@ -70,8 +72,8 @@ class SignUpViewController: UIViewController {
             if status == "success" {
                 self.makeAutoAlert(message: "注册成功", detail: "请记住用户名和密码", showTime: 2) {
                     self.navigationController?.popViewController(animated: true)
-                    UserDefaults.standard.setValue(username, forKey: "lastUsername")
-                    UserDefaults.standard.setValue(password, forKey: "lastPassword")
+                    UserDefaults(suiteName: groupName)?.setValue(username, forKey: "sharedUsername")
+                    UserDefaults(suiteName: groupName)?.setValue(password, forKey: "sharedPassword")
                 }
             } else {
                 self.makeAutoAlert(message: status, detail: nil, showTime: 2, completion: nil)

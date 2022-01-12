@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import DogeChatCommonDefines
 
 protocol VoiceRecordDelegate: AnyObject {
     func voiceConfirmSend(_ url: URL, duration: Int)
@@ -41,10 +42,18 @@ class VoiceViewController: DogeChatViewController, AVAudioRecorderDelegate {
         stack.alignment = .center
         view.addSubview(stack)
         
-        let largeConfig = UIImage.SymbolConfiguration(pointSize: 150, weight: .bold, scale: .large)
-        stopButton.setImage(UIImage(systemName: "stop.circle.fill", withConfiguration: largeConfig), for: .normal)
-        playButton.setImage(UIImage(systemName: "play.circle.fill", withConfiguration: largeConfig), for: .normal)
-        sendButton.setImage(UIImage(systemName: "paperplane.circle.fill", withConfiguration: largeConfig), for: .normal)
+        if #available(iOS 13.0, *) {
+            let largeConfig = UIImage.SymbolConfiguration(pointSize: 150, weight: .bold, scale: .large)
+            stopButton.setImage(UIImage(systemName: "stop.circle.fill", withConfiguration: largeConfig), for: .normal)
+            playButton.setImage(UIImage(systemName: "play.circle.fill", withConfiguration: largeConfig), for: .normal)
+            if #available(iOS 14, *) {
+                sendButton.setImage(UIImage(systemName: "paperplane.circle.fill", withConfiguration: largeConfig), for: .normal)
+            } else {
+                sendButton.setImage(UIImage(systemName: "arrowshape.turn.up.right.circle.fill", withConfiguration: largeConfig), for: .normal)
+            }
+        } else {
+            
+        }
 
         stopButton.addTarget(self, action: #selector(stopAction(_:)), for: .touchUpInside)
         playButton.addTarget(self, action: #selector(playAction(_:)), for: .touchUpInside)
@@ -99,9 +108,13 @@ class VoiceViewController: DogeChatViewController, AVAudioRecorderDelegate {
         
     }
     
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        stopTimer()
+    }
+    
     deinit {
-        timer?.invalidate()
-        timer = nil
+        stopTimer()
     }
     
     @objc func updateUI() {

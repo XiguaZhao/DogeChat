@@ -9,15 +9,11 @@
 import UIKit
 
 class DogeChatNavigationController: UINavigationController {
-
-    var blurView: UIImageView!
     
     var username = ""
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        makeBlurViewForViewController(self, blurView: &blurView)
-        NotificationCenter.default.addObserver(self, selector: #selector(forceDarkMode(noti:)), name: .immersive, object: nil)
     }
     
     override func pushViewController(_ viewController: UIViewController, animated: Bool) {
@@ -29,13 +25,5 @@ class DogeChatNavigationController: UINavigationController {
         return popped
     }
     
-    @objc func forceDarkMode(noti: Notification) {
-        let force = noti.object as! Bool
-        if force {
-            makeBlurViewForViewController(self, blurView: &blurView, username: username)
-        } else {
-            recoverVC(self, blurView: &blurView)
-        }
-    }
     
 }

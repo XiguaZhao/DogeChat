@@ -7,9 +7,11 @@
 //
 
 import UIKit
+import CoreGraphics
 
 class DogeChatSplitViewController: UISplitViewController {
     
+
     let vcDelegate = SplitViewControllerDelegate()
 
     override func viewDidLoad() {
@@ -18,7 +20,9 @@ class DogeChatSplitViewController: UISplitViewController {
         vcDelegate.splitVC = self
         self.preferredPrimaryColumnWidthFraction = 0.35
         self.preferredDisplayMode = .allVisible
+        
     }
+    
     
     func findContactVC() -> ContactsTableViewController? {
         if let tabBarController = self.viewControllers.first as? UITabBarController {
@@ -31,6 +35,13 @@ class DogeChatSplitViewController: UISplitViewController {
             }
         }
         return nil
+    }
+    
+    override func viewSafeAreaInsetsDidChange() {
+        super.viewSafeAreaInsetsDidChange()
+        if view.safeAreaInsets != safeArea {
+            safeArea = view.safeAreaInsets
+        }
     }
     
     func findChatRoomVC() -> ChatRoomViewController? {

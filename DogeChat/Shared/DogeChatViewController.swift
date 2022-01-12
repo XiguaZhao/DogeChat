@@ -9,6 +9,7 @@
 import UIKit
 import DogeChatUniversal
 import DogeChatNetwork
+import DogeChatCommonDefines
 
 protocol DogeChatVCTableDataSource: AnyObject {
     var tableView: DogeChatTableView { get set }
@@ -30,34 +31,54 @@ class DogeChatViewController: UIViewController, UIPopoverPresentationControllerD
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        if #available(iOS 13.0, *) {
+            self.view.backgroundColor = .systemBackground
+        } else {
+            self.view.backgroundColor = .white
+        }
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
             guard let self = self else { return }
             NotificationCenter.default.addObserver(self, selector: #selector(self.immersive(noti:)), name: .immersive, object: nil)
         }
-        toggleBlurView(force: AppDelegate.shared.immersive, needAnimation: false)
+        toggleBlurView(needBlur: AppDelegate.shared.immersive, needAnimation: false)
     }
     
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
-        if let previous = previousTraitCollection, previous.userInterfaceStyle != UIScreen.main.traitCollection.userInterfaceStyle {
+        if let previous = previousTraitCollection, previous.userInterfaceStyle != self.traitCollection.userInterfaceStyle {
             NotificationCenter.default.post(name: .immersive, object: AppDelegate.shared.immersive)
         }
-        AppDelegate.shared.lastUserInterfaceStyle = UIScreen.main.traitCollection.userInterfaceStyle
     }
         
     func recoverBackgroundColor() {
+        if #available(iOS 13.0, *) {
             self.view.backgroundColor = .systemBackground
+        }
     }
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
     }
     
-    func toggleBlurView(force: Bool, needAnimation: Bool) {
+    override func pressesBegan(_ presses: Set<UIPress>, with event: UIPressesEvent?) {
+        super.pressesBegan(presses, with: event)
+        if let key = presses.first?.key {
+            let keyCode = key.keyCode
+            if keyCode == .keyboardEscape {
+                if self.presentingViewController != nil {
+                    self.dismiss(animated: true, completion: nil)
+                } else {
+                    self.navigationController?.popViewController(animated: true)
+                }
+            }
+        }
+    }
+    
+    func toggleBlurView(needBlur: Bool, needAnimation: Bool) {
         if self.username.isEmpty, let myName = (self.splitViewController as? DogeChatSplitViewController)?.findContactVC()?.username {
             self.username = myName
         }
-        if force {
+        if needBlur {
             var tableView: UITableView?
             if let tableViewDataSource = self as? DogeChatVCTableDataSource {
                 tableView = tableViewDataSource.tableView
@@ -75,7 +96,7 @@ class DogeChatViewController: UIViewController, UIPopoverPresentationControllerD
     @objc func immersive(noti: Notification) {
         let force = noti.object as! Bool
         DispatchQueue.main.async {
-            self.toggleBlurView(force: force, needAnimation: true)
+            self.toggleBlurView(needBlur: force, needAnimation: true)
         }
     }
     
@@ -94,6 +115,12 @@ class DogeChatViewController: UIViewController, UIPopoverPresentationControllerD
 }
 
 func makeBlurViewForViewController(_ vc: UIViewController, blurView: inout UIImageView!, needAnimation: Bool = true, addToThisView: UIView? = nil, username: String? = nil) {
+    var username = username
+    if #available(iOS 13.0, *) {
+        if (username == nil || (username ?? "").isEmpty) && SceneDelegate.usernameToDelegate.count == 1 {
+            username = SceneDelegate.usernameToDelegate.keys.first
+        }
+    }
     var targetImage: UIImage?
     if UserDefaults.standard.bool(forKey: "immersive") && PlayerManager.shared.nowAlbumImage != nil && PlayerManager.shared.isPlaying {
         targetImage = PlayerManager.shared.nowAlbumImage
@@ -102,23 +129,37 @@ func makeBlurViewForViewController(_ vc: UIViewController, blurView: inout UIIma
     } else if fileURLAt(dirName: "customBlur", fileName: userID) != nil && PlayerManager.shared.customImage != nil {
         targetImage = PlayerManager.shared.customImage
     }
-    guard let targetImage = targetImage else { return }
+    guard let targetImage = targetImage else {
+        return
+    }
     let interfaceStyle: UIUserInterfaceStyle
     if UserDefaults.standard.bool(forKey: "forceDarkMode") {
-        interfaceStyle = .dark
+        if #available(iOS 13, *) {
+            interfaceStyle = .dark
+        } else {
+            interfaceStyle = .light
+        }
     } else {
         interfaceStyle = .unspecified
     }
-    vc.navigationController?.overrideUserInterfaceStyle = interfaceStyle
-    vc.splitViewController?.overrideUserInterfaceStyle = interfaceStyle
-    vc.tabBarController?.overrideUserInterfaceStyle = interfaceStyle
-    vc.overrideUserInterfaceStyle = interfaceStyle
-    SceneDelegate.usernameToDelegate[username ?? ""]?.window?.overrideUserInterfaceStyle = interfaceStyle
+    if #available(iOS 13.0, *) {
+        vc.navigationController?.overrideUserInterfaceStyle = interfaceStyle
+        vc.splitViewController?.overrideUserInterfaceStyle = interfaceStyle
+        vc.tabBarController?.overrideUserInterfaceStyle = interfaceStyle
+        vc.overrideUserInterfaceStyle = interfaceStyle
+        SceneDelegate.usernameToDelegate[username ?? ""]?.window?.overrideUserInterfaceStyle = interfaceStyle
+    } else {
+        // Fallback on earlier versions
+    }
     vc.view.backgroundColor = .clear
     vc.view.backgroundColor = .clear
     var style: UIBlurEffect.Style = .regular
     if UserDefaults.standard.bool(forKey: "forceDarkMode") {
-        style = .dark
+        if #available(iOS 13, *) {
+            style = .dark
+        } else {
+            style = .extraLight
+        }
     } else {
         style = .regular
     }
@@ -178,14 +219,17 @@ func makeBlurViewForViewController(_ vc: UIViewController, blurView: inout UIIma
 }
 
 func recoverVC(_ vc: UIViewController, blurView: inout UIImageView!) {
-    vc.view.backgroundColor = .systemBackground
-    vc.navigationController?.overrideUserInterfaceStyle = .unspecified
-    vc.splitViewController?.overrideUserInterfaceStyle = .unspecified
-    vc.tabBarController?.overrideUserInterfaceStyle = .unspecified
-    vc.overrideUserInterfaceStyle = .unspecified
-    vc.view.backgroundColor = .systemBackground
-    vc.splitViewController?.view.backgroundColor = .systemBackground
-    vc.view.window?.overrideUserInterfaceStyle = .unspecified
+    if #available(iOS 13.0, *) {
+        vc.view.backgroundColor = .systemBackground
+        vc.navigationController?.overrideUserInterfaceStyle = .unspecified
+        vc.splitViewController?.overrideUserInterfaceStyle = .unspecified
+        vc.tabBarController?.overrideUserInterfaceStyle = .unspecified
+        vc.overrideUserInterfaceStyle = .unspecified
+        vc.splitViewController?.view.backgroundColor = .systemBackground
+        vc.view.window?.overrideUserInterfaceStyle = .unspecified
+    } else {
+        vc.view.backgroundColor = .white
+    }
     UIView.animate(withDuration: 0.5) { [weak blurView] in
         blurView?.alpha = 0
     } completion: { [weak blurView] _ in

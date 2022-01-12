@@ -8,13 +8,25 @@
 
 import UIKit
 import DogeChatUniversal
+import DogeChatNetwork
+import DogeChatCommonDefines
+
+protocol ContactDataSource: AnyObject {
+    var friends: [Friend] { get }
+}
 
 protocol SelectContactsDelegate: AnyObject {
     func didSelectContacts(_ contacts: [Friend], vc: SelectContactsViewController)
     func didCancelSelectContacts(_ vc: SelectContactsViewController)
+    func didFetchContacts(_ contacts: [Friend], vc: SelectContactsViewController)
 }
 
 class SelectContactsViewController: DogeChatViewController, DogeChatVCTableDataSource {
+    
+    enum ContactsType {
+        case all
+        case group
+    }
     
     var displayedFriends = [Friend]() {
         didSet {
@@ -27,11 +39,21 @@ class SelectContactsViewController: DogeChatViewController, DogeChatVCTableDataS
             displayedFriends = dataSourcea?.friends ?? []
         }
     }
+    var type: ContactsType = .all {
+        didSet {
+            (tableView as! SelectContactTableView).type = self.type
+        }
+    }
     var tableView: DogeChatTableView = SelectContactTableView()
     let toolBar = UIToolbar()
     var confirmButton: UIBarButtonItem!
     var cancelButton: UIBarButtonItem!
     weak var delegate: SelectContactsDelegate?
+    var didSelectContacts: (([Friend]) -> Void)?
+    var manager: WebSocketManager? {
+        WebSocketManager.usersToSocketManager[self.username]
+    }
+    var group: Group?
     
     var selectedFriends = [Friend]()
     
@@ -43,12 +65,29 @@ class SelectContactsViewController: DogeChatViewController, DogeChatVCTableDataS
         self.selectedFriends = selectedFriends
         self.excluded = excluded
     }
+    
+    convenience init(username: String, group: Group, members: [Friend]?) {
+        self.init()
+        self.type = .group
+        self.username = username
+        if var members = members {
+            if !members.contains(where: { $0.isGroup }) {
+                members.insert(self.wrapGroupForAt(group), at: 0)
+            }
+            DispatchQueue.main.async {
+                self.displayedFriends = members
+            }
+        } else {
+            self.group = group
+            groupSet()
+        }
+    }
         
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        if dataSourcea == nil {
-            dataSourcea = socketForUsername(username).messageManager
+        if self.type == .all && dataSourcea == nil {
+            dataSourcea = socketForUsername(username)?.messageManager
         }
         
         excludeSomeFriend()
@@ -79,6 +118,31 @@ class SelectContactsViewController: DogeChatViewController, DogeChatVCTableDataS
         }
     }
     
+    override func pressesBegan(_ presses: Set<UIPress>, with event: UIPressesEvent?) {
+        super.pressesBegan(presses, with: event)
+        if let first = presses.first?.key?.keyCode {
+            if first == .keyboardReturnOrEnter {
+                confirmAction(nil)
+            }
+        }
+    }
+    
+    private func wrapGroupForAt(_ group: Group) -> Group {
+        return Group(username: "所有人", nickName: nil, avatarURL: group.avatarURL, latesetMessage: nil, userID: group.userID, isGroup: true, isMyFriend: true)
+    }
+    
+    func groupSet() {
+        guard let group = group, let manager = manager else {
+            return
+        }
+        manager.httpsManager.getGroupMembers(group: group, completion: { [weak self] members in
+            guard let self = self else { return }
+            let total = [self.wrapGroupForAt(group)] + members
+            self.displayedFriends = total
+            self.delegate?.didFetchContacts(total, vc: self)
+        })
+    }
+    
     func excludeSomeFriend() {
         guard !self.excluded.isEmpty else { return }
         var copy = displayedFriends
@@ -100,13 +164,18 @@ class SelectContactsViewController: DogeChatViewController, DogeChatVCTableDataS
         toolBar.setItems(items, animated: true)
     }
     
-    @objc func confirmAction(_ sender: UIBarButtonItem) {
+    @objc func confirmAction(_ sender: UIBarButtonItem!) {
         let selectedContacts = (tableView.indexPathsForSelectedRows ?? []).map { (tableView as! SelectContactTableView).contacts[$0.row] }
-        delegate?.didSelectContacts(selectedContacts, vc: self)
+        self.dismiss(animated: true) {
+            self.delegate?.didSelectContacts(selectedContacts, vc: self)
+            self.didSelectContacts?(selectedContacts)
+        }
     }
     
     @objc func cancelAction(_ sender: UIBarButtonItem) {
-        delegate?.didCancelSelectContacts(self)
+        self.dismiss(animated: true) {
+            self.delegate?.didCancelSelectContacts(self)
+        }
     }
 
 }

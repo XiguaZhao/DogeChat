@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="19455" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="Ker-fq-rFq">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="19529" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="Ker-fq-rFq">
     <device id="retina6_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19454"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19519"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -34,12 +34,27 @@
                     </userDefinedRuntimeAttributes>
                     <connections>
                         <segue destination="hLv-Vk-XoE" kind="relationship" relationship="masterViewController" id="Jml-KI-uAi"/>
-                        <segue destination="mlY-KK-fBy" kind="relationship" relationship="detailViewController" id="t1r-PA-kMy"/>
+                        <segue destination="aWM-a6-2S2" kind="relationship" relationship="detailViewController" id="Hiq-Oo-PdV"/>
                     </connections>
                 </splitViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="VnT-cg-1ec" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-2470" y="-358"/>
+        </scene>
+        <!--Doge Chat View Controller-->
+        <scene sceneID="BTE-36-hJR">
+            <objects>
+                <viewController id="aWM-a6-2S2" customClass="DogeChatViewController" customModule="DogeChat" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="R8N-Ja-kUe">
+                        <rect key="frame" x="0.0" y="0.0" width="428" height="926"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="eAG-lL-9GF"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="KGf-X1-ETf" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-1682" y="139"/>
         </scene>
         <!--Doge Chat Tab Bar Controller-->
         <scene sceneID="fAB-79-vBU">
@@ -53,25 +68,13 @@
                     <connections>
                         <segue destination="73m-2C-Avi" kind="relationship" relationship="viewControllers" id="dF3-Gi-WRe"/>
                         <segue destination="WrQ-ga-1RZ" kind="relationship" relationship="viewControllers" id="tA1-lx-2nr"/>
-                        <segue destination="QJ7-1B-WKH" kind="relationship" relationship="viewControllers" id="6E8-qg-KsY"/>
+                        <segue destination="RJo-ek-ZDH" kind="relationship" relationship="viewControllers" id="PyV-My-JHa"/>
+                        <segue destination="QJ7-1B-WKH" kind="relationship" relationship="viewControllers" id="xSx-Hl-TZc"/>
                     </connections>
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="QFR-kt-v9I" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="-707" y="-161"/>
-        </scene>
-        <!--Doge Chat Navigation Controller-->
-        <scene sceneID="yeq-q3-aB6">
-            <objects>
-                <navigationController storyboardIdentifier="chatroomNav" id="mlY-KK-fBy" customClass="DogeChatNavigationController" customModule="DogeChat" customModuleProvider="target" sceneMemberID="viewController">
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" largeTitles="YES" id="P2Y-tL-7OF">
-                        <rect key="frame" x="0.0" y="44" width="428" height="44"/>
-                        <autoresizingMask key="autoresizingMask"/>
-                    </navigationBar>
-                </navigationController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="zVR-ux-2OQ" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="-1420" y="342"/>
         </scene>
         <!--Root View Controller-->
         <scene sceneID="KTC-wF-asg">
@@ -81,7 +84,7 @@
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="JIg-ig-4v5" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1511" y="-73"/>
+            <point key="canvasLocation" x="1514" y="-17"/>
         </scene>
         <!--Doge Chat Navigation Controller-->
         <scene sceneID="g9u-DR-5dM">
@@ -100,7 +103,23 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="258-Q9-My8" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="638" y="54"/>
+            <point key="canvasLocation" x="750" y="-17"/>
+        </scene>
+        <!--Doge Chat View Controller-->
+        <scene sceneID="IZl-6w-rR5">
+            <objects>
+                <viewController id="6RS-GR-4Rj" customClass="DogeChatViewController" customModule="DogeChat" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="y6N-Wa-yif">
+                        <rect key="frame" x="0.0" y="0.0" width="428" height="926"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="VEJ-WU-8cR"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="tRZ-0z-LTc"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Grd-fQ-a44" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-311" y="599"/>
         </scene>
         <!--Preview-->
         <scene sceneID="TSg-da-ryh">
@@ -117,7 +136,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="ch4-b5-Cui" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="615" y="803"/>
+            <point key="canvasLocation" x="1514.018691588785" y="802.80777537796985"/>
         </scene>
         <!--收藏-->
         <scene sceneID="Vs6-5R-ePp">
@@ -133,11 +152,31 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="JTm-9H-Sg4" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1390" y="806"/>
+            <point key="canvasLocation" x="2289.2523364485978" y="805.39956803455732"/>
+        </scene>
+        <!--动态-->
+        <scene sceneID="lWF-CN-r2m">
+            <objects>
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="RJo-ek-ZDH" customClass="DogeChatNavigationController" customModule="DogeChat" customModuleProvider="target" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="动态" image="square.and.pencil" catalog="system" id="ynX-sm-nhH"/>
+                    <toolbarItems/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="ep3-Ki-H0F">
+                        <rect key="frame" x="0.0" y="44" width="428" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <nil name="viewControllers"/>
+                    <connections>
+                        <segue destination="6RS-GR-4Rj" kind="relationship" relationship="rootViewController" id="lOd-fz-6aK"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="nHO-h1-PQZ" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-921" y="599"/>
         </scene>
     </scenes>
     <resources>
         <image name="music.note.list" catalog="system" width="128" height="115"/>
+        <image name="square.and.pencil" catalog="system" width="128" height="115"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>

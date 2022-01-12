@@ -42,6 +42,9 @@ class EmojiCollectionViewCell: DogeChatBaseCollectionViewCell {
         emojiView.layer.masksToBounds = true
         let longPress = UILongPressGestureRecognizer(target: self, action: #selector(longPressAction(_:)))
         emojiView.isUserInteractionEnabled = true
+        if isMac() {
+            longPress.isEnabled = false
+        }
         emojiView.addGestureRecognizer(longPress)
         
         contentView.addSubview(progress)
@@ -74,7 +77,7 @@ class EmojiCollectionViewCell: DogeChatBaseCollectionViewCell {
         guard let url = URL(string: urlString) else { return }
         self.url = url
         let capturedUrl = url
-        MediaLoader.shared.requestImage(urlStr: urlString, type: .image, needStaticGif: true, completion: { [weak self] image, data, _ in
+        MediaLoader.shared.requestImage(urlStr: urlString, type: .image, needStaticGif: true, completion: { [weak self] image, data, localURL in
             guard let self = self, capturedUrl == self.url else { return }
             if let data = data {
                 self.emojiView.image = UIImage(data: data)

@@ -47,9 +47,9 @@
    </TestAction>
    <LaunchAction
       buildConfiguration = "Debug"
-      selectedDebuggerIdentifier = ""
-      selectedLauncherIdentifier = "Xcode.IDEFoundation.Launcher.PosixSpawn"
-      launchStyle = "1"
+      selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
+      selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
+      launchStyle = "0"
       askForAppToLaunch = "Yes"
       useCustomWorkingDirectory = "NO"
       ignoresPersistentStateOnLaunch = "NO"
@@ -60,8 +60,8 @@
       notificationPayloadFile = "DogeChatWatch Extension/PushNotificationPayload.apns">
       <RemoteRunnable
          runnableDebuggingMode = "0"
-         BundleIdentifier = "com.zhaoxiguang.demo"
-         RemotePath = "/var/containers/Bundle/Application/992CD7F4-83CF-4D47-9E3D-09AA9DD43BF5/DogeChat.app">
+         BundleIdentifier = "com.zhaoxiguang.dogechat"
+         RemotePath = "/Applications/DogeChat.app">
       </RemoteRunnable>
       <MacroExpansion>
          <BuildableReference
