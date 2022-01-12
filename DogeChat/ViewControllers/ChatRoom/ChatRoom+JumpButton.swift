@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import DogeChatUniversal
+import DogeChatCommonDefines
 
 extension ChatRoomViewController {
     
@@ -74,10 +74,10 @@ extension ChatRoomViewController {
         guard self.purpose == .chat else { return }
         var show = false
         var unreads = [Message]()
+        unreads = self.messages.filter({ !$0.isRead })
         if let _ = explictJumpMessageUUID {
             show = true
         } else {
-            unreads = self.messages.filter({ !$0.isRead })
             if !unreads.isEmpty {
                 show = true
             }

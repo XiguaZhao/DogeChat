@@ -8,7 +8,7 @@
 
 import UIKit
 import DogeChatNetwork
-import DogeChatUniversal
+import DogeChatCommonDefines
 
 protocol AddContactDelegate: AnyObject {
     func addSuccess()

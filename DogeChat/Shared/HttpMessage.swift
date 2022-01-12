@@ -9,6 +9,7 @@
 import Foundation
 import RSAiOSWatchOS
 import DogeChatUniversal
+import DogeChatCommonDefines
 
 class HttpMessage {
     

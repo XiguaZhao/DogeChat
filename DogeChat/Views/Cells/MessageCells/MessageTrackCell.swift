@@ -9,6 +9,7 @@
 import UIKit
 import DogeChatUniversal
 import DogeChatNetwork
+import DogeChatCommonDefines
 
 let sharedTracksImageCache = NSCache<NSString, NSData>()
 

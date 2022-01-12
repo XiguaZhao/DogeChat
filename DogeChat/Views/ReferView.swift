@@ -7,12 +7,14 @@
 //
 
 import UIKit
-import DogeChatUniversal
 import SwiftyJSON
+import PencilKit
+import DogeChatCommonDefines
 
 protocol ReferViewDelegate: AnyObject {
     func referViewTapAction(_ referView: ReferView, message: Message?)
     func cancleAction(_ referView: ReferView)
+    func atAction(_ referView: ReferView)
 }
 
 enum ReferViewType {
@@ -33,6 +35,7 @@ class ReferView: UIView {
     let imageView = UIImageView()
     let messageLabel = UILabel()
     let cancleButton = UIButton()
+    let atButton = UIButton()
     var message: Message?
     let type: ReferViewType
 
@@ -55,12 +58,15 @@ class ReferView: UIView {
     
     func buildSubviews() {
         let fontSize: CGFloat = 10
-        stackView = UIStackView(arrangedSubviews: [cancleButton, nameLabel, messageLabel, imageView])
+        stackView = UIStackView(arrangedSubviews: [cancleButton, nameLabel, messageLabel, imageView, atButton])
         stackView.spacing = 5
         stackView.alignment = .center
         nameLabel.font = .systemFont(ofSize: fontSize)
         messageLabel.font = .systemFont(ofSize: fontSize)
         messageLabel.lineBreakMode = .byTruncatingTail
+        
+        atButton.setAttributedTitle(NSAttributedString(string: "(点击@ta)", attributes: [.font : UIFont.systemFont(ofSize: 12), .foregroundColor : UIColor.systemBlue]), for: .normal)
+        atButton.addTarget(self, action: #selector(atButtonAction), for: .touchUpInside)
         
         cancleButton.contentMode = .scaleAspectFit
         cancleButton.setImage(UIImage(named: "delete"), for: .normal)
@@ -97,9 +103,14 @@ class ReferView: UIView {
         delegate?.cancleAction(self)
     }
     
+    @objc func atButtonAction() {
+        delegate?.atAction(self)
+    }
+    
     func apply(message: Message) {
         needShow = true
         self.message = message
+        atButton.isHidden = self.type == .chatRoomCell || message.messageSender == .ourself || message.option == .toOne
         var text: String?
         switch message.messageType {
         case .text, .join:

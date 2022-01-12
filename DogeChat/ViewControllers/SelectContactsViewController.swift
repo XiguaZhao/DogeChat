@@ -9,6 +9,7 @@
 import UIKit
 import DogeChatUniversal
 import DogeChatNetwork
+import DogeChatCommonDefines
 
 protocol ContactDataSource: AnyObject {
     var friends: [Friend] { get }

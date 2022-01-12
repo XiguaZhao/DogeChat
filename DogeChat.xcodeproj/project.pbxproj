@@ -48,14 +48,18 @@
 		07201DDE26DF67FA007D2EDB /* HistoryVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07201DDD26DF67FA007D2EDB /* HistoryVC.swift */; };
 		0726D96C267E2E5B005B89DC /* MediaBrowserCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0726D96B267E2E5B005B89DC /* MediaBrowserCell.swift */; };
 		073054262781C62000CB9EFC /* AppDelagate+UI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 073054252781C62000CB9EFC /* AppDelagate+UI.swift */; };
+		073054282782ADF700CB9EFC /* UIBarButtonItem+Badge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 073054272782ADF700CB9EFC /* UIBarButtonItem+Badge.swift */; };
+		0730542A2782C91500CB9EFC /* PKView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 073054292782C91500CB9EFC /* PKView.swift */; };
+		0730542C2782D2A000CB9EFC /* ChatRoom+Draw.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0730542B2782D2A000CB9EFC /* ChatRoom+Draw.swift */; };
+		073054322782E15900CB9EFC /* PostModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 073054312782E15800CB9EFC /* PostModel.swift */; };
+		0731BDF8278859EC00A2C0E6 /* SelectColorVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0731BDF6278859EC00A2C0E6 /* SelectColorVC.swift */; };
+		0731BDF9278859EC00A2C0E6 /* SelectColorVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0731BDF7278859EC00A2C0E6 /* SelectColorVC.xib */; };
 		0733CAD02774B4D80059A7E0 /* Annotation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0733CACF2774B4D80059A7E0 /* Annotation.swift */; };
 		0734758F275CE126007A3ED2 /* UINavigationController+SplitVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0734758E275CE126007A3ED2 /* UINavigationController+SplitVC.swift */; };
 		0735ABCA26CCF90D007B4ADE /* SDWebImageManager+TempModifyURLPre.m in Sources */ = {isa = PBXBuildFile; fileRef = 0735ABC926CCF90D007B4ADE /* SDWebImageManager+TempModifyURLPre.m */; };
 		0736FDEB27756FA000A334A0 /* ChangeIconVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0736FDE927756FA000A334A0 /* ChangeIconVC.swift */; };
 		0736FDEC27756FA000A334A0 /* ChangeIconVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0736FDEA27756FA000A334A0 /* ChangeIconVC.xib */; };
 		0739FA3E25B9557A00B6A7AB /* MediaBrowserViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0739FA3D25B9557900B6A7AB /* MediaBrowserViewController.swift */; };
-		0739FA4425BA829E00B6A7AB /* PushKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0739FA4325BA829D00B6A7AB /* PushKit.framework */; };
-		0739FA4825BA855A00B6A7AB /* CallKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0739FA4725BA855A00B6A7AB /* CallKit.framework */; };
 		0739FA4F25BAA9A300B6A7AB /* Call.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0739FA4E25BAA9A300B6A7AB /* Call.swift */; };
 		0739FA5225BAAAD300B6A7AB /* CallManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0739FA5125BAAAD300B6A7AB /* CallManager.swift */; };
 		0739FA5525BAACD400B6A7AB /* ProviderDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0739FA5425BAACD400B6A7AB /* ProviderDelegate.swift */; };
@@ -91,8 +95,9 @@
 		0761FB38266E577900AE0171 /* MessageRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0761FB37266E577900AE0171 /* MessageRow.swift */; };
 		0761FB3A266E57B000AE0171 /* ChatRoomInterfaceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0761FB39266E57B000AE0171 /* ChatRoomInterfaceController.swift */; };
 		076B209626E466A800BCD003 /* ChatRoom+Emitter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 076B209326E466A800BCD003 /* ChatRoom+Emitter.swift */; };
+		07792B442785DFA60041F65B /* CallKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0739FA4725BA855A00B6A7AB /* CallKit.framework */; };
+		07792B492785DFA90041F65B /* PushKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0739FA4325BA829D00B6A7AB /* PushKit.framework */; };
 		077F4B8126DE0C5000C50D0D /* ChatRoom+InsertMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 077F4B8026DE0C5000C50D0D /* ChatRoom+InsertMessage.swift */; };
-		078E66A22658C0D600E5277E /* PKView.m in Sources */ = {isa = PBXBuildFile; fileRef = 078E66A12658C0D600E5277E /* PKView.m */; };
 		078E66A6265A310F00E5277E /* DrawViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 078E66A5265A310F00E5277E /* DrawViewController.swift */; };
 		079317282643CDA2008EBB27 /* WebSocketManagerAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 079317272643CDA2008EBB27 /* WebSocketManagerAdapter.swift */; };
 		0796FBF8275A2F8500AAF146 /* VideoChatViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0796FBDA275A2B8F00AAF146 /* VideoChatViewController.m */; };
@@ -144,8 +149,6 @@
 		07BA6096277ED81400496047 /* UIImage+Compress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07BA6095277ED81400496047 /* UIImage+Compress.swift */; };
 		07BA6097277ED81F00496047 /* UIImage+Compress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07BA6095277ED81400496047 /* UIImage+Compress.swift */; };
 		07BA60A3277EE5A200496047 /* MessageSender.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07D593FF277C416400BD8290 /* MessageSender.swift */; };
-		07BA60AB2780203500496047 /* UIBarButtonItem+Badge.m in Sources */ = {isa = PBXBuildFile; fileRef = 07BA60A72780203400496047 /* UIBarButtonItem+Badge.m */; };
-		07BA60AC2780203500496047 /* UIButton+Badge.m in Sources */ = {isa = PBXBuildFile; fileRef = 07BA60A92780203400496047 /* UIButton+Badge.m */; };
 		07BA60AF27804EA900496047 /* HistoryFilterVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07BA60AD27804EA900496047 /* HistoryFilterVC.swift */; };
 		07BA60B027804EA900496047 /* HistoryFilterVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 07BA60AE27804EA900496047 /* HistoryFilterVC.xib */; };
 		07BB5527272C2A9500AE60A6 /* FriendDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07BB5525272C2A9300AE60A6 /* FriendDetailViewController.swift */; };
@@ -334,6 +337,12 @@
 		07201DDD26DF67FA007D2EDB /* HistoryVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryVC.swift; sourceTree = "<group>"; };
 		0726D96B267E2E5B005B89DC /* MediaBrowserCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaBrowserCell.swift; sourceTree = "<group>"; };
 		073054252781C62000CB9EFC /* AppDelagate+UI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AppDelagate+UI.swift"; sourceTree = "<group>"; };
+		073054272782ADF700CB9EFC /* UIBarButtonItem+Badge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIBarButtonItem+Badge.swift"; sourceTree = "<group>"; };
+		073054292782C91500CB9EFC /* PKView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PKView.swift; sourceTree = "<group>"; };
+		0730542B2782D2A000CB9EFC /* ChatRoom+Draw.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ChatRoom+Draw.swift"; sourceTree = "<group>"; };
+		073054312782E15800CB9EFC /* PostModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostModel.swift; sourceTree = "<group>"; };
+		0731BDF6278859EC00A2C0E6 /* SelectColorVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectColorVC.swift; sourceTree = "<group>"; };
+		0731BDF7278859EC00A2C0E6 /* SelectColorVC.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = SelectColorVC.xib; sourceTree = "<group>"; };
 		0733CACF2774B4D80059A7E0 /* Annotation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Annotation.swift; sourceTree = "<group>"; };
 		0734758E275CE126007A3ED2 /* UINavigationController+SplitVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UINavigationController+SplitVC.swift"; sourceTree = "<group>"; };
 		0735ABC826CCF90D007B4ADE /* SDWebImageManager+TempModifyURLPre.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SDWebImageManager+TempModifyURLPre.h"; sourceTree = "<group>"; };
@@ -394,8 +403,6 @@
 		0780327C2486B28C00E370E0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		07866D1826340541007E049C /* Intents.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Intents.framework; path = System/Library/Frameworks/Intents.framework; sourceTree = SDKROOT; };
 		07866D2326340541007E049C /* IntentsUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IntentsUI.framework; path = System/Library/Frameworks/IntentsUI.framework; sourceTree = SDKROOT; };
-		078E66A02658C0D600E5277E /* PKView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PKView.h; sourceTree = "<group>"; };
-		078E66A12658C0D600E5277E /* PKView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PKView.m; sourceTree = "<group>"; };
 		078E66A5265A310F00E5277E /* DrawViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DrawViewController.swift; sourceTree = "<group>"; };
 		079317272643CDA2008EBB27 /* WebSocketManagerAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebSocketManagerAdapter.swift; sourceTree = "<group>"; };
 		0796FBDA275A2B8F00AAF146 /* VideoChatViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VideoChatViewController.m; sourceTree = "<group>"; };
@@ -452,10 +459,6 @@
 		07BA6085277EB0AF00496047 /* SelectContactsTVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelectContactsTVC.swift; sourceTree = "<group>"; };
 		07BA6089277EB12C00496047 /* ContactCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactCell.swift; sourceTree = "<group>"; };
 		07BA6095277ED81400496047 /* UIImage+Compress.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+Compress.swift"; sourceTree = "<group>"; };
-		07BA60A72780203400496047 /* UIBarButtonItem+Badge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIBarButtonItem+Badge.m"; sourceTree = "<group>"; };
-		07BA60A82780203400496047 /* UIButton+Badge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIButton+Badge.h"; sourceTree = "<group>"; };
-		07BA60A92780203400496047 /* UIButton+Badge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIButton+Badge.m"; sourceTree = "<group>"; };
-		07BA60AA2780203500496047 /* UIBarButtonItem+Badge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIBarButtonItem+Badge.h"; sourceTree = "<group>"; };
 		07BA60AD27804EA900496047 /* HistoryFilterVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryFilterVC.swift; sourceTree = "<group>"; };
 		07BA60AE27804EA900496047 /* HistoryFilterVC.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = HistoryFilterVC.xib; sourceTree = "<group>"; };
 		07BB5525272C2A9300AE60A6 /* FriendDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendDetailViewController.swift; sourceTree = "<group>"; };
@@ -576,9 +579,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0739FA4825BA855A00B6A7AB /* CallKit.framework in Frameworks */,
-				0739FA4425BA829E00B6A7AB /* PushKit.framework in Frameworks */,
 				E52F38351E69F8D1B345D569 /* libPods-DogeChat.a in Frameworks */,
+				07792B442785DFA60041F65B /* CallKit.framework in Frameworks */,
+				07792B492785DFA90041F65B /* PushKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -592,6 +595,38 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		0730542D2782E10300CB9EFC /* Moments */ = {
+			isa = PBXGroup;
+			children = (
+				073054302782E12D00CB9EFC /* Controller */,
+				0730542F2782E12800CB9EFC /* View */,
+				0730542E2782E12000CB9EFC /* Model */,
+			);
+			path = Moments;
+			sourceTree = "<group>";
+		};
+		0730542E2782E12000CB9EFC /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				073054312782E15800CB9EFC /* PostModel.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		0730542F2782E12800CB9EFC /* View */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		073054302782E12D00CB9EFC /* Controller */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Controller;
+			sourceTree = "<group>";
+		};
 		073144A3245FF83D00D915E8 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -728,11 +763,8 @@
 				0735ABC926CCF90D007B4ADE /* SDWebImageManager+TempModifyURLPre.m */,
 				075293AC2715A0AC00D10D65 /* UIViewController+Hook.h */,
 				075293AD2715A0AC00D10D65 /* UIViewController+Hook.m */,
-				07BA60AA2780203500496047 /* UIBarButtonItem+Badge.h */,
-				07BA60A72780203400496047 /* UIBarButtonItem+Badge.m */,
-				07BA60A82780203400496047 /* UIButton+Badge.h */,
-				07BA60A92780203400496047 /* UIButton+Badge.m */,
 				07BB552B272C2D2300AE60A6 /* Conform.swift */,
+				073054272782ADF700CB9EFC /* UIBarButtonItem+Badge.swift */,
 			);
 			path = Category;
 			sourceTree = "<group>";
@@ -760,6 +792,7 @@
 				AEC6BF501EAF345A007CA6E5 /* ChatRoomViewController.swift */,
 				07A624D027749BF50061BAEF /* ChatRoom+Location.swift */,
 				07D59401277C631000BD8290 /* ChatRoom+JumpButton.swift */,
+				0730542B2782D2A000CB9EFC /* ChatRoom+Draw.swift */,
 			);
 			path = ChatRoom;
 			sourceTree = "<group>";
@@ -799,6 +832,8 @@
 				07E1BAFD267F8CBA00559A3B /* VoiceViewController.swift */,
 				075C475B2761C8E300A45655 /* TextBrowerVC.swift */,
 				070575D4276EFDC00041C3B8 /* ProfileVC.swift */,
+				0731BDF6278859EC00A2C0E6 /* SelectColorVC.swift */,
+				0731BDF7278859EC00A2C0E6 /* SelectColorVC.xib */,
 				071B89122770A500007ACCBE /* WebViewController.swift */,
 				07A624C7277486F80061BAEF /* LocationVC.swift */,
 			);
@@ -814,8 +849,7 @@
 				0739FABB25BEEF6B00B6A7AB /* FloatWindow.swift */,
 				AE909BEE1EB54C4B009D9D95 /* Label.swift */,
 				AE909BF01EB63FDB009D9D95 /* MessageInputView.swift */,
-				078E66A02658C0D600E5277E /* PKView.h */,
-				078E66A12658C0D600E5277E /* PKView.m */,
+				073054292782C91500CB9EFC /* PKView.swift */,
 				07D0FB6627453EF500B34FE4 /* ReferView.swift */,
 				07BB552F272C449200AE60A6 /* SelectContactTableView.swift */,
 				079BA83726D7A15500E2C8BB /* VideoView.swift */,
@@ -1116,6 +1150,7 @@
 				0796CA5426747B28009F1E1D /* Shared */,
 				078D4140248DF79600E78605 /* SupportingFiles */,
 				078D413D248DF6E500E78605 /* ViewControllers */,
+				0730542D2782E10300CB9EFC /* Moments */,
 				078D413E248DF71700E78605 /* Views */,
 			);
 			path = DogeChat;
@@ -1394,6 +1429,7 @@
 				07BA6079277EA6BE00496047 /* cat120*120.png in Resources */,
 				07BA6076277EA6BE00496047 /* dog167*167.png in Resources */,
 				07C9633025E3B53900C2BF4C /* ImageConfirmViewController.xib in Resources */,
+				0731BDF9278859EC00A2C0E6 /* SelectColorVC.xib in Resources */,
 				07E745B8275BC64C00897751 /* ChatRoom.storyboard in Resources */,
 				0736FDEC27756FA000A334A0 /* ChangeIconVC.xib in Resources */,
 				07D0FBA02749604B00B34FE4 /* AppIntentVocabulary.plist in Resources */,
@@ -1606,7 +1642,6 @@
 				0739FA5525BAACD400B6A7AB /* ProviderDelegate.swift in Sources */,
 				0796FC01275A2FBC00AAF146 /* PipelineStates.swift in Sources */,
 				0715EA7C2673ACCB0042F4F0 /* Encrypt.swift in Sources */,
-				078E66A22658C0D600E5277E /* PKView.m in Sources */,
 				0796FC02275A2FBE00AAF146 /* Renderer.swift in Sources */,
 				AEC6BF411EAF320E007CA6E5 /* JoinChatViewController.swift in Sources */,
 				0798B99C2777837D001F91C8 /* ContactsVC+Drop.swift in Sources */,
@@ -1625,6 +1660,7 @@
 				0755575D266B3D9F00F63F55 /* ContactsTableViewController+Avatar.swift in Sources */,
 				0761F5872684AC2B00E27B07 /* PlayListTrackCell.swift in Sources */,
 				0761FAF4266E342E00AE0171 /* HelperMethods.swift in Sources */,
+				073054322782E15900CB9EFC /* PostModel.swift in Sources */,
 				0739FA4F25BAA9A300B6A7AB /* Call.swift in Sources */,
 				0718AC2A2688025C00E27B28 /* CommonTableCell.swift in Sources */,
 				07A624D127749BF50061BAEF /* ChatRoom+Location.swift in Sources */,
@@ -1666,10 +1702,13 @@
 				0709ECBA2719626C007F229F /* SessionDelegate.swift in Sources */,
 				079317282643CDA2008EBB27 /* WebSocketManagerAdapter.swift in Sources */,
 				071379A82689DCBD007EF6D6 /* ChatRoom+CellDelegate.swift in Sources */,
+				0730542A2782C91500CB9EFC /* PKView.swift in Sources */,
+				0731BDF8278859EC00A2C0E6 /* SelectColorVC.swift in Sources */,
 				0739FA3E25B9557A00B6A7AB /* MediaBrowserViewController.swift in Sources */,
 				075293AE2715A0AC00D10D65 /* UIViewController+Hook.m in Sources */,
 				071CF7B426609F6900897B01 /* MessageTextCell.swift in Sources */,
 				0796FBFA275A2FA300AAF146 /* OverlayVideoView.m in Sources */,
+				073054282782ADF700CB9EFC /* UIBarButtonItem+Badge.swift in Sources */,
 				0749E66225E601690058EC30 /* EmojiCollectionViewCell.swift in Sources */,
 				AE909BEF1EB54C4B009D9D95 /* Label.swift in Sources */,
 				0718AC2826878E8900E27B28 /* DogeChatNavigationController.swift in Sources */,
@@ -1711,9 +1750,7 @@
 				0796FC06275A2FD100AAF146 /* VideoFrameData.swift in Sources */,
 				077F4B8126DE0C5000C50D0D /* ChatRoom+InsertMessage.swift in Sources */,
 				07D59400277C416400BD8290 /* MessageSender.swift in Sources */,
-				07BA60AC2780203500496047 /* UIButton+Badge.m in Sources */,
 				07A624CE2774982D0061BAEF /* MessageLocationCell.swift in Sources */,
-				07BA60AB2780203500496047 /* UIBarButtonItem+Badge.m in Sources */,
 				071B89132770A500007ACCBE /* WebViewController.swift in Sources */,
 				071379A426898E2E007EF6D6 /* MessageTrackCell.swift in Sources */,
 				0796FC00275A2FB900AAF146 /* BufferView.swift in Sources */,
@@ -1722,6 +1759,7 @@
 				07B8321626820A54009434AC /* SearchMusicViewController.swift in Sources */,
 				075C475C2761C8E400A45655 /* TextBrowerVC.swift in Sources */,
 				0733CAD02774B4D80059A7E0 /* Annotation.swift in Sources */,
+				0730542C2782D2A000CB9EFC /* ChatRoom+Draw.swift in Sources */,
 				07BB552C272C2D2300AE60A6 /* Conform.swift in Sources */,
 				07BB5530272C449200AE60A6 /* SelectContactTableView.swift in Sources */,
 				075557342666317000F63F55 /* SettingViewController.swift in Sources */,
@@ -1956,7 +1994,7 @@
 				INFOPLIST_FILE = DogeChatShare/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = DogeChatShare;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2021 Luke Parham. All rights reserved.";
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				"IPHONEOS_DEPLOYMENT_TARGET[sdk=macosx*]" = 14.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1996,7 +2034,7 @@
 				INFOPLIST_FILE = DogeChatShare/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = DogeChatShare;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2021 Luke Parham. All rights reserved.";
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				"IPHONEOS_DEPLOYMENT_TARGET[sdk=macosx*]" = 14.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2034,7 +2072,7 @@
 				INFOPLIST_FILE = DogeChatSiri/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = DogeChatSiri;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2021 Luke Parham. All rights reserved.";
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				"IPHONEOS_DEPLOYMENT_TARGET[sdk=macosx*]" = 14.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2076,7 +2114,7 @@
 				INFOPLIST_FILE = DogeChatSiri/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = DogeChatSiri;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2021 Luke Parham. All rights reserved.";
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				"IPHONEOS_DEPLOYMENT_TARGET[sdk=macosx*]" = 14.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2116,7 +2154,7 @@
 				INFOPLIST_FILE = mynotification/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = mynotification;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2021 赵锡光. All rights reserved.";
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				"IPHONEOS_DEPLOYMENT_TARGET[sdk=macosx*]" = 14.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2156,7 +2194,7 @@
 				INFOPLIST_FILE = mynotification/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = mynotification;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2021 赵锡光. All rights reserved.";
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				"IPHONEOS_DEPLOYMENT_TARGET[sdk=macosx*]" = 14.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2295,7 +2333,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 11446107E0EC4769216E7331 /* Pods-DogeChat.debug.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CLANG_ENABLE_MODULES = YES;
@@ -2335,7 +2373,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 0B69595E028EAB1E5EC8EA2E /* Pods-DogeChat.release.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CLANG_ENABLE_MODULES = YES;

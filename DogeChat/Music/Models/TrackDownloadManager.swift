@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import DogeChatUniversal
+import DogeChatCommonDefines
 import DogeChatNetwork
 
 protocol DownloadDelegate: AnyObject {

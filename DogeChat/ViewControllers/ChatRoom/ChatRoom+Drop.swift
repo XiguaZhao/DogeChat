@@ -10,6 +10,7 @@ import DogeChatUniversal
 import PencilKit
 import Foundation
 import AVFoundation
+import DogeChatCommonDefines
 
 extension ChatRoomViewController: UITableViewDropDelegate {
     func tableView(_ tableView: UITableView, performDropWith coordinator: UITableViewDropCoordinator) {

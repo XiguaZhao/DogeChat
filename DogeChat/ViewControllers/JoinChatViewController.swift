@@ -5,8 +5,9 @@ import DogeChatNetwork
 import RSAiOSWatchOS
 import AuthenticationServices
 import DogeChatUniversal
+import DogeChatCommonDefines
 
-class JoinChatViewController: UIViewController {
+class JoinChatViewController: DogeChatViewController {
     
     let usernameLabel = UILabel()
     let passwordLabel = UILabel()

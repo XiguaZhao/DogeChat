@@ -10,6 +10,7 @@ import Foundation
 import AFNetworking
 import SwiftyJSON
 import DogeChatUniversal
+import DogeChatCommonDefines
 
 class SocketManager: NSObject, URLSessionDelegate, URLSessionWebSocketDelegate, DCWebSocketProtocol, DeviceInfoProvider {
     

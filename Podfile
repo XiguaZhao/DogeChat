@@ -4,6 +4,7 @@ use_modular_headers!
 
 def shared_pods
   pod 'DogeChatUniversal', :path => '/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/DogeChatUniversal'
+  pod 'DogeChatCommonDefines', :path => '/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/DogeChatCommonDefines'
 end
 
 target 'DogeChat' do
@@ -32,10 +33,6 @@ target 'DogeChatWatch Extension' do
   pod 'AFNetworking'
   pod 'SwiftyJSON', :git => 'https://github.com/SwiftyJSON/SwiftyJSON.git', :commit => '2b6054efa051565954e1d2b9da831680026cd768'
   pod 'RSAiOSWatchOS', :path => '/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/RSAiOSWatchOS'
-end
-
-target 'mynotification' do
-  shared_pods
 end
 
 target 'DogeChatSiri' do

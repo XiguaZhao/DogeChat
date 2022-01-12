@@ -8,6 +8,8 @@
 
 import UIKit
 import DogeChatUniversal
+import PencilKit
+import DogeChatCommonDefines
 
 extension ChatRoomViewController: UITableViewDragDelegate {
     

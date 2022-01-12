@@ -8,6 +8,8 @@
 
 import UIKit
 import DogeChatUniversal
+import CoreGraphics
+import DogeChatCommonDefines
 
 let videoIdentifier = "public.movie"
 let gifIdentifier = "com.compuserve.gif"
@@ -183,7 +185,7 @@ extension Dictionary where Key == String {
     
 }
 
-func compressEmojis(_ image: UIImage, imageWidth: ImageWidth = .width100) -> Data {
+func compressEmojis(_ image: UIImage, imageWidth: ImageWidth = .width100, isGIF: Bool = false, data: Data? = nil, scale: CGFloat? = nil) -> Data {
     if imageWidth == .original {
         return image.jpegData(compressionQuality: 0.3) ?? Data()
     }
@@ -193,12 +195,14 @@ func compressEmojis(_ image: UIImage, imageWidth: ImageWidth = .width100) -> Dat
         size = image.size
     }
     let rect = CGRect(origin: .zero, size: size)
+    var res: UIImage?
     UIGraphicsBeginImageContextWithOptions(size, false, 0.0)
     image.draw(in: rect)
-    let image = UIGraphicsGetImageFromCurrentImageContext()
+    res = UIGraphicsGetImageFromCurrentImageContext()
     UIGraphicsEndImageContext()
-    return image?.jpegData(compressionQuality: 0.3) ?? Data()
+    return res?.jpegData(compressionQuality: 0.3) ?? Data()
 }
+
 
 func boundsForDraw(_ message: Message) -> CGRect? {
     if let str = message.pkDataURL {

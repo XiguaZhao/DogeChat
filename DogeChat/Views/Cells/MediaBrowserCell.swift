@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import DogeChatUniversal
+import DogeChatCommonDefines
 
 protocol MediaBrowserCellDelegate: AnyObject {
     func livePhotoWillBegin(_ cell: MediaBrowserCell, livePhotoView: PHLivePhotoView)
@@ -135,7 +135,9 @@ class MediaBrowserCell: UICollectionViewCell, PHLivePhotoViewDelegate {
     }
     
     @objc func longPress(_ ges: UILongPressGestureRecognizer) {
-        guard ges.state == .ended else { return }
+        if self.messageType == .livePhoto {
+            guard ges.state == .ended else { return }
+        }
         let sheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
         sheet.addAction(UIAlertAction(title: "保存到相册", style: .default, handler: { [weak self] _ in
             guard let self = self else { return }

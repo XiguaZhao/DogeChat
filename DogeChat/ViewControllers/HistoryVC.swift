@@ -10,12 +10,14 @@ import UIKit
 import DogeChatUniversal
 import DogeChatNetwork
 import MJRefresh
+import DogeChatCommonDefines
 
 class HistoryVC: ChatRoomViewController {
         
     let slider = UISlider()
     let progressLabel = UILabel()
     var stack: UIStackView!
+    var params: [String : Any?]?
     var totalPages = 0 {
         didSet {
             progressLabel.text = "\(nowPage)/\(totalPages)"
@@ -94,11 +96,19 @@ class HistoryVC: ChatRoomViewController {
         let vc = HistoryFilterVC()
         vc.didConfirm = { [weak self] params in
             guard let self = self else { return }
-            self.manager?.commonWebSocket.historyMessages(for: self.friend, pageNum: 0, pageSize: ChatRoomViewController.numberOfHistory, uuid: nil, type: params["type"] as? String, beginDate: params["timestamp"] as? String, keyWord: params["keyword"] as? String)
+            self.messages.removeAll()
+            self.tableView.reloadData()
+            self.params = params
+            if params["timestamp"] == nil {
+                self.requestPage(1)
+            } else {
+                self.requestPage(-1)
+            }
         }
+        configRefresh()
         self.present(vc, animated: true, completion: nil)
     }
-            
+                
     @objc func sliderAction(_ slider: UISlider) {
         print(slider.state)
         self.messages.removeAll()
@@ -114,7 +124,8 @@ class HistoryVC: ChatRoomViewController {
     
     
     func requestPage(_ page: Int) {
-        socketForUsername(username)?.historyMessages(for: friend, pageNum: page)
+        nowPage = page
+        self.manager?.commonWebSocket.historyMessages(for: self.friend, pageNum: page, pageSize: ChatRoomViewController.numberOfHistory, uuid: nil, type: params?["type"] as? String, beginDate: params?["timestamp"] as? String, keyWord: params?["keyword"] as? String)
     }
     
     @objc func refreshFooterAction() {
@@ -143,11 +154,14 @@ class HistoryVC: ChatRoomViewController {
             tableView.mj_footer?.endRefreshing()
         }
         guard let messages = noti.userInfo?["messages"] as? [Message], !messages.isEmpty, let pages = noti.userInfo?["pages"] as? Int, let current = noti.userInfo?["current"] as? Int else { return }
+        if nowPage < 0 {
+            upNowPage = current
+            downNowPage = current
+        }
         let filtered = messages.filter ({ !self.messagesUUIDs.contains($0.uuid) }).reversed() as [Message]
         self.totalPages = pages
         self.nowPage = current
         if filtered.isEmpty { return }
-        filtered.forEach { $0.page = current }
         slider.maximumValue = Float(pages)
         let indexPaths: [IndexPath]
         let isFooter = filtered[0].id > (self.messages.last?.id ?? 0)

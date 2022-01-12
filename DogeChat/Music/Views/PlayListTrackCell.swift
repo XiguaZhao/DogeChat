@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import DogeChatUniversal
+import DogeChatCommonDefines
 import DogeChatNetwork
 
 class PlayListTrackCell: UITableViewCell {
@@ -88,17 +88,19 @@ class PlayListTrackCell: UITableViewCell {
             if #available(iOS 13.0, *) {
                 image = UIImage(systemName: "speaker.zzz.fill")
             } else {
-                image = UIImage(named: "")
+                image = UIImage(named: "laba")
             }
         } else if track.isPaused {
             if #available(iOS 13.0, *) {
                 image = UIImage(systemName: "pause.circle.fill")
             } else {
-                image = UIImage(named: "")
+                image = UIImage(named: "zanting")
             }
         }
         if let image = image {
-            self.accessoryView = UIImageView(image: image)
+            let imageView = UIImageView(image: image)
+            imageView.bounds = CGRect(x: 0, y: 0, width: 20, height: 20)
+            self.accessoryView = imageView
         }
     }
     

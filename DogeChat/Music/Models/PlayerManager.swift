@@ -9,6 +9,7 @@
 import DogeChatUniversal
 import MediaPlayer
 import DogeChatNetwork
+import DogeChatCommonDefines
 
 enum BlurImageSource {
     case customBlur
@@ -312,6 +313,7 @@ class PlayerManager: NSObject {
     }
     
     @objc func trackPlayToEndNoti(_ noti: Notification) {
+        guard self.playerTypes.contains(.track) else { return }
         if isPlaying {
             playNextTrack() { [weak self] success in
                 if !success {

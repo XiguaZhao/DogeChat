@@ -10,6 +10,7 @@ import UIKit
 import DogeChatUniversal
 import DogeChatNetwork
 import SwiftyJSON
+import DogeChatCommonDefines
 
 let trackThumbCache = NSCache<NSString, NSData>()
 let tracksDirName = "tracks"

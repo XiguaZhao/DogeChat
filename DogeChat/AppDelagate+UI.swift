@@ -10,12 +10,15 @@ import Foundation
 import DogeChatUniversal
 import DogeChatNetwork
 import RSAiOSWatchOS
+import DogeChatCommonDefines
 
 class AppDelegateUI {
     
     static let shared = AppDelegateUI()
     
-    var username = ""
+    var username: String {
+        WebSocketManager.shared.myName
+    }
     weak var tabBarController: UITabBarController! {
         return splitVC.viewControllers.first as? UITabBarController
     }
@@ -34,6 +37,9 @@ class AppDelegateUI {
         if let username = UserDefaults(suiteName: groupName)?.value(forKey: "sharedUsername") as? String, let accountInfo = accountInfo(username: username) {
             let contactVC = ContactsTableViewController()
             self.contactVC = contactVC
+            if let userID = accountInfo.userID, let friends = getContacts(userID: userID) {
+                contactVC.friends = friends
+            }
             contactVC.setUsername(accountInfo.username, andPassword: accountInfo.password)
             MediaLoader.shared.cookie = accountInfo.cookieInfo?.cookie
             contactVC.loginAndConnect()
@@ -42,10 +48,38 @@ class AppDelegateUI {
         } else {
             makeLogininVC()
         }
+        NotificationCenter.default.addObserver(forName: .logined, object: nil, queue: .main) { noti in
+            MediaLoader.shared.cookie = noti.userInfo?["cookie"] as? String
+        }
     }
     
     func makeLogininVC() {
         self.navController.setViewControllers([JoinChatViewController()], animated: true)
+    }
+    
+    func enterBackground() {
+        let userID = WebSocketManager.shared.httpsManager.accountInfo.userID
+        if let friends = self.contactVC?.friends, let userID = userID, !userID.isEmpty {
+            saveFriendsToDisk(friends, userID: userID)
+        }
+        WebSocketManager.shared.disconnect()
+        AppDelegate.shared.checkIfShouldRemoveCache()
+    }
+    
+    func resignActive() {
+        UserDefaults.standard.set(WebSocketManager.shared.messageManager.maxId, forKey: "maxID")
+    }
+    
+    func enterForeground() {
+        NotificationManager.checkRevokeMessages()
+        if let cookie = WebSocketManager.shared.httpsManager.accountInfo.cookieInfo, !cookie.isValid {
+            NotificationCenter.default.post(name: .cookieExpire, object: username)
+            return
+        }
+        if !WebSocketManager.shared.connected {
+            contactVC?.loginAndConnect()
+        }
+
     }
     
 }

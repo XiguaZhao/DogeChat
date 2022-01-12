@@ -10,6 +10,7 @@ import UIKit
 import DogeChatNetwork
 import DogeChatUniversal
 import RSAiOSWatchOS
+import DogeChatCommonDefines
 
 struct RemoteNotificationInfo {
     var sender: String?
@@ -117,7 +118,7 @@ class NotificationManager: NSObject {
     func processReplyAction(replyContent: String) {
         if !self.nowPushInfo.sender.isEmpty {
             let receiver = nowPushInfo.sender
-            httpMessage.sendText(replyContent, to: receiver) { [weak self] success, _ in
+            httpMessage.sendText(replyContent, to: receiver, userID: nowPushInfo.senderID) { [weak self] success, _ in
                 if success {
                     print("快捷回复成功")
                 } else {
@@ -126,6 +127,14 @@ class NotificationManager: NSObject {
                 self?.actionCompletionHandler?()
                 self?.actionCompletionHandler = nil
             }
+        }
+    }
+    
+    static func checkRevokeMessages() {
+        if let data = UserDefaults(suiteName: groupName)?.value(forKey: "revokedMessages") as? Data,
+           let revokes = try? JSONDecoder().decode([RemoteMessage].self, from: data) {
+            NotificationCenter.default.post(name: .revokeMessage, object: revokes)
+            UserDefaults(suiteName: groupName)?.set(nil, forKey: "revokedMessages")
         }
     }
     

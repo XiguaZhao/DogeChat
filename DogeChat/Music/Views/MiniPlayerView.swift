@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import DogeChatUniversal
+import DogeChatCommonDefines
 
 class MiniPlayerView: UIView, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, UIPopoverPresentationControllerDelegate {
 

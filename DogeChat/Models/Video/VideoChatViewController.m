@@ -13,6 +13,7 @@
 #import "Recorder.h"
 @import DogeChatNetwork;
 
+API_AVAILABLE(ios(13.0))
 @interface VideoChatViewController () <AVCaptureVideoDataOutputSampleBufferDelegate>
 
 @property (nonatomic, strong) FriendVideoView *friendView;

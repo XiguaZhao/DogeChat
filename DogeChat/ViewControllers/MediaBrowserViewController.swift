@@ -56,7 +56,11 @@ class MediaBrowserViewController: UIViewController {
         
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        flowLayout.itemSize = view.frame.size
+        if !isMac() {
+            flowLayout.itemSize = view.frame.size
+        } else {
+            flowLayout.itemSize = CGSize(width: view.frame.width, height: view.frame.height - view.safeAreaInsets.top)
+        }
         scrollToIndex(targetIndex)
     }
     

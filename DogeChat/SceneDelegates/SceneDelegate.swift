@@ -12,6 +12,7 @@ import DogeChatUniversal
 import RSAiOSWatchOS
 import UserNotifications
 import Intents
+import DogeChatCommonDefines
 
 enum SceneState {
     case none
@@ -205,7 +206,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         var isValid = false
         let socket = WebSocketManager()
         var accountInfo: AccountInfo?
-        if let _accountInfo = DogeChatUniversal.accountInfo(username: username) {
+        if let _accountInfo = DogeChatCommonDefines.accountInfo(username: username) {
             accountInfo = _accountInfo
             if let _password = _accountInfo.password, !_password.isEmpty {
                 self.password = _password
@@ -364,8 +365,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     //2
     func sceneWillEnterForeground(_ scene: UIScene) {
         print("enter foreground")
+        NotificationManager.checkRevokeMessages()
         UserDefaults(suiteName: groupName)?.set(true, forKey: "hostActive")
-        UIApplication.shared.applicationIconBadgeNumber = 0
         UNUserNotificationCenter.current().removeAllDeliveredNotifications()
         guard state == .none else {
             state = .none

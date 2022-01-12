@@ -11,6 +11,7 @@ import DogeChatUniversal
 import SwiftyJSON
 import Photos
 import DogeChatVideoCompression
+import DogeChatCommonDefines
 
 protocol ReferMessageDataSource: AnyObject {
     func referMessage() -> Message?
@@ -116,7 +117,7 @@ class MessageSender {
                     message.imageURL = filePath
                     message.text = message.imageURL ?? ""
                     let dir = createDir(name: photoDir)
-                    let newImageLocalUrl = dir.appendingPathComponent(filePath.components(separatedBy: "/").last!)
+                    let newImageLocalUrl = dir.appendingPathComponent(filePath.components(separatedBy: "/").last ?? "")
                     if index == 0 && type == .normal {
                         do {
                             try FileManager.default.moveItem(at: imageURL, to: newImageLocalUrl)
@@ -154,7 +155,7 @@ class MessageSender {
                 message.voiceURL = voicePath
                 message.text = voicePath
                 let dir = createDir(name: voiceDir)
-                let newVoiceUrl = dir.appendingPathComponent(voicePath.components(separatedBy: "/").last!)
+                let newVoiceUrl = dir.appendingPathComponent(voicePath.components(separatedBy: "/").last ?? "")
                 message.videoLocalPath = newVoiceUrl
                 if index == 0 && type == .normal {
                     try? FileManager.default.moveItem(at: info.url, to: newVoiceUrl)
@@ -189,7 +190,7 @@ class MessageSender {
                 message.videoURL = videoPath
                 DispatchQueue.global().async {
                     let dir = createDir(name: videoDir)
-                    let newVideoUrl = dir.appendingPathComponent(videoPath.components(separatedBy: "/").last!)
+                    let newVideoUrl = dir.appendingPathComponent(videoPath.components(separatedBy: "/").last ?? "")
                     if index == 0 && type == .normal {
                         if Self.isMac() {
                             try? FileManager.default.copyItem(at: info.url, to: newVideoUrl)
@@ -242,8 +243,8 @@ class MessageSender {
                             message.text = imagePath + " " + videoPath
                             DispatchQueue.global().async {
                                 let dir = createDir(name: livePhotoDir)
-                                let newImageUrl = dir.appendingPathComponent(imagePath.components(separatedBy: "/").last!)
-                                let newVideoUrl = dir.appendingPathComponent(videoPath.components(separatedBy: "/").last!)
+                                let newImageUrl = dir.appendingPathComponent(imagePath.components(separatedBy: "/").last ?? "")
+                                let newVideoUrl = dir.appendingPathComponent(videoPath.components(separatedBy: "/").last ?? "")
                                 if index == 0 && type == .normal {
                                     try? FileManager.default.moveItem(at: livePhoto.imageURL, to: newImageUrl)
                                     try? FileManager.default.moveItem(at: livePhoto.videoURL, to: newVideoUrl)

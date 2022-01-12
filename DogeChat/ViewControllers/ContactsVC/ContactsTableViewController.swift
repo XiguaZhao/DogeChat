@@ -12,6 +12,7 @@ import DogeChatNetwork
 import DogeChatUniversal
 import WatchConnectivity
 import Foundation
+import DogeChatCommonDefines
 
 class ContactsTableViewController: DogeChatViewController, UITableViewDelegate, UITableViewDataSource, DogeChatVCTableDataSource {
     
@@ -20,6 +21,7 @@ class ContactsTableViewController: DogeChatViewController, UITableViewDelegate, 
             let total = unreadMessage.values.map({$0.unreadCount}).reduce(0, +)
             self.navigationItem.title = total > 0 ? "(\(total)未读)" : username
             self.navigationController?.tabBarItem.badgeValue = total > 0 ? String(total) : nil
+            UIApplication.shared.applicationIconBadgeNumber = total
         }
     }
     var friends: [Friend] = []
@@ -218,6 +220,7 @@ class ContactsTableViewController: DogeChatViewController, UITableViewDelegate, 
         guard noti.object as? String == self.username else { return }
         WCSession.default.sendMessage(["username": username, "password": password as Any], replyHandler: nil, errorHandler: nil)
         MediaLoader.shared.cookie = manager?.cookie
+        nameLabel.text = username
     }
     
     @objc func refreshContactsNoti(_ noti: Notification) {
@@ -284,7 +287,7 @@ class ContactsTableViewController: DogeChatViewController, UITableViewDelegate, 
     }
         
     @objc func presentSearchVC() {
-        barItem.badgeValue = "0"
+        barItem.hideDot()
         let vc = SearchViewController()
         vc.username = self.username
         vc.delegate = self
@@ -379,8 +382,9 @@ class ContactsTableViewController: DogeChatViewController, UITableViewDelegate, 
     func receiveNewMessages(_ messages: [Message], isGroup: Bool) { //打开聊天界面的话，要insert，没有的话要更新红点
         var friendDict = [String : [Message]]()
         for message in messages {
-            let friendID = message.friend.userID
-            friendDict.add(message, for: friendID)
+            if let friend = message.friend {
+                friendDict.add(message, for: friend.userID)
+            }
         }
         var reloadIndexPaths = [IndexPath]()
         let chatVCs = findChatRoomVCs()
@@ -408,8 +412,8 @@ class ContactsTableViewController: DogeChatViewController, UITableViewDelegate, 
         }
 
         if isPhone() && (self.tabBarController?.selectedIndex != 0 || self.navigationController?.visibleViewController != self) {
-            guard let message = friendDict.first?.value.last, message.messageSender != .ourself else { return }
-            let friendID = message.friend.isGroup ? message.receiverUserID : message.senderUserID
+            guard let message = friendDict.first?.value.last, let friend = message.friend, message.messageSender != .ourself else { return }
+            let friendID = friend.isGroup ? message.receiverUserID : message.senderUserID
             for chatVC in chatVCs {
                 if friendID == chatVC.friend.userID {
                     return
@@ -418,7 +422,7 @@ class ContactsTableViewController: DogeChatViewController, UITableViewDelegate, 
             var content = message.option == .toGroup ? "\(message.senderUsername)：" : ""
             content += message.summary()
             if #available(iOS 13.0, *) {
-                SceneDelegate.usernameToDelegate[username]?.pushWindow.assignValueForPush(sender: message.friend.username, content: content)
+                SceneDelegate.usernameToDelegate[username]?.pushWindow.assignValueForPush(sender: friend.username, content: content)
             }
         }
         reselectFriend(nil)
@@ -467,7 +471,6 @@ class ContactsTableViewController: DogeChatViewController, UITableViewDelegate, 
         tableView.reloadRows(at: [indexPath], with: .none)
         reselectFriend(friends[indexPath.row])
         self.navigationController?.setViewControllersForSplitVC(vcs: [self, chatRoomVC], firstAnimated: false, secondAnimated: true, animatedIfCollapsed: true)
-        unreadMessage[self.friends[indexPath.row].userID]?.unreadCount = 0
     }
     
     @available(iOS 13.0, *)
@@ -519,8 +522,9 @@ class ContactsTableViewController: DogeChatViewController, UITableViewDelegate, 
         syncOnMainThread {
             var friendDict = [String : [Message]]()
             for message in messages {
-                let friendID = message.friend.userID
-                friendDict.add(message, for: friendID)
+                if let friendID = message.friend?.userID {
+                    friendDict.add(message, for: friendID)
+                }
             }
             let sortedDict = friendDict.sorted(by: { first, second in
                 return first.value.last?.timestamp ?? 0 > second.value.last?.timestamp ?? 0
@@ -614,9 +618,11 @@ extension ContactsTableViewController: MessageDelegate, AddContactDelegate {
     
     func newFriendRequest() {
         playSound()
-        let button = navigationItem.rightBarButtonItem
-        button?.badgeValue = "1"
+        if let button = navigationItem.rightBarButtonItem {
+            button.makeDot()
+        }
     }
+    
     
     func revokeSuccess(id: Int, senderID: String, receiverID: String) {
         for chatVC in findChatRoomVCs() {

@@ -8,8 +8,11 @@
 
 import UIKit
 import DogeChatUniversal
+import DogeChatCommonDefines
 
-class SelectContactsTVC: UITableViewController {
+class SelectContactsTVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
+    
+    let tableView = UITableView()
     
     var friends = [Friend]()
     
@@ -20,6 +23,9 @@ class SelectContactsTVC: UITableViewController {
         
     override func viewDidLoad() {
         super.viewDidLoad()
+        tableView.delegate = self
+        tableView.dataSource = self
+        self.view.addSubview(tableView)
         self.view.addSubview(toolBar)
         tableView.register(ContactCell.self, forCellReuseIdentifier: "cell")
         
@@ -29,15 +35,13 @@ class SelectContactsTVC: UITableViewController {
         let sendItem = UIBarButtonItem(title: "发送", style: .plain, target: self, action: #selector(sendAction))
         toolBar.setItems([sendItem], animated: true)
         
-        self.tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 44, right: 0)
-        
-    
     }
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         let size = self.view.bounds.size
         toolBar.frame = CGRect(x: 0, y: size.height - 44, width: size.width, height: 44)
+        tableView.frame = CGRect(x: 0, y: 0, width: size.width, height: size.height - 44)
     }
     
     @objc func sendAction() {
@@ -46,23 +50,24 @@ class SelectContactsTVC: UITableViewController {
 
     // MARK: - Table view data source
 
-    override func numberOfSections(in tableView: UITableView) -> Int {
+    func numberOfSections(in tableView: UITableView) -> Int {
         // #warning Incomplete implementation, return the number of sections
         return 1
     }
 
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
         return friends.count
     }
 
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! ContactCell
-        cell.label.text = friends[indexPath.row].username
+        let friend = friends[indexPath.row]
+        cell.label.text = friend.nickName ?? friend.username
         return cell
     }
     
-    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         self.didSelectContact?((tableView.indexPathsForSelectedRows ?? []).map { friends[$0.row] })
     }
     

@@ -10,6 +10,7 @@ import DogeChatNetwork
 import DogeChatUniversal
 import SwiftyJSON
 import UIKit
+import DogeChatCommonDefines
 
 extension ChatRoomViewController: ReferMessageDataSource {
     
@@ -20,10 +21,11 @@ extension ChatRoomViewController: ReferMessageDataSource {
         let filteredUUIDs = newUUIDs.subtracting(alreadyUUIDs)
         var filtered = messages.filter { filteredUUIDs.contains($0.uuid)}
         filtered = filtered.filter { message in
+            guard let friend = message.friend else { return false }
             if message.option != self.messageOption {
                 return false
             } else {
-                let friendID = message.friend.isGroup ? message.receiverUserID : (message.messageSender == .ourself ? message.receiverUserID : message.senderUserID)
+                let friendID = friend.isGroup ? message.receiverUserID : (message.messageSender == .ourself ? message.receiverUserID : message.senderUserID)
                 return friendID == self.friend.userID
             }
         }
@@ -90,8 +92,8 @@ extension ChatRoomViewController: ReferMessageDataSource {
     
     func checkReferMessage(_ message: Message) {
         if message.referMessage != nil { return }
-        if let referUUID = message.referMessageUUID {
-            manager?.httpsManager.getMessagesWith(friendID: message.friend.userID, uuid: referUUID, pageNum: nil, pageSize: nil)
+        if let referUUID = message.referMessageUUID, let friendID = message.friend?.userID {
+            manager?.httpsManager.getMessagesWith(friendID: friendID, uuid: referUUID, pageNum: nil, pageSize: nil)
         }
     }
     

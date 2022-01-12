@@ -11,6 +11,7 @@ import PhotosUI
 import DogeChatUniversal
 import SwiftyJSON
 import DogeChatNetwork
+import DogeChatCommonDefines
 
 extension ChatRoomViewController: MessageInputDelegate, VoiceRecordDelegate {
     
@@ -60,12 +61,11 @@ extension ChatRoomViewController: MessageInputDelegate, VoiceRecordDelegate {
             if #available(iOS 13.0, *) {
                 let drawVC = DrawViewController()
                 drawVC.username = username
-                drawVC.pkViewDelegate.dataChangedDelegate = self
+                drawVC.pkViewDelegate.dataChangeDelegate = self
                 let newMessage = processMessageString(for: "", type: .draw, imageURL: nil, videoURL: nil)
                 drawVC.message = newMessage
                 drawVC.modalPresentationStyle = .fullScreen
                 drawVC.chatRoomVC = self
-                self.drawingIndexPath = IndexPath(item: self.messages.count, section: 0)
                 self.navigationController?.present(drawVC, animated: true, completion: nil)
             }
         case .add:
@@ -79,7 +79,7 @@ extension ChatRoomViewController: MessageInputDelegate, VoiceRecordDelegate {
     
     func atAction() {
         if let group = self.friend as? Group {
-            let selectVC = SelectContactsViewController(username: self.username, group: group, members: group.membersDict?.map({$0.value}) ?? self.groupMembers)
+            let selectVC = SelectContactsViewController(username: self.username, group: group, members: self.groupMembers)
             selectVC.delegate = self
             self.present(selectVC, animated: true, completion: nil)
         }
@@ -189,7 +189,7 @@ extension ChatRoomViewController: MessageInputDelegate, VoiceRecordDelegate {
         voiceVC.preferredContentSize = CGSize(width: 300, height: 250)
         let popover = voiceVC.popoverPresentationController
         popover?.sourceView = sender
-        popover?.sourceRect = sender.frame
+        popover?.sourceRect = sender.bounds
         popover?.delegate = self
         voiceVC.delegate = self
         self.present(voiceVC, animated: true, completion: nil)
@@ -211,7 +211,7 @@ extension ChatRoomViewController: MessageInputDelegate, VoiceRecordDelegate {
                 if result.itemProvider.canLoadObject(ofClass: PHLivePhoto.self) {
                     result.itemProvider.loadObject(ofClass: PHLivePhoto.self) {[self] livePhoto, error in
                         if let live = livePhoto as? PHLivePhoto {
-                            LivePhotoGenerator().generate(for: live, windowWidth: self.tableView.frame.width) { livePhoto in
+                            LivePhotoGenerator().generate(for: live, windowWidth: self.tableView.frame.width) { livePhoto, _, _ in
                                 let imageURL = livePhoto.value(forKey: "imageURL") as! URL
                                 let videoURL = livePhoto.value(forKey: "videoURL") as! URL
                                 self.messageSender.pickedLivePhotos = [(imageURL, videoURL, livePhoto.size, livePhoto)]
@@ -269,9 +269,7 @@ extension ChatRoomViewController: MessageInputDelegate, VoiceRecordDelegate {
         } else if imagePickerType == .livePhoto {
             picker.dismiss(animated: true, completion: nil)
             if let live = info[.livePhoto] as? PHLivePhoto {
-                LivePhotoGenerator().generate(for: live, windowWidth: self.tableView.frame.width) { livePhoto in
-                    let imageURL = livePhoto.value(forKey: "imageURL") as! URL
-                    let videoURL = livePhoto.value(forKey: "videoURL") as! URL
+                LivePhotoGenerator().generate(for: live, windowWidth: self.tableView.frame.width) { livePhoto, imageURL, videoURL in
                     self.messageSender.pickedLivePhotos = [(imageURL, videoURL, livePhoto.size, livePhoto)]
                     self.sendLivePhotos()
                 }

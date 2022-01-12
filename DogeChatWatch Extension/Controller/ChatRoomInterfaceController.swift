@@ -8,6 +8,7 @@
 
 import WatchKit
 import DogeChatUniversal
+import DogeChatCommonDefines
 
 func syncOnMain(_ block: () -> Void) {
     if Thread.isMainThread {

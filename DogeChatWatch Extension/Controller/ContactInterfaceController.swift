@@ -10,6 +10,7 @@ import WatchKit
 import Foundation
 import DogeChatUniversal
 import WatchConnectivity
+import DogeChatCommonDefines
 
 var isLogin = false
 var url_pre: String {
@@ -249,8 +250,9 @@ extension ContactInterfaceController: MessageDelegate {
     func updateLatestMessages(_ messages: [Message]) {
         var friendDict = [String : [Message]]()
         for message in messages {
-            let friendID = message.friend.userID
-            friendDict.add(message, for: friendID)
+            if let friendID = message.friend?.userID {
+                friendDict.add(message, for: friendID)
+            }
         }
         let sortedDict = friendDict.sorted(by: { first, second in
             return first.value.last?.timestamp ?? 0 > second.value.last?.timestamp ?? 0
@@ -285,8 +287,9 @@ extension ContactInterfaceController: MessageDelegate {
         }
         var friendDict = [String : [Message]]()
         for message in messages {
-            let friendID = message.friend.userID
-            friendDict.add(message, for: friendID)
+            if let friendID = message.friend?.userID {
+                friendDict.add(message, for: friendID)
+            }
         }
         for (friendID, newMessages) in friendDict {
             if let index = self.friends.firstIndex(where: { $0.userID == friendID }) {

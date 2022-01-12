@@ -10,6 +10,7 @@ import UIKit
 import DogeChatUniversal
 import DogeChatNetwork
 import SwiftyJSON
+import DogeChatCommonDefines
 
 class FriendDetailViewController: DogeChatViewController, UITableViewDataSource, UITableViewDelegate, DogeChatVCTableDataSource {
     

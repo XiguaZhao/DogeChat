@@ -9,6 +9,7 @@
 import UIKit
 import DogeChatUniversal
 import DogeChatNetwork
+import DogeChatCommonDefines
 
 protocol DogeChatVCTableDataSource: AnyObject {
     var tableView: DogeChatTableView { get set }

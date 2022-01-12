@@ -9,6 +9,7 @@
 import Foundation
 import UIKit
 import DogeChatUniversal
+import DogeChatCommonDefines
 
 class MediaLoader: NSObject, URLSessionDownloadDelegate {
     
@@ -67,7 +68,7 @@ class MediaLoader: NSObject, URLSessionDownloadDelegate {
             let cacheKey = fileName.fileNameWithWidth(imageWidth)
             if let data = cache[cacheKey] {
                 syncOnMainThread {
-                    completion?(nil, data, url)
+                    completion?(nil, data, fileURLAt(dirName: photoDir, fileName: fileName) ?? url)
                 }
                 return
             }
@@ -186,7 +187,7 @@ class MediaLoader: NSObject, URLSessionDownloadDelegate {
                             DispatchQueue.global().async {
                                 if let image = image {
                                     if (fileName.isGif && request.needStaticGif) || !fileName.isGif {
-                                        data = compressEmojis(image, imageWidth: request.imageWidth)
+                                        data = compressEmojis(image, imageWidth: request.imageWidth, isGIF: fileName.isGif)
                                     }
                                 }
                                 DispatchQueue.main.async {

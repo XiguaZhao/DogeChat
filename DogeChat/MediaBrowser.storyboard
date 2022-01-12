@@ -12,7 +12,7 @@
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="gnd-iI-s3Q" customClass="DogeChatNavigationController" customModule="DogeChat" customModuleProvider="target" sceneMemberID="viewController">
                     <toolbarItems/>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="hgh-e8-ek3">
+                    <navigationBar key="navigationBar" hidden="YES" contentMode="scaleToFill" id="hgh-e8-ek3">
                         <rect key="frame" x="0.0" y="44" width="414" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>

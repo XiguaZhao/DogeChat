@@ -8,7 +8,7 @@
 
 import UIKit
 import DogeChatUniversal
-
+import DogeChatCommonDefines
 
 class DogeChatTabBarController: UITabBarController, UITabBarControllerDelegate {
 

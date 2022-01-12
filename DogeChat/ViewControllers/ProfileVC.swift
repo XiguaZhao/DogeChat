@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import DogeChatUniversal
+import DogeChatCommonDefines
 import DogeChatNetwork
 import SwiftyJSON
 
@@ -20,6 +20,9 @@ class ProfileVC: DogeChatViewController, DogeChatVCTableDataSource, UITableViewD
         case email = "注册邮箱"
         case createTime = "创建时间"
         case userID = "用户ID"
+        case blurImage = "自定义毛玻璃"
+        case trailer = "Trailers"
+        case customizedColors = "自定义颜色"
     }
     
     var manager: WebSocketManager? {
@@ -29,7 +32,7 @@ class ProfileVC: DogeChatViewController, DogeChatVCTableDataSource, UITableViewD
     var tableView: DogeChatTableView = DogeChatTableView()
     let sections: [[ProfileCellType]] = [
         [.avatar],
-        [.username, .userID, .email, .createTime]
+        [.username, .userID, .email, .createTime, .blurImage, .trailer,. customizedColors]
     ]
     var info: AccountInfo?
 
@@ -68,6 +71,7 @@ class ProfileVC: DogeChatViewController, DogeChatVCTableDataSource, UITableViewD
         let title = row.rawValue
         var trailingType: CommonTableCell.TrailingViewType?
         var trailingText: String?
+        var imageURL: String?
         switch row {
         case .avatar:
             cellID = ProfileAvatarCell.cellID
@@ -83,12 +87,21 @@ class ProfileVC: DogeChatViewController, DogeChatVCTableDataSource, UITableViewD
         case .userID:
             trailingType = .label
             trailingText = info?.userID
+        case .blurImage:
+            imageURL = info?.backgroudImage
+        case .trailer:
+            if let firstTrack = allTracks.first {
+                trailingType = .label
+                trailingText = firstTrack.name + "等\(allTracks.count)首"
+            }
+        case .customizedColors:
+            break
         }
         let cell = tableView.dequeueReusableCell(withIdentifier: cellID, for: indexPath)
         if let avatarCell = cell as? ProfileAvatarCell {
             avatarCell.apply(url: info?.avatarURL)
         } else if let userInfoCell = cell as? CommonTableCell? {
-            userInfoCell?.apply(title: title, subTitle: nil, imageURL: nil, trailingViewType: trailingType, trailingText: trailingText, switchOn: nil)
+            userInfoCell?.apply(title: title, subTitle: nil, imageURL: imageURL, trailingViewType: trailingType, trailingText: trailingText, switchOn: nil, imageIsLeft: false)
         }
         return cell
     }
@@ -102,6 +115,8 @@ class ProfileVC: DogeChatViewController, DogeChatVCTableDataSource, UITableViewD
         let type = sections[indexPath.section][indexPath.row]
         if type == .avatar {
             changeAvatar()
+        } else if type == .customizedColors {
+            
         }
         if let cell = tableView.cellForRow(at: indexPath) as? CommonTableCell {
             var text: String?

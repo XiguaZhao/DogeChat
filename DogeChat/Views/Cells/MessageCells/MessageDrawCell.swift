@@ -9,6 +9,8 @@
 import UIKit
 import DogeChatNetwork
 import DogeChatUniversal
+import PencilKit
+import DogeChatCommonDefines
 
 func getPKDrawing(message: Message) -> Any? {
     if #available(iOS 13, *) {

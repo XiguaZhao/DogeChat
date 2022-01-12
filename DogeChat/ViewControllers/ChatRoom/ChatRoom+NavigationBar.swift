@@ -9,6 +9,7 @@
 import UIKit
 import FLAnimatedImage
 import DogeChatUniversal
+import DogeChatCommonDefines
 
 extension ChatRoomViewController {
     

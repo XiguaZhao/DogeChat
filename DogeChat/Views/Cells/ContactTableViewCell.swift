@@ -8,6 +8,7 @@
 
 import UIKit
 import DogeChatUniversal
+import DogeChatCommonDefines
 
 protocol ContactTableViewCellDelegate: AnyObject {
     func avatarTapped(_ cell: ContactTableViewCell?, path: String)
@@ -76,6 +77,7 @@ class ContactTableViewCell: UITableViewCell {
         unreadLabel.backgroundColor = .red
         unreadLabel.textAlignment = .center
         unreadLabel.font = .systemFont(ofSize: 13)
+        unreadLabel.textColor = .white
         unreadLabel.bounds = CGRect(x: 0, y: 0, width: 22, height: 22)
         unreadLabel.layer.cornerRadius = 11
         self.accessoryView = unreadLabel

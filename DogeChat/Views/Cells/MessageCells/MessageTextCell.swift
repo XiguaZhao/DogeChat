@@ -10,8 +10,7 @@ import UIKit
 import DogeChatNetwork
 import DogeChatUniversal
 import AVFoundation
-
-let messageFontSize: CGFloat = 17
+import DogeChatCommonDefines
 
 class MessageTextCell: MessageBaseCell {
     

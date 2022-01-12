@@ -8,6 +8,7 @@
 
 import UIKit
 import DogeChatUniversal
+import DogeChatCommonDefines
 
 class SelectContactTableView: DogeChatTableView, UITableViewDataSource, UITableViewDelegate {
     

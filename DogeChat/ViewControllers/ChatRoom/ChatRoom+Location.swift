@@ -7,7 +7,7 @@
 //
 
 import Foundation
-import DogeChatUniversal
+import DogeChatCommonDefines
 
 extension ChatRoomViewController: LocationVCDelegate {
     

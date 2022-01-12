@@ -11,6 +11,7 @@ import DogeChatUniversal
 import UserNotifications
 import RSAiOSWatchOS
 import WatchConnectivity
+import DogeChatCommonDefines
 
 class ExtensionDelegate: NSObject, WKExtensionDelegate, UNUserNotificationCenterDelegate {
     

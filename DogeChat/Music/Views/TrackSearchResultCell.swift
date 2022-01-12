@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import DogeChatUniversal
+import DogeChatCommonDefines
 
 protocol TrackSearchResultCellDelegate: AnyObject {
     func downloadTap(cell: TrackSearchResultCell, sender: UIButton)

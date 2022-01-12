@@ -7,9 +7,10 @@
 //
 
 import UIKit
-import DogeChatUniversal
+import DogeChatCommonDefines
+import DogeChatNetwork
 
-class HistoryFilterVC: DogeChatViewController, UIPickerViewDataSource, UIPickerViewDelegate {
+class HistoryFilterVC: DogeChatViewController, UIPickerViewDataSource, UIPickerViewDelegate, UITextFieldDelegate {
 
     @IBOutlet weak var keywordTF: UITextField!
     
@@ -35,6 +36,9 @@ class HistoryFilterVC: DogeChatViewController, UIPickerViewDataSource, UIPickerV
         typePicker.dataSource = self
         typePicker.delegate = self
         
+        keywordTF.delegate = self
+        keywordTF.returnKeyType = .search
+        
         self.view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tap)))
     }
     
@@ -53,9 +57,9 @@ class HistoryFilterVC: DogeChatViewController, UIPickerViewDataSource, UIPickerV
         typePicker.isHidden = !sender.isOn
     }
     
-    @IBAction func confirm(_ sender: UIButton) {
+    @IBAction func confirm(_ sender: UIButton!) {
         if !datePicker.isHidden {
-            self.params["timestamp"] = self.datePicker.date.timeIntervalSince1970 * 1000
+            self.params["timestamp"] = "\(Int(self.datePicker.date.timeIntervalSince1970 * 1000))"
         }
         if !typePicker.isHidden {
             self.params["type"] = types[self.typePicker.selectedRow(inComponent: 0)].rawValue
@@ -63,6 +67,7 @@ class HistoryFilterVC: DogeChatViewController, UIPickerViewDataSource, UIPickerV
         if let text = keywordTF.text, !text.isEmpty {
             self.params["keyword"] = text
         }
+        guard !self.params.isEmpty else { return }
         self.dismiss(animated: true) { [weak self] in
             guard let self = self else { return }
             self.didConfirm?(self.params)
@@ -85,5 +90,8 @@ class HistoryFilterVC: DogeChatViewController, UIPickerViewDataSource, UIPickerV
         return types[row].Chinese()
     }
     
-    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        confirm(nil)
+        return true
+    }
 }

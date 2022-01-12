@@ -10,6 +10,7 @@ import UIKit
 import DogeChatUniversal
 import MapKit
 import SwiftyJSON
+import DogeChatCommonDefines
 
 class MessageLocationCell: MessageBaseCell {
 

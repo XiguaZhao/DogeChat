@@ -9,6 +9,8 @@
 import Foundation
 import DogeChatUniversal
 import UIKit
+import PencilKit
+import DogeChatCommonDefines
 
 extension ChatRoomViewController: MessageTableViewCellDelegate {
     
@@ -16,15 +18,9 @@ extension ChatRoomViewController: MessageTableViewCellDelegate {
         guard let group = self.friend as? Group, let manager = self.manager else { return }
         if let index = tableView.indexPath(for: cell)?.row {
             let message = messages[index]
-            if let friend = self.groupMembers?.first(where: { $0.userID == message.senderUserID }) {
-                atFriends([friend])
-            } else {
-                manager.httpsManager.getGroupMembers(group: group) { [weak self] members in
-                    guard let self = self else { return }
-                    self.groupMembers = members
-                    if let friend = members.first(where: { $0.userID == message.senderUserID }) {
-                        self.atFriends([friend])
-                    }
+            findGroupMember(userID: message.senderUserID) { [weak self] targetMember in
+                if let friend = targetMember {
+                    self?.atFriends([friend])
                 }
             }
         }
@@ -148,17 +144,17 @@ extension ChatRoomViewController: MessageTableViewCellDelegate {
                 lastActive.resignFirstResponder()
             }
             activePKView = pkView
-            if let indexPath = tableView.indexPath(for: cell) {
-                drawingIndexPath = indexPath
+            guard let indexPath = tableView.indexPath(for: cell) else {
+                return
             }
 
             let drawVC = DrawViewController()
             drawVC.username = username
             guard let pkView = pkView as? PKCanvasView else { return }
-            let message = messages[drawingIndexPath.item]
+            let message = messages[indexPath.item]
             drawVC.message = message
             drawVC.pkView.drawing = pkView.drawing.transformed(using: CGAffineTransform(scaleX: 1/message.drawScale, y: 1/message.drawScale))
-            drawVC.pkViewDelegate.dataChangedDelegate = self
+            drawVC.pkViewDelegate.dataChangeDelegate = self
             drawVC.modalPresentationStyle = .fullScreen
             drawVC.chatRoomVC = self
             self.navigationController?.present(drawVC, animated: true, completion: nil)
@@ -194,6 +190,34 @@ extension ChatRoomViewController: MessageTableViewCellDelegate {
             newInfo?.lastModifiedUserId = manager.myInfo.userID ?? ""
             manager.sendEmojiInfos([messages[indexPahth.item]])
         }
+    }
+    
+    @objc func playToEnd(_ noti: Notification) {
+        guard let _index = MessageAudioCell.index else { return }
+        tableView.reloadRows(at: [IndexPath(row: _index, section: 0)], with: .none)
+        var nextIndex: Int?
+        for (index, message) in self.messages.enumerated() {
+            if index > _index && message.messageType == .voice {
+                nextIndex = index
+                break
+            }
+        }
+        if let nextIndex = nextIndex {
+            let message = self.messages[nextIndex]
+            if let path = message.voiceURL, let url = fileURLAt(dirName: voiceDir, fileName: path.fileName) {
+                let player = MessageAudioCell.voicePlayer
+                let item = AVPlayerItem(url: url)
+                player.replaceCurrentItem(with: item)
+                player.seek(to: .zero)
+                player.play()
+                message.isPlaying = true
+                MessageAudioCell.index = nextIndex
+            }
+        } else {
+            MessageAudioCell.index = nil
+            MessageAudioCell.isPlaying = false
+        }
+        return
     }
     
     func sharedTracksTap(_ cell: MessageBaseCell, tracks: [Track]) {
@@ -242,7 +266,10 @@ extension ChatRoomViewController: MessageTableViewCellDelegate {
         if #available(iOS 13.0, *) {
             controller.showMenu(from: targetView, rect: rect)
         } else {
-            controller.setMenuVisible(true, animated: true)
+            if let targetView = cell.indicationNeighborView {
+                controller.setTargetRect(CGRect(x: targetView.bounds.width / 2, y: 0, width: 100, height: 100), in: targetView)
+                controller.setMenuVisible(true, animated: true)
+            }
         }
         messageInputBar.textView.ignoreActions = false
     }

@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import DogeChatUniversal
+import DogeChatCommonDefines
 
 class SelectShortcutTVC: DogeChatViewController, DogeChatVCTableDataSource, UITableViewDataSource, UITableViewDelegate {
     

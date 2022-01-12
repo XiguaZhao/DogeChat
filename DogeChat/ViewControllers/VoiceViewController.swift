@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import DogeChatUniversal
+import DogeChatCommonDefines
 
 protocol VoiceRecordDelegate: AnyObject {
     func voiceConfirmSend(_ url: URL, duration: Int)
@@ -108,9 +108,13 @@ class VoiceViewController: DogeChatViewController, AVAudioRecorderDelegate {
         
     }
     
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        stopTimer()
+    }
+    
     deinit {
-        timer?.invalidate()
-        timer = nil
+        stopTimer()
     }
     
     @objc func updateUI() {

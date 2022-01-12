@@ -102,8 +102,9 @@ NSString const *UIBarButtonItem_badgeValueKey = @"UIBarButtonItem_badgeValueKey"
     // Using const we make sure the badge doesn't get too smal
     minWidth = (minWidth < minHeight) ? minHeight : expectedLabelSize.width;
     self.badge.layer.masksToBounds = YES;
-    self.badge.frame = CGRectMake(self.badgeOriginX, self.badgeOriginY, minWidth + padding, minHeight + padding);
-    self.badge.layer.cornerRadius = (minHeight + padding) / 2;
+    CGFloat width = 12;
+    self.badge.frame = CGRectMake(16, 0, width, width);
+    self.badge.layer.cornerRadius = (width) / 2;
 }
 
 // Handle the badge changing value

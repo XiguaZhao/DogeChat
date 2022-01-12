@@ -5,6 +5,8 @@ import DogeChatNetwork
 import DogeChatUniversal
 import PhotosUI
 import FLAnimatedImage
+import PencilKit
+import DogeChatCommonDefines
 
 enum ChatRoomSceneType {
     case normal
@@ -31,7 +33,12 @@ class ChatRoomViewController: DogeChatViewController, DogeChatVCTableDataSource 
     var messageOption: MessageOption {
         friend.isGroup ? .toGroup : .toOne
     }
-    var groupMembers: [Friend]?
+    lazy var groupMembers: [Friend]? = {
+        if let group = self.friend as? Group {
+            return group.membersDict?.map({$0.value})
+        }
+        return nil
+    }()
     var friend: Friend! {
         didSet {
             messages = friend.messages
@@ -76,12 +83,13 @@ class ChatRoomViewController: DogeChatViewController, DogeChatVCTableDataSource 
         return Set(self.messages.map{ $0.uuid })
     }
     var activePKView: UIView!
-    var drawingIndexPath: IndexPath!
     var friendAvatarUrl: String {
         friend.avatarURL
     }
     var lastViewSize = CGSize.zero
-    lazy var lastTextViewContentSize: CGSize = CGSize(width: 0, height: 36)
+    lazy var lastTextViewHeight: CGFloat = {
+        return messageInputBar.textView.frame.height
+    }()
     weak var contactVC: ContactsTableViewController?
     weak var activeMenuCell: MessageBaseCell?
     var hapticInputIndex = 0
@@ -136,6 +144,12 @@ class ChatRoomViewController: DogeChatViewController, DogeChatVCTableDataSource 
             if isMac() {
                 self?.messageInputBar.textView.becomeFirstResponder()
             }
+        }
+        NotificationCenter.default.addObserver(self, selector: #selector(playToEnd(_:)), name: .AVPlayerItemDidPlayToEndTime, object: nil)
+        if #available(iOS 13.0, *) {
+            NotificationCenter.default.addObserver(self, selector: #selector(enterForeground(_:)), name: UIScene.willEnterForegroundNotification, object: nil)
+        } else {
+            
         }
         NotificationCenter.default.addObserver(self, selector: #selector(groupInfoChange(noti:)), name: .groupInfoChange, object: username)
         NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: .main) { [weak self] _ in
@@ -192,6 +206,14 @@ class ChatRoomViewController: DogeChatViewController, DogeChatVCTableDataSource 
                 self.view.window?.windowScene?.title = username + "与\(friend.username)"
             }
         }
+        //上报已读
+        DispatchQueue.global().async { [self] in
+            if let maxID = self.messages.max(by: { $0.id < $1.id })?.id {
+                manager.commonWebSocket.send(makeJsonString(for: ["method" : "readMessage",
+                                                                  "userId" : friend.userID,
+                                                                  "readId" : maxID]))
+            }
+        }
     }
         
     deinit {
@@ -242,14 +264,23 @@ class ChatRoomViewController: DogeChatViewController, DogeChatVCTableDataSource 
         }
     }
     
+    @available(iOS 13, *)
+    @objc func enterForeground(_ noti: Notification) {
+        if isPad() && !isMac() {
+            scrollToBottomWithoutAnimation()
+        }
+    }
+    
     @objc func friendChangeAvatar(_ noti: Notification) {
         let friend = noti.userInfo?["friend"] as! Friend
         if friend.userID != self.friend.userID { return }
         self.friend.avatarURL = friend.avatarURL
-        for message in self.messages {
-            message.avatarUrl = friend.avatarURL
+        if !friend.isGroup {
+            for message in self.messages {
+                message.avatarUrl = friend.avatarURL
+            }
+            self.tableView.reloadData()
         }
-        self.tableView.reloadData()
         if friend is Group {
             updateTitleAvatar()
         }
@@ -279,6 +310,8 @@ class ChatRoomViewController: DogeChatViewController, DogeChatVCTableDataSource 
             messages[index].id = message.id
             let indexPath = IndexPath(row: index, section: 0)
             if let cell = tableView.cellForRow(at: indexPath) as? MessageBaseCell {
+                cell.message.sendStatus = .success
+                cell.indicator.isHidden = true
                 cell.layoutIfNeeded()
                 cell.setNeedsLayout()
             } else {
@@ -304,102 +337,6 @@ extension ChatRoomViewController: UIImagePickerControllerDelegate, UINavigationC
         guard let _ = targetCell as? MessageBaseCell else { return }
     }
     
-}
-
-extension ChatRoomViewController {
-    
-    @objc func drawDone() {
-        self.navigationItem.rightBarButtonItem = nil
-        activePKView?.backgroundColor = .clear
-        activePKView?.resignFirstResponder()
-        activePKView?.isUserInteractionEnabled = false
-        tableView.isScrollEnabled = true
-        activePKView = nil
-        drawingIndexPath = nil
-        self.navigationController?.interactivePopGestureRecognizer?.isEnabled = true
-    }
-    
-}
-
-extension ChatRoomViewController: PKViewChangedDelegate {
-    func pkView(_ pkView: PKCanvasView, message: Any?, addNewStroke newStroke: Any) {
-        guard #available(iOS 14.0, *), let newStroke = newStroke as? PKStroke else { return }
-        print("add new stroke")
-        guard let message = message as? Message else { return }
-        guard message.needRealTimeDraw else { return }
-        let data = PKDrawing(strokes: [newStroke]).dataRepresentation()
-        let base64String = data.base64EncodedString()
-        manager?.sendRealTimeDrawData(base64String, sender: username, receiver: friendName, uuid: message.uuid, senderID: message.senderUserID, receiverID: message.receiverUserID)
-    }
-    
-    @available(iOS 13.0, *)
-    func pkView(_ pkView: PKCanvasView, message: Any?, deleteStrokesIndex: [NSNumber]) {
-        print("delete\(deleteStrokesIndex.count)")
-        guard let message = message as? Message else { return }
-        if message.needRealTimeDraw {
-            let indexes = deleteStrokesIndex.map { $0.intValue }
-            manager?.sendRealTimeDrawData(indexes, sender: username, receiver: friendName, uuid: message.uuid, senderID: message.senderUserID, receiverID: message.receiverUserID)
-        }
-    }
-    
-    @available(iOS 13.0, *)
-    func pkViewDidFinishDrawing(_ pkView: PKCanvasView, message: Any?) {
-        if let manager = manager, let message = message as? Message {
-            message.sendStatus = .fail
-            let data = pkView.drawing.dataRepresentation()
-            let fileName = UUID().uuidString
-            let dir = createDir(name: drawDir)
-            let originalURL = dir.appendingPathComponent(fileName)
-            saveFileToDisk(dirName: drawDir, fileName: fileName, data: data)
-            message.pkLocalURL = originalURL
-            if #available(iOS 14.0, *) {
-                guard !pkView.drawing.strokes.isEmpty else { return }
-            }
-            let drawData = pkView.drawing.dataRepresentation()
-            let bounds = pkView.drawing.bounds
-            let x = Int(bounds.origin.x)
-            let y = Int(bounds.origin.y)
-            let width = Int(bounds.size.width)
-            let height = Int(bounds.size.height)
-            message.drawBounds = bounds
-            if let index = self.messages.firstIndex(where: { $0.uuid == message.uuid }) {
-                tableView.reloadRows(at: [IndexPath(item: index, section: 0)], with: .none)
-            }
-            insertNewMessageCell([message], forceScrollBottom: true) { [weak self] in
-                self?.drawDone()
-            }
-            manager.uploadData(drawData, path: "message/uploadImg", name: "upload", fileName: "+\(x)+\(y)+\(width)+\(height)", needCookie: true, contentType: "application/octet-stream", params: nil) { task, data in
-                guard let data = data else { return }
-                let json = JSON(data)
-                guard json["status"].stringValue == "success" else {
-                    print("上传失败")
-                    return
-                }
-                let filePath = manager.messageManager.encrypt.decryptMessage(json["filePath"].stringValue)
-                message.pkDataURL = filePath
-                message.text = message.pkDataURL ?? ""
-                manager.sendDrawMessage(message)
-                DispatchQueue.global().async {
-                    let newURL = dir.appendingPathComponent(filePath.components(separatedBy: "/").last!)
-                    try? FileManager.default.moveItem(at: originalURL, to: newURL)
-                }
-            }
-        }
-    }
-    
-    @available(iOS 13.0, *)
-    func pkViewDidCancelDrawing(_ pkView: PKCanvasView, message: Any?) {
-        drawingIndexPath = nil
-        if let message = message as? Message {
-            if #available(iOS 14.0, *) {
-                if (message.pkLocalURL == nil && message.pkDataURL == nil) {
-                    revoke(message: message)
-                } else {
-                    manager?.commonWebSocket.sendWrappedMessage(message)
-                }
-            }
-        }
-    }
 }
 
 extension ChatRoomViewController {
@@ -531,6 +468,7 @@ extension ChatRoomViewController: UITextViewDelegate {
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
         if text == "\n" {
             messageInputBar.sendTapped()
+            messageInputBar.textView.font = .systemFont(ofSize: MessageInputView.textViewDefaultFontSize)
             return false
         }
         return true

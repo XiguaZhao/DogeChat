@@ -9,6 +9,7 @@
 import UIKit
 import DogeChatNetwork
 import DogeChatUniversal
+import DogeChatCommonDefines
 
 class MessageImageCell: MessageImageKindCell {
     

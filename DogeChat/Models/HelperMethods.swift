@@ -10,6 +10,7 @@ import Foundation
 import DogeChatNetwork
 import DogeChatUniversal
 import UIKit
+import DogeChatCommonDefines
 
 func playHaptic(_ intensity: CGFloat = 1) {
     if #available(iOS 13.0, *) {

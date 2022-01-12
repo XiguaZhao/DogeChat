@@ -7,12 +7,12 @@
 //
 
 import UIKit
-import DogeChatUniversal
+import DogeChatCommonDefines
 
 class MessageAudioCell: MessageTextCell {
     
     static let voicePlayer = AVPlayer()
-    static var voiceURL: URL?
+    static var index: Int?
     static var isPlaying = false {
         didSet {
             if isPlaying {
@@ -28,19 +28,8 @@ class MessageAudioCell: MessageTextCell {
     }
 
     let tapGes = UITapGestureRecognizer()
-    var isPlaying = false {
-        didSet {
-            Self.isPlaying = isPlaying
-        }
-    }
     var isEnd = false
     weak var item: AVPlayerItem!
-    var voiceURL: URL? {
-        if let name = message?.voiceURL?.components(separatedBy: "/").last {
-            return fileURLAt(dirName: voiceDir, fileName: name)
-        }
-        return nil
-    }
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -58,7 +47,6 @@ class MessageAudioCell: MessageTextCell {
         if noti.object as? AVPlayerItem != self.item {
             return
         }
-        isPlaying = false
         isEnd = true
     }
 
@@ -68,7 +56,9 @@ class MessageAudioCell: MessageTextCell {
     }
     
     func playVoice() {
-        try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, policy: .default, options: .duckOthers)
+        self.message?.isPlaying = true
+        try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, policy: .default, options: [.allowBluetooth, .allowBluetoothA2DP])
+        try? AVAudioSession.sharedInstance().setActive(true, options: .notifyOthersOnDeactivation)
         if let path = message.voiceURL, let url = fileURLAt(dirName: voiceDir, fileName: path.components(separatedBy: "/").last!) {
             let player = Self.voicePlayer
             let item = AVPlayerItem(url: url)
@@ -76,25 +66,25 @@ class MessageAudioCell: MessageTextCell {
             player.replaceCurrentItem(with: item)
             player.seek(to: .zero)
             player.play()
-            Self.voiceURL = url
+            Self.index = self.indexPath.row
             isEnd = false
-            isPlaying = true
+            Self.isPlaying = true
         }
     }
     
     @objc func tapAction() {
         playHaptic()
-        if Self.voiceURL == self.voiceURL {
-            if isPlaying {
+        if Self.index == self.indexPath.row {
+            if Self.isPlaying {
                 Self.voicePlayer.pause()
-                isPlaying = false
+                Self.isPlaying = false
             } else {
                 Self.voicePlayer.play()
-                isPlaying = true
+                Self.isPlaying = true
             }
             if isEnd || Self.voicePlayer.currentItem == nil {
                 playVoice()
-                isPlaying = true
+                Self.isPlaying = true
             }
         } else {
             playVoice()
@@ -108,14 +98,16 @@ class MessageAudioCell: MessageTextCell {
             guard let self = self, captured == self.message, let url = url else { return }
             self.message.videoLocalPath = url
             self.tapGes.isEnabled = true
-            syncOnMainThread {
-                self.messageLabel.backgroundColor = #colorLiteral(red: 0.667152524, green: 0.4650295377, blue: 1, alpha: 1)
+            if !captured.isPlaying {
+                syncOnMainThread {
+                    self.messageLabel.backgroundColor = #colorLiteral(red: 0.667152524, green: 0.4650295377, blue: 1, alpha: 1)
+                }
             }
         }
         if message.voiceLocalPath != nil && message.sendStatus == .fail {
             url = message.voiceLocalPath!
             block()
-        } else if let _url = fileURLAt(dirName: voiceDir, fileName: self.message.voiceURL!.components(separatedBy: "/").last!) {
+        } else if let _url = fileURLAt(dirName: voiceDir, fileName: self.message.voiceURL?.fileName) {
             url = _url
             block()
         } else {

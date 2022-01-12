@@ -8,6 +8,7 @@
 
 import UIKit
 import DogeChatUniversal
+import DogeChatCommonDefines
 
 class MessageVideoCell: MessageImageKindCell {
     
@@ -18,7 +19,7 @@ class MessageVideoCell: MessageImageKindCell {
         if #available(iOS 13, *) {
             return UIImageView(image: UIImage(systemName: "play.circle.fill"))
         } else {
-            return UIImageView(image: UIImage(named: ""))
+            return UIImageView(image: UIImage(named: "bofang"))
         }
     }()
     var videoEnd = false
@@ -135,7 +136,7 @@ class MessageVideoCell: MessageImageKindCell {
         if message.videoLocalPath != nil && message.sendStatus == .fail {
             url = message.videoLocalPath!
             block(true)
-        } else if let _url = fileURLAt(dirName: videoDir, fileName: self.message.videoURL!.components(separatedBy: "/").last!) {
+        } else if let fileName = self.message?.videoURL?.fileName, let _url = fileURLAt(dirName: videoDir, fileName: fileName) {
             url = _url
             block(false)
         } else {

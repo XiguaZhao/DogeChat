@@ -8,7 +8,7 @@
 
 import CallKit
 import DogeChatNetwork
-import DogeChatUniversal
+import DogeChatCommonDefines
 
 class CallManager: NSObject {
     

@@ -10,6 +10,7 @@ import UIKit
 import Social
 import DogeChatUniversal
 import RSAiOSWatchOS
+import DogeChatCommonDefines
 
 class ShareViewController: SLComposeServiceViewController, KeyProvider {
             

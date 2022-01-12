@@ -11,6 +11,8 @@ import DogeChatNetwork
 import SwiftyJSON
 import DogeChatUniversal
 import DataCompression
+import PencilKit
+import DogeChatCommonDefines
 
 func playSound(needSound: Bool = true) {
     if UIApplication.shared.applicationState == .active {
@@ -41,7 +43,11 @@ class WebSocketManagerAdapter: NSObject {
     }
     
     var navigationController: UINavigationController? {
-        return sceneDelegate?.navigationController
+        if #available(iOS 13, *) {
+            return (sceneDelegate as? SceneDelegate)?.navigationController
+        } else {
+            return AppDelegateUI.shared.navController
+        }
     }
     
     var chatRoom: ChatRoomViewController? {
@@ -131,17 +137,18 @@ class WebSocketManagerAdapter: NSObject {
     @objc func receiveVoiceChatRequestNoti(_ noti: Notification) {
         if #available(iOS 13, *) {
             if noti.object as? String != self.username { return }
-            guard let sender = noti.userInfo?["sender"] as? String,
+            guard let _
+                    = noti.userInfo?["sender"] as? String,
                   let uuid = noti.userInfo?["uuid"] as? String,
                   let finalUUID = UUID(uuidString: uuid)
             else { return }
             AppDelegate.shared.nowCallUUID = finalUUID
             if let sceneDelegate = SceneDelegate.usernameToDelegate.first?.value {
                 sceneDelegate.socketManager?.nowCallUUID = finalUUID
-                sceneDelegate.providerDelegate.reportIncomingCall(uuid: finalUUID, handle: sender) { (error) in
-                    guard error == nil else { return }
-                    sceneDelegate.notificationManager.prepareVoiceChat(caller: sender, uuid: finalUUID)
-                }
+//                sceneDelegate.providerDelegate.reportIncomingCall(uuid: finalUUID, handle: sender) { (error) in
+//                    guard error == nil else { return }
+//                    sceneDelegate.notificationManager.prepareVoiceChat(caller: sender, uuid: finalUUID)
+//                }
             }
         }
     }
@@ -186,6 +193,7 @@ class WebSocketManagerAdapter: NSObject {
         message.cellHeight = 0
         if let chatRoomVC = navigationController?.topViewController as? ChatRoomViewController {
             if let index = chatRoomVC.messages.firstIndex(of: message) {
+                chatRoomVC.messages[index] = message
                 DispatchQueue.main.async {
                     chatRoomVC.tableView.reloadRows(at: [IndexPath(item: index, section: 0)], with: .none)
                 }
@@ -215,15 +223,15 @@ class WebSocketManagerAdapter: NSObject {
             if let base64Str = json["base64Str"].string {
                 guard let strokeData = Data(base64Encoded: base64Str) else { return }
                 if let newStroke = (try? PKDrawing(data: strokeData))?.transformed(using: CGAffineTransform(scaleX: targetMessage.drawScale, y: targetMessage.drawScale)) {
-                    if let cell = self.getDrawCell(for: targetMessage), let drawing = cell.getPKView()?.drawing {
-                        let wholeNewDrawing = drawing.appending(newStroke)
-                        cell.getPKView()!.drawing = wholeNewDrawing
-                        cell.getPKView()?.isScrollEnabled = true
+                    if let cell = self.getDrawCell(for: targetMessage), let drawView = cell.getPKView() {
+                        let wholeNewDrawing = drawView.drawing.appending(newStroke)
+                        drawView.drawing = wholeNewDrawing
+                        drawView.isScrollEnabled = true
                         let newBounds = wholeNewDrawing.bounds
-                        let widthLack = newBounds.maxX > cell.getPKView()!.bounds.maxX
-                        let _ = newBounds.maxY > cell.getPKView()!.bounds.maxY
+                        let widthLack = newBounds.maxX > drawView.bounds.maxX
+                        let _ = newBounds.maxY > drawView.bounds.maxY
                         if widthLack {
-                            cell.getPKView()!.drawing = cell.getPKView()!.drawing.transformed(using: CGAffineTransform(scaleX: 0.8, y: 0.8))
+                            cell.getPKView()!.drawing = drawView.drawing.transformed(using: CGAffineTransform(scaleX: 0.8, y: 0.8))
                             targetMessage.drawScale *= 0.8
                         }
                         cell.getPKView()?.scrollRectToVisible(newStroke.bounds, animated: true)

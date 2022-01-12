@@ -37,8 +37,7 @@ extension ChatRoomViewController {
             return
         }
         var shouldDown = shouldDown
-        if let userInfo = notification.userInfo {
-            var endFrame = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)!.cgRectValue
+        if let userInfo = notification.userInfo, var endFrame = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
             if let beginFrame = (userInfo[UIResponder.keyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue, beginFrame == endFrame {
                 return
             }
@@ -233,10 +232,11 @@ extension ChatRoomViewController {
         }
         let oldFrame = messageInputBar.frame
         let newTextViewSize = textView.contentSize
-        var heightChanged = newTextViewSize.height - lastTextViewContentSize.height
+        var heightChanged = newTextViewSize.height - lastTextViewHeight
         var tableViewInset = tableView.contentInset
         if text.isEmpty {
             heightChanged = messageBarHeight - oldFrame.height
+            textView.font = .systemFont(ofSize: MessageInputView.textViewDefaultFontSize)
         }
         let inputBarHeight = oldFrame.height+heightChanged
         if inputBarHeight > MessageInputView.maxHeight {
@@ -258,12 +258,12 @@ extension ChatRoomViewController {
                     }
                 }) { _ in
                     self.updateTextViewOffset()
+                    self.lastTextViewHeight = textView.frame.height
                 }
             }
         } else {
             updateTextViewOffset()
         }
-        lastTextViewContentSize = newTextViewSize
     }
         
     func needScrollBottom() -> Bool {

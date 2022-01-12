@@ -45,6 +45,7 @@ class MessageInputView: DogeChatStaticBlurView {
     static var maxHeight: CGFloat {
         safeArea.bottom + 186
     }
+    static let textViewMaxHeight: CGFloat = 160
     static let defaultHeight: CGFloat = 86
     static let textViewDefaultFontSize: CGFloat = 17
     static let ratioOfEmojiView: CGFloat = 0.45
@@ -182,8 +183,8 @@ class MessageInputView: DogeChatStaticBlurView {
         }
         
         NSLayoutConstraint.activate([
-            referView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: Self.offset),
-            referView.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -Self.offset),
+            referView.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: Self.offset),
+            referView.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -Self.offset),
             referView.heightAnchor.constraint(equalToConstant: ReferView.height)
         ])
         self.referViewBottomContraint = referView.bottomAnchor.constraint(equalTo: self.topAnchor, constant: ReferView.height)
@@ -226,8 +227,10 @@ class MessageInputView: DogeChatStaticBlurView {
         let inset: CGFloat = -20
         let edgeInsets = UIEdgeInsets(top: inset, left: inset, bottom: inset, right: inset)
         if self.referView.alpha > 0 {
-            if self.referView.cancleButton.bounds.inset(by: edgeInsets).contains(converted) {
+            if self.referView.cancleButton.frame.inset(by: edgeInsets).contains(converted) {
                 return referView.cancleButton
+            } else if self.referView.atButton.frame.inset(by: edgeInsets).contains(converted) {
+                return referView.atButton
             } else if self.referView.bounds.inset(by: edgeInsets).contains(converted) {
                 return referView.stackView
             }

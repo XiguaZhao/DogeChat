@@ -8,6 +8,7 @@ import DogeChatNetwork
 import RSAiOSWatchOS
 import DogeChatUniversal
 import WatchConnectivity
+import DogeChatCommonDefines
 
 @objc enum SplitVCSide: Int {
     case left, right
@@ -175,6 +176,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         return UISceneConfiguration(name: "Default Configuration", sessionRole: connectingSceneSession.role)
     }
+    
+    func applicationDidEnterBackground(_ application: UIApplication) {
+        AppDelegateUI.shared.enterBackground()
+    }
+    
                         
     func application(_ application: UIApplication, handleEventsForBackgroundURLSession identifier: String, completionHandler: @escaping () -> Void) {
         self.backgroundSessionCompletionHandler = completionHandler
@@ -182,16 +188,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func applicationWillEnterForeground(_ application: UIApplication) {
         //通知中心，控制中心，快捷访问都不会触发这里。重新登录的逻辑在这里可能更合适
+        AppDelegateUI.shared.enterForeground()
     }
         
     func applicationWillResignActive(_ application: UIApplication) {
-        
+        AppDelegateUI.shared.resignActive()
     }
     
     func applicationDidBecomeActive(_ application: UIApplication) {
         application.applicationIconBadgeNumber = 0
     }
-            
+    
+    func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        processRevoke(userInfo: notification.request.content.userInfo)
+        completionHandler([])
+    }
+                
     // app 在前台运行中收到通知会调用
     func application(
         _ application: UIApplication,
@@ -199,6 +211,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void
     ) {
         print(userInfo)
+    }
+    
+    func processRevoke(userInfo: [AnyHashable : Any]) {
+        if let aps = userInfo["aps"] as? [String: Any] {
+            if let status = aps["messageStatus"] as? Int, status == -1 {
+                if let senderID = aps["senderId"] as? String, let receiverID = aps["receiverId"] as? String,
+                   let isGroup = (aps["isGroup"] as? NSString)?.boolValue, let uuid = aps["uuid"] as? String {
+                    let revoke = RemoteMessage(isGroup: isGroup, senderID: senderID, receiverID: receiverID, uuid: uuid)
+                    NotificationCenter.default.post(name: .revokeMessage, object: [revoke])
+                }
+            }
+        }
     }
     
     func registerNotification() {
@@ -212,6 +236,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             } else {
                 print("请求通知权限被拒绝了")
             }
+        }
+        NotificationCenter.default.addObserver(forName: .init("NSWindowDidBecomeMainNotification"), object: nil, queue: nil) { _ in
+            NotificationManager.checkRevokeMessages()
         }
     }
     

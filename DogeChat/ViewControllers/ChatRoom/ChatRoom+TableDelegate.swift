@@ -2,6 +2,7 @@
 import UIKit
 import DogeChatNetwork
 import DogeChatUniversal
+import DogeChatCommonDefines
 
 extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, SelectContactsDelegate {
     
@@ -309,6 +310,7 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
     
     func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
         if !decelerate {
+            self.decelerate()
             didStopScroll()
             if let cell = centerCell() as? DogeChatTableViewCell {
                 callCenterBlock(centerCell: cell)
@@ -318,6 +320,14 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
     
     func scrollViewDidScrollToTop(_ scrollView: UIScrollView) {
         didStopScroll()
+    }
+    
+    func decelerate() {
+        if let uuids = self.tableView.indexPathsForVisibleRows?.map({ self.messages[$0.row].uuid }) {
+            if uuids.contains(self.explictJumpMessageUUID ?? "") {
+                self.explictJumpMessageUUID = nil
+            }
+        }
     }
     
     func didStopScroll() {

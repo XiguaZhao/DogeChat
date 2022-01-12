@@ -9,6 +9,7 @@
 import UIKit
 import DogeChatNetwork
 import DogeChatUniversal
+import DogeChatCommonDefines
 
 enum SettingType: String {
     case shortcut = "多账号管理"

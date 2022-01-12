@@ -10,6 +10,7 @@ import Foundation
 import SwiftyJSON
 import DogeChatNetwork
 import DogeChatUniversal
+import DogeChatCommonDefines
 
 extension ContactsTableViewController: ContactTableViewCellDelegate, UIContextMenuInteractionDelegate {
     func avatarTapped(_ cell: ContactTableViewCell?, path: String) {

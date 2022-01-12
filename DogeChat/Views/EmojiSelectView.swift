@@ -11,6 +11,7 @@ import DogeChatNetwork
 import SwiftyJSON
 import DogeChatUniversal
 import Foundation
+import DogeChatCommonDefines
 
 @objc protocol EmojiViewDelegate: AnyObject {
     @objc optional func didSelectEmoji(filePath: String)
@@ -80,7 +81,10 @@ extension EmojiSelectView: UICollectionViewDataSource, UICollectionViewDelegateF
         let avatarMenuItem = UIMenuItem(title: "设为自己头像", action: #selector(useAsAvatar(sender:)))
         let deleteMenuItem = UIMenuItem(title: "删除", action: #selector(deleteMenuItemAction(sender:)))
         let controller = UIMenuController.shared
-        var items = [avatarMenuItem, deleteMenuItem]
+        var items = [avatarMenuItem]
+        if debugUsers.contains(self.username) {
+            items.append(deleteMenuItem)
+        }
         if friend.isGroup {
             items.append(UIMenuItem(title: "设为群聊头像", action: #selector(useAsGroupAvatar(sender:))))
         }
@@ -209,7 +213,10 @@ extension EmojiSelectView: UICollectionViewDataSource, UICollectionViewDelegateF
                     self?.deleteEmoji(cell: cell)
                 }
             }
-            var items = [avatarMenuItem, deleteMenuItem]
+            var items = [avatarMenuItem]
+            if debugUsers.contains(self?.username ?? "") {
+                items.append(deleteMenuItem)
+            }
             if let self = self, self.friend.isGroup {
                 items.append(UIAction(title: "设为群聊头像") { [weak self, weak cell] _ in
                     if let self = self, let cell = cell as? EmojiCollectionViewCell {

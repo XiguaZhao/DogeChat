@@ -5,6 +5,8 @@ import DogeChatNetwork
 import DogeChatUniversal
 import PhotosUI
 import DACircularProgress
+import PencilKit
+import DogeChatCommonDefines
 
 let nameLabelStartX: CGFloat = 40 + 5 + 5
 let nameLabelStartY: CGFloat = 10
@@ -349,8 +351,11 @@ class MessageBaseCell: DogeChatTableViewCell {
         let type = message.messageType
         switch type {
         case .join, .text, .voice:
+            let computer: (String) -> CGFloat = { text in
+                return height(forText: text, fontSize: min(maxFontSize, type == .join ? 10 : message.fontSize * fontSizeScale) + (isMac() ? 3 : 0), maxSize: maxSize)
+            }
             let text = message.messageType == .voice ? "  " : message.text
-            let messageHeight = height(forText: text, fontSize: min(maxFontSize, type == .join ? 10 : message.fontSize * fontSizeScale) + (isMac() ? 3 : 0), maxSize: maxSize)
+            let messageHeight = computer(text)
             rowHeight = nameHeight + messageHeight + 32 + 2 * Label.verticalPadding
             rowHeight = min(rowHeight, maxTextHeight)
         case .image, .livePhoto, .video:

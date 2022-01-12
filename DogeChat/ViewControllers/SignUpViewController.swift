@@ -9,6 +9,7 @@
 import UIKit
 import DogeChatNetwork
 import DogeChatUniversal
+import DogeChatCommonDefines
 
 enum SignUpVCType: Int {
     case signUp = 1

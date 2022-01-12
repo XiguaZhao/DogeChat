@@ -8,6 +8,7 @@
 
 import Foundation
 import DogeChatUniversal
+import DogeChatCommonDefines
 
 extension ChatRoomViewController: ReferViewDelegate {
     
@@ -36,6 +37,33 @@ extension ChatRoomViewController: ReferViewDelegate {
             }
         }
 
+    }
+    
+    func atAction(_ referView: ReferView) {
+        if let message = referView.message {
+            findGroupMember(userID: message.senderUserID) { [weak self] friend in
+                if let friend = friend {
+                    self?.atFriends([friend])
+                }
+            }
+        }
+    }
+    
+    func findGroupMember(userID: String, completion:((Friend?) -> Void)?) {
+        if let friend = self.groupMembers?.first(where: { $0.userID == userID }) {
+            completion?(friend)
+        } else if let group = self.friend as? Group {
+            manager?.httpsManager.getGroupMembers(group: group, completion: { members in
+                self.groupMembers = members
+                if let friend = members.first(where: { $0.userID == userID }) {
+                    completion?(friend)
+                } else {
+                    completion?(nil)
+                }
+            })
+        } else {
+            completion?(nil)
+        }
     }
     
     func referViewTapAction(_ referView: ReferView, message: Message?) {
