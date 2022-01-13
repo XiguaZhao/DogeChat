@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		00536501BB221CE9B66071996E2997D6 /* LKS_AttrModificationPatchHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = E9884C3D65FAA7853E45202141FB91FF /* LKS_AttrModificationPatchHandler.h */; settings = {ATTRIBUTES = (Project, ); }; };
-		00C50AF5125CDCD91078F501158EEEF9 /* Pods-mynotification-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 6D6B1F3433698B71952786CEE33C1190 /* Pods-mynotification-dummy.m */; };
 		00EE933474CD331185221566442C2B75 /* LookinAutoLayoutConstraint.m in Sources */ = {isa = PBXBuildFile; fileRef = 77B5F3834A0E00DF66FC94C540A3856F /* LookinAutoLayoutConstraint.m */; };
 		015C2F8113C97472E3B8FE91D0BD55B0 /* LookinAttrIdentifiers.h in Headers */ = {isa = PBXBuildFile; fileRef = 00DA43F75C906F42AA8438FF5BFFFAC9 /* LookinAttrIdentifiers.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		01CE41E638F783F584024042B2B7D8EB /* StringExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9A34D7043EA6EDF11BD04EB27AF1BC8 /* StringExtension.swift */; };
@@ -23,6 +22,8 @@
 		0741ABA6F7E7E1C97C6CF994481251C5 /* MJRefreshAutoNormalFooter.m in Sources */ = {isa = PBXBuildFile; fileRef = EB65DEF101919F65931EBEFF12FB9CF1 /* MJRefreshAutoNormalFooter.m */; };
 		076FE05E367F50E1CE503F6951FE6357 /* LookinAppInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = 4BAA21B7E7528CE70CF3B5D89DD0995B /* LookinAppInfo.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		07A10D17D9877458DE5401E490123AEC /* SDWeakProxy.h in Headers */ = {isa = PBXBuildFile; fileRef = 148335E963915F686C17BE7392E859AA /* SDWeakProxy.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		07A443D8278FD41F00E5ACD6 /* CustomizedColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07A443D7278FD41E00E5ACD6 /* CustomizedColor.swift */; };
+		07A443D9278FD41F00E5ACD6 /* CustomizedColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07A443D7278FD41E00E5ACD6 /* CustomizedColor.swift */; };
 		084A32D242B73FA0EB834004677AA7ED /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = C04C9883B12C1A60222FAF7727E5BCF9 /* Message.swift */; };
 		08A63419932B9572165E6C3DD1D9AF9C /* TCPTransport.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8B17887BC9C36F04FF81DAC331F7EB8 /* TCPTransport.swift */; };
 		08DE818674B8D2D34514CD4958915A32 /* WebSocketCommon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BBC6A5609366CDC53AA688941FD5A20 /* WebSocketCommon.swift */; };
@@ -123,7 +124,6 @@
 		364FD2B896225E6B9F85A0341522F72C /* LookinHierarchyInfo.h in Headers */ = {isa = PBXBuildFile; fileRef = A0E0EB937D8138D4A4BD3236EC9D2FA3 /* LookinHierarchyInfo.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		367D585D2D5F5839414696DB9372A16B /* Compression.swift in Sources */ = {isa = PBXBuildFile; fileRef = 32B862B0E1F0648E63F32AC2A9FB00EE /* Compression.swift */; };
 		36D8DC6682DBA9D82969A9DE31AFBA6E /* UIVisualEffectView+LookinServer.m in Sources */ = {isa = PBXBuildFile; fileRef = 20A69F5E7F448392924CD7251CB329F3 /* UIVisualEffectView+LookinServer.m */; };
-		36EDF088127CFF2F84304E4838016A91 /* Pods-mynotification-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = E26EC97E57B3251F26C31E4C445DCBEF /* Pods-mynotification-umbrella.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		3751CC3217B41464041AE093F17307C0 /* SDWebImageDownloaderRequestModifier.m in Sources */ = {isa = PBXBuildFile; fileRef = A11D7B9F169211ADD7837B8323D7642D /* SDWebImageDownloaderRequestModifier.m */; };
 		376D5DEBA0D4EE782CCA7044528A57BB /* WKWebView+AFNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = BF99B11D9EF557D422ADAD548076440D /* WKWebView+AFNetworking.m */; };
 		380C67261BFB4480E66F976F53A41F95 /* DogeChatCommonDefines-watchOS-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = A81D65567DC38A308224AC8957DF1710 /* DogeChatCommonDefines-watchOS-umbrella.h */; settings = {ATTRIBUTES = (Project, ); }; };
@@ -194,6 +194,7 @@
 		53EA39BD68A2AB07417C0C6DE7F380EF /* NSLayoutConstraint+MASDebugAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = D1B9ACF65C9E81DBB83FB870BDB441FA /* NSLayoutConstraint+MASDebugAdditions.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		5447C814A3ACFA312DCCA3457F5FFD56 /* LKS_TraceManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 429550EAE33D8600513747C247412549 /* LKS_TraceManager.m */; };
 		54AB8C7445569B1054E78CB492F40F8C /* SDWebImageCacheKeyFilter.h in Headers */ = {isa = PBXBuildFile; fileRef = 7847234BDA75CD7915BC3A415DBB07A7 /* SDWebImageCacheKeyFilter.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		54C20500856A566F1575B9D54E009E39 /* Pods-mynotification-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 6D6B1F3433698B71952786CEE33C1190 /* Pods-mynotification-dummy.m */; };
 		5619CDDD05823321412D6481CEF97406 /* LKS_RequestHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = 4782FF29558372239AF9EED4C63094C7 /* LKS_RequestHandler.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		56550959190E8AF7603F84997A05CFAF /* DogeChatUniversal-watchOS-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 701F13157F80A876161FFFA307B1AC90 /* DogeChatUniversal-watchOS-umbrella.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		56A3E76EDD0DC4E5D66BBDD2E04E7E9C /* MessageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8714E6F7D68122C092FB788B0858D9DA /* MessageManager.swift */; };
@@ -324,6 +325,7 @@
 		8F04528A1A613865EC20190B29AFAA42 /* LKS_ObjectRegistry.m in Sources */ = {isa = PBXBuildFile; fileRef = 3AF65C9F558EBE810657D9EAEF12AAD1 /* LKS_ObjectRegistry.m */; };
 		8F57E4B4F6D945742041619EB3D3F378 /* AFNetworking.h in Headers */ = {isa = PBXBuildFile; fileRef = 061D182600247C18F61DFFA8ACE948B6 /* AFNetworking.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		8F9E027B7311DF9144BD03753A2B1194 /* LookinAttrType.h in Headers */ = {isa = PBXBuildFile; fileRef = 5777C7F492E169EB6E53C7D9AFC07DF3 /* LookinAttrType.h */; settings = {ATTRIBUTES = (Project, ); }; };
+		8FBD8C7719968B3006A1A1BC61025D1C /* Pods-mynotification-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = E26EC97E57B3251F26C31E4C445DCBEF /* Pods-mynotification-umbrella.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		8FCD73A18AEDF212B98AEBBE31677FA9 /* LKS_LocalInspectPanelLabelView.h in Headers */ = {isa = PBXBuildFile; fileRef = 78536D7DA764D52EA2E10BE70346921A /* LKS_LocalInspectPanelLabelView.h */; settings = {ATTRIBUTES = (Project, ); }; };
 		90971415002D3F58EE7EA590134F736A /* SDImageCodersManager.m in Sources */ = {isa = PBXBuildFile; fileRef = F64F2F435FB89C919285DCB10D8E69EC /* SDImageCodersManager.m */; };
 		919610B338BBDE3BC2065332C7FC8AAB /* UIView+WebCacheOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = B0E7DE023956105ADF65B19C738AC31A /* UIView+WebCacheOperation.h */; settings = {ATTRIBUTES = (Project, ); }; };
@@ -600,13 +602,6 @@
 			remoteGlobalIDString = 6D322FEB11A16B73D4ED581AFD5F5385;
 			remoteInfo = "RSAiOSWatchOS-iOS";
 		};
-		1BA1413908EBD325BAA7C1E11996EEEF /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = BFDFE7DC352907FC980B868725387E98 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 0130B3724283586C0E9D2A112D4F2AA1;
-			remoteInfo = AFNetworking;
-		};
 		1F2B1844AEC23D6F5280B3B4E3F556BE /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = BFDFE7DC352907FC980B868725387E98 /* Project object */;
@@ -627,13 +622,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = 55AF53E6C77A10ED4985E04D74A8878E;
 			remoteInfo = Masonry;
-		};
-		311B6B9E76DCFCCCEE7032DAD4DBB05A /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = BFDFE7DC352907FC980B868725387E98 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = C650A1BAC55265B0D2C33A6353B4F626;
-			remoteInfo = "DogeChatCommonDefines-iOS";
 		};
 		3E055FFE941676910F94F93D7EE59B31 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -676,13 +664,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = 4A8E8992707D01510894596DB9BCCA00;
 			remoteInfo = FLAnimatedImage;
-		};
-		571D10846F15C04BC2AA1F939600B9C9 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = BFDFE7DC352907FC980B868725387E98 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = BF0C6CD2E713DE257EF65C62E5F27D8A;
-			remoteInfo = "SwiftyJSON-iOS";
 		};
 		57D0E3D5E4A77C85F1EF99AAF80DB85F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -746,13 +727,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = 918DF6979E4DB460ED5FA774E6E2DB17;
 			remoteInfo = "SwiftyRSA-iOS";
-		};
-		7A9F5823D438BE818CE7F0F1D5AD938A /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = BFDFE7DC352907FC980B868725387E98 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 05328373B5EFAE363FCEEF1FB915377C;
-			remoteInfo = "DogeChatUniversal-iOS";
 		};
 		7CBE86B9424353E76D845C32D3A60293 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -837,6 +811,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 0468CB6577BE97B25702FAB5845D42BB;
 			remoteInfo = DogeChatVideoCompression;
+		};
+		A3901AB8F9DD34C78F2C074AC3F2862F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BFDFE7DC352907FC980B868725387E98 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C650A1BAC55265B0D2C33A6353B4F626;
+			remoteInfo = "DogeChatCommonDefines-iOS";
 		};
 		ABD78C1DF4F91EE005288ACDD2B70966 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -965,6 +946,7 @@
 		061FBD27D9326B076C19C0DA0210ECFF /* SwiftyRSA.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SwiftyRSA.swift; path = Source/SwiftyRSA.swift; sourceTree = "<group>"; };
 		06540C329AB68E7DC7E78DDBAF25D3D2 /* SDImageGIFCoder.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDImageGIFCoder.m; path = SDWebImage/Core/SDImageGIFCoder.m; sourceTree = "<group>"; };
 		06EC1883C493205B6D3C996AF9CBBD91 /* SDImageIOCoder.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDImageIOCoder.m; path = SDWebImage/Core/SDImageIOCoder.m; sourceTree = "<group>"; };
+		07A443D7278FD41E00E5ACD6 /* CustomizedColor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CustomizedColor.swift; path = DogeChatCommonDefines/Classes/CustomizedColor.swift; sourceTree = "<group>"; };
 		07A9F808AC903DD89C4136941388E00B /* AFAutoPurgingImageCache.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = AFAutoPurgingImageCache.m; path = "UIKit+AFNetworking/AFAutoPurgingImageCache.m"; sourceTree = "<group>"; };
 		07D754665114012FBB73F1586B9C716C /* SDImageLoadersManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDImageLoadersManager.m; path = SDWebImage/Core/SDImageLoadersManager.m; sourceTree = "<group>"; };
 		07DAC4FC90DBD62EF03E6940628570F9 /* LookinServer.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = LookinServer.modulemap; sourceTree = "<group>"; };
@@ -980,7 +962,7 @@
 		0CA0695A4339E1E43386B969E52315B8 /* SDImageLoadersManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDImageLoadersManager.h; path = SDWebImage/Core/SDImageLoadersManager.h; sourceTree = "<group>"; };
 		0D5CC284DF8A16BD56624F4AEDE16D3F /* SDWebImageDownloaderResponseModifier.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDWebImageDownloaderResponseModifier.h; path = SDWebImage/Core/SDWebImageDownloaderResponseModifier.h; sourceTree = "<group>"; };
 		0DF9DC44D8DFCC57FE984D67DEE0A099 /* LKS_LocalInspectViewController.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = LKS_LocalInspectViewController.h; path = Src/Server/Inspect/LKS_LocalInspectViewController.h; sourceTree = "<group>"; };
-		0E425C99AC05F87CDE4EAD4B20DA8688 /* DogeChatUniversal.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = DogeChatUniversal.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		0E425C99AC05F87CDE4EAD4B20DA8688 /* DogeChatUniversal.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; path = DogeChatUniversal.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		0E942BEA6C24C86298F4BE697C6A7C77 /* StringHTTPHandler.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = StringHTTPHandler.swift; path = Sources/Framer/StringHTTPHandler.swift; sourceTree = "<group>"; };
 		0E9AAE93341F2F3112A3B1FD2554952D /* SwiftyRSAError.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SwiftyRSAError.swift; path = Source/SwiftyRSAError.swift; sourceTree = "<group>"; };
 		0EC02015DA4E8C41F5581F05AD9FB9BE /* LookinAttribute.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = LookinAttribute.h; path = Src/Shared/LookinAttribute.h; sourceTree = "<group>"; };
@@ -988,7 +970,7 @@
 		10EFDFB1C5D2BB8B6AEAC179362400D4 /* LKS_PerspectiveHierarchyView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = LKS_PerspectiveHierarchyView.m; path = Src/Server/Perspective/LKS_PerspectiveHierarchyView.m; sourceTree = "<group>"; };
 		11E35B29BBA974A625D5637C8C0A1DE5 /* NSArray+MASShorthandAdditions.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "NSArray+MASShorthandAdditions.h"; path = "Masonry/NSArray+MASShorthandAdditions.h"; sourceTree = "<group>"; };
 		124CC28EB1422BE073C0894BB9A806D9 /* UIImageView+AFNetworking.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "UIImageView+AFNetworking.h"; path = "UIKit+AFNetworking/UIImageView+AFNetworking.h"; sourceTree = "<group>"; };
-		127605F9BB65C6BC1578C0D4B3BB3980 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; path = LICENSE; sourceTree = "<group>"; };
+		127605F9BB65C6BC1578C0D4B3BB3980 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		129423BD60768964D1BFC7D9C48A549C /* MASViewAttribute.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = MASViewAttribute.m; path = Masonry/MASViewAttribute.m; sourceTree = "<group>"; };
 		129C1DA931B857566B4DA9CCB996FF33 /* DogeChatUniversal-iOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "DogeChatUniversal-iOS.release.xcconfig"; sourceTree = "<group>"; };
 		12B6DAFB77369067953C24D39F9C0A9A /* Encrypt.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Encrypt.swift; path = RSAiOSWatchOS/Classes/Encrypt.swift; sourceTree = "<group>"; };
@@ -1024,7 +1006,7 @@
 		1A7A826E1DBEBC9C6482C5C0006D4E96 /* SDWebImageManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDWebImageManager.m; path = SDWebImage/Core/SDWebImageManager.m; sourceTree = "<group>"; };
 		1C0097CC0121E82079E5458623A4E8E2 /* FoundationHTTPServerHandler.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FoundationHTTPServerHandler.swift; path = Sources/Framer/FoundationHTTPServerHandler.swift; sourceTree = "<group>"; };
 		1C5C91932AE7EDEBAC311355F0632E9D /* SDImageGraphics.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDImageGraphics.h; path = SDWebImage/Core/SDImageGraphics.h; sourceTree = "<group>"; };
-		1C72555A7E718FDA751667A3090D198A /* DogeChatNetwork.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = DogeChatNetwork.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		1C72555A7E718FDA751667A3090D198A /* DogeChatNetwork.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; path = DogeChatNetwork.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		1D45C72134B3B9846D6C336F8F5277B5 /* DataCompression-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "DataCompression-dummy.m"; sourceTree = "<group>"; };
 		1D938F1673E521CD9DBC39821E555F85 /* LookinServer.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = LookinServer.debug.xcconfig; sourceTree = "<group>"; };
 		1DE5580D5137B51BB6FE1FC420E0E4A8 /* Framer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Framer.swift; path = Sources/Framer/Framer.swift; sourceTree = "<group>"; };
@@ -1109,7 +1091,7 @@
 		35753BCCB3479BE1510CAD9FFE32DC86 /* LKS_PerspectiveViewController.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = LKS_PerspectiveViewController.m; path = Src/Server/Perspective/LKS_PerspectiveViewController.m; sourceTree = "<group>"; };
 		357D06B079E4F5FA7B6091205412FBDF /* LookinMethodTraceRecord.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = LookinMethodTraceRecord.m; path = Src/Shared/LookinMethodTraceRecord.m; sourceTree = "<group>"; };
 		35830B96211D2D27598D4F058A6855EA /* SwiftyRSA-iOS-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "SwiftyRSA-iOS-dummy.m"; sourceTree = "<group>"; };
-		35E58CC4E6D5633A82572A94457989B9 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; path = README.md; sourceTree = "<group>"; };
+		35E58CC4E6D5633A82572A94457989B9 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		3691676244FE4B8B770A389946ACCC9B /* CALayer+Lookin.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "CALayer+Lookin.m"; path = "Src/Shared/Category/CALayer+Lookin.m"; sourceTree = "<group>"; };
 		36A1318D6DEDA2A1A2D0CAA2443DE47E /* DataCompression.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = DataCompression.swift; path = Sources/DataCompression/DataCompression.swift; sourceTree = "<group>"; };
 		36AA8BF98710E4313C96CC5BE91D0CBE /* MJRefresh-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "MJRefresh-umbrella.h"; sourceTree = "<group>"; };
@@ -1122,14 +1104,14 @@
 		395501F2E5D68603806FAC146641750F /* FLAnimatedImage-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "FLAnimatedImage-prefix.pch"; sourceTree = "<group>"; };
 		3970C35AE3ACCA6E4F65B05F82F135BF /* SDAnimatedImageView+WebCache.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "SDAnimatedImageView+WebCache.h"; path = "SDWebImage/Core/SDAnimatedImageView+WebCache.h"; sourceTree = "<group>"; };
 		39CF10E827A3862D4C3420F485690530 /* LookinObject.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = LookinObject.h; path = Src/Shared/LookinObject.h; sourceTree = "<group>"; };
-		39FF82043D637FBB99D92862CAACDDAA /* SwiftyRSA.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = SwiftyRSA.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		39FF82043D637FBB99D92862CAACDDAA /* SwiftyRSA.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; path = SwiftyRSA.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		3A07C05631AE0D819942EA5F397117EB /* SDWebImage-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "SDWebImage-dummy.m"; sourceTree = "<group>"; };
 		3A5BCE818C02D9D320A6FFFF8F32AB72 /* MJRefreshStateHeader.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = MJRefreshStateHeader.h; path = MJRefresh/Custom/Header/MJRefreshStateHeader.h; sourceTree = "<group>"; };
 		3AB8F18E8EFD4C437F73C9A7724B0B8E /* DogeChatCommonDefines-watchOS-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "DogeChatCommonDefines-watchOS-prefix.pch"; path = "../DogeChatCommonDefines-watchOS/DogeChatCommonDefines-watchOS-prefix.pch"; sourceTree = "<group>"; };
 		3AF65C9F558EBE810657D9EAEF12AAD1 /* LKS_ObjectRegistry.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = LKS_ObjectRegistry.m; path = Src/Server/Others/LKS_ObjectRegistry.m; sourceTree = "<group>"; };
 		3BB62B3BB6596506A71D69384B9FF738 /* MJRefreshBackStateFooter.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = MJRefreshBackStateFooter.m; path = MJRefresh/Custom/Footer/Back/MJRefreshBackStateFooter.m; sourceTree = "<group>"; };
 		3BCF847AE5856AD9E8211098A04DF41E /* SDWebImageTransition.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDWebImageTransition.m; path = SDWebImage/Core/SDWebImageTransition.m; sourceTree = "<group>"; };
-		3C07FB0609AC9BDF24ACA332699F3992 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; path = README.md; sourceTree = "<group>"; };
+		3C07FB0609AC9BDF24ACA332699F3992 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		3C55507E84A6CD4476926E78AB2347BD /* FLAnimatedImage.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = FLAnimatedImage.debug.xcconfig; sourceTree = "<group>"; };
 		3D56DC2E282157FD6612CA24609EC183 /* SwiftyJSON.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SwiftyJSON.swift; path = Source/SwiftyJSON/SwiftyJSON.swift; sourceTree = "<group>"; };
 		3D7A4C36FA654905511CB7C210132A64 /* UIViewController+LookinServer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "UIViewController+LookinServer.h"; path = "Src/Server/Category/UIViewController+LookinServer.h"; sourceTree = "<group>"; };
@@ -1138,7 +1120,7 @@
 		3DC133B37AC4913C2852A2AC0309B8B4 /* AFURLSessionManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = AFURLSessionManager.h; path = AFNetworking/AFURLSessionManager.h; sourceTree = "<group>"; };
 		3E03FD283C00A85DC5AF01F96EFD4B92 /* SDWebImage-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "SDWebImage-umbrella.h"; sourceTree = "<group>"; };
 		3E4895FE75A762C446FF77E7B5527E13 /* FLAnimatedImage.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = FLAnimatedImage.modulemap; sourceTree = "<group>"; };
-		3E75AA72CF1EC90BDDFE7BACB77A5B35 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; path = LICENSE; sourceTree = "<group>"; };
+		3E75AA72CF1EC90BDDFE7BACB77A5B35 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		3EFC73931460951D962472D2DDE7A14C /* LookinAttributesSection.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = LookinAttributesSection.h; path = Src/Shared/LookinAttributesSection.h; sourceTree = "<group>"; };
 		3F0D0370526D217A7BEB9D09DCBDF0AB /* MASConstraintMaker.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = MASConstraintMaker.m; path = Masonry/MASConstraintMaker.m; sourceTree = "<group>"; };
 		3FBD2A2AE73A96F2EA1E6651200C9DDA /* LookinObject.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = LookinObject.m; path = Src/Shared/LookinObject.m; sourceTree = "<group>"; };
@@ -1153,7 +1135,7 @@
 		431787563A4FC7132BC0A696A5B6483E /* Pods-DogeChatShare.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = "Pods-DogeChatShare.modulemap"; sourceTree = "<group>"; };
 		4370654B96F8BC5F02FF45BFC68728AB /* Pods-DogeChatWatch Extension.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = "Pods-DogeChatWatch Extension.modulemap"; sourceTree = "<group>"; };
 		437397DDB39AFFD2405C11E4DDA9ECB8 /* SDImageCachesManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDImageCachesManager.m; path = SDWebImage/Core/SDImageCachesManager.m; sourceTree = "<group>"; };
-		4420F9DA8F5D2DB0B3D8B24D98AB5D30 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; path = LICENSE; sourceTree = "<group>"; };
+		4420F9DA8F5D2DB0B3D8B24D98AB5D30 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		44959BB5C3CC62240A177C63E89CC7E3 /* DogeChatCommonDefines-iOS-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "DogeChatCommonDefines-iOS-dummy.m"; sourceTree = "<group>"; };
 		45417DE2390486DF0BF34C211364894A /* View+MASAdditions.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "View+MASAdditions.h"; path = "Masonry/View+MASAdditions.h"; sourceTree = "<group>"; };
 		45681AE5123214ADC21ECA32210A7A32 /* LKS_ConnectionManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = LKS_ConnectionManager.m; path = Src/Server/Connection/LKS_ConnectionManager.m; sourceTree = "<group>"; };
@@ -1167,7 +1149,7 @@
 		47AA8CEC5311CC0D3EEBAD643F0D9EEB /* SDDiskCache.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDDiskCache.m; path = SDWebImage/Core/SDDiskCache.m; sourceTree = "<group>"; };
 		4863127F1533A760AB18E3B53412CB86 /* MJRefreshAutoStateFooter.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = MJRefreshAutoStateFooter.m; path = MJRefresh/Custom/Footer/Auto/MJRefreshAutoStateFooter.m; sourceTree = "<group>"; };
 		48B7E8439933FCC9BB1D194D98693084 /* MJRefreshHeader.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = MJRefreshHeader.m; path = MJRefresh/Base/MJRefreshHeader.m; sourceTree = "<group>"; };
-		48D19675CC5C48B7472306B99E07D02A /* DogeChatCommonDefines.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = DogeChatCommonDefines.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		48D19675CC5C48B7472306B99E07D02A /* DogeChatCommonDefines.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; path = DogeChatCommonDefines.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		49083B7BB154DC1057BB128C76CA078D /* NSButton+WebCache.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "NSButton+WebCache.m"; path = "SDWebImage/Core/NSButton+WebCache.m"; sourceTree = "<group>"; };
 		49254C7C94269702C4EFF6A6CCAC9DFD /* Pods-DogeChatSiri-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-DogeChatSiri-acknowledgements.plist"; sourceTree = "<group>"; };
 		49476DD55E4F7B2F8AA449490F4EAFB1 /* UITableView+LookinServer.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UITableView+LookinServer.m"; path = "Src/Server/Category/UITableView+LookinServer.m"; sourceTree = "<group>"; };
@@ -1198,7 +1180,7 @@
 		532E6A38568148458743BEF5A0AF7E99 /* DogeChatUniversal-watchOS.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; name = "DogeChatUniversal-watchOS.modulemap"; path = "../DogeChatUniversal-watchOS/DogeChatUniversal-watchOS.modulemap"; sourceTree = "<group>"; };
 		545265D97705D598928A7626F78BB596 /* Message.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Message.swift; path = Source/Message.swift; sourceTree = "<group>"; };
 		54792C3C6B046918D9B291AFA5ABECBA /* MJRefreshAutoGifFooter.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = MJRefreshAutoGifFooter.h; path = MJRefresh/Custom/Footer/Auto/MJRefreshAutoGifFooter.h; sourceTree = "<group>"; };
-		5491DFA919FA5646A6F69C7983AFF71F /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; path = LICENSE; sourceTree = "<group>"; };
+		5491DFA919FA5646A6F69C7983AFF71F /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		54C5A33316A5237CA632A24723D753E0 /* FLAnimatedImage.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = FLAnimatedImage.h; sourceTree = "<group>"; };
 		550F6FE3E98138C03A90843C90EDA34E /* DogeChatCommonDefines-iOS */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = "DogeChatCommonDefines-iOS"; path = "libDogeChatCommonDefines-iOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		55B665D44034F7ABFA559DC87B6E8462 /* SDImageCache.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDImageCache.m; path = SDWebImage/Core/SDImageCache.m; sourceTree = "<group>"; };
@@ -1212,7 +1194,7 @@
 		58B5A5082D59DD2E266918D6CA4D456A /* SDWebImageDownloader.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDWebImageDownloader.m; path = SDWebImage/Core/SDWebImageDownloader.m; sourceTree = "<group>"; };
 		58BD3BCE914A882B765463ECB53E0A43 /* WSEngine.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = WSEngine.swift; path = Sources/Engine/WSEngine.swift; sourceTree = "<group>"; };
 		5A27E2B7FE9DBF444DF05C0F03EC0609 /* CommonDefines.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = CommonDefines.swift; path = DogeChatCommonDefines/Classes/CommonDefines.swift; sourceTree = "<group>"; };
-		5A58E503A9AD93C7D159E6A1FB5D6DC3 /* FLAnimatedImage.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = FLAnimatedImage.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		5A58E503A9AD93C7D159E6A1FB5D6DC3 /* FLAnimatedImage.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; path = FLAnimatedImage.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		5B9AC4009E921EFE4F26F86E4D5BCF66 /* UIImage+ForceDecode.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "UIImage+ForceDecode.h"; path = "SDWebImage/Core/UIImage+ForceDecode.h"; sourceTree = "<group>"; };
 		5BECB43637F8791F5F053B5390299EE1 /* RSAiOSWatchOS-watchOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "RSAiOSWatchOS-watchOS.release.xcconfig"; path = "../RSAiOSWatchOS-watchOS/RSAiOSWatchOS-watchOS.release.xcconfig"; sourceTree = "<group>"; };
 		5C016E4FA69E890F166C11BB1FAC624F /* SDImageHEICCoder.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDImageHEICCoder.h; path = SDWebImage/Core/SDImageHEICCoder.h; sourceTree = "<group>"; };
@@ -1291,7 +1273,7 @@
 		7847234BDA75CD7915BC3A415DBB07A7 /* SDWebImageCacheKeyFilter.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDWebImageCacheKeyFilter.h; path = SDWebImage/Core/SDWebImageCacheKeyFilter.h; sourceTree = "<group>"; };
 		78536D7DA764D52EA2E10BE70346921A /* LKS_LocalInspectPanelLabelView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = LKS_LocalInspectPanelLabelView.h; path = Src/Server/Inspect/LKS_LocalInspectPanelLabelView.h; sourceTree = "<group>"; };
 		78729D6A7B461C229FA83F804B5175C6 /* LKS_MethodTraceManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = LKS_MethodTraceManager.m; path = Src/Server/Others/LKS_MethodTraceManager.m; sourceTree = "<group>"; };
-		78DCD8E2A8FD3CC735DCC415F57532C3 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; path = LICENSE; sourceTree = "<group>"; };
+		78DCD8E2A8FD3CC735DCC415F57532C3 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		7908AE1AE3E2991CDA3BFFE93142FF13 /* PTProtocol.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PTProtocol.m; path = Src/Shared/Peertalk/PTProtocol.m; sourceTree = "<group>"; };
 		791248B799F233CBDB4EB3B23FE75CA2 /* MJRefreshGifHeader.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = MJRefreshGifHeader.m; path = MJRefresh/Custom/Header/MJRefreshGifHeader.m; sourceTree = "<group>"; };
 		791BCA8134F5DA925B796452B4ECE5A5 /* MJRefreshConfig.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = MJRefreshConfig.h; path = MJRefresh/MJRefreshConfig.h; sourceTree = "<group>"; };
@@ -1300,7 +1282,7 @@
 		7A16557AAC124974B3DA6966633D05FB /* SDWeakProxy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDWeakProxy.m; path = SDWebImage/Private/SDWeakProxy.m; sourceTree = "<group>"; };
 		7A414929BC769CF19A0824856E29D63A /* Pods-DogeChat.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = "Pods-DogeChat.modulemap"; sourceTree = "<group>"; };
 		7A8D203FCC2BDD285B2F46987B3B879B /* DogeChatUniversal-iOS.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = "DogeChatUniversal-iOS.modulemap"; sourceTree = "<group>"; };
-		7AD2DEC378DF3B8F92DD0920106CAF18 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; path = README.md; sourceTree = "<group>"; };
+		7AD2DEC378DF3B8F92DD0920106CAF18 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		7AE458285420EFA47C4B31ED7783FAA1 /* UIImageView+WebCache.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UIImageView+WebCache.m"; path = "SDWebImage/Core/UIImageView+WebCache.m"; sourceTree = "<group>"; };
 		7B51F231C045501F348AE85ADA254D08 /* SwiftyRSA-iOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "SwiftyRSA-iOS.release.xcconfig"; sourceTree = "<group>"; };
 		7C9B7ADAC9828E4B232CD70669029A5B /* MJRefresh-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "MJRefresh-prefix.pch"; sourceTree = "<group>"; };
@@ -1345,7 +1327,7 @@
 		8C53E7EB275FBA70D0A5174614BA2284 /* NSString+Lookin.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "NSString+Lookin.m"; path = "Src/Shared/Category/NSString+Lookin.m"; sourceTree = "<group>"; };
 		8C5FE6FAD6CC533625B1DCEAACA47A1A /* SDImageAssetManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDImageAssetManager.m; path = SDWebImage/Private/SDImageAssetManager.m; sourceTree = "<group>"; };
 		8D106EF408EBF8599EA45B61D221C68A /* MJRefresh.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = MJRefresh.debug.xcconfig; sourceTree = "<group>"; };
-		8D26EFC77333C7F263799B26D529385C /* DogeChatVideoCompression.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = DogeChatVideoCompression.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		8D26EFC77333C7F263799B26D529385C /* DogeChatVideoCompression.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; path = DogeChatVideoCompression.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		8FB53F547AEE35CB07F67333BA45E614 /* DALabeledCircularProgressView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = DALabeledCircularProgressView.m; path = DACircularProgress/DALabeledCircularProgressView.m; sourceTree = "<group>"; };
 		9023B6F5E119D19C806E6373B8F8B987 /* SDAnimatedImageView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDAnimatedImageView.h; path = SDWebImage/Core/SDAnimatedImageView.h; sourceTree = "<group>"; };
 		917C7F6834B3881D6793ECE6470A22A9 /* FLAnimatedImageView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = FLAnimatedImageView.m; path = FLAnimatedImage/FLAnimatedImageView.m; sourceTree = "<group>"; };
@@ -1364,7 +1346,7 @@
 		95F4CAF38250F03B8137AE8A54256E16 /* LivePhotoGenerator.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = LivePhotoGenerator.h; path = DogeChatVideoCompression/Classes/LivePhotoGenerator.h; sourceTree = "<group>"; };
 		960D31F6DEC4C950DD7C4DBB26653B0D /* LookinAttributesGroup.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = LookinAttributesGroup.m; path = Src/Shared/LookinAttributesGroup.m; sourceTree = "<group>"; };
 		96261657DF1AE4D63BFD7D6C0BF0587F /* MJRefresh.bundle */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = "wrapper.plug-in"; name = MJRefresh.bundle; path = MJRefresh/MJRefresh.bundle; sourceTree = "<group>"; };
-		97125350AC14CF182BADFEE875167C0E /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; path = LICENSE; sourceTree = "<group>"; };
+		97125350AC14CF182BADFEE875167C0E /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		971654EFF77088DC30D016D37B0CDC08 /* Pods-mynotification */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = "Pods-mynotification"; path = "libPods-mynotification.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		9847946616F6FA1E48110B7BA1DFEE00 /* MusicHttpManager.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MusicHttpManager.swift; path = DogeChatNetwork/Classes/MusicHttpManager.swift; sourceTree = "<group>"; };
 		9861D347DF86A025FF469D6B01897D6B /* SDWebImage-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "SDWebImage-prefix.pch"; sourceTree = "<group>"; };
@@ -1376,7 +1358,7 @@
 		9C1C97F07A0641941EA961B2C5CB7FB0 /* CALayer+Lookin.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "CALayer+Lookin.h"; path = "Src/Shared/Category/CALayer+Lookin.h"; sourceTree = "<group>"; };
 		9CC7DBEE97908B1F394C821344FE761E /* Starscream-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Starscream-dummy.m"; sourceTree = "<group>"; };
 		9D86B9347A6335B83DFED03DDC214C36 /* UIRefreshControl+AFNetworking.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UIRefreshControl+AFNetworking.m"; path = "UIKit+AFNetworking/UIRefreshControl+AFNetworking.m"; sourceTree = "<group>"; };
-		9D940727FF8FB9C785EB98E56350EF41 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		9D940727FF8FB9C785EB98E56350EF41 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		9E15AA6C74783DE45558386DACCC6875 /* LKS_PerspectiveDataSource.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = LKS_PerspectiveDataSource.h; path = Src/Server/Perspective/LKS_PerspectiveDataSource.h; sourceTree = "<group>"; };
 		9E8E9C8A98923B4814292142BA1312A0 /* AFURLRequestSerialization.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = AFURLRequestSerialization.h; path = AFNetworking/AFURLRequestSerialization.h; sourceTree = "<group>"; };
 		9EF3BD29462E38D5257BB4E204427BA1 /* DataCompression-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "DataCompression-prefix.pch"; sourceTree = "<group>"; };
@@ -1463,10 +1445,10 @@
 		C3050F245B94AFF29CDB32024D3EE63A /* MASConstraint.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = MASConstraint.h; path = Masonry/MASConstraint.h; sourceTree = "<group>"; };
 		C41BFA97A9F49BC9883F6B9AF4708132 /* MJRefreshBackGifFooter.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = MJRefreshBackGifFooter.h; path = MJRefresh/Custom/Footer/Back/MJRefreshBackGifFooter.h; sourceTree = "<group>"; };
 		C43655B9B2185D83FB93737D67F0BE6D /* LKS_ObjectRegistry.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = LKS_ObjectRegistry.h; path = Src/Server/Others/LKS_ObjectRegistry.h; sourceTree = "<group>"; };
-		C478A4455D8B5256F54C28321DF6127D /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; path = README.md; sourceTree = "<group>"; };
+		C478A4455D8B5256F54C28321DF6127D /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		C4973F6D9C8BC11B0F94460216C33897 /* SwiftyJSON-iOS.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = "SwiftyJSON-iOS.modulemap"; sourceTree = "<group>"; };
 		C4AFEEB90ED16FA0BBAFEBDC21373E67 /* CommonMethods.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = CommonMethods.swift; path = DogeChatCommonDefines/Classes/CommonMethods.swift; sourceTree = "<group>"; };
-		C50E7D10EEA10B77C2440182224B3FDF /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; path = README.md; sourceTree = "<group>"; };
+		C50E7D10EEA10B77C2440182224B3FDF /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		C5303EBE3819066DEF97791CAD86CAE2 /* LookinDisplayItem.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = LookinDisplayItem.h; path = Src/Shared/LookinDisplayItem.h; sourceTree = "<group>"; };
 		C5376EB389AA4A0134AA824DD42F3E8B /* SDWebImageTransition.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDWebImageTransition.h; path = SDWebImage/Core/SDWebImageTransition.h; sourceTree = "<group>"; };
 		C543354F69F163F78D90A9580628023A /* Pods-mynotification.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = "Pods-mynotification.modulemap"; sourceTree = "<group>"; };
@@ -1481,7 +1463,7 @@
 		C859EFD37B2FC57644486C63D4129AAE /* MJRefreshBackGifFooter.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = MJRefreshBackGifFooter.m; path = MJRefresh/Custom/Footer/Back/MJRefreshBackGifFooter.m; sourceTree = "<group>"; };
 		C8632ECFED6F8CC71FF49D208D80D434 /* UIImage+ExtendedCacheData.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UIImage+ExtendedCacheData.m"; path = "SDWebImage/Core/UIImage+ExtendedCacheData.m"; sourceTree = "<group>"; };
 		C86D330FDB72165122EDBF32F76614A0 /* SDImageFrame.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDImageFrame.h; path = SDWebImage/Core/SDImageFrame.h; sourceTree = "<group>"; };
-		C9381F5756A2B25265F19DFEED2EFDBE /* RSAiOSWatchOS.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = RSAiOSWatchOS.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		C9381F5756A2B25265F19DFEED2EFDBE /* RSAiOSWatchOS.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; path = RSAiOSWatchOS.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		C9446E0D4273D99D65131317465D8D12 /* LookinTuple.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = LookinTuple.h; path = Src/Shared/LookinTuple.h; sourceTree = "<group>"; };
 		C98C71D7D63F7D86905AD469FD909515 /* LookinMsgTargetAction.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = LookinMsgTargetAction.h; path = Src/Shared/Message/LookinMsgTargetAction.h; sourceTree = "<group>"; };
 		CA89BE133F79F83CBAEC66B367A3B8A6 /* DogeChatUniversal-watchOS-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "DogeChatUniversal-watchOS-prefix.pch"; path = "../DogeChatUniversal-watchOS/DogeChatUniversal-watchOS-prefix.pch"; sourceTree = "<group>"; };
@@ -1538,7 +1520,7 @@
 		E137D2433D8AA393CC1A1F7DF67C21BB /* SwiftyJSON-iOS-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "SwiftyJSON-iOS-prefix.pch"; sourceTree = "<group>"; };
 		E1ACDB10BE985BC745DC2E24FD5368C8 /* AFSecurityPolicy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = AFSecurityPolicy.m; path = AFNetworking/AFSecurityPolicy.m; sourceTree = "<group>"; };
 		E1BA875E547BF2879AE202135F79102C /* UIKit+AFNetworking.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "UIKit+AFNetworking.h"; path = "UIKit+AFNetworking/UIKit+AFNetworking.h"; sourceTree = "<group>"; };
-		E2273D9E261AEF017A86BA69E8900562 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; path = README.md; sourceTree = "<group>"; };
+		E2273D9E261AEF017A86BA69E8900562 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		E26EC97E57B3251F26C31E4C445DCBEF /* Pods-mynotification-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-mynotification-umbrella.h"; sourceTree = "<group>"; };
 		E310A9CD849290AB1BB21936597C2277 /* SDWebImageDownloaderDecryptor.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDWebImageDownloaderDecryptor.m; path = SDWebImage/Core/SDWebImageDownloaderDecryptor.m; sourceTree = "<group>"; };
 		E31B2E245561FADB6E876C5F1B0B1379 /* Pods-DogeChat-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-DogeChat-acknowledgements.plist"; sourceTree = "<group>"; };
@@ -1603,7 +1585,7 @@
 		F997870262D947AED415FDE7691E0DC2 /* UIImageView+LookinServer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "UIImageView+LookinServer.h"; path = "Src/Server/Category/UIImageView+LookinServer.h"; sourceTree = "<group>"; };
 		FA0DC2270D4C24EA3CE29C48EF912343 /* MJRefreshGifHeader.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = MJRefreshGifHeader.h; path = MJRefresh/Custom/Header/MJRefreshGifHeader.h; sourceTree = "<group>"; };
 		FAA5F2D71B90788C908800A94534AA92 /* FLAnimatedImage */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; name = FLAnimatedImage; path = libFLAnimatedImage.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		FB098470ED83ABBA5CB1E5ACA2EAD2A2 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; path = README.md; sourceTree = "<group>"; };
+		FB098470ED83ABBA5CB1E5ACA2EAD2A2 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		FB62EFF3E7D01DC88D8CD08D925CDA57 /* Pods-DogeChatWatch Extension-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-DogeChatWatch Extension-acknowledgements.markdown"; sourceTree = "<group>"; };
 		FBB4D3AB181709CAE0AF75BBE32F2620 /* SDMemoryCache.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDMemoryCache.h; path = SDWebImage/Core/SDMemoryCache.h; sourceTree = "<group>"; };
 		FBF04EF0D4359975572265478518C1A8 /* DogeChatVideoCompression-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "DogeChatVideoCompression-prefix.pch"; sourceTree = "<group>"; };
@@ -1615,11 +1597,18 @@
 		FF48C13327AC409925E8486BC9AD0FF6 /* DogeChatNetwork-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "DogeChatNetwork-prefix.pch"; sourceTree = "<group>"; };
 		FF9BA581DB0DDF5457F442DE540C7D86 /* Masonry.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = Masonry.debug.xcconfig; sourceTree = "<group>"; };
 		FFCF49932A71C432EBE5393E32EE68C7 /* Peertalk.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = Peertalk.h; path = Src/Shared/Peertalk/Peertalk.h; sourceTree = "<group>"; };
-		FFE71D60514EF72DC414F6E8246285AF /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; path = LICENSE; sourceTree = "<group>"; };
+		FFE71D60514EF72DC414F6E8246285AF /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		03A7B3DF70F82972A5516EAD6E022531 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		09A75603DDE15D764DDB1FDBC118F60C /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -1801,13 +1790,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		FC4082FD09BC7327E52A87287F7F97C7 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -1962,7 +1944,6 @@
 				20A69F5E7F448392924CD7251CB329F3 /* UIVisualEffectView+LookinServer.m */,
 				90AA3CACE363CC5E712DF2FD1A357F0F /* Support Files */,
 			);
-			name = LookinServer;
 			path = LookinServer;
 			sourceTree = "<group>";
 		};
@@ -2065,7 +2046,6 @@
 				58BD3BCE914A882B765463ECB53E0A43 /* WSEngine.swift */,
 				B0A75CFB2B8BEE9C08BF2E12B4BAC3DD /* Support Files */,
 			);
-			name = Starscream;
 			path = Starscream;
 			sourceTree = "<group>";
 		};
@@ -2129,7 +2109,6 @@
 				3D56DC2E282157FD6612CA24609EC183 /* SwiftyJSON.swift */,
 				DC22E6E93027C9C8FFD543E716C22918 /* Support Files */,
 			);
-			name = SwiftyJSON;
 			path = SwiftyJSON;
 			sourceTree = "<group>";
 		};
@@ -2186,6 +2165,7 @@
 				B5B549E275FBE12FC28436894DE105A5 /* Friend.swift */,
 				C04C9883B12C1A60222FAF7727E5BCF9 /* Message.swift */,
 				AB451858F681B595BA0221F36573C497 /* Notification+Names.swift */,
+				07A443D7278FD41E00E5ACD6 /* CustomizedColor.swift */,
 				E03A2AD9D4FBA9391DE49DE3C7F87169 /* Pod */,
 				9709EC37847B43AABF34BFBEC4FC2316 /* Support Files */,
 			);
@@ -2349,7 +2329,6 @@
 				6520D8BD4790AB7F0091CC0D2A1E39D9 /* ViewController+MASAdditions.m */,
 				8ACFFA3ECBCDFF13F7D597431B6C9C0F /* Support Files */,
 			);
-			name = Masonry;
 			path = Masonry;
 			sourceTree = "<group>";
 		};
@@ -2487,7 +2466,6 @@
 				877C6CA77EE760C2FC3652C776A811B7 /* Support Files */,
 				2C2AC1C8C8DC622219AC2CD84466081D /* UIKit */,
 			);
-			name = AFNetworking;
 			path = AFNetworking;
 			sourceTree = "<group>";
 		};
@@ -2959,7 +2937,6 @@
 				A99029381B66DC748E536EC8AAF7634E /* Resources */,
 				9322EBB20AB2DC60E290F91E46E79CDA /* Support Files */,
 			);
-			name = MJRefresh;
 			path = MJRefresh;
 			sourceTree = "<group>";
 		};
@@ -2969,7 +2946,6 @@
 				36A1318D6DEDA2A1A2D0CAA2443DE47E /* DataCompression.swift */,
 				005F67E0E26A1C651E807BD345FC9C32 /* Support Files */,
 			);
-			name = DataCompression;
 			path = DataCompression;
 			sourceTree = "<group>";
 		};
@@ -2979,7 +2955,6 @@
 				BC2DA5ED75C2F902848D07AE7EB23C3B /* Core */,
 				4E5AC10DE9F91418E8AFC95E51300F10 /* Support Files */,
 			);
-			name = SDWebImage;
 			path = SDWebImage;
 			sourceTree = "<group>";
 		};
@@ -2992,21 +2967,12 @@
 				8FB53F547AEE35CB07F67333BA45E614 /* DALabeledCircularProgressView.m */,
 				3DE689297D30EE8309B9F3570165E067 /* Support Files */,
 			);
-			name = DACircularProgress;
 			path = DACircularProgress;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		0275C71DAA39A9B960D84C7EF084029B /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				36EDF088127CFF2F84304E4838016A91 /* Pods-mynotification-umbrella.h in Headers */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		12E4FBE02E0AC4137E11C562B151606F /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -3436,6 +3402,14 @@
 				44FF1CD2E5D2B27330BC19370E664793 /* UIView+LookinServer.h in Headers */,
 				31F560C8F06C0D5515CD3D2655CBD4E8 /* UIViewController+LookinServer.h in Headers */,
 				0CE2AF6270C79EBC59CAB0FD8199152E /* UIVisualEffectView+LookinServer.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F9E7328871AEC0CC5CA73BDE1B0AE088 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8FBD8C7719968B3006A1A1BC61025D1C /* Pods-mynotification-umbrella.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3910,19 +3884,16 @@
 		};
 		CC52612A25A90673221009F1C39B11FF /* Pods-mynotification */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 8BFA5A4F376DE71D82020E302CA03AC8 /* Build configuration list for PBXNativeTarget "Pods-mynotification" */;
+			buildConfigurationList = DC231E73C65C4459609AA42FDA2CE51D /* Build configuration list for PBXNativeTarget "Pods-mynotification" */;
 			buildPhases = (
-				0275C71DAA39A9B960D84C7EF084029B /* Headers */,
-				CC23AD31EC37022706B9E5DAB8A8C1BD /* Sources */,
-				FC4082FD09BC7327E52A87287F7F97C7 /* Frameworks */,
+				F9E7328871AEC0CC5CA73BDE1B0AE088 /* Headers */,
+				4196F04DFEF13444AAF5C6C53301821E /* Sources */,
+				09A75603DDE15D764DDB1FDBC118F60C /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				F2AF6CE7FA04538C6466846236936280 /* PBXTargetDependency */,
-				F6AC266926A0C9F4F954DCB1FEF7EFA3 /* PBXTargetDependency */,
-				387AF495859E68AC27F7C16D99C15F3C /* PBXTargetDependency */,
-				B948D3740B342D7CEF64BA560EA1E59E /* PBXTargetDependency */,
+				5CB26B216C6886F3BEC46288766B37BF /* PBXTargetDependency */,
 			);
 			name = "Pods-mynotification";
 			productName = "Pods-mynotification";
@@ -4459,6 +4430,7 @@
 				03A3C7BA3E7338FFDFC3881D7BEFE9FF /* DogeChatCommonDefines-iOS-dummy.m in Sources */,
 				D4C042318877FE120BB8E52C04DDB5CE /* Friend.swift in Sources */,
 				084A32D242B73FA0EB834004677AA7ED /* Message.swift in Sources */,
+				07A443D8278FD41F00E5ACD6 /* CustomizedColor.swift in Sources */,
 				522F03740950CB74222CF600E2C56B9F /* Notification+Names.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -4470,6 +4442,14 @@
 				93B7D5A2862267368350E12C88BED720 /* Encrypt.swift in Sources */,
 				A228C0A589FD9092BC2A9A65882620DD /* RSAiOSWatchOS-iOS-dummy.m in Sources */,
 				6700F905DEC8EFD19ECB6517B92CB201 /* RSAKeyEncoding.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		4196F04DFEF13444AAF5C6C53301821E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				54C20500856A566F1575B9D54E009E39 /* Pods-mynotification-dummy.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4661,6 +4641,7 @@
 				B2988EAC335B2E62D4F2A6B9E8DE0762 /* DogeChatCommonDefines-watchOS-dummy.m in Sources */,
 				DA503AD96D6D95D36CE392BD0424B6F4 /* Friend.swift in Sources */,
 				72CDAD960CF81691267C431BF66832E9 /* Message.swift in Sources */,
+				07A443D9278FD41F00E5ACD6 /* CustomizedColor.swift in Sources */,
 				F5B20B510D542CFBF0D5C678F6084A20 /* Notification+Names.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -4764,14 +4745,6 @@
 				0E2CEF4644FD05EC1B3401D6DBACB8D3 /* DogeChatNetwork-dummy.m in Sources */,
 				59B9AAFE445E60E67422B81A5AFE35FE /* MusicHttpManager.swift in Sources */,
 				97A4CE5FAA754845455F84C14D30C045 /* WebSocketManager.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		CC23AD31EC37022706B9E5DAB8A8C1BD /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				00C50AF5125CDCD91078F501158EEEF9 /* Pods-mynotification-dummy.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4899,12 +4872,6 @@
 			target = 6868056D761E163D10FDAF8CF1C4D9B8 /* MJRefresh */;
 			targetProxy = 06C9EE42725FF1C891363C5B875FCCB2 /* PBXContainerItemProxy */;
 		};
-		387AF495859E68AC27F7C16D99C15F3C /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "DogeChatUniversal-iOS";
-			target = 05328373B5EFAE363FCEEF1FB915377C /* DogeChatUniversal-iOS */;
-			targetProxy = 7A9F5823D438BE818CE7F0F1D5AD938A /* PBXContainerItemProxy */;
-		};
 		3CBD1B8331F120F62CE6027A8C3D09E4 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = "SwiftyRSA-watchOS";
@@ -4952,6 +4919,12 @@
 			name = "DogeChatCommonDefines-watchOS";
 			target = BFF49A01BD1202F9F4765B2E6A93BE6D /* DogeChatCommonDefines-watchOS */;
 			targetProxy = 4FF1EFD720A3FC20D3CF7811120978AD /* PBXContainerItemProxy */;
+		};
+		5CB26B216C6886F3BEC46288766B37BF /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "DogeChatCommonDefines-iOS";
+			target = C650A1BAC55265B0D2C33A6353B4F626 /* DogeChatCommonDefines-iOS */;
+			targetProxy = A3901AB8F9DD34C78F2C074AC3F2862F /* PBXContainerItemProxy */;
 		};
 		5D4DEC41225EAEF11DAD38597167AB80 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -5079,12 +5052,6 @@
 			target = CA618B8C7A745F327CC6DAA2B60F6F83 /* SwiftyRSA-watchOS */;
 			targetProxy = 1F2B1844AEC23D6F5280B3B4E3F556BE /* PBXContainerItemProxy */;
 		};
-		B948D3740B342D7CEF64BA560EA1E59E /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "SwiftyJSON-iOS";
-			target = BF0C6CD2E713DE257EF65C62E5F27D8A /* SwiftyJSON-iOS */;
-			targetProxy = 571D10846F15C04BC2AA1F939600B9C9 /* PBXContainerItemProxy */;
-		};
 		BCBD6190FE55C03E64468A3C2085DD78 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = "SwiftyJSON-iOS";
@@ -5156,18 +5123,6 @@
 			name = AFNetworking;
 			target = 0130B3724283586C0E9D2A112D4F2AA1 /* AFNetworking */;
 			targetProxy = B60B9D38E4BDC92065BF6B5977815C6D /* PBXContainerItemProxy */;
-		};
-		F2AF6CE7FA04538C6466846236936280 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = AFNetworking;
-			target = 0130B3724283586C0E9D2A112D4F2AA1 /* AFNetworking */;
-			targetProxy = 1BA1413908EBD325BAA7C1E11996EEEF /* PBXContainerItemProxy */;
-		};
-		F6AC266926A0C9F4F954DCB1FEF7EFA3 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "DogeChatCommonDefines-iOS";
-			target = C650A1BAC55265B0D2C33A6353B4F626 /* DogeChatCommonDefines-iOS */;
-			targetProxy = 311B6B9E76DCFCCCEE7032DAD4DBB05A /* PBXContainerItemProxy */;
 		};
 		FD1E522B1F767749984F96C503B577B1 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -5443,28 +5398,6 @@
 			};
 			name = Release;
 		};
-		0F87732202924E09A29FD54624E3CBEB /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 75450B96FB8CA663FFA90ECF9D102C17 /* Pods-mynotification.debug.xcconfig */;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
-				MACH_O_TYPE = staticlib;
-				MODULEMAP_FILE = "Target Support Files/Pods-mynotification/Pods-mynotification.modulemap";
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PODS_ROOT = "$(SRCROOT)";
-				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
 		122E93990DBFB1A0B2F490E268A607E3 /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 245C5DBED98F2480BFD6E18CAC3366D6 /* SwiftyJSON-iOS.release.xcconfig */;
@@ -5659,6 +5592,28 @@
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) ";
 				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		40ED66EA3F6750A7B57C05087A4463D9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 75450B96FB8CA663FFA90ECF9D102C17 /* Pods-mynotification.debug.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				MACH_O_TYPE = staticlib;
+				MODULEMAP_FILE = "Target Support Files/Pods-mynotification/Pods-mynotification.modulemap";
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -6092,6 +6047,29 @@
 			};
 			name = Debug;
 		};
+		9608FEC9EB7714DE1BE309D88FFA19B2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 876E9DAC135A96560A488C2167913E41 /* Pods-mynotification.release.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				MACH_O_TYPE = staticlib;
+				MODULEMAP_FILE = "Target Support Files/Pods-mynotification/Pods-mynotification.modulemap";
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
 		96FF3259CD790A55A584308E9A08FC9E /* Release */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 24BCD5FFF92FEA80C42E2C43A8B9E942 /* AFNetworking.release.xcconfig */;
@@ -6339,29 +6317,6 @@
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
-		};
-		D9AC6727310650C9B81F68298D042376 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 876E9DAC135A96560A488C2167913E41 /* Pods-mynotification.release.xcconfig */;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
-				CLANG_ENABLE_OBJC_WEAK = NO;
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
-				MACH_O_TYPE = staticlib;
-				MODULEMAP_FILE = "Target Support Files/Pods-mynotification/Pods-mynotification.modulemap";
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PODS_ROOT = "$(SRCROOT)";
-				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALIDATE_PRODUCT = YES;
-			};
-			name = Release;
 		};
 		E1FB9892F2FDFBE3C028A77AE7EF2954 /* Debug */ = {
 			isa = XCBuildConfiguration;
@@ -6777,15 +6732,6 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		8BFA5A4F376DE71D82020E302CA03AC8 /* Build configuration list for PBXNativeTarget "Pods-mynotification" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				0F87732202924E09A29FD54624E3CBEB /* Debug */,
-				D9AC6727310650C9B81F68298D042376 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 		8CFCD0D3310ECC5115AAF4E086D6DC03 /* Build configuration list for PBXNativeTarget "MJRefresh" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -6854,6 +6800,15 @@
 			buildConfigurations = (
 				7C352ABD3E0D4B1E141737132DA6A601 /* Debug */,
 				4ACA28658742708034E01F689B09BF8F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		DC231E73C65C4459609AA42FDA2CE51D /* Build configuration list for PBXNativeTarget "Pods-mynotification" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				40ED66EA3F6750A7B57C05087A4463D9 /* Debug */,
+				9608FEC9EB7714DE1BE309D88FFA19B2 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

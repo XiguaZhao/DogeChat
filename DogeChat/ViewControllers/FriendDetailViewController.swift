@@ -27,6 +27,7 @@ class FriendDetailViewController: DogeChatViewController, UITableViewDataSource,
         case deleteGroup = "删除该群聊"
         case history = "查看聊天记录"
         case changeGroupAvatar = "修改群聊头像"
+        case switchMute = "消息推送"
     }
     
     var manager: WebSocketManager? {
@@ -39,13 +40,7 @@ class FriendDetailViewController: DogeChatViewController, UITableViewDataSource,
     
     var myNameInGroup: String?
     
-    var members: [Friend] = [] {
-        didSet {
-            if sections.count > 1 {
-                sections
-            }
-        }
-    }
+    var members: [Friend] = []
     
     var sections = [[Any]]()
     
@@ -63,13 +58,13 @@ class FriendDetailViewController: DogeChatViewController, UITableViewDataSource,
         self.username = username
         self.navigationItem.title = friend.nickName ?? friend.username
         if friend.isGroup, let group = friend as? Group {
-            rows = [.nickName, .nameInGroup, .groupOwner, .changeGroupAvatar, .addMember, .removeMember]
+            rows = [.nickName, .nameInGroup, .groupOwner, .switchMute, .changeGroupAvatar, .addMember, .removeMember]
             if group.ownerID == manager?.httpsManager.myId {
                 rows.append(.deleteGroup)
             }
             getMembers()
         } else {
-            rows = [.username, .nickName, .createGroup]
+            rows = [.username, .nickName, .switchMute, .createGroup]
         }
         rows.insert(.history, at: 2)
         sections = [rows]
@@ -147,6 +142,7 @@ class FriendDetailViewController: DogeChatViewController, UITableViewDataSource,
             var title = row.rawValue
             var type: CommonTableCell.TrailingViewType?
             var trailingText: String?
+            var switchOn: Bool?
             switch row {
             case .nickName:
                 type = .textField
@@ -163,11 +159,19 @@ class FriendDetailViewController: DogeChatViewController, UITableViewDataSource,
             case .nameInGroup:
                 type = .textField
                 trailingText = myNameInGroup ?? manager?.myInfo.username
+            case .switchMute:
+                type = .switcher
+                switchOn = !self.friend.isMuted
             default:
                 break
             }
             commonCell.delegate = self
-            commonCell.apply(title: title, subTitle: nil, imageURL: nil, trailingViewType: type, trailingText: trailingText)
+            commonCell.apply(title: title,
+                             subTitle: nil,
+                             imageURL: nil,
+                             trailingViewType: type,
+                             trailingText: trailingText,
+                             switchOn: switchOn)
         } else if let members = section as? [Friend] {
             let contactCell = tableView.dequeueReusableCell(withIdentifier: ContactTableViewCell.cellID, for: indexPath) as? ContactTableViewCell
             cell = contactCell
@@ -386,7 +390,17 @@ extension FriendDetailViewController: SelectContactsDelegate, UIImagePickerContr
     }
 
     func didSwitch(cell: CommonTableCell, isOn: Bool) {
-        
+        if let indexPath = self.tableView.indexPath(for: cell) {
+            let type = self.sections[indexPath.section][indexPath.row]
+            if let type = type as? RowType, type == RowType.switchMute {
+                manager?.httpsManager.switchMute(friend: self.friend, isMute: !self.friend.isMuted, completion: { [weak self] success in
+                    if success {
+                        self?.tableView.reloadRows(at: [indexPath], with: .none)
+                    }
+                    NotificationCenter.default.post(name: .reloadContacts, object: nil)
+                })
+            }
+        }
     }
     
     func textFieldDidEndInputing(cell: CommonTableCell, text: String) {

@@ -128,7 +128,9 @@ class SelectContactsViewController: DogeChatViewController, DogeChatVCTableDataS
     }
     
     private func wrapGroupForAt(_ group: Group) -> Group {
-        return Group(username: "所有人", nickName: nil, avatarURL: group.avatarURL, latesetMessage: nil, userID: group.userID, isGroup: true, isMyFriend: true)
+        return Group(username: "所有人", nickName: nil,
+                     avatarURL: group.avatarURL, latesetMessage: nil,
+                     userID: group.userID, isGroup: true, isMyFriend: true, isMuted: group.isMuted)
     }
     
     func groupSet() {

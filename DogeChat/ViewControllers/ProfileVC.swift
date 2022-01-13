@@ -32,7 +32,7 @@ class ProfileVC: DogeChatViewController, DogeChatVCTableDataSource, UITableViewD
     var tableView: DogeChatTableView = DogeChatTableView()
     let sections: [[ProfileCellType]] = [
         [.avatar],
-        [.username, .userID, .email, .createTime, .blurImage, .trailer,. customizedColors]
+        [.username, .userID, .email, .createTime, .blurImage, .trailer, .customizedColors]
     ]
     var info: AccountInfo?
 
@@ -54,9 +54,17 @@ class ProfileVC: DogeChatViewController, DogeChatVCTableDataSource, UITableViewD
     }
     
     func makeRequest() {
-        self.manager?.httpsManager.getProfile({ info in
-            self.info = info
-            self.tableView.reloadData()
+        self.manager?.httpsManager.getProfile({ [weak self] info in
+            self?.info = info
+            self?.tableView.reloadData()
+            if let url = info?.tracksURL {
+                MediaLoader.shared.requestImage(urlStr: url, type: .track) { _, _, localURL in
+                    if let data = try? Data(contentsOf: localURL), let store = try? JSONDecoder().decode(TrackStore.self, from: data), !store.tracks.isEmpty {
+                        allTracks = store.tracks
+                        self?.tableView.reloadData()
+                    }
+                }
+            }
         })
     }
     
@@ -116,7 +124,11 @@ class ProfileVC: DogeChatViewController, DogeChatVCTableDataSource, UITableViewD
         if type == .avatar {
             changeAvatar()
         } else if type == .customizedColors {
-            
+            let vc = SelectColorVC()
+            vc.didSelectColors = { [weak self] colors in
+                self?.didSelectColors(colors)
+            }
+            self.navigationController?.pushViewController(vc, animated: true)
         }
         if let cell = tableView.cellForRow(at: indexPath) as? CommonTableCell {
             var text: String?
@@ -144,6 +156,21 @@ class ProfileVC: DogeChatViewController, DogeChatVCTableDataSource, UITableViewD
         picker.allowsEditing = true
         picker.delegate = self
         self.present(picker, animated: true, completion: nil)
+    }
+    
+    func didSelectColors(_ customizedColor: CustomizedColor) {
+        let colors = customizedColor
+        let params = ["atColor": colors.at.getParams(),
+                      "sendTextColor": colors.sendText.getParams(),
+                      "receiveTextColor": colors.receiveText.getParams(),
+                      "sendBubbleColor": colors.sendBubble.getParams(),
+                      "receiveBubbleColor": colors.receiveBubble.getParams()
+        ]
+        manager?.httpsManager.saveTracks(nil, andBlurImage: nil, customizedData: ["customizedColor": params], completion: { [weak self] success in
+            self?.makeAutoAlert(message: success ? "成功修改" : "失败", detail: nil, showTime: 0.3, completion: {
+                self?.manager?.httpsManager.getProfile(nil)
+            })
+        })
     }
 
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {

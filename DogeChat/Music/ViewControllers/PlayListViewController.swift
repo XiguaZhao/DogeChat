@@ -663,7 +663,7 @@ func saveTracksInfoToDisk(username: String, needUpload: Bool) {
                         return
                     }
                     let filePath = manager.messageManager.encrypt.decryptMessage(json["filePath"].stringValue)
-                    manager.httpsManager.saveTracks(filePath, andBlurImage: nil) { success in
+                    manager.httpsManager.saveTracks(filePath, andBlurImage: nil, customizedData: nil) { success in
                         
                     }
                 }

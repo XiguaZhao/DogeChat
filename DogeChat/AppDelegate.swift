@@ -33,6 +33,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var backgroundSessionCompletionHandler: (() -> Void)?
     let voipRegistry = PKPushRegistry(queue: DispatchQueue.main)
     var lastAppEnterBackgroundTime = NSDate().timeIntervalSince1970
+    weak var remoteNotiDelegate: RemoteNotificationDelegate?
     var latestRemoteNotiInfo: RemoteNotificationInfo? {
         didSet {
             if let latestRemoteNotiInfo = latestRemoteNotiInfo {
@@ -200,8 +201,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
-        processRevoke(userInfo: notification.request.content.userInfo)
-        completionHandler([])
+        guard let infos = notification.request.content.userInfo["aps"] as? [String : Any] else {
+            completionHandler([])
+            return
+        }
+        processRevoke(infos)
+        if let delegate = self.remoteNotiDelegate, delegate.showPresentRemoteNotification(infos) {
+            completionHandler([.alert])
+        } else {
+            completionHandler([])
+        }
     }
                 
     // app 在前台运行中收到通知会调用
@@ -213,14 +222,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         print(userInfo)
     }
     
-    func processRevoke(userInfo: [AnyHashable : Any]) {
-        if let aps = userInfo["aps"] as? [String: Any] {
-            if let status = aps["messageStatus"] as? Int, status == -1 {
-                if let senderID = aps["senderId"] as? String, let receiverID = aps["receiverId"] as? String,
-                   let isGroup = (aps["isGroup"] as? NSString)?.boolValue, let uuid = aps["uuid"] as? String {
-                    let revoke = RemoteMessage(isGroup: isGroup, senderID: senderID, receiverID: receiverID, uuid: uuid)
-                    NotificationCenter.default.post(name: .revokeMessage, object: [revoke])
-                }
+    func processRevoke(_ aps: [String : Any]) {
+        if let status = aps["messageStatus"] as? Int, status == -1 {
+            if let senderID = aps["senderId"] as? String, let receiverID = aps["receiverId"] as? String,
+               let isGroup = (aps["isGroup"] as? NSString)?.boolValue, let uuid = aps["uuid"] as? String {
+                let revoke = RemoteMessage(isGroup: isGroup, senderID: senderID, receiverID: receiverID, uuid: uuid)
+                NotificationCenter.default.post(name: .revokeMessage, object: [revoke])
             }
         }
     }
@@ -236,9 +243,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             } else {
                 print("请求通知权限被拒绝了")
             }
-        }
-        NotificationCenter.default.addObserver(forName: .init("NSWindowDidBecomeMainNotification"), object: nil, queue: nil) { _ in
-            NotificationManager.checkRevokeMessages()
         }
     }
     

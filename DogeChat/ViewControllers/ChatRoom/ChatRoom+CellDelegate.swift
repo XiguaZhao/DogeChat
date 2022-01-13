@@ -66,23 +66,8 @@ extension ChatRoomViewController: MessageTableViewCellDelegate {
     func textCellSingleTap(_ cell: MessageBaseCell) {
         if let text = cell.message?.text {
             guard let textURL = text.webUrlify() else { return }
-            if isPad() {
-                if !isMac() {
-                    let userActivity = wrapMediaBrowserUserActivity(paths: nil, url: textURL, targetIndex: nil)
-                    if #available(iOS 13.0, *) {
-                        let option = UIScene.ActivationRequestOptions()
-                        option.requestingScene = self.view.window?.windowScene
-                        UIApplication.shared.requestSceneSessionActivation(nil, userActivity: userActivity, options: option, errorHandler: nil)
-                    }
-                } else {
-                    if let url = URL(string: textURL) {
-                        UIApplication.shared.open(url, options: [:], completionHandler: nil)
-                    }
-                }
-            } else if isPhone() {
-                let vc = WebViewController()
-                vc.apply(url: textURL)
-                self.navigationController?.present(vc, animated: true, completion: nil)
+            if let url = URL(string: textURL.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? "") {
+                UIApplication.shared.open(url, options: [:], completionHandler: nil)
             }
         }
     }

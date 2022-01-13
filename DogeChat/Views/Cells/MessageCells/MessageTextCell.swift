@@ -14,6 +14,18 @@ import DogeChatCommonDefines
 
 class MessageTextCell: MessageBaseCell {
     
+    static var atColor = #colorLiteral(red: 0, green: 0.4159892797, blue: 1, alpha: 1)
+    static let atDefaultColor = #colorLiteral(red: 0, green: 0.4159892797, blue: 1, alpha: 1)
+    static var sendTextColor = UIColor.white
+    static let sendTextDefaultColor = UIColor.white
+    static var receiveTextColor = UIColor.white
+    static let receiveTextDefaultColor = UIColor.white
+    static var sendBubbleColor = UIColor(red: 24/255, green: 180/255, blue: 128/255, alpha: 1.0)
+    static let sendBubbleDefaultColor = UIColor(red: 24/255, green: 180/255, blue: 128/255, alpha: 1.0)
+    static var receiveBubbleColor = #colorLiteral(red: 0.09282096475, green: 0.7103053927, blue: 1, alpha: 1)
+    static let receiveBubbleDefaultColor = #colorLiteral(red: 0.09282096475, green: 0.7103053927, blue: 1, alpha: 1)
+
+    
     static let macCatalystMaxTextLength = 200
     static let iosMaxTextLength = 5000
     static let cellID = "MessageTextCell"
@@ -81,6 +93,14 @@ class MessageTextCell: MessageBaseCell {
         textLabelSingleTap.isEnabled = textURLAndRange != nil
         
         messageLabel.font = UIFont(name: "Helvetica", size: min(maxFontSize, message.fontSize * fontSizeScale) + (isMac() ? 3 : 0))
+        
+        if message.messageSender == .ourself {
+            messageLabel.backgroundColor = Self.sendBubbleColor
+            messageLabel.textColor = Self.sendTextColor
+        } else {
+            messageLabel.backgroundColor = Self.receiveBubbleColor
+            messageLabel.textColor = Self.receiveTextColor
+        }
 
         if message.messageType == .text || message.messageType == .join {
             let attrStr: NSAttributedString
@@ -98,12 +118,6 @@ class MessageTextCell: MessageBaseCell {
             count = max(count, 3)
             let str = Array(repeating: " ", count: count).joined()
             messageLabel.text = message.messageSender == .someoneElse ? str + "\(message.voiceDuration)''" : "\(message.voiceDuration)''" + str
-        }
-        if message.messageSender == .ourself {
-            messageLabel.backgroundColor = UIColor(red: 24/255, green: 180/255, blue: 128/255, alpha: 1.0)
-
-        } else {
-            messageLabel.backgroundColor = #colorLiteral(red: 0.09282096475, green: 0.7103053927, blue: 1, alpha: 1)
         }
     }
     
@@ -130,7 +144,7 @@ class MessageTextCell: MessageBaseCell {
             if atInfo.userID == group.userID || atInfo.userID == self.manager?.myID {
                 if let range = atInfo.range.getRange() {
                     let nsRange = NSRange(location: range.location-1, length: range.length+1)
-                    res.addAttributes([.foregroundColor : #colorLiteral(red: 0, green: 0.4159892797, blue: 1, alpha: 1),
+                    res.addAttributes([.foregroundColor : Self.atColor,
                                        .font : UIFont.boldSystemFont(ofSize: messageLabel.font.pointSize)], range: nsRange)
                 }
             }
@@ -147,7 +161,9 @@ class MessageTextCell: MessageBaseCell {
     }
     
     func layoutForTextMessage() {
-        var size = messageLabel.sizeThatFits(CGSize(width: 2*(contentView.bounds.width/3), height: CGFloat.greatestFiniteMagnitude))
+        let width = (message.emojisInfo.isEmpty ? 2/3 : 0.45)*contentView.bounds.width
+        let maxSize = CGSize(width: width, height: CGFloat.greatestFiniteMagnitude)
+        var size = messageLabel.sizeThatFits(maxSize)
         size.height = min(size.height, maxTextHeight - ((nameLabel.isHidden ? 0 : nameLabel.bounds.height) + 3 * nameLabelStartY + 2 * Label.verticalPadding))
         messageLabel.bounds = CGRect(x: 0, y: 0, width: size.width + 2 * Label.horizontalPadding, height: size.height + 2 * Label.verticalPadding)
     }

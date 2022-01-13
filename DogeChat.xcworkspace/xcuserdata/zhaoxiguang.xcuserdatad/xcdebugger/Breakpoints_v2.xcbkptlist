@@ -524,22 +524,6 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "25FA69C7-AB27-4A46-AC16-0293E58CA956"
-            shouldBeEnabled = "Yes"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "../DogeChatUniversal/DogeChatUniversal/Classes/HttpRequests.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "294"
-            endingLineNumber = "294"
-            landmarkName = "checkLoginStatus(json:)"
-            landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
             uuid = "DA18D09B-940F-4123-ADDE-F03078060764"
             shouldBeEnabled = "No"
             ignoreCount = "0"
@@ -638,38 +622,6 @@
             endingLineNumber = "317"
             landmarkName = "trackPlayToEndNoti(_:)"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "9A769BE3-3BA0-46C9-87D9-3625D74C21A8 - c59fe8bfa243177d"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "DogeChat.PlayerManager.trackPlayToEndNoti(Foundation.Notification) -&gt; ()"
-                  moduleName = "DogeChat"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/zhaoxiguang/Library/Mobile%20Documents/com~apple~CloudDocs/Documents/Developer/DogeChat/DogeChat/Music/Models/PlayerManager.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "317"
-                  endingLineNumber = "317"
-                  offsetFromSymbolStart = "248">
-               </Location>
-               <Location
-                  uuid = "9A769BE3-3BA0-46C9-87D9-3625D74C21A8 - 4cf13933abf5331d"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "closure #1 (Swift.Bool) -&gt; () in DogeChat.PlayerManager.trackPlayToEndNoti(Foundation.Notification) -&gt; ()"
-                  moduleName = "DogeChat"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/zhaoxiguang/Library/Mobile%20Documents/com~apple~CloudDocs/Documents/Developer/DogeChat/DogeChat/Music/Models/PlayerManager.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "317"
-                  endingLineNumber = "317"
-                  offsetFromSymbolStart = "52">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -737,8 +689,8 @@
             filePath = "DogeChat/AppDelegate.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "204"
-            endingLineNumber = "204"
+            startingLineNumber = "214"
+            endingLineNumber = "214"
             landmarkName = "userNotificationCenter(_:willPresent:withCompletionHandler:)"
             landmarkType = "7">
          </BreakpointContent>

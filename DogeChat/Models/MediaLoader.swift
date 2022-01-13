@@ -8,7 +8,6 @@
 
 import Foundation
 import UIKit
-import DogeChatUniversal
 import DogeChatCommonDefines
 
 class MediaLoader: NSObject, URLSessionDownloadDelegate {

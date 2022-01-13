@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import DogeChatUniversal
 import CoreGraphics
 import DogeChatCommonDefines
 
@@ -100,21 +99,9 @@ extension String {
         }
         return nil
     }
-    
-    func getParams() -> [String : String] {
-        var res = [String: String]()
-        let components = self.components(separatedBy: "&")
-        for component in components {
-            let keyValue = component.components(separatedBy: "=")
-            if keyValue.count == 2 {
-                res[keyValue[0]] = keyValue[1]
-            }
-        }
-        return res
-    }
-    
+        
     func getRange() -> NSRange? {
-        let params = self.getParams()
+        let params = getParams()
         if let location = Int(params["location"] ?? ""),
            let length = Int(params["length"] ?? "") {
             return NSRange(location: location, length: length)

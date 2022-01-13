@@ -12,6 +12,10 @@ import DogeChatNetwork
 import RSAiOSWatchOS
 import DogeChatCommonDefines
 
+protocol RemoteNotificationDelegate: AnyObject {
+    func showPresentRemoteNotification(_ infos: [String : Any]) -> Bool
+}
+
 class AppDelegateUI {
     
     static let shared = AppDelegateUI()

@@ -45,19 +45,20 @@ extension ChatRoomViewController {
         view.addSubview(jumpToBottomStack)
         jumpToBottomLable.font = .systemFont(ofSize: 13)
         jumpToBottomLable.textColor = #colorLiteral(red: 0, green: 0.5130392909, blue: 1, alpha: 1)
-        jumpToBottomStack.mas_makeConstraints { make in
-            make?.trailing.equalTo()(self.view)?.offset()(-10)
-            make?.bottom.equalTo()(self.messageInputBar.mas_top)?.offset()(-30)
-        }
-        
-        jumpToUnreadStack.mas_makeConstraints { make in
-            make?.trailing.equalTo()(self.view)?.offset()(-10)
-            make?.bottom.equalTo()(self.jumpToBottomStack.mas_safeAreaLayoutGuideTop)?.offset()(-15)
-        }
 
         jumpToBottomStack.isUserInteractionEnabled = true
         jumpToBottomStack.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(jumpToBottom)))
 
+        jumpToUnreadStack.translatesAutoresizingMaskIntoConstraints = false
+        jumpToBottomStack.translatesAutoresizingMaskIntoConstraints = false
+        
+        let safeArea = self.view.safeAreaLayoutGuide
+        NSLayoutConstraint.activate([
+            jumpToUnreadStack.trailingAnchor.constraint(equalTo: safeArea.trailingAnchor, constant: -10),
+            jumpToUnreadStack.bottomAnchor.constraint(equalTo: self.jumpToBottomStack.topAnchor, constant: -15),
+            jumpToBottomStack.trailingAnchor.constraint(equalTo: jumpToUnreadStack.trailingAnchor),
+            jumpToBottomStack.bottomAnchor.constraint(equalTo: self.messageInputBar.topAnchor, constant: -30)
+        ])
     }
     
     @objc func jumpToBottom() {

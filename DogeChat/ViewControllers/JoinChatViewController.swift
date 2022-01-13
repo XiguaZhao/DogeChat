@@ -214,12 +214,8 @@ extension JoinChatViewController: UITextFieldDelegate {
             makeAutoAlert(message: "信息不完整", detail: nil, showTime: 1, completion: nil)
             return
         }
-        guard !WebSocketManager.usersToSocketManager.keys.contains(username) else {
-            makeAutoAlert(message: "该账号已登录", detail: isPad() ? "请从expose中恢复关闭的窗口" : nil, showTime: 1, completion: nil)
-            return
-        }
         let manager = WebSocketManager()
-        manager.commonWebSocket.httpRequestsManager.login(username: username, password: password) { [weak self] res, _ in
+        manager.commonWebSocket.httpRequestsManager.login(username: username, password: password, forceLogin: true) { [weak self] res, _ in
             if res {
                 self?.processLoginSuccess(username: username, password: password, manager: manager)
             } else {

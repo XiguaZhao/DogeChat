@@ -43,6 +43,7 @@ class CommonTableCell: DogeChatTableViewCell, UITextFieldDelegate {
         trailingLabel.font = .preferredFont(forTextStyle: .footnote)
         trailingLabel.numberOfLines = 0
         textField.font = .preferredFont(forTextStyle: .footnote)
+        textField.returnKeyType = .done
         trailingLabel.textAlignment = .right
         textField.textAlignment = .right
         

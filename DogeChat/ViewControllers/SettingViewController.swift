@@ -23,6 +23,7 @@ enum SettingType: String {
     case forceDarkMode = "毛玻璃强制暗黑"
     case logout = "退出登录"
     case browseFiles = "查看文件"
+    case customizedColors = "设置颜色"
 }
 
 class SettingViewController: DogeChatViewController, DatePickerChangeDelegate, UITableViewDataSource, UITableViewDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, DogeChatVCTableDataSource, TrailingViewProtocol {
@@ -144,6 +145,9 @@ class SettingViewController: DogeChatViewController, DatePickerChangeDelegate, U
             self.navigationController?.setViewControllersForSplitVC(vcs: [self, FileBrowerVC()])
         case .changeIcon:
             self.navigationController?.setViewControllersForSplitVC(vcs: [self, ChangeIconVC()])
+        case .customizedColors:
+            let vc = SelectColorVC()
+            self.present(vc, animated: true, completion: nil)
         }
     }
     
@@ -179,7 +183,7 @@ class SettingViewController: DogeChatViewController, DatePickerChangeDelegate, U
         if !isOn {
             deleteFile(dirName: "customBlur", fileName: userID)
             PlayerManager.shared.customImage = nil
-            manager?.httpsManager.saveTracks(nil, andBlurImage: "", completion: nil)
+            manager?.httpsManager.saveTracks(nil, andBlurImage: "", customizedData: nil, completion: nil)
             return
         }
         showPicker()
@@ -206,7 +210,7 @@ class SettingViewController: DogeChatViewController, DatePickerChangeDelegate, U
         if let url = fileURLAt(dirName: "customBlur", fileName: userID) {
             manager?.httpsManager.uploadPhoto(imageUrl: url, type: .image, size: compress.size, isBlurImage: false, uploadProgress: nil, success: { [weak self] path in
                 print(path)
-                self?.manager?.httpsManager.saveTracks(nil, andBlurImage: path, completion: nil)
+                self?.manager?.httpsManager.saveTracks(nil, andBlurImage: path, customizedData: nil, completion: nil)
             }, fail: nil)
         }
     }

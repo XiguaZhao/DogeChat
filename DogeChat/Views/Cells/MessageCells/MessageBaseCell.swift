@@ -345,13 +345,16 @@ class MessageBaseCell: DogeChatTableViewCell {
     class func height(for message: Message, tableViewSize: CGSize) -> CGFloat {
         let screenWidth = tableViewSize.width
         let screenHeight = tableViewSize.height
-        let maxSize = CGSize(width: 2*(screenWidth/3), height: CGFloat.greatestFiniteMagnitude)
+        var maxSize = CGSize(width: 2*(screenWidth/3), height: CGFloat.greatestFiniteMagnitude)
         let nameHeight = message.messageSender == .ourself ? 0 : (height(forText: message.senderUsername, fontSize: 10, maxSize: maxSize) + 4 )
         var rowHeight: CGFloat
         let type = message.messageType
         switch type {
         case .join, .text, .voice:
             let computer: (String) -> CGFloat = { text in
+                if !message.emojisInfo.isEmpty {
+                    maxSize.width = 0.45 * screenWidth
+                }
                 return height(forText: text, fontSize: min(maxFontSize, type == .join ? 10 : message.fontSize * fontSizeScale) + (isMac() ? 3 : 0), maxSize: maxSize)
             }
             let text = message.messageType == .voice ? "  " : message.text

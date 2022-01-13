@@ -233,6 +233,10 @@ class ChatRoomViewController: DogeChatViewController, DogeChatVCTableDataSource 
                 contactVC?.arrowDown(messageInputBar.textView)
             } else if keyCode == .keyboardV && key.modifierFlags == .command {
                 processItemProviders(UIPasteboard.general.itemProviders)
+            } else if keyCode == .keyboardEscape {
+                if messageInputBar.referView.alpha == 1 {
+                    cancleAction(messageInputBar.referView)
+                }
             } else if !messageInputBar.textView.isFirstResponder {
                 messageInputBar.textView.becomeFirstResponder()
             }

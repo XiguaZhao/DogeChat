@@ -247,7 +247,7 @@ extension ChatRoomViewController {
         }
         let finalFrame = CGRect(x: oldFrame.origin.x, y: oldFrame.origin.y-heightChanged, width: oldFrame.width, height: oldFrame.height+heightChanged)
         tableViewInset.bottom += heightChanged
-        if heightChanged != 0 || scrollByTextViewChange() {
+        if abs(heightChanged) > 5 || scrollByTextViewChange() {
             DispatchQueue.main.async {
                 UIView.animate(withDuration: 0.3, animations: { [weak self] in
                     guard let self = self else { return }

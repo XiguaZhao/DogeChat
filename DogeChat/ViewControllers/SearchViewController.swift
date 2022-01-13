@@ -50,27 +50,19 @@ class SearchViewController: DogeChatViewController, DogeChatVCTableDataSource {
         tableView.translatesAutoresizingMaskIntoConstraints = false
         
         self.navigationItem.titleView = searchBar
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "取消", style: .plain, target: self, action: #selector(swipeAction))
         
         searchBar.delegate = self
         tableView.delegate = self
         tableView.dataSource = self
         
         tableView.register(ContactTableViewCell.self, forCellReuseIdentifier: ContactTableViewCell.cellID)
-        let swipeDown = UISwipeGestureRecognizer(target: self, action: #selector(swipeAction))
-        swipeDown.direction = .down
-        view.addGestureRecognizer(swipeDown)
     }
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         self.tableView.frame = self.view.bounds
     }
-    
-    @objc func swipeAction() {
-        self.dismiss(animated: true, completion: nil)
-    }
-    
+        
 }
 
 extension SearchViewController: UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate {

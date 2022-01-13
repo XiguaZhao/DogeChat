@@ -40,7 +40,6 @@ class ContactTableViewCell: UITableViewCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         self.backgroundColor = .clear
-        nameLabel.font = UIFont.preferredFont(forTextStyle: .body)//UIFont.systemFont(ofSize: 15)
         
         latestMessageLabel.textColor = .lightGray
         latestMessageLabel.numberOfLines = 1
@@ -113,7 +112,16 @@ class ContactTableViewCell: UITableViewCell {
         if let titleMore = titleMore {
             title += titleMore
         }
-        self.nameLabel.text = title
+        let attributedTitle = NSMutableAttributedString(string: title + " ", attributes: [
+            .font : UIFont.preferredFont(forTextStyle: .body)
+        ])
+        if info.isMuted {
+            let imageAttach = NSTextAttachment()
+            imageAttach.image = UIImage(named: "jingyin")
+            imageAttach.bounds = CGRect(x: 0, y: 0, width: 15, height: 15)
+            attributedTitle.append(NSAttributedString(attachment: imageAttach))
+        }
+        self.nameLabel.attributedText = attributedTitle
         var text = ""
         var latestMessageText: String?
         if let message = info.latestMessage {
