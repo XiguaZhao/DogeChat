@@ -10,7 +10,29 @@ import UIKit
 
 class MessageImageKindCell: MessageBaseCell {
     
-    func layoutImageKindView(_ targetView: UIView) {
+    var container = UIView()
+
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: reuseIdentifier)
+        
+        contentView.addSubview(container)
+        container.layer.masksToBounds = true
+        indicationNeighborView = container
+    }
+    
+    func addMainView(_ view: UIView) {
+        container.addSubview(view)
+        view.mas_makeConstraints { make in
+            make?.edges.equalTo()(self.container)
+        }
+    }
+    
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    func layoutImageKindView() {
+        guard let targetView = indicationNeighborView else { return }
         if message.imageSize == .zero {
             targetView.frame = CGRect(x: 0, y: 0, width: 120, height: 120)
             return

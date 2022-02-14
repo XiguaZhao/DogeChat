@@ -22,9 +22,8 @@ class MessageLivePhotoCell: MessageImageKindCell, PHLivePhotoViewDelegate {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
-        contentView.addSubview(livePhotoView)
-        indicationNeighborView = livePhotoView
-        
+        addMainView(livePhotoView)
+                
         livePhotoView.layer.masksToBounds = true
         livePhotoView.addSubview(livePhotoBadgeView)
         livePhotoBadgeView.image = PHLivePhotoView.livePhotoBadgeImage(options: .overContent)
@@ -61,7 +60,7 @@ class MessageLivePhotoCell: MessageImageKindCell, PHLivePhotoViewDelegate {
     override func layoutSubviews() {
         super.layoutSubviews()
         guard message != nil else { return }
-        layoutImageKindView(livePhotoView)
+        layoutImageKindView()
         layoutIndicatorViewAndMainView()
     }
     

@@ -41,11 +41,12 @@ extension ChatRoomViewController: PKViewChangeDelegate {
             let originalURL = dir.appendingPathComponent(fileName)
             saveFileToDisk(dirName: drawDir, fileName: fileName, data: data)
             message.pkLocalURL = originalURL
+            let drawing = pkView.drawing
             if #available(iOS 14.0, *) {
-                guard !pkView.drawing.strokes.isEmpty else { return }
+                guard !drawing.strokes.isEmpty else { return }
             }
-            let drawData = pkView.drawing.dataRepresentation()
-            let bounds = pkView.drawing.bounds
+            let drawData = drawing.dataRepresentation()
+            let bounds = drawing.bounds
             let x = Int(bounds.origin.x)
             let y = Int(bounds.origin.y)
             let width = Int(bounds.size.width)
@@ -55,6 +56,8 @@ extension ChatRoomViewController: PKViewChangeDelegate {
                 tableView.reloadRows(at: [IndexPath(item: index, section: 0)], with: .none)
             }
             insertNewMessageCell([message], forceScrollBottom: true)
+            let group = DispatchGroup()
+            group.enter()
             manager.uploadData(drawData, path: "message/uploadImg", name: "upload", fileName: "+\(x)+\(y)+\(width)+\(height)", needCookie: true, contentType: "application/octet-stream", params: nil) { task, data in
                 guard let data = data else { return }
                 let json = JSON(data)
@@ -65,11 +68,31 @@ extension ChatRoomViewController: PKViewChangeDelegate {
                 let filePath = manager.messageManager.encrypt.decryptMessage(json["filePath"].stringValue)
                 message.pkDataURL = filePath
                 message.text = message.pkDataURL ?? ""
-                manager.sendDrawMessage(message)
+                group.leave()
                 DispatchQueue.global().async {
                     let newURL = dir.appendingPathComponent(filePath.components(separatedBy: "/").last!)
                     try? FileManager.default.moveItem(at: originalURL, to: newURL)
                 }
+            }
+            group.enter()
+            let image = drawing.image(from: drawing.bounds, scale: 1)
+            let size = image.size
+            do {
+                if let pngData = image.pngData() {
+                    let localUrl = URL(string: "file://" + NSTemporaryDirectory() + UUID().uuidString + ".jpg")!
+                    try pngData.write(to: localUrl)
+                    self.manager?.httpsManager.uploadPhoto(imageUrl: localUrl, type: .image, size: size, uploadProgress: nil, success: { path in
+                        try? FileManager.default.removeItem(at: localUrl)
+                        message.drawImagePath = path
+                        group.leave()
+                    }, fail: nil)
+                    
+                }
+            } catch {
+                
+            }
+            group.notify(queue: .main) {
+                manager.sendDrawMessage(message)
             }
         }
     }

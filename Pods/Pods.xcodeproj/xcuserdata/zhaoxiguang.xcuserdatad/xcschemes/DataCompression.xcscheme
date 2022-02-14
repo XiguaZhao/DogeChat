@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "F7D8BDE71DA27F3F798B5070A118A979"
-               BuildableName = "libDataCompression.a"
+               BuildableName = "DataCompression.framework"
                BlueprintName = "DataCompression"
                ReferencedContainer = "container:Pods.xcodeproj">
             </BuildableReference>

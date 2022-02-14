@@ -16,7 +16,7 @@ class SocketManager: NSObject, URLSessionDelegate, URLSessionWebSocketDelegate, 
     
     static let shared = SocketManager()
     var commonSocket: DogeChatWebSocket!
-    let url_pre = "https://121.5.152.193/"
+    let url_pre = dogeChatIP
     var socket: URLSessionWebSocketTask!
     var messageManager: MessageManager {
         commonSocket.messageManager
@@ -67,7 +67,7 @@ class SocketManager: NSObject, URLSessionDelegate, URLSessionWebSocketDelegate, 
         guard !messageManager.cookie.isEmpty else {
             return
         }
-        var request = URLRequest(url: URL(string: "wss://121.5.152.193/webSocket?deviceType=\(deviceType())")!)
+        var request = URLRequest(url: URL(string: "wss://\(dogeChatIP)/webSocket?deviceType=\(deviceType())")!)
         request.addValue("SESSION="+messageManager.cookie, forHTTPHeaderField: "Cookie")
         self.socket = session.webSocketTask(with: request)
         DispatchQueue.main.async {

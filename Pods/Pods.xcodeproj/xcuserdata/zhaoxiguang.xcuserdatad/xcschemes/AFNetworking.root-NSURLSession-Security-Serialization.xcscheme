@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "47BBD34D08F2A2B3935EC26469C1649F"
-               BuildableName = "libAFNetworking.root-NSURLSession-Security-Serialization.a"
+               BuildableName = "AFNetworking.framework"
                BlueprintName = "AFNetworking.root-NSURLSession-Security-Serialization"
                ReferencedContainer = "container:Pods.xcodeproj">
             </BuildableReference>

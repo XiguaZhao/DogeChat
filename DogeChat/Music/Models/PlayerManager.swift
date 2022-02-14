@@ -18,7 +18,7 @@ enum BlurImageSource {
 
 enum PlayerType {
     case track
-    case chatroomImageCell
+    case chatroomVideoCell
     case chatroomVoiceCell
     case mediaBrowser
 }
@@ -239,6 +239,7 @@ class PlayerManager: NSObject {
         DispatchQueue.main.async {
             NotificationCenter.default.post(name: .toggleTrack, object: self.nowPlayingTrack)
         }
+        guard self.nowPlayingTrack != nil else { return }
         if isPlaying {
             pause()
         } else {

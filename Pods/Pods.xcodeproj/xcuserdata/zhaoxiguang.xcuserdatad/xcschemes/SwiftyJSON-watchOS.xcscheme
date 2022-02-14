@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "7737959F044655E11A16E572A933F46D"
-               BuildableName = "libSwiftyJSON-watchOS.a"
+               BuildableName = "SwiftyJSON.framework"
                BlueprintName = "SwiftyJSON-watchOS"
                ReferencedContainer = "container:Pods.xcodeproj">
             </BuildableReference>

@@ -22,6 +22,11 @@ class ChatRoomViewController: DogeChatViewController, DogeChatVCTableDataSource 
         case history
     }
     
+    enum PickerPurpose {
+        case send
+        case addEmoji
+    }
+        
     static let numberOfHistory = 10
     var manager: WebSocketManager? {
         return socketForUsername(username)
@@ -43,7 +48,6 @@ class ChatRoomViewController: DogeChatViewController, DogeChatVCTableDataSource 
         didSet {
             messages = friend.messages
             customTitle = friend.nickName ?? friend.username
-            emojiSelectView.friend = friend
             DispatchQueue.main.async {
                 self.messageInputBar.atButton.isHidden = !self.friend.isGroup
             }
@@ -60,6 +64,8 @@ class ChatRoomViewController: DogeChatViewController, DogeChatVCTableDataSource 
         }
     }
     var imagePickerType: MessageType = .image
+    var pickerPurpose: PickerPurpose = .send
+    var addEmojiType: Emoji.AddEmojiType = .favorite
     var heightCache = [String : CGFloat]()
     var jumpToUnreadStack: UIStackView!
     let jumpToUnreadButton = UIImageView()
@@ -68,6 +74,7 @@ class ChatRoomViewController: DogeChatViewController, DogeChatVCTableDataSource 
     var explictJumpMessageUUID: String?
     let titleLabel = UILabel()
     let titleAvatar = FLAnimatedImageView()
+    let titleAvatarContainer = UIView()
     var pagesAndCurNum = (pages: 1, curNum: 1)
     var activeSwipeIndexPath: IndexPath?
     lazy var messageSender: MessageSender = {
@@ -77,7 +84,7 @@ class ChatRoomViewController: DogeChatViewController, DogeChatVCTableDataSource 
         sender.manager = self.manager?.httpsManager
         return sender
     }()
-    let emojiSelectView = EmojiSelectView()
+    let emojiSelectView = EmojiView()
     var messages = [Message]()
     var messagesUUIDs: Set<String> {
         return Set(self.messages.map{ $0.uuid })
@@ -92,6 +99,13 @@ class ChatRoomViewController: DogeChatViewController, DogeChatVCTableDataSource 
     }()
     weak var contactVC: ContactsTableViewController?
     weak var activeMenuCell: MessageBaseCell?
+    weak var transitionSourceView: UIView!
+    weak var transitionToView: UIView!
+    weak var transitionToRadiusView: UIView?
+    weak var transitionFromCornerRadiusView: UIView?
+    var transitionPreferDuration: TimeInterval?
+    var transitionPreferDamping: CGFloat?
+
     var hapticInputIndex = 0
     var pan: UIScreenEdgePanGestureRecognizer?
     var ignoreKeyboardChange = false
@@ -139,6 +153,7 @@ class ChatRoomViewController: DogeChatViewController, DogeChatVCTableDataSource 
         NotificationCenter.default.addObserver(forName: .logout, object: username, queue: .main) { [weak self] _ in
             self?.navigationController?.viewControllers = []
         }
+        NotificationCenter.default.addObserver(self, selector: #selector(mediaBrowserPathChange(_:)), name: .mediaBrowserPathChange, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(friendChangeAvatar(_:)), name: .friendChangeAvatar, object: nil)
         NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: .main) { [weak self] _ in
             if isMac() {
@@ -219,7 +234,7 @@ class ChatRoomViewController: DogeChatViewController, DogeChatVCTableDataSource 
     deinit {
         print("chat room VC deinit")
         MessageAudioCell.voicePlayer.replaceCurrentItem(with: nil)
-        PlayerManager.shared.playerTypes.remove(.chatroomImageCell)
+        PlayerManager.shared.playerTypes.remove(.chatroomVideoCell)
         PlayerManager.shared.playerTypes.remove(.chatroomVoiceCell)
     }
     
@@ -330,25 +345,18 @@ class ChatRoomViewController: DogeChatViewController, DogeChatVCTableDataSource 
     
 }
 
-//MARK - Message Input Bar
-extension ChatRoomViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate, PHPickerViewControllerDelegate {
-        
-    func updateUploadProgress(_ progress: Progress, message: Message) {
-        let targetCell = tableView.visibleCells.filter { cell in
-            guard let cell = cell as? MessageBaseCell else { return false }
-            return cell.message.uuid == message.uuid
-        }.first
-        guard let _ = targetCell as? MessageBaseCell else { return }
-    }
-    
-}
-
 extension ChatRoomViewController {
     
     @objc func receiveNewMessageNotification(_ notification: Notification) {
-        guard notification.object as? String == self.username, let dict = notification.userInfo?["friendDict"] as? [String : [Message]] else { return }
+        guard notification.object as? String == self.username, let dict = notification.userInfo?["friendDict"] as? [String : [Message]] else {
+            debugText("username不匹配noti")
+            return
+        }
         for (friendID, newMessages) in dict {
             if friendID == self.friend.userID {
+                if newMessages.isEmpty {
+                    debugText("newMessage为空")
+                }
                 insertNewMessageCell(newMessages)
             }
         }
@@ -402,8 +410,13 @@ extension ChatRoomViewController {
             tableView.refreshControl?.endRefreshing()
             return
         }
-        
+        let alreadyMin = self.messages.max(by: { $0.id > $1.id })?.id ?? Int.max
         self.messages.insert(contentsOf: filtered, at: 0)
+        if filtered.contains(where: { $0.id > alreadyMin }) {
+            self.messages.sort(by: { $0.id < $1.id })
+            self.tableView.reloadData()
+            return
+        }
         let indexPaths = [Int](0..<filtered.count).map{ IndexPath(item: $0, section: 0) }
         var myselfIndexPaths = [IndexPath]()
         var othersIndexPaths = [IndexPath]()
@@ -447,7 +460,7 @@ extension ChatRoomViewController {
         message.referMessage = nil
         message.referMessageUUID = nil
         let indexPath = IndexPath(row: index, section: 0)
-        tableView.reloadRows(at: [indexPath], with: .none)
+        tableView.reloadRows(at: [indexPath], with: .fade)
     }
     
     func revokeMessage(_ id: Int, senderID: String, receiverID: String) {
@@ -461,6 +474,7 @@ extension ChatRoomViewController: UITextViewDelegate {
     func textViewShouldBeginEditing(_ textView: UITextView) -> Bool {
         showEmojiButton(textView.text.isEmpty)
         messageInputBar.recoverEmojiButton()
+        emojiSelectView.pageIndicator.isHidden = true
         return true
     }
     

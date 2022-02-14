@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "CBCC475DD9E1F4436D7BC25266CEE10F"
-               BuildableName = "libPods-DogeChatSiri.a"
+               BuildableName = "Pods_DogeChatSiri.framework"
                BlueprintName = "Pods-DogeChatSiri"
                ReferencedContainer = "container:Pods.xcodeproj">
             </BuildableReference>

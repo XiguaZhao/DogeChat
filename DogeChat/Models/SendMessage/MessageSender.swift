@@ -10,7 +10,7 @@ import Foundation
 import DogeChatUniversal
 import SwiftyJSON
 import Photos
-import DogeChatVideoCompression
+import DogeChatVideoUtil
 import DogeChatCommonDefines
 
 protocol ReferMessageDataSource: AnyObject {
@@ -19,6 +19,7 @@ protocol ReferMessageDataSource: AnyObject {
 
 protocol DownloadUploadProgressDelegate: AnyObject {
     func downloadProgressUpdate(progress: Double, messages: [Message])
+    func processingMedia(finished: Bool)
 }
 
 protocol KeyProvider: AnyObject {
@@ -31,7 +32,7 @@ class MessageSender {
         case normal
         case shareExtension
     }
-        
+            
     var latestPickedImageInfos: [(image: UIImage?, fileUrl: URL, size: CGSize)] = []
     var pickedLivePhotos: [(imageURL: URL, videoURL: URL, size: CGSize, live: PHLivePhoto)] = []
     var pickedVideos: (url: URL, size: CGSize)?
@@ -90,14 +91,13 @@ class MessageSender {
         message.at = res
     }
     
-    func confirmSendPhoto(friends: [Friend]) -> [Message] {
+    func confirmSendPhoto(friends: [Friend], emojiType: Emoji.AddEmojiType = .favorite) -> [Message] {
         defer {
             self.latestPickedImageInfos.removeAll()
         }
         guard let manager = manager else {
             return []
         }
-        let type = self.type
         let infos = self.latestPickedImageInfos
         let username = manager.myName
         var newMessages = [Message]()
@@ -110,22 +110,22 @@ class MessageSender {
                 newMessages.append(message)
                 messagesWithSameURL.append(message)
             }
+            self.progressDelegate?.processingMedia(finished: false)
             manager.uploadPhoto(imageUrl: imageURL, type: .image, size: size, clientKey: self.clientKeyProvider?.getClientPublicKey()) { [weak self] progress in
                 self?.progressDelegate?.downloadProgressUpdate(progress: progress.fractionCompleted, messages: messagesWithSameURL)
-            } success: { filePath in
-                for (index, message) in messagesWithSameURL.enumerated() {
+            } success: { [weak self] filePath in
+                self?.progressDelegate?.processingMedia(finished: true)
+                let dir = createDir(name: photoDir)
+                let newImageLocalUrl = dir.appendingPathComponent(filePath.components(separatedBy: "/").last ?? "")
+                try? FileManager.default.moveItem(at: imageURL, to: newImageLocalUrl)
+                for (_, message) in messagesWithSameURL.enumerated() {
                     message.imageURL = filePath
                     message.text = message.imageURL ?? ""
-                    let dir = createDir(name: photoDir)
-                    let newImageLocalUrl = dir.appendingPathComponent(filePath.components(separatedBy: "/").last ?? "")
-                    if index == 0 && type == .normal {
-                        do {
-                            try FileManager.default.moveItem(at: imageURL, to: newImageLocalUrl)
-                            message.imageLocalPath = newImageLocalUrl
-                        } catch {
-                        }
-                    }
+                    message.imageLocalPath = newImageLocalUrl
                     NotificationCenter.default.post(name: .uploadSuccess, object: username, userInfo: ["message": message])
+                }
+                if messagesWithSameURL.isEmpty {
+                    NotificationCenter.default.post(name: .uploadSuccess, object: username, userInfo: ["serverPath": filePath, "localURL": newImageLocalUrl, "emojiType": emojiType])
                 }
             } fail: {
             }
@@ -147,9 +147,11 @@ class MessageSender {
             message.voiceDuration = info.duration
             newMessages.append(message)
         }
+        self.progressDelegate?.processingMedia(finished: false)
         manager.uploadPhoto(imageUrl: info.url, type: .voice, size: .zero, voiceDuration: info.duration, clientKey: self.clientKeyProvider?.getClientPublicKey()) { [weak self] progress in
             self?.progressDelegate?.downloadProgressUpdate(progress: progress.fractionCompleted, messages: newMessages)
-        } success: { voicePath in
+        } success: { [weak self] voicePath in
+            self?.progressDelegate?.processingMedia(finished: true)
             print(voicePath)
             for (index, message) in newMessages.enumerated() {
                 message.voiceURL = voicePath
@@ -181,9 +183,11 @@ class MessageSender {
             message.imageSize = info.size
             newMessages.append(message)
         }
+        self.progressDelegate?.processingMedia(finished: false)
         manager.uploadPhoto(imageUrl: info.url, type: .video, size: info.size, clientKey: self.clientKeyProvider?.getClientPublicKey()) { [weak self] progress in
             self?.progressDelegate?.downloadProgressUpdate(progress: progress.fractionCompleted, messages: newMessages)
-        } success: { videoPath in
+        } success: { [weak self] videoPath in
+            self?.progressDelegate?.processingMedia(finished: true)
             print(videoPath)
             for (index, message) in newMessages.enumerated() {
                 message.text = videoPath
@@ -229,6 +233,7 @@ class MessageSender {
                 message.imageSize = livePhoto.size
                 newMessages.append(message)
                 messageWithSameURL.append(message)
+                self.progressDelegate?.processingMedia(finished: false)
                 manager.uploadPhoto(imageUrl: livePhoto.imageURL, type: .livePhoto, size: livePhoto.size, clientKey: self.clientKeyProvider?.getClientPublicKey()) { _ in
                     
                 } success: { [weak self] imagePath in
@@ -236,6 +241,7 @@ class MessageSender {
                     manager.uploadPhoto(imageUrl: livePhoto.videoURL, type: .livePhoto, size: livePhoto.size, clientKey: self?.clientKeyProvider?.getClientPublicKey()) { [weak self] progress in
                         self?.progressDelegate?.downloadProgressUpdate(progress: progress.fractionCompleted, messages: messageWithSameURL)
                     } success: { videoPath in
+                        self?.progressDelegate?.processingMedia(finished: true)
                         print(videoPath)
                         for (index, message) in messageWithSameURL.enumerated() {
                             message.imageURL = imagePath
@@ -263,10 +269,12 @@ class MessageSender {
         return newMessages
     }
 
-    func processItemProviders(_ items: [NSItemProvider], friends: [Friend], completion: (([Message]) -> Void)?) {
+    func processItemProviders(_ items: [NSItemProvider], friends: [Friend], emojiType: Emoji.AddEmojiType = .favorite, completion: (([Message]) -> Void)? = nil) {
         for item in items {
             if item.hasItemConformingToTypeIdentifier(videoIdentifier) { // drop
+                progressDelegate?.processingMedia(finished: false)
                 item.loadItem(forTypeIdentifier: videoIdentifier, options: nil) { obj, error in
+                    self.progressDelegate?.processingMedia(finished: true)
                     if error == nil, let url = obj as? URL, let reachable = try? url.checkResourceIsReachable(), reachable, let _ = try? Data(contentsOf: url) {
                         self.compressAndSendVideo(url, friends: friends, completion: completion)
                     } else {
@@ -283,7 +291,9 @@ class MessageSender {
                     }
                 }
             } else if item.hasItemConformingToTypeIdentifier(audioIdentifier) {
+                self.progressDelegate?.processingMedia(finished: false)
                 item.loadDataRepresentation(forTypeIdentifier: audioIdentifier) { data, error in
+                    self.progressDelegate?.processingMedia(finished: true)
                     if let data = data {
                         let id = UUID().uuidString
                         let newURL = createDir(name: audioDir).appendingPathComponent(id).appendingPathExtension("m4a")
@@ -299,7 +309,9 @@ class MessageSender {
                     }
                 }
             } else if item.hasItemConformingToTypeIdentifier(fileIdentifier) { // finder粘贴
+                self.progressDelegate?.processingMedia(finished: false)
                 item.loadItem(forTypeIdentifier: fileIdentifier, options: nil) { res, error in
+                    self.progressDelegate?.processingMedia(finished: true)
                     if error == nil, let data = res as? Data, let str = String(data: data, encoding: .utf8), let url = URL(string: str) {
                         if str.isVideo {
                             self.compressAndSendVideo(url, friends: friends)
@@ -313,14 +325,16 @@ class MessageSender {
                     }
                 }
             } else if item.hasItemConformingToTypeIdentifier(gifIdentifier) {
+                self.progressDelegate?.processingMedia(finished: false)
                 item.loadDataRepresentation(forTypeIdentifier: gifIdentifier) { data, error in
+                    self.progressDelegate?.processingMedia(finished: true)
                     if let data = data, let image = UIImage(data: data) {
                         let id = UUID().uuidString
                         let newURL = createDir(name: pasteDir).appendingPathComponent(id).appendingPathExtension("gif")
                         do {
                             try data.write(to: newURL)
                             self.latestPickedImageInfos = [(image, newURL, image.size)]
-                            let messages = self.confirmSendPhoto(friends: friends)
+                            let messages = self.confirmSendPhoto(friends: friends, emojiType: emojiType)
                             completion?(messages)
                         } catch {
                             
@@ -328,11 +342,23 @@ class MessageSender {
                     }
                 }
             } else if item.canLoadObject(ofClass: UIImage.self) {
+                self.progressDelegate?.processingMedia(finished: false)
                 item.loadObject(ofClass: UIImage.self) { [weak self] object, error in
+                    self?.progressDelegate?.processingMedia(finished: true)
                     if let image = object as? UIImage, let self = self {
                         self.latestPickedImageInfos = [compressImage(image, saveMemory: self.type == .shareExtension)]
-                        let messages = self.confirmSendPhoto(friends: friends)
+                        let messages = self.confirmSendPhoto(friends: friends, emojiType: emojiType)
                         completion?(messages)
+                    }
+                }
+            } else if item.canLoadObject(ofClass: String.self) {
+                let myName = self.manager?.myName
+                _ = item.loadObject(ofClass: String.self) { str, error in
+                    if let str = str {
+                        for friend in friends {
+                            let message = self.processMessageString(for: str, type: .text, friend: friend, imageURL: nil, videoURL: nil)
+                            NotificationCenter.default.post(name: .uploadSuccess, object: myName, userInfo: ["message": message as Any])
+                        }
                     }
                 }
             }

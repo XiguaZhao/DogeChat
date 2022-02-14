@@ -39,7 +39,6 @@ class SelectColorVC: DogeChatViewController, UIColorPickerViewControllerDelegate
             button.layer.cornerRadius = 8
             button.setTitle("", for: .normal)
             button.addTarget(self, action: #selector(onTap(_:)), for: .touchUpInside)
-            button.tintColor = value.color
             button.backgroundColor = value.color
         }
         
@@ -66,14 +65,16 @@ class SelectColorVC: DogeChatViewController, UIColorPickerViewControllerDelegate
         default:
             break
         }
-        if #available(iOS 14.0, *) {
+        if #available(iOS 14.0, *), !isMac() {
             let picker = UIColorPickerViewController()
             picker.delegate = self
+            picker.selectedColor = button.backgroundColor ?? .black
             self.present(picker, animated: true, completion: nil)
         } else {
             let vc = SelectColorLowVersion()
-            vc.didSelectColor = { [weak self] color in
-                self?.didSelectColor(color)
+            vc.color = dict[type]!.color
+            vc.didSelectColor = { color in
+                self.didSelectColor(color)
             }
             self.present(vc, animated: true, completion: nil)
         }
@@ -108,8 +109,11 @@ class SelectColorVC: DogeChatViewController, UIColorPickerViewControllerDelegate
         case .receiveBubbleColor:
             button = receiveBubble
         }
-        button?.tintColor = color
+        button?.backgroundColor = color
         dict[self.type]?.color = color
+    }
+    @IBAction func onCancle(_ sender: Any) {
+        self.navigationController?.popViewController(animated: true)
     }
     
     @IBAction func onConfirm(_ sender: Any) {

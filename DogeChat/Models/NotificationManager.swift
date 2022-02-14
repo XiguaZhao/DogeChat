@@ -78,7 +78,6 @@ class NotificationManager: NSObject {
               let content = processed.content,
               let senderID = processed.senderID else { return }
         nowPushInfo = (sender, content, senderID)
-        UIApplication.shared.applicationIconBadgeNumber = 0
         if !AppDelegate.shared.launchedByPushAction {
             remoteNotificationUsername = sender
         }

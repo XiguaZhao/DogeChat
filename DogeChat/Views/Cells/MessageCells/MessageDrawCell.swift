@@ -64,7 +64,11 @@ class MessageDrawCell: MessageBaseCell {
     override func apply(message: Message) {
         super.apply(message: message)
         tapGes.isEnabled = message.messageSender == .ourself
-        downloadPKDataIfNeeded()
+        if #available(iOS 13, *) {
+            downloadPKDataIfNeeded()
+        } else {
+            self.contentView.subviews.forEach { $0.isHidden = true }
+        }
     }
     
     // PencilKit相关

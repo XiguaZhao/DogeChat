@@ -56,6 +56,8 @@ class CommonTableCell: DogeChatTableViewCell, UITextFieldDelegate {
         let rightStack = UIStackView(arrangedSubviews: [trailingLabel, textField, switcher])
         textField.setContentCompressionResistancePriority(.required, for: .horizontal)
         trailingLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
+        rightStack.setContentCompressionResistancePriority(.required, for: .horizontal)
+        switcher.setContentCompressionResistancePriority(.required, for: .horizontal)
 
         let stack = UIStackView(arrangedSubviews: [leadingImageView, middleStack, rightStack])
         self.stackView = stack
@@ -130,7 +132,7 @@ class CommonTableCell: DogeChatTableViewCell, UITextFieldDelegate {
                 if imageURL.isGif {
                     self?.leadingImageView.animatedImage = FLAnimatedImage(gifData: data)
                 } else {
-                    self?.leadingImageView.image = image
+                    self?.leadingImageView.image = UIImage(data: data ?? Data())
                 }
             }, progress: nil)
         }

@@ -6,7 +6,7 @@
 //  Copyright © 2021 赵锡光. All rights reserved.
 //
 
-#import "SDWebImageManager.h"
+@import SDWebImage;
 
 NS_ASSUME_NONNULL_BEGIN
 

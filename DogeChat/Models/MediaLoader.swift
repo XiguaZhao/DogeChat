@@ -23,6 +23,7 @@ class MediaLoader: NSObject, URLSessionDownloadDelegate {
         let type: MessageType
         let imageWidth: ImageWidth
         let needStaticGif: Bool
+        let onlyDataWhenImage: Bool
         let completionHandler: ((UIImage?, Data?, URL) -> Void)?
         let progressBlock: ((Double) -> Void)?
     }
@@ -46,13 +47,29 @@ class MediaLoader: NSObject, URLSessionDownloadDelegate {
         return sesssion
     }()
     
-    func requestImage(urlStr: String, type: MessageType, cookie: String? = nil, syncIfCan: Bool = false, imageWidth: ImageWidth = .width100, needStaticGif: Bool = false, needCache: Bool = true, completion: ((UIImage?, Data?, URL) -> Void)? = nil, progress: ((Double) -> Void)? = nil) {
+    func checkIfShouldRemoveCache() {
+        DispatchQueue.main.async {
+            let size = self.cacheSize.values.reduce(0, +)
+            if size / 1024 / 1024 > 50 {
+                let average = size / self.cache.count
+                for (cacheKey, size) in self.cacheSize {
+                    if size > average {
+                        self.cache.removeValue(forKey: cacheKey)
+                        self.cacheSize.removeValue(forKey: cacheKey)
+                    }
+                }
+            }
+        }
+    }
+    
+
+    func requestImage(urlStr: String, type: MessageType, cookie: String? = nil, syncIfCan: Bool = false, imageWidth: ImageWidth = .width100, needStaticGif: Bool = false, needCache: Bool = true, onlyDataWhenImage: Bool = false, completion: ((UIImage?, Data?, URL) -> Void)? = nil, progress: ((Double) -> Void)? = nil) {
         syncOnMainThread {
             if urlStr.isEmpty {
                 return
             }
             let imageWidth: ImageWidth = needStaticGif ? imageWidth : (urlStr.isGif ? .original : imageWidth)
-            let ip = "121.5.152.193"
+            let ip = dogeChatIP
             var newURLStr = urlStr
             newURLStr = newURLStr.replacingOccurrences(of: "procwq.top", with: ip)
             if !newURLStr.contains(ip) && !newURLStr.hasPrefix("https://") {
@@ -115,16 +132,16 @@ class MediaLoader: NSObject, URLSessionDownloadDelegate {
                 return
             } else {
                 syncOnMainThread {
-                    let requestUrl = URL(string: "https://121.5.152.193/star/fileDownload/\(url.lastPathComponent.replacingOccurrences(of: "+", with: "%2B"))")!
+                    let requestUrl = URL(string: "https://\(dogeChatIP)/star/fileDownload/\(url.lastPathComponent.replacingOccurrences(of: "+", with: "%2B"))")!
                     var request = URLRequest(url: requestUrl)
                     let _cookie = cookie ?? self.cookie
                     if let cookie = _cookie, !cookie.isEmpty {
                         request.setValue("SESSION="+cookie, forHTTPHeaderField: "Cookie")
                         if downloadingInfos[fileName] != nil {
-                            downloadingInfos[fileName]?.append(ImageRequest(type: type, imageWidth: imageWidth, needStaticGif: needStaticGif, completionHandler: completion, progressBlock: progress))
+                            downloadingInfos[fileName]?.append(ImageRequest(type: type, imageWidth: imageWidth, needStaticGif: needStaticGif, onlyDataWhenImage: onlyDataWhenImage, completionHandler: completion, progressBlock: progress))
                             return
                         }
-                        downloadingInfos[fileName] = [ImageRequest(type: type, imageWidth: imageWidth, needStaticGif: needStaticGif, completionHandler: completion, progressBlock: progress)]
+                        downloadingInfos[fileName] = [ImageRequest(type: type, imageWidth: imageWidth, needStaticGif: needStaticGif, onlyDataWhenImage: onlyDataWhenImage, completionHandler: completion, progressBlock: progress)]
                         DispatchQueue.global().async {
                             self.session.downloadTask(with: request).resume()
                         }
@@ -184,7 +201,7 @@ class MediaLoader: NSObject, URLSessionDownloadDelegate {
                             request.completionHandler?(image, data, localURL!)
                         } else {
                             DispatchQueue.global().async {
-                                if let image = image {
+                                if let image = image, !request.onlyDataWhenImage {
                                     if (fileName.isGif && request.needStaticGif) || !fileName.isGif {
                                         data = compressEmojis(image, imageWidth: request.imageWidth, isGIF: fileName.isGif)
                                     }

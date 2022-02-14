@@ -58,7 +58,7 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        let height = MessageBaseCell.height(for: messages[indexPath.item], tableViewSize: tableView.frame.size)
+        let height = MessageBaseCell.height(for: messages[indexPath.item], tableViewSize: tableView.frame.size, userID: manager?.myInfo.userID)
         heightCache[messages[indexPath.row].uuid] = height
         return height
     }
@@ -105,13 +105,13 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
     }
     
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        guard self.purpose == .chat else { return nil }
         let saveEmoji = UIContextualAction(style: .normal, title: "收藏表情") { [weak tableView, weak self] action, view, handler in
             guard let self = self else { return }
             handler(true)
             if let cell = tableView?.cellForRow(at: indexPath) as? MessageImageCell {
                 if let imageUrl = cell.message.imageURL, cell.message.sendStatus == .success {
-                    let isGif = imageUrl.hasSuffix(".gif")
-                    self.manager?.starAndUploadEmoji(filePath: imageUrl, isGif: isGif)
+                    self.manager?.commonWebSocket.starAndUploadEmoji(emoji: Emoji(path: imageUrl, type: "file"))
                 }
             }
         }
@@ -165,8 +165,7 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
             }
             if let imageUrl = cell.message.imageURL, cell.message.sendStatus == .success {
                 starEmojiAction = UIAction(title: "收藏表情") { [weak self] (_) in
-                    let isGif = imageUrl.hasSuffix(".gif")
-                    self?.manager?.starAndUploadEmoji(filePath: imageUrl, isGif: isGif)
+                    self?.manager?.commonWebSocket.starAndUploadEmoji(emoji: Emoji(path: imageUrl, type: "file"))
                 }
             }
             if cell.message.messageType == .draw, let pkView = (cell as? MessageDrawCell)?.getPKView() {
@@ -321,6 +320,8 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
     func scrollViewDidScrollToTop(_ scrollView: UIScrollView) {
         didStopScroll()
     }
+    
+
     
     func decelerate() {
         if let uuids = self.tableView.indexPathsForVisibleRows?.map({ self.messages[$0.row].uuid }) {

@@ -68,7 +68,7 @@ extension ChatRoomViewController: UITableViewDragDelegate {
         let offset = cell.bounds.width - cell.contentView.bounds.width
         rect.origin.x += offset
         let path = UIBezierPath(roundedRect: rect, cornerRadius: targetView.layer.cornerRadius)
-        let avatarPath = UIBezierPath(roundedRect: cell.avatarImageView.frame, cornerRadius: cell.avatarImageView.layer.cornerRadius)
+        let avatarPath = UIBezierPath(roundedRect: cell.avatarContainer.frame, cornerRadius: cell.avatarContainer.layer.cornerRadius)
         path.append(avatarPath)
         preview.visiblePath = path
         return preview

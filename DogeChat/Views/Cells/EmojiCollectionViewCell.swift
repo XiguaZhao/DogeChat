@@ -9,6 +9,7 @@
 import UIKit
 import DogeChatNetwork
 import DACircularProgress
+import DogeChatCommonDefines
 
 protocol EmojiSelectCellLongPressDelegate: AnyObject {
     func didLongPressEmojiCell(_ cell: EmojiCollectionViewCell)
@@ -20,10 +21,9 @@ class EmojiCollectionViewCell: DogeChatBaseCollectionViewCell {
     static let cellID = "EmojiCollectionViewCell"
     let emojiView = UIImageView()
     let imageDownloader = SDWebImageManager.shared
-    var url: URL?
     weak var delegate: EmojiSelectCellLongPressDelegate?
     var indexPath: IndexPath!
-    var path: String!
+    var emoji: Emoji?
     let progress = DACircularProgressView()
     
     override func layoutSubviews() {
@@ -69,22 +69,22 @@ class EmojiCollectionViewCell: DogeChatBaseCollectionViewCell {
     }
     
     @objc func longPressAction(_ ges: UILongPressGestureRecognizer) {
+        guard ges.state == .ended else { return }
         delegate?.didLongPressEmojiCell(self)
     }
     
     
-    func displayEmoji(urlString: String) {
-        guard let url = URL(string: urlString) else { return }
-        self.url = url
-        let capturedUrl = url
-        MediaLoader.shared.requestImage(urlStr: urlString, type: .image, needStaticGif: true, completion: { [weak self] image, data, localURL in
-            guard let self = self, capturedUrl == self.url else { return }
+    func displayEmoji(emoji: Emoji) {
+        self.emoji = emoji
+        let path = emoji.path
+        MediaLoader.shared.requestImage(urlStr: path, type: .image, needStaticGif: true, completion: { [weak self] image, data, localURL in
+            guard let self = self, self.emoji?.path == path else { return }
             if let data = data {
                 self.emojiView.image = UIImage(data: data)
             }
-        }) { progress in
-            if self.url == capturedUrl {
-                self.delegate?.updateDownloadProgress(self, progress: progress, path: urlString)
+        }) { [weak self] progress in
+            if let self = self, self.emoji?.path == path {
+                self.delegate?.updateDownloadProgress(self, progress: progress, path: path)
                 self.progress.isHidden = progress >= 1
                 self.progress.setProgress(progress, animated: false)
             }

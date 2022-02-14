@@ -29,6 +29,9 @@ class MediaBrowserSceneDelegate: UIResponder, UIWindowSceneDelegate {
                 if let index = userInfo["index"] as? Int {
                     mediaVC.targetIndex = index
                 }
+                if let purposeInt = userInfo["purpose"] as? Int, let purpose = MediaVCPurpose(rawValue: purposeInt) {
+                    mediaVC.purpose = purpose
+                }
                 vc = mediaVC
             } else if let url = userInfo["url"] as? String {
                 let webVC = WebViewController()

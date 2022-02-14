@@ -1,6 +1,5 @@
-module DogeChatUniversal {
+framework module DogeChatUniversal {
   umbrella header "DogeChatUniversal-iOS-umbrella.h"
-  exclude header "DogeChatUniversal-watchOS-umbrella.h"
 
   export *
   module * { export * }

@@ -31,6 +31,7 @@ extension ChatRoomViewController: MessageInputDelegate, VoiceRecordDelegate {
             cameraAction()
         case .photo:
             imagePickerType = .image
+            pickerPurpose = .send
             if #available(iOS 14, *) {
                 var config = PHPickerConfiguration()
                 config.filter = PHPickerFilter.any(of: [.images])
@@ -43,6 +44,7 @@ extension ChatRoomViewController: MessageInputDelegate, VoiceRecordDelegate {
             }
         case .livePhoto:
             imagePickerType = .livePhoto
+            pickerPurpose = .send
             if #available(iOS 14, *) {
                 var config = PHPickerConfiguration()
                 config.filter = PHPickerFilter.livePhotos
@@ -100,22 +102,7 @@ extension ChatRoomViewController: MessageInputDelegate, VoiceRecordDelegate {
         locationVC.delegate = self
         self.navigationController?.pushViewController(locationVC, animated: true)
     }
-        
-    @objc func emojiButtonTapped() {
-        emojiSelectView.collectionView.reloadData()
-        manager?.getEmojis { _ in
-        }
-        if messageInputBar.emojiButton.image(for: .normal)?.accessibilityIdentifier == "pin" {
-            messageInputBar.emojiButtonStatus = .pin
-        }
-        if #available(iOS 13, *) {
-            let image = UIImage(systemName: "pin.circle.fill", withConfiguration: MessageInputView.largeConfig as? UIImage.Configuration)
-            image?.accessibilityIdentifier = "pin"
-            messageInputBar.emojiButton.setImage(image, for: .normal)
-        }
-        
-    }
-    
+            
     func addButtonTapped() {
         messageInputBar.textViewResign()
         let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
@@ -199,83 +186,11 @@ extension ChatRoomViewController: MessageInputDelegate, VoiceRecordDelegate {
         self.messageSender.voiceInfo = (url, duration)
         _ = self.messageSender.sendVoice(friends: [friend])
     }
-    
-    @available(iOS 14, *)
-    func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
-        picker.dismiss(animated: true, completion: nil)
-        if results.isEmpty { return }
-        let isLivePhotoOnly = picker.configuration.filter == .livePhotos
-        self.messageSender.pickedLivePhotos.removeAll()
-        if isLivePhotoOnly {
-            for result in results {
-                if result.itemProvider.canLoadObject(ofClass: PHLivePhoto.self) {
-                    result.itemProvider.loadObject(ofClass: PHLivePhoto.self) {[self] livePhoto, error in
-                        if let live = livePhoto as? PHLivePhoto {
-                            LivePhotoGenerator().generate(for: live, windowWidth: self.tableView.frame.width) { livePhoto, _, _ in
-                                let imageURL = livePhoto.value(forKey: "imageURL") as! URL
-                                let videoURL = livePhoto.value(forKey: "videoURL") as! URL
-                                self.messageSender.pickedLivePhotos = [(imageURL, videoURL, livePhoto.size, livePhoto)]
-                                self.sendLivePhotos()
-                            }
-                        }
-                    }
-                    continue
-                }
-            }
-        } else {
-            processItemProviders(results.map { $0.itemProvider })
-        }
-    }
-    
+        
     func processItemProviders(_ items: [NSItemProvider]) {
         messageSender.processItemProviders(items, friends: [self.friend]) { messages in
             self.insertNewMessageCell(messages)
         }
     }
         
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
-        if let type = info[.mediaType] as? String, type == "public.movie" {
-            if let videoURL = info[.mediaURL] as? URL {
-                self.messageSender.compressAndSendVideo(videoURL, friends: [friend], completion: nil)
-            }
-            picker.dismiss(animated: true, completion: nil)
-            return
-        }
-        guard let image = info[.originalImage] as? UIImage else {
-            picker.dismiss(animated: true, completion: nil)
-            return
-        }
-        var isGif = false
-        var originalUrl: URL?
-        if imagePickerType == .image {
-            if let originalUrl_ = info[.imageURL] as? URL {
-                isGif = originalUrl_.absoluteString.hasSuffix(".gif")
-                originalUrl = originalUrl_
-            }
-            self.messageSender.latestPickedImageInfos = [(isGif ? (nil, originalUrl!, image.size) : compressImage(image))]
-            picker.dismiss(animated: true) {
-                guard !isGif && picker.sourceType != .camera else {
-                    self.confirmSendPhoto()
-                    return
-                }
-                let vc = ImageConfirmViewController()
-                if let image = self.messageSender.latestPickedImageInfos.first?.image {
-                    vc.image = image
-                } else {
-                    vc.image = image
-                }
-                self.navigationController?.pushViewController(vc, animated: true)
-            }
-        } else if imagePickerType == .livePhoto {
-            picker.dismiss(animated: true, completion: nil)
-            if let live = info[.livePhoto] as? PHLivePhoto {
-                LivePhotoGenerator().generate(for: live, windowWidth: self.tableView.frame.width) { livePhoto, imageURL, videoURL in
-                    self.messageSender.pickedLivePhotos = [(imageURL, videoURL, livePhoto.size, livePhoto)]
-                    self.sendLivePhotos()
-                }
-            }
-        }
-    }
-    
-    
 }

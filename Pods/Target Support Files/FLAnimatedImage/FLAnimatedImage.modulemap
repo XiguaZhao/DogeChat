@@ -1,4 +1,4 @@
-module FLAnimatedImage {
+framework module FLAnimatedImage {
   umbrella header "FLAnimatedImage-umbrella.h"
 
   export *

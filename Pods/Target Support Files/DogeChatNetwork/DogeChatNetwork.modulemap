@@ -1,4 +1,4 @@
-module DogeChatNetwork {
+framework module DogeChatNetwork {
   umbrella header "DogeChatNetwork-umbrella.h"
 
   export *

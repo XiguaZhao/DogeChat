@@ -1,4 +1,4 @@
-module Pods_DogeChat {
+framework module Pods_DogeChat {
   umbrella header "Pods-DogeChat-umbrella.h"
 
   export *

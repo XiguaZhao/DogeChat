@@ -65,6 +65,9 @@ extension ChatRoomViewController: UITableViewDropDelegate {
     }
         
     func tableView(_ tableView: UITableView, dropSessionDidUpdate session: UIDropSession, withDestinationIndexPath destinationIndexPath: IndexPath?) -> UITableViewDropProposal {
+        if let info = session.localDragSession?.items.first?.localObject as? [String : Any], let userID = info["userID"] as? String, userID == friend.userID {
+            return .init(operation: .forbidden)
+        }
         return .init(operation: .copy)
     }
 }

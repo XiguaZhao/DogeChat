@@ -74,7 +74,6 @@ class WebSocketManagerAdapter: NSObject {
     }
     
     func registerNotification() {
-        NotificationCenter.default.addObserver(self, selector: #selector(emojiPathsFetched(noti:)), name: .emojiPathsFetched, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(sendToken(noti:)), name: .sendToken, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(startCall(noti:)), name: .startCall, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(preloadEmojiPaths(noti:)), name: .preloadEmojiPaths, object: nil)
@@ -95,12 +94,6 @@ class WebSocketManagerAdapter: NSObject {
         DogeChat.playSound(needSound: needSound)
     }
     
-    
-    @objc func emojiPathsFetched(noti: Notification) {
-        if noti.object as? String != self.username { return }
-        let pathToID = noti.userInfo as! [String : String]
-        EmojiSelectView.emojiPathToId = pathToID
-    }
     
     @objc func sendToken(noti: Notification) {
         if noti.object as? String != self.username { return }
@@ -128,8 +121,7 @@ class WebSocketManagerAdapter: NSObject {
     @objc func preloadEmojiPaths(noti: Notification) {
         if noti.object as? String != self.username { return }
         if !AppDelegate.shared.launchedByPushAction {
-            manager.getEmojis { (paths) in
-                HttpRequestsManager.emojiPaths = paths
+            manager.getEmojis { _ in
             }
         }
     }

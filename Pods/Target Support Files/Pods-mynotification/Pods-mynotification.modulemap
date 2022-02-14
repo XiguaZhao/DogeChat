@@ -1,4 +1,4 @@
-module Pods_mynotification {
+framework module Pods_mynotification {
   umbrella header "Pods-mynotification-umbrella.h"
 
   export *

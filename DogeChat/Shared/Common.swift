@@ -29,7 +29,7 @@ let tableViewCellTopBottomPadding: CGFloat = 5
 var fontSizeScale: CGFloat = 1
 let maxFontSize: CGFloat = 60
 
-let debugUsers = ["赵锡光", "username2", "username", "Pino", "靓仔2号", "靓仔三号", "西瓜", "仙城最靓的仔", "最强王者"]
+let debugUsers = ["赵锡光", "username2", "username", "Pino", "靓仔2号", "靓仔三号", "西瓜", "仙城最靓的仔", "最强王者", "冰淇淋", "🐷🐷"]
 
 
 public func syncOnMainThread(block: () -> Void) {
@@ -219,14 +219,26 @@ func sizeForImageOrVideo(_ message: Message) -> CGSize? {
     return sizeFromStr(str)
 }
 
-func sizeFromStr(_ str: String) -> CGSize? {
+func sizeFromStr(_ str: String, preferWidth: Bool? = true, length: CGFloat? = nil) -> CGSize? {
     var str = str as NSString
     str = str.replacingOccurrences(of: ".jpeg", with: "") as NSString
     str = str.replacingOccurrences(of: ".gif", with: "") as NSString
     str = str.replacingOccurrences(of: ".mov", with: "") as NSString
     var components = str.components(separatedBy: "+")
     if components.count >= 2, let height = Int(components.removeLast()), let width = Int(components.removeLast()) {
-        return CGSize(width: width, height: height)
+        if preferWidth ?? false {
+            if let length = length {
+                return CGSize(width: length, height: length * CGFloat(height) / CGFloat(width))
+            } else {
+                return CGSize(width: width, height: height)
+            }
+        } else {
+            if let length = length {
+                return CGSize(width: length * CGFloat(width) / CGFloat(height), height: length)
+            } else {
+                return CGSize(width: width, height: height)
+            }
+        }
     }
     return nil
 }

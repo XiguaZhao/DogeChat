@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "6D322FEB11A16B73D4ED581AFD5F5385"
-               BuildableName = "libRSAiOSWatchOS-iOS.a"
+               BuildableName = "RSAiOSWatchOS.framework"
                BlueprintName = "RSAiOSWatchOS-iOS"
                ReferencedContainer = "container:Pods.xcodeproj">
             </BuildableReference>

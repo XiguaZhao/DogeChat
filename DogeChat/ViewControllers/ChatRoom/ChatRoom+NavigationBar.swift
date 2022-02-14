@@ -64,13 +64,26 @@ extension ChatRoomViewController {
     }
     
     func makeTitleView() -> UIStackView {
+        titleAvatarContainer.addSubview(titleAvatar)
         titleAvatar.contentMode = .scaleAspectFill
-        titleAvatar.mas_makeConstraints { make in
+        titleAvatarContainer.mas_makeConstraints { make in
             make?.width.height().mas_equalTo()(36)
         }
-        titleAvatar.layer.cornerRadius = 18
-        titleAvatar.layer.masksToBounds = true
-        let stackView = UIStackView(arrangedSubviews: [titleLabel, titleAvatar])
+        let finalSize: CGSize
+        let width: CGFloat = 36
+        if let size = sizeFromStr(friendAvatarUrl), let avatarSize = sizeFromStr(friendAvatarUrl, preferWidth: size.width < size.height, length: width) {
+            finalSize = avatarSize
+        } else {
+            finalSize = CGSize(width: width, height: width)
+        }
+        titleAvatar.mas_makeConstraints { make in
+            make?.centerX.centerY().equalTo()(titleAvatarContainer)
+            make?.width.mas_equalTo()(finalSize.width)
+            make?.height.mas_equalTo()(finalSize.height)
+        }
+        titleAvatarContainer.layer.cornerRadius = 18
+        titleAvatarContainer.layer.masksToBounds = true
+        let stackView = UIStackView(arrangedSubviews: [titleLabel, titleAvatarContainer])
         stackView.spacing = 2
         updateTitleAvatar()
         return stackView
@@ -118,10 +131,19 @@ extension ChatRoomViewController {
         guard sender.state == .ended else {
             return
         }
+        playHaptic()
         let browser = MediaBrowserViewController()
         browser.imagePaths = [self.friendAvatarUrl]
-        self.splitViewController?.present(browser, animated: true, completion: nil)
-        playHaptic()
+        browser.purpose = .avatar
+        browser.modalPresentationStyle = .fullScreen
+        browser.transitioningDelegate = DogeChatTransitionManager.shared
+        DogeChatTransitionManager.shared.fromDataSource = self
+        DogeChatTransitionManager.shared.toDataSource = self
+        self.transitionSourceView = titleAvatar
+        self.transitionToView = titleAvatar
+        self.transitionToRadiusView = titleAvatarContainer
+        self.transitionFromCornerRadiusView = titleAvatarContainer
+        self.present(browser, animated: true, completion: nil)
     }
     
     @objc func groupInfoChange(noti: Notification) {

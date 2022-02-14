@@ -1,6 +1,5 @@
-module DogeChatCommonDefines {
+framework module DogeChatCommonDefines {
   umbrella header "DogeChatCommonDefines-iOS-umbrella.h"
-  exclude header "DogeChatCommonDefines-watchOS-umbrella.h"
 
   export *
   module * { export * }

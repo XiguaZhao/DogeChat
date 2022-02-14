@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "C650A1BAC55265B0D2C33A6353B4F626"
-               BuildableName = "libDogeChatCommonDefines-iOS.a"
+               BuildableName = "DogeChatCommonDefines.framework"
                BlueprintName = "DogeChatCommonDefines-iOS"
                ReferencedContainer = "container:Pods.xcodeproj">
             </BuildableReference>

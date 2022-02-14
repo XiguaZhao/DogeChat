@@ -24,12 +24,9 @@ class MessageImageCell: MessageImageKindCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         animatedImageView = FLAnimatedImageView()
-        animatedImageView.layer.masksToBounds = true
         animatedImageView.contentMode = .scaleAspectFit
-        contentView.addSubview(animatedImageView)
         addGestureForImageView()
-        indicationNeighborView = animatedImageView
-        
+        addMainView(animatedImageView)
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -78,7 +75,7 @@ class MessageImageCell: MessageImageKindCell {
     }
     
     func layoutImageView() {
-        layoutImageKindView(animatedImageView)
+        layoutImageKindView()
     }
     
     func downloadImageIfNeeded() {
@@ -101,7 +98,7 @@ class MessageImageCell: MessageImageKindCell {
         }
         let capturedMessage = message
         // 接下来进入下载操作
-        MediaLoader.shared.requestImage(urlStr: imageUrl, type: .image, syncIfCan: message.syncGetMedia, imageWidth: isGif ? .original : .width300) { [self] image, data, _ in
+        MediaLoader.shared.requestImage(urlStr: imageUrl, type: .image, syncIfCan: message.syncGetMedia, imageWidth: (isGif || message.drawImagePath != nil) ? .original : .width300, onlyDataWhenImage: message.drawImagePath != nil) { [self] image, data, _ in
                 guard let capturedMessage = capturedMessage, capturedMessage.imageURL == message.imageURL, let data = data else {
                     return
                 }

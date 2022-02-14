@@ -127,21 +127,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }, progress: nil)
     }
     
-    func checkIfShouldRemoveCache() {
-        DispatchQueue.main.async {
-            let size = MediaLoader.shared.cacheSize.values.reduce(0, +)
-            if size / 1024 / 1024 > 50 {
-                let average = size / MediaLoader.shared.cache.count
-                for (cacheKey, size) in MediaLoader.shared.cacheSize {
-                    if size > average {
-                        MediaLoader.shared.cache.removeValue(forKey: cacheKey)
-                        MediaLoader.shared.cacheSize.removeValue(forKey: cacheKey)
-                    }
-                }
-            }
-        }
-    }
-    
     @available(iOS 13.0, *)
     func application(_ application: UIApplication, didDiscardSceneSessions sceneSessions: Set<UISceneSession>) {
     }
@@ -200,18 +185,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         application.applicationIconBadgeNumber = 0
     }
     
+    #if !targetEnvironment(macCatalyst)
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
         guard let infos = notification.request.content.userInfo["aps"] as? [String : Any] else {
             completionHandler([])
             return
         }
         processRevoke(infos)
-        if let delegate = self.remoteNotiDelegate, delegate.showPresentRemoteNotification(infos) {
+        if let delegate = self.remoteNotiDelegate, delegate.shouldPresentRemoteNotification(infos) {
             completionHandler([.alert])
         } else {
             completionHandler([])
         }
     }
+    #endif
                 
     // app 在前台运行中收到通知会调用
     func application(
@@ -265,25 +252,30 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         } else {
             NotificationManager.shared.processRemoteNotification(aps)
         }
-        self.latestRemoteNotiInfo = NotificationManager.getRemoteNotiInfo(aps)
         switch response.actionIdentifier {
         case "REPLY_ACTION":
-            if let textResponse = response as? UNTextInputNotificationResponse,
-               let username = getUsernameAndPassword()?.username {
-                if #available(iOS 13.0, *) {
-                    if let sceneDelegate = SceneDelegate.usernameToDelegate[username] {
-                        let input = textResponse.userText
-                        sceneDelegate.notificationManager.actionCompletionHandler = completionHandler
-                        sceneDelegate.notificationManager.processReplyAction(replyContent: input)
-                    }
+            if let textResponse = response as? UNTextInputNotificationResponse {
+                let input = textResponse.userText
+                if UIApplication.shared.applicationState != .background, let delegate = self.remoteNotiDelegate, delegate.quickReply(aps, input: input) {
+                    completionHandler()
                 } else {
-                    NotificationManager.shared.actionCompletionHandler = completionHandler
-                    NotificationManager.shared.processReplyAction(replyContent: textResponse.userText)
+                    if let username = getUsernameAndPassword()?.username {
+                        if #available(iOS 13.0, *) {
+                            if let sceneDelegate = SceneDelegate.usernameToDelegate[username] {
+                                sceneDelegate.notificationManager.actionCompletionHandler = completionHandler
+                                sceneDelegate.notificationManager.processReplyAction(replyContent: input)
+                            }
+                        } else {
+                            NotificationManager.shared.actionCompletionHandler = completionHandler
+                            NotificationManager.shared.processReplyAction(replyContent: textResponse.userText)
+                        }
+                    }
                 }
             }
         case "DO_NOT_DISTURT_ACTION":
             break
         default:
+            self.latestRemoteNotiInfo = NotificationManager.getRemoteNotiInfo(aps)
             break
         }
     }

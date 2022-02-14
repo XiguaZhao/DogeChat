@@ -110,7 +110,10 @@ class MessageInputView: DogeChatStaticBlurView {
             videoButton.setImage(UIImage(named: "video"), for: .normal)
             locationButton.setImage(UIImage(named: "dingwei"), for: .normal)
         }
-        if #available(iOS 13, *) {
+                
+        if #available(iOS 15, *) {
+            photoButton.setImage(UIImage(systemName: "photo.circle.fill", withConfiguration: Self.largeConfig as? UIImage.Configuration), for: .normal)
+        } else if #available(iOS 13, *) {
             photoButton.setImage(UIImage(named: "xiangce"), for: .normal)
         } else {
             photoButton.setImage(UIImage(named: "xiangce-2"), for: .normal)
@@ -158,7 +161,7 @@ class MessageInputView: DogeChatStaticBlurView {
         if #available(iOS 13, *) {
             toolStack.arrangedSubviews.forEach { button in
                 button.mas_makeConstraints { make in
-                    make?.width.height().mas_lessThanOrEqualTo()(button == photoButton ? width - 3 : width)
+                    make?.width.height().mas_lessThanOrEqualTo()(width)
                 }
             }
         } else {

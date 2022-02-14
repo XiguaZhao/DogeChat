@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "CA618B8C7A745F327CC6DAA2B60F6F83"
-               BuildableName = "libSwiftyRSA-watchOS.a"
+               BuildableName = "SwiftyRSA.framework"
                BlueprintName = "SwiftyRSA-watchOS"
                ReferencedContainer = "container:Pods.xcodeproj">
             </BuildableReference>

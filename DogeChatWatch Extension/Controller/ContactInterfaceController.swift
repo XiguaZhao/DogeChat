@@ -216,6 +216,10 @@ class ContactInterfaceController: WKInterfaceController {
 }
 
 extension ContactInterfaceController: MessageDelegate {
+    func readMessageUpdate(friendID: String, messageID: Int) {
+        
+    }
+    
     func asyncReconnect() {
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) { [weak self] in
             guard let self = self, WKExtension.shared().applicationState == .active else { return }

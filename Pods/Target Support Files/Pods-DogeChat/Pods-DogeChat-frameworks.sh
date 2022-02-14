@@ -113,6 +113,7 @@ install_dsym() {
       rsync --delete -av "${RSYNC_PROTECT_TMP_FILES[@]}" --links --filter "- CVS/" --filter "- .svn/" --filter "- .git/" --filter "- .hg/" --filter "- Headers" --filter "- PrivateHeaders" --filter "- Modules" "${DERIVED_FILES_DIR}/${basename}.dSYM" "${DWARF_DSYM_FOLDER_PATH}"
     else
       # The dSYM was not stripped at all, in this case touch a fake folder so the input/output paths from Xcode do not reexecute this script because the file is missing.
+      mkdir -p "${DWARF_DSYM_FOLDER_PATH}"
       touch "${DWARF_DSYM_FOLDER_PATH}/${basename}.dSYM"
     fi
   fi
@@ -175,10 +176,39 @@ code_sign_if_enabled() {
 }
 
 if [[ "$CONFIGURATION" == "Debug" ]]; then
-  install_framework "${PODS_ROOT}/LookinServer/LookinServer.framework"
+  install_framework "${BUILT_PRODUCTS_DIR}/AFNetworking/AFNetworking.framework"
+  install_framework "${BUILT_PRODUCTS_DIR}/DACircularProgress/DACircularProgress.framework"
+  install_framework "${BUILT_PRODUCTS_DIR}/DataCompression/DataCompression.framework"
+  install_framework "${BUILT_PRODUCTS_DIR}/DogeChatCommonDefines-iOS/DogeChatCommonDefines.framework"
+  install_framework "${BUILT_PRODUCTS_DIR}/DogeChatNetwork/DogeChatNetwork.framework"
+  install_framework "${BUILT_PRODUCTS_DIR}/DogeChatUniversal-iOS/DogeChatUniversal.framework"
+  install_framework "${BUILT_PRODUCTS_DIR}/DogeChatVideoUtil/DogeChatVideoUtil.framework"
+  install_framework "${BUILT_PRODUCTS_DIR}/FLAnimatedImage/FLAnimatedImage.framework"
+  install_framework "${BUILT_PRODUCTS_DIR}/LookinServer/LookinServer.framework"
+  install_framework "${BUILT_PRODUCTS_DIR}/MJRefresh/MJRefresh.framework"
+  install_framework "${BUILT_PRODUCTS_DIR}/Masonry/Masonry.framework"
+  install_framework "${BUILT_PRODUCTS_DIR}/RSAiOSWatchOS-iOS/RSAiOSWatchOS.framework"
+  install_framework "${BUILT_PRODUCTS_DIR}/SDWebImage/SDWebImage.framework"
+  install_framework "${BUILT_PRODUCTS_DIR}/Starscream/Starscream.framework"
+  install_framework "${BUILT_PRODUCTS_DIR}/SwiftyJSON-iOS/SwiftyJSON.framework"
+  install_framework "${BUILT_PRODUCTS_DIR}/SwiftyRSA-iOS/SwiftyRSA.framework"
 fi
 if [[ "$CONFIGURATION" == "Release" ]]; then
-  install_framework "${PODS_ROOT}/LookinServer/LookinServer.framework"
+  install_framework "${BUILT_PRODUCTS_DIR}/AFNetworking/AFNetworking.framework"
+  install_framework "${BUILT_PRODUCTS_DIR}/DACircularProgress/DACircularProgress.framework"
+  install_framework "${BUILT_PRODUCTS_DIR}/DataCompression/DataCompression.framework"
+  install_framework "${BUILT_PRODUCTS_DIR}/DogeChatCommonDefines-iOS/DogeChatCommonDefines.framework"
+  install_framework "${BUILT_PRODUCTS_DIR}/DogeChatNetwork/DogeChatNetwork.framework"
+  install_framework "${BUILT_PRODUCTS_DIR}/DogeChatUniversal-iOS/DogeChatUniversal.framework"
+  install_framework "${BUILT_PRODUCTS_DIR}/DogeChatVideoUtil/DogeChatVideoUtil.framework"
+  install_framework "${BUILT_PRODUCTS_DIR}/FLAnimatedImage/FLAnimatedImage.framework"
+  install_framework "${BUILT_PRODUCTS_DIR}/MJRefresh/MJRefresh.framework"
+  install_framework "${BUILT_PRODUCTS_DIR}/Masonry/Masonry.framework"
+  install_framework "${BUILT_PRODUCTS_DIR}/RSAiOSWatchOS-iOS/RSAiOSWatchOS.framework"
+  install_framework "${BUILT_PRODUCTS_DIR}/SDWebImage/SDWebImage.framework"
+  install_framework "${BUILT_PRODUCTS_DIR}/Starscream/Starscream.framework"
+  install_framework "${BUILT_PRODUCTS_DIR}/SwiftyJSON-iOS/SwiftyJSON.framework"
+  install_framework "${BUILT_PRODUCTS_DIR}/SwiftyRSA-iOS/SwiftyRSA.framework"
 fi
 if [ "${COCOAPODS_PARALLEL_CODE_SIGN}" == "true" ]; then
   wait

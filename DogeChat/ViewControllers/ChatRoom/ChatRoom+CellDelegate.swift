@@ -12,10 +12,16 @@ import UIKit
 import PencilKit
 import DogeChatCommonDefines
 
-extension ChatRoomViewController: MessageTableViewCellDelegate {
+extension ChatRoomViewController: MessageTableViewCellDelegate, TransitionFromDataSource, TransitionToDataSource {
+    
+    
+    func processingMedia(finished: Bool) {
+        DispatchQueue.main.async {
+            self.navigationItem.title = finished ? self.friendName : "正在处理、上传数据..."
+        }
+    }
     
     func longPressAvatar(_ cell: MessageBaseCell, ges: UILongPressGestureRecognizer!) {
-        guard let group = self.friend as? Group, let manager = self.manager else { return }
         if let index = tableView.indexPath(for: cell)?.row {
             let message = messages[index]
             findGroupMember(userID: message.senderUserID) { [weak self] targetMember in
@@ -73,34 +79,103 @@ extension ChatRoomViewController: MessageTableViewCellDelegate {
     }
         
     func mediaViewTapped(_ cell: MessageBaseCell, path: String, isAvatar: Bool) {
+        if isAvatar {
+            self.transitionSourceView = cell.avatarImageView
+            self.transitionFromCornerRadiusView = cell.avatarContainer
+        } else {
+            self.transitionSourceView = (cell as? MessageImageKindCell)?.container.subviews.first
+            self.transitionFromCornerRadiusView = (cell as? MessageImageKindCell)?.container
+        }
         messageInputBar.textViewResign()
-        let browser = MediaBrowserViewController()
         let paths: [String]
         var targetIndex = 0
         if !isAvatar {
-            paths = (self.messages.filter { $0.messageType == .image || $0.messageType == .livePhoto || $0.messageType == .video }).map { $0.text }
-            browser.imagePaths = paths
-            if let index = paths.firstIndex(of: path) {
-                browser.targetIndex = index
+            let messages = (self.messages.filter { $0.messageType == .image || $0.messageType == .livePhoto || $0.messageType == .video })
+            paths = messages.map { $0.text }
+            if let index = self.tableView.indexPath(for: cell)?.row {
+                targetIndex = messages.firstIndex(of: self.messages[index]) ?? 0
+            } else if let index = paths.firstIndex(of: path) {
                 targetIndex = index
             }
         } else {
             paths = [path]
-            browser.imagePaths = [path]
+//            self.makeBrowser(paths: paths, purpose: .avatar)
+//            return
         }
-        browser.modalPresentationStyle = .fullScreen
         if !isMac() {
-            self.navigationController?.present(browser, animated: true, completion: nil)
+            let browser = MediaBrowserViewController()
+            browser.customData = tableView.indexPath(for:cell)?.row
+            browser.imagePaths = paths
+            browser.targetIndex = targetIndex
+            browser.purpose = isAvatar ? .avatar : .normal
+            browser.modalPresentationStyle = .fullScreen
+            browser.transitioningDelegate = DogeChatTransitionManager.shared
+            DogeChatTransitionManager.shared.fromDataSource = self
+            DogeChatTransitionManager.shared.toDataSource = self
+            self.present(browser, animated: true, completion: nil)
         } else {
             if #available(iOS 13.0, *) {
                 let option = UIScene.ActivationRequestOptions()
                 option.requestingScene = self.view.window?.windowScene
-                UIApplication.shared.requestSceneSessionActivation(nil, userActivity: self.wrapMediaBrowserUserActivity(paths: paths, targetIndex: targetIndex), options: option, errorHandler: nil)
+                UIApplication.shared.requestSceneSessionActivation(nil, userActivity: ChatRoomViewController.wrapMediaBrowserUserActivity(paths: paths, targetIndex: targetIndex, purpose: isAvatar ? .avatar : .normal), options: option, errorHandler: nil)
             }
         }
     }
     
-    func wrapMediaBrowserUserActivity(paths: [String]?, url: String? = nil, targetIndex: Int? = 0) -> NSUserActivity {
+    @objc func mediaBrowserPathChange(_ noti: Notification) {
+        guard !isMac(), let vc = noti.object as? MediaBrowserViewController,
+        let userInfo = noti.userInfo,
+        let targetIndex = userInfo["targetIndex"] as? Int,
+        let path = userInfo["path"] as? String,
+        let purpose = userInfo["purpose"] as? MediaVCPurpose else { return }
+        if purpose == .normal {
+            let mediaMessages = (self.messages.filter { $0.messageType == .image || $0.messageType == .livePhoto || $0.messageType == .video })
+            var index: Int?
+            if mediaMessages.count > targetIndex {
+                index = self.messages.firstIndex(of: mediaMessages[targetIndex])
+            } else {
+                index = self.messages.firstIndex(where: { $0.text == path })
+            }
+            if let index = index  {
+                let indexPath = IndexPath(row: index, section: 0)
+                if let cell = self.tableView.cellForRow(at: indexPath) as? MessageImageKindCell {
+                    let container = cell.container
+                    let converted = container.convert(container.bounds, to: self.view)
+                    if converted.intersects(self.navigationController?.navigationBar.frame ?? CGRect.zero) || converted.intersects(messageInputBar.frame) {
+                        self.tableView.scrollToRow(at: indexPath, at: .middle, animated: false)
+                    }
+                    self.transitionToView = container.subviews.first
+                    self.transitionToRadiusView = container
+                } else {
+                    tableView.scrollToRow(at: indexPath, at: .middle, animated: false)
+                    DispatchQueue.main.async { [self] in
+                        if let cell = tableView.cellForRow(at: indexPath) as? MessageImageKindCell {
+                            self.transitionToView = cell.container.subviews.first
+                            self.transitionToRadiusView = cell.container
+                        }
+                    }
+                }
+            }
+        } else {
+            var target: MessageBaseCell?
+            if let index = vc.customData as? Int {
+                if let cell = tableView.cellForRow(at: IndexPath(row: index, section: 0)) as? MessageBaseCell {
+                    target = cell
+                } else {
+                    let cells = tableView.visibleCells as! [MessageBaseCell]
+                    if let _target = cells.first(where: { $0.message.avatarUrl == path }) {
+                        target = _target
+                    }
+                }
+            }
+            if let target = target {
+                self.transitionToView = target.avatarImageView
+                self.transitionToRadiusView = target.avatarContainer
+            }
+        }
+    }
+    
+    static func wrapMediaBrowserUserActivity(paths: [String]?, url: String? = nil, targetIndex: Int? = 0, purpose: MediaVCPurpose) -> NSUserActivity {
         let userActivity = NSUserActivity(activityType: userActivityID)
         userActivity.title = AppDelegate.mediaBrowserWindow
         var userInfo = [String: Any]()
@@ -113,6 +188,7 @@ extension ChatRoomViewController: MessageTableViewCellDelegate {
         if let url = url {
             userInfo["url"] = url
         }
+        userInfo["purpose"] = purpose.rawValue
         userActivity.userInfo = userInfo
         return userActivity
     }
@@ -159,7 +235,7 @@ extension ChatRoomViewController: MessageTableViewCellDelegate {
             messages[oldIndexPath.item].emojisInfo.remove(at: messageIndex)
             let newPoint = gesture.location(in: tableView.cellForRow(at: newIndexPath)?.contentView)
             emojiInfo.x = newPoint.x / UIScreen.main.bounds.width
-            emojiInfo.y = newPoint.y / MessageBaseCell.height(for: messages[newIndexPath.item], tableViewSize: tableView.frame.size)
+            emojiInfo.y = newPoint.y / MessageBaseCell.height(for: messages[newIndexPath.item], tableViewSize: tableView.frame.size, userID: manager.myInfo.userID)
             emojiInfo.lastModifiedBy = manager.messageManager.myName
             emojiInfo.lastModifiedUserId = manager.myInfo.userID ?? ""
             messages[newIndexPath.item].emojisInfo.append(emojiInfo)
@@ -240,8 +316,11 @@ extension ChatRoomViewController: MessageTableViewCellDelegate {
             items.append(revoke)
         }
         if message.messageType == .image {
-            let saveEmoji = UIMenuItem(title: "收藏表情", action: #selector(saveEmojiMenuItemAction(sender:)))
+            let saveEmoji = UIMenuItem(title: "收藏私有", action: #selector(saveEmojiMenuItemAction(sender:)))
             items.append(saveEmoji)
+            if debugUsers.contains(self.username) {
+                items.append(UIMenuItem(title: "收藏公共", action: #selector(saveEmojiCommonMenuItemAction(sender:))))
+            }
         }
         let multiSele = UIMenuItem(title: "多选", action: #selector(multiSeleMenuItemAction(sender:)))
         items.append(multiSele)
@@ -301,8 +380,23 @@ extension ChatRoomViewController: MessageTableViewCellDelegate {
         menuItemDone()
         guard let cell = activeMenuCell else { return }
         if let imageUrl = cell.message.imageURL, cell.message.sendStatus == .success {
-            let isGif = imageUrl.hasSuffix(".gif")
-            self.manager?.starAndUploadEmoji(filePath: imageUrl, isGif: isGif)
+            let emoji  = Emoji(path: imageUrl, type: Emoji.AddEmojiType.favorite.rawValue)
+            saveEmoji(emoji)
+        }
+    }
+    
+    @objc func saveEmojiCommonMenuItemAction(sender: UIMenuController) {
+        menuItemDone()
+        guard let cell = activeMenuCell else { return }
+        if let imageUrl = cell.message.imageURL, cell.message.sendStatus == .success {
+            let emoji = Emoji(path: imageUrl, type: Emoji.AddEmojiType.common.rawValue)
+            saveEmoji(emoji)
+        }
+    }
+    
+    func saveEmoji(_ emoji: Emoji) {
+        self.manager?.commonWebSocket.starAndUploadEmoji(emoji: emoji) { success in
+            self.makeAutoAlert(message: success ? "成功":"失败", detail: nil, showTime: 0.2, completion: nil)
         }
     }
     

@@ -22,7 +22,7 @@ class ProfileAvatarCell: DogeChatTableViewCell {
 
         contentView.addSubview(avatarImageView)
         
-        avatarImageView.contentMode = .scaleAspectFit
+        avatarImageView.contentMode = .scaleAspectFill
         avatarImageView.layer.masksToBounds = true
         avatarImageView.layer.cornerRadius = width / 2
         avatarImageView.mas_makeConstraints { make in

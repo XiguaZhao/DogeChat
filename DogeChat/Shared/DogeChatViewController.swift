@@ -74,6 +74,10 @@ class DogeChatViewController: UIViewController, UIPopoverPresentationControllerD
         }
     }
     
+    deinit {
+        print("\(self)  deinit")
+    }
+    
     func toggleBlurView(needBlur: Bool, needAnimation: Bool) {
         if self.username.isEmpty, let myName = (self.splitViewController as? DogeChatSplitViewController)?.findContactVC()?.username {
             self.username = myName
@@ -129,11 +133,12 @@ func makeBlurViewForViewController(_ vc: UIViewController, blurView: inout UIIma
     } else if fileURLAt(dirName: "customBlur", fileName: userID) != nil && PlayerManager.shared.customImage != nil {
         targetImage = PlayerManager.shared.customImage
     }
+    let forceDarkMode = UserDefaults.standard.bool(forKey: "forceDarkMode")
     guard let targetImage = targetImage else {
         return
     }
     let interfaceStyle: UIUserInterfaceStyle
-    if UserDefaults.standard.bool(forKey: "forceDarkMode") {
+    if forceDarkMode {
         if #available(iOS 13, *) {
             interfaceStyle = .dark
         } else {
@@ -154,7 +159,7 @@ func makeBlurViewForViewController(_ vc: UIViewController, blurView: inout UIIma
     vc.view.backgroundColor = .clear
     vc.view.backgroundColor = .clear
     var style: UIBlurEffect.Style = .regular
-    if UserDefaults.standard.bool(forKey: "forceDarkMode") {
+    if forceDarkMode {
         if #available(iOS 13, *) {
             style = .dark
         } else {

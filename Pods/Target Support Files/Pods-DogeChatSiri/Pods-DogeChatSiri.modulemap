@@ -1,4 +1,4 @@
-module Pods_DogeChatSiri {
+framework module Pods_DogeChatSiri {
   umbrella header "Pods-DogeChatSiri-umbrella.h"
 
   export *

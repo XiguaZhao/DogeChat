@@ -1,6 +1,7 @@
 # Uncomment the next line to define a global platform for your project
 # platform :ios, '9.0'
 use_modular_headers!
+  use_frameworks!
 
 def commonDefinesPod
   pod 'DogeChatCommonDefines', :path => '/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/DogeChatCommonDefines'
@@ -13,7 +14,6 @@ end
 
 target 'DogeChat' do
   # Comment the next line if you don't want to use dynamic frameworks
-#  use_frameworks!
 shared_pods
 pod 'DACircularProgress'
 pod 'MJRefresh'
@@ -27,7 +27,7 @@ pod 'DogeChatNetwork', :path => '/Users/zhaoxiguang/Library/Mobile Documents/com
 pod 'LookinServer', :configurations => ['Debug']
 pod 'RSAiOSWatchOS', :path => '/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/RSAiOSWatchOS'
 pod 'DataCompression'
-pod 'DogeChatVideoCompression', :path => '/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/DogeChatVideoCompression'
+pod 'DogeChatVideoUtil', :path => '/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/DogeChatVideoUtil'
 end
 
 
@@ -51,5 +51,5 @@ end
 target 'DogeChatShare' do
   shared_pods
   pod 'RSAiOSWatchOS', :path => '/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/RSAiOSWatchOS'
-  pod 'DogeChatVideoCompression', :path => '/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/DogeChatVideoCompression'
+  pod 'DogeChatVideoUtil', :path => '/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/DogeChatVideoUtil'
 end

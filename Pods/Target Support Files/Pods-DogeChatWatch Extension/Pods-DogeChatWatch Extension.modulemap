@@ -1,4 +1,4 @@
-module Pods_DogeChatWatch_Extension {
+framework module Pods_DogeChatWatch_Extension {
   umbrella header "Pods-DogeChatWatch Extension-umbrella.h"
 
   export *

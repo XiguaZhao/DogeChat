@@ -8,6 +8,7 @@ extension ChatRoomViewController {
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
         super.viewWillTransition(to: size, with: coordinator)
         self.messageInputBar.textViewResign()
+        layout(requireSize: size)
     }
     
     @objc func sizeCategoryChange(_ noti: Notification) {
@@ -99,9 +100,18 @@ extension ChatRoomViewController {
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        if lastViewSize != view.bounds.size {
-            layoutViews(size: view.bounds.size)
+        layout()
+    }
+    
+    func layout(requireSize: CGSize? = nil) {
+        if let requireSize = requireSize {
+            layoutViews(size: requireSize)
             lastViewSize = view.bounds.size
+        } else {
+            if lastViewSize != view.bounds.size {
+                layoutViews(size: view.bounds.size)
+                lastViewSize = view.bounds.size
+            }
         }
     }
 
@@ -139,7 +149,9 @@ extension ChatRoomViewController {
         tableView.layer.masksToBounds = true
         
         emojiSelectView.delegate = self
-        emojiSelectView.username = username
+        emojiSelectView.vc = self
+        emojiSelectView.manager = self.manager
+        emojiSelectView.input = messageInputBar.textView
         
         messageInputBar.delegate = self
         messageInputBar.referView.delegate = self
@@ -180,7 +192,7 @@ extension ChatRoomViewController {
     }
         
     func layoutViews(size: CGSize) {
-        let size = view.frame.size
+        let size = size
         tableView.frame = CGRect(x: 0, y: 0, width: size.width, height: size.height)
         if purpose == .chat {
             tableView.contentInset = .init(top: 0, left: 0, bottom: messageBarHeight - safeArea.bottom, right: 0)
@@ -291,7 +303,7 @@ extension ChatRoomViewController {
     func makeNavBarUI() {
         var total: CGFloat = 0
         for message in messages.reversed() {
-            total += MessageBaseCell.height(for: message, tableViewSize: tableView.frame.size)
+            total += MessageBaseCell.height(for: message, tableViewSize: tableView.frame.size, userID: manager?.myInfo.userID)
             if total > tableView.bounds.height - tableView.contentInset.top {
                 if let bar = self.navigationController?.navigationBar,
                    let blurView = bar.subviews.first?.subviews.first as? UIVisualEffectView {

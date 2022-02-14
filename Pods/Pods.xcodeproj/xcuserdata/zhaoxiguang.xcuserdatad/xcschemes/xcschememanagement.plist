@@ -67,7 +67,7 @@
 			<key>orderHint</key>
 			<integer>19</integer>
 		</dict>
-		<key>DogeChatVideoCompression.xcscheme</key>
+		<key>DogeChatVideoUtil.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>

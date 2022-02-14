@@ -14,23 +14,42 @@ import DogeChatCommonDefines
 
 extension ChatRoomViewController: ReferMessageDataSource {
     
-    func insertNewMessageCell(_ messages: [Message], position: InsertPosition = .bottom, index: Int = 0, forceScrollBottom: Bool = false, completion: (()->Void)? = nil) {
+    func debugText(_ text: String) {
+        if self.username == "赵锡光" {
+            self.navigationItem.title = text
+        }
+    }
+    
+    func insertNewMessageCell(_ messages: [Message], index: Int = 0, forceScrollBottom: Bool = false, completion: (()->Void)? = nil) {
         guard self.purpose == .chat else { return }
         let alreadyUUIDs = self.messagesUUIDs
         let newUUIDs: Set<String> = Set(messages.map { $0.uuid })
         let filteredUUIDs = newUUIDs.subtracting(alreadyUUIDs)
         var filtered = messages.filter { filteredUUIDs.contains($0.uuid)}
         filtered = filtered.filter { message in
-            guard let friend = message.friend else { return false }
+            guard let friend = message.friend else {
+                debugText("message中的friend为空")
+                return false
+            }
             if message.option != self.messageOption {
+                debugText("option匹配不上")
                 return false
             } else {
                 let friendID = friend.isGroup ? message.receiverUserID : (message.messageSender == .ourself ? message.receiverUserID : message.senderUserID)
-                return friendID == self.friend.userID
+                let match = friendID == self.friend.userID
+                if !match {
+                    debugText("friendID不匹配")
+                }
+                return match
             }
         }
-        guard !filtered.isEmpty else {
-            return
+        if filtered.isEmpty {
+            debugText("过滤后为空数组")
+            filtered = messages.filter({ message in
+                !self.messages.contains(where: { alreadyMessage in
+                    return message.uuid == alreadyMessage.uuid }) && message.friend?.userID == self.friend.userID
+            })
+            if filtered.isEmpty { return }
         }
         var scrollToBottom = !tableView.isDragging
         let contentHeight = tableView.contentSize.height
@@ -39,18 +58,26 @@ extension ChatRoomViewController: ReferMessageDataSource {
         }
         scrollToBottom = scrollToBottom || (messages.count == 1 && messages[0].messageSender == .ourself)
         scrollToBottom = scrollToBottom || forceScrollBottom
+        scrollToBottom = scrollToBottom && !(self.navigationController?.visibleViewController is MediaBrowserViewController)
         syncOnMainThread { [weak self] in
             guard let self = self else { return }
             var indexPaths: [IndexPath] = []
+            let alreadyMax = self.messages.max(by: { $0.id < $1.id })?.id ?? 0
             for message in filtered {
                 indexPaths.append(IndexPath(row: self.messages.count, section: 0))
                 self.messages.append(message)
+            }
+            if filtered.contains(where: { $0.id < alreadyMax }) {
+                self.messages.sort(by: { $0.id < $1.id })
+                tableView.reloadData()
+                completion?()
+                return
             }
             UIView.performWithoutAnimation {
                 self.tableView.insertRows(at: indexPaths, with: .none)
             }
             needScrollToBottom = scrollToBottom
-            if filtered.map({ MessageBaseCell.height(for: $0, tableViewSize: self.tableView.bounds.size)}).reduce(0, +) > self.tableView.bounds.height {
+            if filtered.map({ MessageBaseCell.height(for: $0, tableViewSize: self.tableView.bounds.size, userID: manager?.myInfo.userID)}).reduce(0, +) > self.tableView.bounds.height {
                 self.explictJumpMessageUUID = messages[0].uuid
                 self.didStopScroll()
             }
@@ -128,14 +155,5 @@ extension ChatRoomViewController: ReferMessageDataSource {
         }
     }
     
-}
-
-extension ChatRoomViewController: EmojiViewDelegate {
-    func didSelectEmoji(filePath: String) {
-        if let message = processMessageString(for: filePath, type: .image, imageURL: filePath, videoURL: nil) {
-            insertNewMessageCell([message])
-            manager?.commonWebSocket.sendWrappedMessage(message)
-        }
-    }
 }
 

@@ -47,6 +47,7 @@ class MessageTextCell: MessageBaseCell {
         messageLabel.numberOfLines = 0
         messageLabel.isUserInteractionEnabled = true
         messageLabel.lineBreakMode = .byTruncatingTail
+        messageLabel.adjustsFontSizeToFitWidth = true
         contentView.addSubview(messageLabel)
         indicationNeighborView = messageLabel
         
@@ -69,9 +70,6 @@ class MessageTextCell: MessageBaseCell {
     
     override func prepareForReuse() {
         super.prepareForReuse()
-        messageLabel.textAlignment = .left
-        messageLabel.textColor = .white
-        messageLabel.attributedText = nil
     }
     
     override func layoutSubviews() {
@@ -88,6 +86,9 @@ class MessageTextCell: MessageBaseCell {
     
     override func apply(message: Message) {
         super.apply(message: message)
+        if message.messageType == .text && messageLabel.textAlignment != .left {
+            messageLabel.textAlignment = .left
+        }
         textLabelDoubleTap.isEnabled = message.messageType == .text
         let textURLAndRange = message.text.webUrlifyWithountChange()
         textLabelSingleTap.isEnabled = textURLAndRange != nil
@@ -103,13 +104,12 @@ class MessageTextCell: MessageBaseCell {
         }
 
         if message.messageType == .text || message.messageType == .join {
-            let attrStr: NSAttributedString
+            let attrStr = NSMutableAttributedString(attributedString: processText())
             if let textURLAndRange = textURLAndRange {
-                let attributedStr = NSMutableAttributedString(string: message.text)
-                attributedStr.addAttributes([.underlineStyle: NSNumber(integerLiteral: NSUnderlineStyle.single.rawValue)], range: textURLAndRange.range)
-                attrStr = attributedStr
-            } else {
-                attrStr = processText()
+                let range = textURLAndRange.range
+                if range.location + range.length <= attrStr.length {
+                    attrStr.addAttributes([.underlineStyle: NSNumber(integerLiteral: NSUnderlineStyle.single.rawValue)], range: textURLAndRange.range)
+                }
             }
             messageLabel.attributedText = processAtFor(attributedString: attrStr, message: message)
         } else if message.messageType == .voice {
@@ -128,7 +128,7 @@ class MessageTextCell: MessageBaseCell {
         length = Self.macCatalystMaxTextLength
         #endif
         if text.count > length {
-            text = (text as NSString).substring(to: length) + "..."
+            text = text.prefix(length) + "..."
         }
         let attr = NSAttributedString(string: text, attributes: [.paragraphStyle : Self.paraStyle])
         return attr
@@ -161,10 +161,10 @@ class MessageTextCell: MessageBaseCell {
     }
     
     func layoutForTextMessage() {
-        let width = (message.emojisInfo.isEmpty ? 2/3 : 0.45)*contentView.bounds.width
-        let maxSize = CGSize(width: width, height: CGFloat.greatestFiniteMagnitude)
-        var size = messageLabel.sizeThatFits(maxSize)
-        size.height = min(size.height, maxTextHeight - ((nameLabel.isHidden ? 0 : nameLabel.bounds.height) + 3 * nameLabelStartY + 2 * Label.verticalPadding))
+        var size = MessageBaseCell.computeTextSizeForMessage(self.message, viewSize: contentView.bounds.size, userID: manager?.myInfo.userID)
+        let extraHeight = (nameLabel.isHidden ? 0 : nameLabel.bounds.height) + (self.message.referMessage == nil ? 0 : ReferView.height + ReferView.margin) + 4 * Label.verticalPadding
+        size.height = min(size.height, maxTextHeight - (3 * nameLabelStartY) - extraHeight)
+        size.height = min(size.height, contentView.bounds.height - extraHeight)
         messageLabel.bounds = CGRect(x: 0, y: 0, width: size.width + 2 * Label.horizontalPadding, height: size.height + 2 * Label.verticalPadding)
     }
     

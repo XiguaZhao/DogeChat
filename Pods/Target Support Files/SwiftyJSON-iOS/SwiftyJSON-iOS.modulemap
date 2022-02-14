@@ -1,6 +1,5 @@
-module SwiftyJSON {
+framework module SwiftyJSON {
   umbrella header "SwiftyJSON-iOS-umbrella.h"
-  exclude header "SwiftyJSON-watchOS-umbrella.h"
 
   export *
   module * { export * }

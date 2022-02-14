@@ -33,6 +33,7 @@ class ContactsTableViewController:  DogeChatViewController,
     private var password: String?
     var loginCount = 0
     let avatarImageView = FLAnimatedImageView()
+    let avatarContainer = UIView()
     var manager: WebSocketManager? {
         return socketForUsername(username)
     }
@@ -41,6 +42,7 @@ class ContactsTableViewController:  DogeChatViewController,
         sender.manager = self.manager?.httpsManager
         return sender
     }()
+    let readMessageManager = ReadMessageManager()
     override var username: String {
         didSet {
             self.navigationItem.title = username
@@ -65,6 +67,14 @@ class ContactsTableViewController:  DogeChatViewController,
             }
         }
     }
+    
+    weak var transitionSourceView: UIView!
+    weak var transitionFromCornerRadiusView: UIView?
+    var transitionPreferDuration: TimeInterval?
+    var transitionPreferDamping: CGFloat?
+    weak var transitionToView: UIView!
+    weak var transitionToRadiusView: UIView?
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -101,13 +111,6 @@ class ContactsTableViewController:  DogeChatViewController,
                 fontSizeScale = getScaleForSizeCategory(size)
             }
         }
-        if isMac() {
-            NotificationCenter.default.addObserver(forName: .init("NSWindowDidBecomeMainNotification"), object: nil, queue: nil) { [weak self] noti in
-                NotificationManager.checkRevokeMessages()
-                UserDefaults(suiteName: groupName)?.set(true, forKey: "hostActive")
-                self?.enterForeground(noti)
-            }
-        }
         if #available(iOS 13.0, *) {
             NotificationCenter.default.addObserver(self, selector: #selector(enterForeground(_:)), name: UIScene.willEnterForegroundNotification, object: nil)
         }
@@ -122,7 +125,11 @@ class ContactsTableViewController:  DogeChatViewController,
         let barItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(presentSearchVC))
         self.navigationItem.rightBarButtonItem = barItem
         self.barItem = barItem
+        createMyAvatar()
         setupMyAvatar()
+        readMessageManager.username = username
+        readMessageManager.dataSource = self
+        readMessageManager.fileTimer()
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
             NotificationCenter.default.post(name: .immersive, object: AppDelegate.shared.immersive)
         }
@@ -143,6 +150,7 @@ class ContactsTableViewController:  DogeChatViewController,
         super.viewDidAppear(animated)
         manager?.messageManager.messageDelegate = self
         loadAllTracks(username: username)
+        setupMyAvatar()
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -206,6 +214,14 @@ class ContactsTableViewController:  DogeChatViewController,
         UIApplication.shared.applicationIconBadgeNumber = unreadMessage.values.map({$0.unreadCount}).reduce(0, +)
     }
     
+    @objc func sceneDidBecomeMainNoti() {
+        manager?.commonWebSocket.pingWithResult({ [weak self] connected in
+            if !connected {
+                self?.loginAndConnect()
+            }
+        })
+    }
+    
     @objc func connectingNoti(_ noti: Notification) {
         guard noti.object as? String == self.username else { return }
         navigationItem.title = "正在连接..."
@@ -218,6 +234,7 @@ class ContactsTableViewController:  DogeChatViewController,
             setupMyAvatar()
         }
         navigationItem.title = username
+        nameLabel.text = username
         processUserActivity()
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) { [weak self] in
             self?.refreshContacts(completion: nil)
@@ -232,6 +249,15 @@ class ContactsTableViewController:  DogeChatViewController,
         checkGroupInfos()
         if #available(iOS 13.0, *) {
             self.view.window?.windowScene?.title = username
+            if isMac() {
+                DispatchQueue.once {
+                    NotificationCenter.default.addObserver(forName: .init("NSWindowDidBecomeMainNotification"), object: nil, queue: nil) { [weak self] noti in
+                        NotificationManager.checkRevokeMessages()
+                        UserDefaults(suiteName: groupName)?.set(true, forKey: "hostActive")
+                        self?.sceneDidBecomeMainNoti()
+                    }
+                }
+            }
         }
     }
     
@@ -403,41 +429,33 @@ class ContactsTableViewController:  DogeChatViewController,
         print("contactVCDeinit")
     }
     
-    func receiveNewMessages(_ messages: [Message], isGroup: Bool) { //打开聊天界面的话，要insert，没有的话要更新红点
-        var friendDict = [String : [Message]]()
-        for message in messages {
-            if let friend = message.friend {
-                friendDict.add(message, for: friend.userID)
-            }
+    
+    func makeLocalNotification(message: Message) {
+        guard let friend = message.friend else { return }
+        let content = UNMutableNotificationContent()
+        content.title = friend.username
+        content.body = (friend.isGroup ? "\(message.senderUsername)：" : "") + message.summary()
+        content.userInfo = ["aps" : [
+            "senderId" : friend.userID,
+            "sender": friend.username,
+            "receiver": username,
+            "receiverId": manager?.myID ?? "",
+            "uuid": message.uuid,
+            "isLocal" : true,
+            "alert": [
+                "title": friend.username,
+                "body": message.summary()
+            ]
+        ]]
+        content.categoryIdentifier = "MESSAGE"
+        let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
+        UNUserNotificationCenter.current().add(request) { error in
+            print(error as Any)
         }
-        var reloadIndexPaths = [IndexPath]()
-        let chatVCs = findChatRoomVCs()
-        NotificationCenter.default.post(name: .receiveNewMessage, object: username, userInfo: ["friendDict" : friendDict])
-        for (friendID, newMessages) in friendDict {
-            if let index = self.friends.firstIndex(where: { $0.userID == friendID }) {
-                reloadIndexPaths.append(IndexPath(row: index, section: 0))
-            }
-            if !chatVCs.isEmpty && chatVCs.contains(where: { $0.friend.userID == friendID }) {
-                unreadMessage[friendID] = (0, false)
-            } else {
-                let hasNewAt = newMessages.contains(where: { $0.someoneAtMe })
-                let newCount = newMessages.filter({ $0.messageSender == .someoneElse }).count
-                if let already = unreadMessage[friendID] {
-                    unreadMessage[friendID] = (already.unreadCount + newCount, already.hasAt || hasNewAt)
-                } else {
-                    unreadMessage[friendID] = (newCount, hasNewAt)
-                }
-            }
-        }
-        tableView.reloadRows(at: reloadIndexPaths, with: .none)
-        
-        if messages.contains(where: { $0.messageSender == .someoneElse }) {
-            playSound()
-        }
-        reselectFriend(nil)
     }
     
-    func showPresentRemoteNotification(_ infos: [String : Any]) -> Bool {
+    func shouldPresentRemoteNotification(_ infos: [String : Any]) -> Bool {
+        if UIApplication.shared.applicationState != .active { return true }
         if let friendID = infos["senderId"] as? String {
             if isPhone() && (self.tabBarController?.selectedIndex != 0 || self.navigationController?.visibleViewController != self) {
                 for chatVC in self.findChatRoomVCs() {
@@ -445,67 +463,46 @@ class ContactsTableViewController:  DogeChatViewController,
                         return false
                     }
                 }
-                return true
+                return infos["isLocal"] != nil
             }
+        }
+        return false
+    }
+    
+    func quickReply(_ infos: [String : Any], input: String) -> Bool {
+        if let friendID = infos["senderId"] as? String, let friend = friends.first(where: { $0.userID == friendID }), let myID = manager?.myID {
+            let message = Message(message: input, friend: friend, messageSender: .ourself, receiver: friend.username, receiverUserID: friendID, sender: username, senderUserID: myID, messageType: .text)
+            manager?.commonWebSocket.sendWrappedMessage(message)
+            unreadMessage[friendID] = (0, false)
+            tableView.reloadData()
+            return true
         }
         return false
     }
     
     @objc func uploadSuccess(notification: Notification) {
         guard notification.object as? String == self.username,
-              let manager = manager,
-              let message = notification.userInfo?["message"] as? Message else { return }
-        manager.commonWebSocket.sendWrappedMessage(message)
+              let manager = manager else { return }
+        
+        if let message = notification.userInfo?["message"] as? Message {
+            manager.commonWebSocket.sendWrappedMessage(message)
+        }
+        if let serverPath = notification.userInfo?["serverPath"] as? String, let type = notification.userInfo?["emojiType"] as? Emoji.AddEmojiType {
+            manager.commonWebSocket.starAndUploadEmoji(emoji: Emoji(userID: "", usenrmae: "", id: "", time: "", type: type.rawValue, path: serverPath))
+        }
     }
     
     
     func chatroomVC(for indexPath: IndexPath) -> ChatRoomViewController {
         let chatRoomVC = ChatRoomViewController()
         let friend = self.friends[indexPath.row]
+        friend.messages.sort(by: { $0.id < $1.id })
         chatRoomVC.username = username
         chatRoomVC.friend = friend
         chatRoomVC.contactVC = self
         return chatRoomVC
     }
-    
-    func updateLatestMessages(_ messages: [Message]) {
-        syncOnMainThread {
-            var friendDict = [String : [Message]]()
-            for message in messages {
-                if let friendID = message.friend?.userID {
-                    friendDict.add(message, for: friendID)
-                }
-            }
-            let sortedDict = friendDict.sorted(by: { first, second in
-                return first.value.last?.timestamp ?? 0 > second.value.last?.timestamp ?? 0
-            })
-            var indexPathsToReload = [IndexPath]()
-            var locations = [(from: Int, to: Int)]()
-            for friend in sortedDict {
-                if let index = self.friends.firstIndex(where: { $0.userID == friend.key }) {
-                    indexPathsToReload.append(IndexPath(row: index, section: 0))
-                    self.friends[index].latestMessage = friend.value.last
-                    locations.append((from: index, to: locations.count))
-                }
-            }
-            self.tableView.reloadRows(at: indexPathsToReload, with: .none)
-            self.reselectFriend(nil)
-            locations.sort(by: { $0.from > $1.from })
-            tableView.performBatchUpdates { [self] in
-                var removed = Array<Friend?>(repeating: nil, count: locations.count)
-                for location in locations {
-                    removed[location.to] = self.friends.remove(at: location.from)
-                }
-                self.friends.insert(contentsOf: removed.compactMap({ $0 }), at: 0)
-                for location in locations where location.from != location.to {
-                    tableView.moveRow(at: IndexPath(row: location.from, section: 0), to: IndexPath(row: location.to, section: 0))
-                }
-            } completion: { _ in
-                self.reselectFriend(nil)
-            }
-        }
-    }
-    
+        
     func reselectFriend(_ friend: Friend?) {
         if let friend = friend ?? selectedFriend {
             if let index = friends.firstIndex(of: friend) {
@@ -527,19 +524,8 @@ class ContactsTableViewController:  DogeChatViewController,
     
 }
 
-extension ContactsTableViewController: MessageDelegate, AddContactDelegate {
+extension ContactsTableViewController: AddContactDelegate {
     
-    func asyncReconnect() {
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) { [weak self] in
-            guard UIApplication.shared.applicationState == .active else { return }
-            self?.manager?.commonWebSocket.loginAndConnect(username: nil, password: nil)
-        }
-    }
-
-    func updateOnlineNumber(to newNumber: Int) {
-        
-    }
-        
     func findChatRoomVCs() -> [ChatRoomViewController] {
         var chatRooms = [ChatRoomViewController]()
         if let chatRoom = (self.splitViewController as? DogeChatSplitViewController)?.findChatRoomVC() {
@@ -557,29 +543,6 @@ extension ContactsTableViewController: MessageDelegate, AddContactDelegate {
         return chatRooms
     }
         
-    func revokeMessage(_ id: Int, senderID: String, receiverID: String) {
-        for chatRoom in findChatRoomVCs() {
-            chatRoom.revokeMessage(id, senderID: senderID, receiverID: receiverID)
-        }
-    }
-    
-    func newFriend() {
-        refreshContacts()
-    }
-    
-    func newFriendRequest() {
-        playSound()
-        if let button = navigationItem.rightBarButtonItem {
-            button.makeDot()
-        }
-    }
-    
-    
-    func revokeSuccess(id: Int, senderID: String, receiverID: String) {
-        for chatVC in findChatRoomVCs() {
-            chatVC.revokeSuccess(id: id, senderID: senderID, receiverID: receiverID)
-        }
-    }
         
     func addSuccess() {
         refreshContacts()
@@ -587,11 +550,7 @@ extension ContactsTableViewController: MessageDelegate, AddContactDelegate {
     
 }
 
-extension ContactsTableViewController: ContactDataSource {
-    
-}
-
-extension ContactsTableViewController: UITableViewDragDelegate {
+extension ContactsTableViewController: UITableViewDragDelegate, ContactDataSource {
         
     func tableView(_ tableView: UITableView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
         let itemProvider = NSItemProvider(object: wrapUserActivity(for: self.friends[indexPath.row]))

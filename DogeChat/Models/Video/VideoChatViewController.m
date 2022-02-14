@@ -23,6 +23,7 @@ API_AVAILABLE(ios(13.0))
 
 @end
 
+API_AVAILABLE(ios(13.0))
 @implementation VideoChatViewController
 
 - (instancetype)init

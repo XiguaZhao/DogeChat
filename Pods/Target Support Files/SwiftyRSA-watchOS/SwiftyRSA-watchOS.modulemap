@@ -1,6 +1,5 @@
-module SwiftyRSA {
+framework module SwiftyRSA {
   umbrella header "SwiftyRSA-watchOS-umbrella.h"
-  exclude header "SwiftyRSA-iOS-umbrella.h"
 
   export *
   module * { export * }

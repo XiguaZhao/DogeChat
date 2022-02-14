@@ -28,7 +28,7 @@ PODS:
     - AFNetworking
     - DogeChatCommonDefines
     - SwiftyJSON
-  - DogeChatVideoCompression (0.1.0)
+  - DogeChatVideoUtil (0.1.0)
   - FLAnimatedImage (1.0.16)
   - LookinServer (1.0.4)
   - Masonry (1.1.0)
@@ -51,7 +51,7 @@ DEPENDENCIES:
   - DogeChatCommonDefines (from `/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/DogeChatCommonDefines`)
   - DogeChatNetwork (from `/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/DogeChatNetwork`)
   - DogeChatUniversal (from `/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/DogeChatUniversal`)
-  - DogeChatVideoCompression (from `/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/DogeChatVideoCompression`)
+  - DogeChatVideoUtil (from `/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/DogeChatVideoUtil`)
   - FLAnimatedImage (from `/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/FLAnimatedImage`)
   - LookinServer
   - Masonry
@@ -80,8 +80,8 @@ EXTERNAL SOURCES:
     :path: "/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/DogeChatNetwork"
   DogeChatUniversal:
     :path: "/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/DogeChatUniversal"
-  DogeChatVideoCompression:
-    :path: "/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/DogeChatVideoCompression"
+  DogeChatVideoUtil:
+    :path: "/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/DogeChatVideoUtil"
   FLAnimatedImage:
     :path: "/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/FLAnimatedImage"
   RSAiOSWatchOS:
@@ -104,7 +104,7 @@ SPEC CHECKSUMS:
   DogeChatCommonDefines: c248ce4818df571745b822c563d0e4ee71499dc5
   DogeChatNetwork: dc9612adf2921d46a61b49c23fe7b4c89668849c
   DogeChatUniversal: 75b00cf6d15a88e719310b9ba75257382977866a
-  DogeChatVideoCompression: 5593abc15c98fe4cc7327a0875cb73606bc2d855
+  DogeChatVideoUtil: 2b3f69b2ccee052fcac9478a16bb55454508abc3
   FLAnimatedImage: 8f3e854ebf9680b71f0b6e700939687fc4d82b4b
   LookinServer: 743c1681771d0a8dcc38825325a080c3186404a5
   Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
@@ -115,6 +115,6 @@ SPEC CHECKSUMS:
   SwiftyJSON: 4e107719275086d9d9111e1a7ca6c484b6664574
   SwiftyRSA: 3b9c9179744217951facc6a3e9ae8d8c97061ffa
 
-PODFILE CHECKSUM: b77baeaa975d170b8d3dfba46afa6cab9bb1dea2
+PODFILE CHECKSUM: 4cbea4932ddca3d3b4f790c77cef91e8f8d865a2
 
 COCOAPODS: 1.11.0

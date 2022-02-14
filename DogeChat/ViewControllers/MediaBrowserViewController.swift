@@ -9,12 +9,43 @@
 import UIKit
 import DogeChatNetwork
 
-class MediaBrowserViewController: UIViewController {
+public enum MediaVCPurpose: Int {
+    case avatar
+    case normal
+}
+
+class MediaBrowserViewController: UIViewController, TransitionFromDataSource {
+    
+    
+    weak var transitionSourceView: UIView!
+    weak var transitionFromCornerRadiusView: UIView?
+    var transitionPreferDuration: TimeInterval?
+    var transitionPreferDamping: CGFloat? {
+        return purpose == .avatar ? 0.8 : nil
+    }
     
     var cache: NSCache<NSString, NSData>!
     var collectionView: UICollectionView!
     var imagePaths = [String]()
-    var targetIndex = 0
+    
+    var purpose: MediaVCPurpose = .normal
+    var customData: Any?
+    
+    private let isPotrait = UIApplication.shared.statusBarOrientation.isPortrait
+    private weak var transitionDelegate: UIViewControllerTransitioningDelegate?
+    
+    var swipeDownGes: UISwipeGestureRecognizer!
+    var targetIndex = 0 {
+        didSet {
+            DispatchQueue.main.async { [self] in
+                NotificationCenter.default.post(name: .mediaBrowserPathChange, object:self, userInfo: [
+                    "targetIndex": targetIndex,
+                    "path": imagePaths[targetIndex],
+                    "purpose": purpose
+                ])
+            }
+        }
+    }
     let flowLayout = UICollectionViewFlowLayout()
     
     override func viewDidLoad() {
@@ -28,6 +59,8 @@ class MediaBrowserViewController: UIViewController {
         collectionView.showsHorizontalScrollIndicator = false
         collectionView.register(MediaBrowserCell.self, forCellWithReuseIdentifier: MediaBrowserCell.cellID)
         view.addSubview(collectionView)
+                
+        self.transitionDelegate = self.transitioningDelegate
         
         DispatchQueue.main.async { [self] in
             scrollToIndex(targetIndex)
@@ -37,16 +70,30 @@ class MediaBrowserViewController: UIViewController {
             view.backgroundColor = .systemBackground
         }
         
-        let swipeDownGesture = UISwipeGestureRecognizer(target: self, action: #selector(swipeDown))
-        swipeDownGesture.direction = .down
-        self.view.addGestureRecognizer(swipeDownGesture)
+        self.swipeDownGes = UISwipeGestureRecognizer(target: self, action: #selector(swipeDown))
+        swipeDownGes.direction = .down
+        self.view.addGestureRecognizer(swipeDownGes)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(onOrientationChange), name: UIDevice.orientationDidChangeNotification, object: nil)
+    }
+    
+    @objc func onOrientationChange() {
+        if UIApplication.shared.statusBarOrientation.isPortrait != self.isPotrait {
+            self.transitioningDelegate = nil
+        } else {
+            self.transitioningDelegate = self.transitionDelegate
+        }
     }
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        if isPhone() {
-            UIDevice.current.setValue(NSNumber(integerLiteral: UIInterfaceOrientation.portrait.rawValue), forKey: "orientation")
-        }
+    }
+        
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        swipeDownGes.isEnabled = self.transitioningDelegate == nil
+        updateSourceView()
     }
     
     override func viewWillLayoutSubviews() {
@@ -69,7 +116,7 @@ class MediaBrowserViewController: UIViewController {
     }
     
     override var prefersStatusBarHidden: Bool {
-        return true
+        return isPhone()
     }
     
     override var keyCommands: [UIKeyCommand]? {
@@ -86,7 +133,7 @@ class MediaBrowserViewController: UIViewController {
     }
 
     @objc func escapeAction(_ sender: Any) {
-        self.dismiss(animated: true, completion: nil)
+        swipeDown()
         if #available(iOS 13.0, *) {
             if let scene = self.view?.window?.windowScene, scene.delegate is MediaBrowserSceneDelegate {
                 let option = UIWindowSceneDestructionRequestOptions()
@@ -103,8 +150,10 @@ class MediaBrowserViewController: UIViewController {
     }
             
     @objc func swipeDown() {
+        DogeChatTransitionManager.shared.fromDataSource = self
         self.dismiss(animated: true, completion: nil)
     }
+    
     
 }
 
@@ -114,19 +163,32 @@ extension MediaBrowserViewController: UICollectionViewDataSource, UICollectionVi
     }
     
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
-        updateIndex()
+        stopScroll()
     }
     
     func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
         if !decelerate {
-            updateIndex()
+            stopScroll()
         }
     }
     
+    func stopScroll() {
+        updateIndex()
+    }
+    
     func updateIndex() {
-        let center = CGRect(origin: .zero, size: collectionView.contentSize).center
-        if let indexPath = collectionView.indexPathForItem(at: center) {
+        var offset = collectionView.contentOffset
+        offset.x += flowLayout.itemSize.width / 2
+        offset.y = flowLayout.itemSize.height / 2
+        if let indexPath = collectionView.indexPathForItem(at: offset) {
             targetIndex = indexPath.item
+            updateSourceView()
+        }
+    }
+    
+    func updateSourceView() {
+        if let cell = collectionView.cellForItem(at: IndexPath(item: targetIndex, section: 0)) as? MediaBrowserCell {
+            transitionSourceView = cell.getView()
         }
     }
     
@@ -141,6 +203,7 @@ extension MediaBrowserViewController: UICollectionViewDataSource, UICollectionVi
         if let cell = collectionView.dequeueReusableCell(withReuseIdentifier: MediaBrowserCell.cellID, for: indexPath) as? MediaBrowserCell {
             cell.delegate = self
             cell.vc = self
+            cell.purpose = self.purpose
             return cell
         }
         return UICollectionViewCell()
@@ -151,7 +214,7 @@ extension MediaBrowserViewController: UICollectionViewDataSource, UICollectionVi
     }
     
     func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        (cell as! MediaBrowserCell).player.pause()
+        (cell as! MediaBrowserCell).videoView.player?.pause()
         (cell as! MediaBrowserCell).livePhotoView.stopPlayback()
     }
     
@@ -172,7 +235,7 @@ extension MediaBrowserViewController: UICollectionViewDataSource, UICollectionVi
 
 extension MediaBrowserViewController: MediaBrowserCellDelegate {
     func singleTap(_ cell: MediaBrowserCell) {
-        dismiss(animated: true, completion: nil)
+        swipeDown()
     }
     
     func livePhotoWillBegin(_ cell: MediaBrowserCell, livePhotoView: PHLivePhotoView) {
@@ -181,5 +244,11 @@ extension MediaBrowserViewController: MediaBrowserCellDelegate {
     func livePhotoDidEnd(_ cell: MediaBrowserCell, livePhotoView: PHLivePhotoView) {
     }
     
+    func mediaCellDidZoom(_cell: MediaBrowserCell) {
+        if purpose == .avatar { //缩放的情况目前还无法处理。
+//            self.transitioningDelegate = nil
+//            self.transitionDelegate = nil
+        }
+    }
     
 }

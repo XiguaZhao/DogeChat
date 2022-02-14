@@ -176,7 +176,12 @@ class ProfileVC: DogeChatViewController, DogeChatVCTableDataSource, UITableViewD
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         picker.dismiss(animated: true, completion: nil)
         guard let manager = manager, let image = info[.editedImage] as? UIImage else { return }
-        if let compressedImageData = compressImage(image, needSave: false).image.jpegData(compressionQuality: 0.3) {
+        let cropped = image.cgImage?.cropping(to: image.size.croppedRectangle())
+        var croppedImage: UIImage?
+        if let cropped = cropped {
+            croppedImage = UIImage(cgImage: cropped)
+        }
+        if let compressedImageData = compressImage(croppedImage ?? image, needSave: false).image.jpegData(compressionQuality: 0.3) {
             manager.uploadData(compressedImageData, path: "user/changeAvatar", name: "avatar", fileName: UUID().uuidString + ".jpeg", needCookie: true, contentType: "multipart/form-data", params: nil) { task, data in
                 guard let data = data else { return }
                 let json = JSON(data)

@@ -22,51 +22,60 @@ class MessageVideoCell: MessageImageKindCell {
             return UIImageView(image: UIImage(named: "bofang"))
         }
     }()
-    var videoEnd = false
-    let player = AVPlayer()
-    var item: AVPlayerItem!
-    var isPlaying = false {
+    var item: AVPlayerItem? {
+        videoView.item
+    }
+    var isPlaying: Bool = false {
         didSet {
             DispatchQueue.main.async {
                 self.iconView.isHidden = self.isPlaying
+            }
+            if isPlaying {
+                PlayerManager.shared.playerTypes.insert(.chatroomVideoCell)
+            } else {
+                PlayerManager.shared.playerTypes.remove(.chatroomVideoCell)
             }
         }
     }
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        contentView.addSubview(videoView)
+        addMainView(videoView)
         videoView.addSubview(iconView)
-        indicationNeighborView = videoView
         
         videoView.layer.masksToBounds = true
+        videoView.doubleTap.isEnabled = false
         
         iconView.mas_makeConstraints { make in
             make?.width.height().mas_equalTo()(50)
             make?.center.equalTo()(videoView)
         }
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(playToEnd(_:)), name: .AVPlayerItemDidPlayToEndTime, object: nil)
-        
+                
         addGestureForVideoView()
+        
+        NotificationCenter.default.addObserver(forName: .AVPlayerItemDidPlayToEndTime, object: nil, queue: .main) { [weak self] noti in
+            if noti.object as? AVPlayerItem == self?.item {
+                self?.isPlaying = false
+            }
+        }
 
         endDisplayBlock = { [weak self] _, _ in
             guard let self = self else { return }
-            self.player.pause()
-            self.videoEnd = true
+            self.videoView.player?.pause()
+            self.videoView.videoEnd = true
             self.isPlaying = false
         }
 
         resignCenterBlock = { [weak self] _, _ in
             guard let self = self else { return }
-            self.player.pause()
+            self.videoView.player?.pause()
             self.isPlaying = false
-            self.videoEnd = true
+            self.videoView.videoEnd = true
         }
 
-        centerDisplayBlock = { [weak player, weak self] _ , _ in
-            guard let self = self, let player = player else { return }
-            if player.currentTime() == .zero || self.videoEnd {
+        centerDisplayBlock = { [weak self] _ , _ in
+            guard let self = self, let player = self.videoView.player else { return }
+            if player.currentTime() == .zero || self.videoView.videoEnd {
                 self.playVideo()
             }
         }
@@ -79,9 +88,9 @@ class MessageVideoCell: MessageImageKindCell {
     
     override func prepareForReuse() {
         super.prepareForReuse()
-        item = nil
-        player.replaceCurrentItem(with: nil)
-        videoEnd = false
+        videoView.item = nil
+        videoView.player?.replaceCurrentItem(with: nil)
+        videoView.videoEnd = false
         isPlaying = false
     }
 
@@ -93,22 +102,25 @@ class MessageVideoCell: MessageImageKindCell {
     override func layoutSubviews() {
         super.layoutSubviews()
         guard message != nil else { return }
-        layoutImageKindView(videoView)
+        layoutImageKindView()
         layoutIndicatorViewAndMainView()
     }
 
     func playVideo(url: URL, playNow: Bool) {
         if self.item == nil {
-            self.item = AVPlayerItem(url: url)
-            player.replaceCurrentItem(with: self.item)
-            self.videoView.player = self.player
+            self.videoView.item = DogeChatPlayerItem(url: url)
+            let player = self.videoView.player
+            if player == nil {
+                self.videoView.player = AVPlayer()
+            }
+            videoView.player?.replaceCurrentItem(with: self.item)
         }
         if playNow {
             activeSession()
-            self.player.isMuted = true
-            self.player.seek(to: .zero)
-            self.player.play()
-            videoEnd = false
+            self.videoView.player?.isMuted = true
+            self.videoView.player?.seek(to: .zero)
+            self.videoView.player?.play()
+            videoView.videoEnd = false
             isPlaying = true
         }
     }
@@ -117,14 +129,7 @@ class MessageVideoCell: MessageImageKindCell {
         guard let videoPath = self.message?.videoURL, let url = fileURLAt(dirName: videoDir, fileName:videoPath.components(separatedBy: "/").last!) else { return }
         self.playVideo(url: url, playNow: true)
     }
-    
-    @objc func playToEnd(_ noti: Notification) {
-        if let item = noti.object as? AVPlayerItem, item == self.item {
-            self.videoEnd = true
-            isPlaying = false
-        }
-    }
-    
+        
     func makeVideo() {
         var url: URL?
         let captured = self.message
@@ -155,31 +160,9 @@ class MessageVideoCell: MessageImageKindCell {
         let videoSingleTap = UITapGestureRecognizer(target: self, action: #selector(videoTapped))
         videoView.addGestureRecognizer(videoSingleTap)
         
-        let videoDoubleTap = UITapGestureRecognizer(target: self, action: #selector(videoDoubleTap(_:)))
-        videoDoubleTap.numberOfTapsRequired = 2
-        videoView.addGestureRecognizer(videoDoubleTap)
-        videoSingleTap.require(toFail: videoDoubleTap)
+        videoSingleTap.require(toFail: videoView.doubleTap)
     }
-
-    @objc func videoSingleTap(_ tap: UITapGestureRecognizer) {
-        PlayerManager.shared.isMute.toggle()
-        activeSession()
-        player.isMuted.toggle()
-    }
-    
-    @objc func videoDoubleTap(_ tap: UITapGestureRecognizer) {
-        if isPlaying {
-            player.pause()
-        } else {
-            if videoEnd {
-                playVideo()
-            } else {
-                player.play()
-            }
-        }
-        isPlaying.toggle()
-    }
-    
+        
     @objc func videoTapped() {
         delegate?.mediaViewTapped(self, path: message.text, isAvatar: false)
     }

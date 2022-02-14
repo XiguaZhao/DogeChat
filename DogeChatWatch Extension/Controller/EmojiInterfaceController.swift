@@ -29,7 +29,7 @@ class EmojiInterfaceController: WKInterfaceController {
         super.didAppear()
         if emojis.isEmpty {
             SocketManager.shared.httpManager.getEmoji { emojis in
-                self.emojis = emojis
+                self.emojis = emojis.reduce([], +).map{$0.path}
                 self.reloadEmojis()
             }
         } else {

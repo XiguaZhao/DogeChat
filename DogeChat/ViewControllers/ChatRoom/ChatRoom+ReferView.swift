@@ -71,12 +71,7 @@ extension ChatRoomViewController: ReferViewDelegate {
             return
         }
         if message.messageType == .image || message.messageType == .livePhoto || message.messageType == .video {
-            let browser = MediaBrowserViewController()
-            browser.imagePaths = [message.text]
-            if isMac() {
-                browser.modalPresentationStyle = .fullScreen
-            }
-            present(browser, animated: true, completion: nil)
+            self.makeBrowser(paths: [message.text], targetIndex: 0, purpose: .avatar)
         } else if let index = self.messages.firstIndex(of: message) {
             let indexPath = IndexPath(row: index, section: 0)
             tableView.selectRow(at: indexPath, animated: true, scrollPosition: .middle)

@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "918DF6979E4DB460ED5FA774E6E2DB17"
-               BuildableName = "libSwiftyRSA-iOS.a"
+               BuildableName = "SwiftyRSA.framework"
                BlueprintName = "SwiftyRSA-iOS"
                ReferencedContainer = "container:Pods.xcodeproj">
             </BuildableReference>

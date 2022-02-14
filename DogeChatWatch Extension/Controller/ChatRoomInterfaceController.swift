@@ -75,7 +75,7 @@ class ChatRoomInterfaceController: WKInterfaceController {
             self?.setTitle(SocketManager.shared.messageManager.myName)
         }
         SocketManager.shared.httpManager.getEmoji { emojis in
-            self.emojis = emojis
+            self.emojis = emojis.reduce([], +).map{ $0.path }
         }
         if messages.isEmpty {
             isFirstTimeFetch = true
@@ -204,7 +204,7 @@ class ChatRoomInterfaceController: WKInterfaceController {
     }
     
     @IBAction func emojiAction() {
-        self.presentController(withName: "emoji", context: emojis.isEmpty ? HttpRequestsManager.emojiPaths : emojis)
+        self.presentController(withName: "emoji", context: emojis.isEmpty ? SocketManager.shared.httpManager.emojis.reduce([], +).map{$0.path} : emojis)
     }
     
     

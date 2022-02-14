@@ -50,7 +50,7 @@ class NotificationService: UNNotificationServiceExtension {
                             path = imagePath
                         }
                     }
-                    let wholePath = "https://121.5.152.193" + path
+                    let wholePath = "https://\(dogeChatIP)" + path
                     if let _ = URL(string: wholePath) {
                         guard !path.hasSuffix(".gif") else {
                             complete()

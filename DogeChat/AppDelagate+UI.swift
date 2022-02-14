@@ -13,7 +13,8 @@ import RSAiOSWatchOS
 import DogeChatCommonDefines
 
 protocol RemoteNotificationDelegate: AnyObject {
-    func showPresentRemoteNotification(_ infos: [String : Any]) -> Bool
+    func shouldPresentRemoteNotification(_ infos: [String : Any]) -> Bool
+    func quickReply(_ infos: [String : Any], input: String) -> Bool
 }
 
 class AppDelegateUI {
@@ -67,7 +68,7 @@ class AppDelegateUI {
             saveFriendsToDisk(friends, userID: userID)
         }
         WebSocketManager.shared.disconnect()
-        AppDelegate.shared.checkIfShouldRemoveCache()
+        MediaLoader.shared.checkIfShouldRemoveCache()
     }
     
     func resignActive() {

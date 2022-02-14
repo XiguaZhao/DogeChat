@@ -170,7 +170,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             }
 
             return
-        } else if let shortcutItemInfo = options.shortcutItem?.userInfo {
+        } else if #available(macCatalyst 14, *), let shortcutItemInfo = options.shortcutItem?.userInfo {
             if let username = shortcutItemInfo["username"] as? String {
                 if login(username: username) {
                     processReloginOrReConnect()
@@ -292,7 +292,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
     func sceneDidEnterBackground(_ scene: UIScene) {
         launchedByPushAction = false
-        AppDelegate.shared.checkIfShouldRemoveCache()
+        MediaLoader.shared.checkIfShouldRemoveCache()
         print("enter background")
         UserDefaults(suiteName: groupName)?.set(false, forKey: "hostActive")
         lastAppEnterBackgroundTime = NSDate().timeIntervalSince1970

@@ -94,7 +94,38 @@ public extension UIViewController {
         let alert = UIAlertController(title: message, message: detail, preferredStyle: .alert)
         return alert
     }
+    
+    func makeBrowser(paths: [String], targetIndex: Int = 0, purpose: MediaVCPurpose) {
+        if !isMac() {
+            let browser = MediaBrowserViewController()
+            browser.imagePaths = paths
+            browser.targetIndex = targetIndex
+            browser.purpose = purpose
+            browser.modalPresentationStyle = .fullScreen
+            self.present(browser, animated: true, completion: nil)
+        } else {
+            if #available(iOS 13.0, *) {
+                let option = UIScene.ActivationRequestOptions()
+                option.requestingScene = self.view.window?.windowScene
+                UIApplication.shared.requestSceneSessionActivation(nil, userActivity: ChatRoomViewController.wrapMediaBrowserUserActivity(paths: paths, targetIndex: targetIndex, purpose: purpose), options: option, errorHandler: nil)
+            }
+        }
+    }
 }
+
+func getSizeFromViewSize(_ viewSize: CGSize, animateViewSize: CGSize) -> CGSize {
+    let width: CGFloat
+    let height: CGFloat
+    if viewSize.width / viewSize.height > animateViewSize.width / animateViewSize.height {
+        height = viewSize.height
+        width = height * animateViewSize.width / animateViewSize.height
+    } else {
+        width = viewSize.width
+        height = width * animateViewSize.height / animateViewSize.width
+    }
+    return CGSize(width: width, height: height)
+}
+
 
 public extension String {
     func image(size: CGSize = CGSize(width: 15, height: 15)) -> UIImage {
@@ -105,6 +136,14 @@ public extension String {
         return image!
     }
     
+}
+
+public extension CGSize {
+    func croppedRectangle() -> CGRect {
+        let length = min(self.width, self.height)
+        let bounds = CGRect(x: 0, y: 0, width: length, height: length)
+        return CGRect(center: bounds.center, size: CGSize(width: length, height: length))
+    }
 }
 
 func adapterFor(username: String) -> WebSocketManagerAdapter {
