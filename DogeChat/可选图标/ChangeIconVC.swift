@@ -16,7 +16,7 @@ class ChangeIconVC: DogeChatViewController {
         super.viewDidLoad()
         
         // Do any additional setup after loading the view.
-        let recover = UIBarButtonItem(title: "恢复默认", style: .plain, target: self, action: #selector(recover))
+        let recover = UIBarButtonItem(title: NSLocalizedString("recoverDefault", comment: ""), style: .plain, target: self, action: #selector(recover))
         navigationItem.rightBarButtonItem = recover
     }
 

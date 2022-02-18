@@ -274,20 +274,11 @@ class MessageBaseCell: DogeChatTableViewCell {
         guard let manager = manager else {
             return
         }
-        let userID = message.senderUserID
         var url: String?
         if message.messageSender == .ourself {
             url = manager.messageManager.myAvatarUrl
         } else {
-            switch message.option {
-            case .toOne:
-                if let index = contactDataSource?.friends.firstIndex(where: { $0.userID == userID }),
-                   let path = contactDataSource?.friends[index].avatarURL {
-                    url = path
-                }
-            case .toGroup:
-                url = message.avatarUrl
-            }
+            url = message.avatarUrl
         }
         if let url = message.imageLocalPath?.absoluteString ?? url {
             delegate?.mediaViewTapped(self, path: url, isAvatar: true)

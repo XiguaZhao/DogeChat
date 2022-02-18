@@ -133,16 +133,8 @@ class ChatRoomViewController: DogeChatViewController, DogeChatVCTableDataSource 
     override func viewDidLoad() {
         super.viewDidLoad()
         makeDetailRightBarButton()
-        if isPad() {
-            if !isMac() {
-                NotificationCenter.default.addObserver(self, selector: #selector(keyboardFrameChangeNoti(_:)), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
-            }
-        } else if isPhone() {
-            NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(noti:)), name: UIWindow.keyboardWillShowNotification, object: nil)
-            NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(noti:)), name: UIWindow.keyboardWillHideNotification, object: nil)
-        }
         NotificationCenter.default.addObserver(self, selector: #selector(sendSuccess(notification:)), name: .sendSuccess, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(receiveNewMessageNotification(_:)), name: .receiveNewMessage, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(receiveNewMessageNotification(_:)), name: .receiveNewMessage, object: self.manager)
         NotificationCenter.default.addObserver(self, selector: #selector(confirmSendPhoto), name: .confirmSendPhoto, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(emojiButtonTapped), name: .emojiButtonTapped, object: messageInputBar)
         NotificationCenter.default.addObserver(self, selector: #selector(receiveEmojiInfoChangedNotification(_:)), name: .emojiInfoChanged, object: nil)
@@ -158,6 +150,9 @@ class ChatRoomViewController: DogeChatViewController, DogeChatVCTableDataSource 
         NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: .main) { [weak self] _ in
             if isMac() {
                 self?.messageInputBar.textView.becomeFirstResponder()
+            } else {
+                if self?.messageInputBar.textView.isFirstResponder ?? false {
+                }
             }
         }
         NotificationCenter.default.addObserver(self, selector: #selector(playToEnd(_:)), name: .AVPlayerItemDidPlayToEndTime, object: nil)
@@ -167,9 +162,6 @@ class ChatRoomViewController: DogeChatViewController, DogeChatVCTableDataSource 
             
         }
         NotificationCenter.default.addObserver(self, selector: #selector(groupInfoChange(noti:)), name: .groupInfoChange, object: username)
-        NotificationCenter.default.addObserver(forName: UIApplication.didEnterBackgroundNotification, object: nil, queue: .main) { [weak self] _ in
-            self?.messageInputBar.textViewResign()
-        }
         navigationItem.largeTitleDisplayMode = .never
         addRefreshController()
         loadViews()
@@ -190,7 +182,18 @@ class ChatRoomViewController: DogeChatViewController, DogeChatVCTableDataSource 
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        messageInputBar.textView.resignFirstResponder()
+        if messageInputBar.observingKeyboard {
+            if isPad() {
+                if !isMac() {
+                    NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
+                }
+            } else if isPhone() {
+                NotificationCenter.default.removeObserver(self, name: UIWindow.keyboardWillShowNotification, object: nil)
+                NotificationCenter.default.removeObserver(self, name: UIWindow.keyboardWillHideNotification, object: nil)
+                NotificationCenter.default.removeObserver(self, name: UIWindow.keyboardDidShowNotification, object: nil)
+            }
+            messageInputBar.observingKeyboard = false
+        }
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -199,6 +202,18 @@ class ChatRoomViewController: DogeChatViewController, DogeChatVCTableDataSource 
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        if !messageInputBar.observingKeyboard {
+            if isPad() {
+                if !isMac() {
+                    NotificationCenter.default.addObserver(self, selector: #selector(keyboardFrameChangeNoti(_:)), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
+                }
+            } else if isPhone() {
+                NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(noti:)), name: UIWindow.keyboardWillShowNotification, object: nil)
+                NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(noti:)), name: UIWindow.keyboardWillHideNotification, object: nil)
+                NotificationCenter.default.addObserver(self, selector: #selector(keyboardDidShow(noti:)), name: UIWindow.keyboardDidShowNotification, object: nil)
+            }
+            messageInputBar.observingKeyboard = true
+        }
         if #available(iOS 13.0, *) {
             (self.view.window?.windowScene?.delegate as? SceneDelegate)?.navigationController = self.navigationController
         } else {
@@ -348,18 +363,21 @@ class ChatRoomViewController: DogeChatViewController, DogeChatVCTableDataSource 
 extension ChatRoomViewController {
     
     @objc func receiveNewMessageNotification(_ notification: Notification) {
-        guard notification.object as? String == self.username, let dict = notification.userInfo?["friendDict"] as? [String : [Message]] else {
-            debugText("username不匹配noti")
-            return
-        }
-        for (friendID, newMessages) in dict {
-            if friendID == self.friend.userID {
-                if newMessages.isEmpty {
-                    debugText("newMessage为空")
-                }
-                insertNewMessageCell(newMessages)
-            }
-        }
+//        guard notification.object as? String == self.username, let dict = notification.userInfo?["friendDict"] as? [String : [Message]] else {
+//            debugText("username不匹配noti")
+//            return
+//        }
+//        for (friendID, newMessages) in dict {
+//            if friendID == self.friend.userID {
+//                if newMessages.isEmpty {
+//                    debugText("newMessage为空")
+//                }
+//                insertNewMessageCell(newMessages)
+//            }
+//        }
+        let messages = notification.userInfo?["messages"] as! [Message]
+        let filter = messages.filter({ $0.friend?.userID == self.friend.userID })
+        insertNewMessageCell(filter)
     }
         
     
@@ -374,7 +392,7 @@ extension ChatRoomViewController {
     }
     
     @objc func displayHistory() {
-        customTitle = "正在加载..."
+        customTitle = localizedString("loading")
         pagesAndCurNum.curNum = (self.messages.count / ChatRoomViewController.numberOfHistory) + 1
         manager?.historyMessages(for: friend, pageNum: pagesAndCurNum.curNum)
         pagesAndCurNum.curNum += 1
@@ -455,7 +473,7 @@ extension ChatRoomViewController {
     
     func removeMessage(index: Int) {
         let message = self.messages[index]
-        message.text = "\(message.senderUsername)撤回了一条消息"
+        message.text = String.localizedStringWithFormat(localizedString("someoneRecallMessage"), message.senderUsername)
         message.messageType = .join
         message.referMessage = nil
         message.referMessageUUID = nil

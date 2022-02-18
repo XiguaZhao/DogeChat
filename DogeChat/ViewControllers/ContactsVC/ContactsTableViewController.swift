@@ -224,7 +224,7 @@ class ContactsTableViewController:  DogeChatViewController,
     
     @objc func connectingNoti(_ noti: Notification) {
         guard noti.object as? String == self.username else { return }
-        navigationItem.title = "正在连接..."
+        navigationItem.title = localizedString("connecting")
         nameLabel.text = navigationItem.title
     }
     
@@ -263,7 +263,7 @@ class ContactsTableViewController:  DogeChatViewController,
     
     @objc func loginingNoti(_ noti: Notification) {
         guard noti.object as? String == self.username else { return }
-        navigationItem.title = "正在登录..."
+        navigationItem.title = localizedString("logining")
         nameLabel.text = navigationItem.title
     }
     
@@ -301,7 +301,7 @@ class ContactsTableViewController:  DogeChatViewController,
             }
         }
         let username = self.username
-        self.makeAutoAlert(message: "登录信息失效", detail: "请重新登录", showTime: 0.5) {
+        self.makeAutoAlert(message: localizedString("infoExpire"), detail: localizedString("reLogin"), showTime: 0.5) {
             if #available(iOS 13.0, *) {
                 SceneDelegate.usernameToDelegate[username]?.makeLoginPage()
             } else {

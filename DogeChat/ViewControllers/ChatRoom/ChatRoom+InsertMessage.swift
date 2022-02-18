@@ -21,22 +21,17 @@ extension ChatRoomViewController: ReferMessageDataSource {
     }
     
     func insertNewMessageCell(_ messages: [Message], index: Int = 0, forceScrollBottom: Bool = false, completion: (()->Void)? = nil) {
-        guard self.purpose == .chat else { return }
+        guard self.purpose == .chat, !messages.isEmpty else { return }
         let alreadyUUIDs = self.messagesUUIDs
         let newUUIDs: Set<String> = Set(messages.map { $0.uuid })
         let filteredUUIDs = newUUIDs.subtracting(alreadyUUIDs)
         var filtered = messages.filter { filteredUUIDs.contains($0.uuid)}
         filtered = filtered.filter { message in
-            guard let friend = message.friend else {
-                debugText("message中的friend为空")
-                return false
-            }
             if message.option != self.messageOption {
                 debugText("option匹配不上")
                 return false
             } else {
-                let friendID = friend.isGroup ? message.receiverUserID : (message.messageSender == .ourself ? message.receiverUserID : message.senderUserID)
-                let match = friendID == self.friend.userID
+                let match = message.friend?.userID == self.friend.userID
                 if !match {
                     debugText("friendID不匹配")
                 }
@@ -77,7 +72,7 @@ extension ChatRoomViewController: ReferMessageDataSource {
                 self.tableView.insertRows(at: indexPaths, with: .none)
             }
             needScrollToBottom = scrollToBottom
-            if filtered.map({ MessageBaseCell.height(for: $0, tableViewSize: self.tableView.bounds.size, userID: manager?.myInfo.userID)}).reduce(0, +) > self.tableView.bounds.height {
+            if filtered.filter({ !$0.isRead }).map({ MessageBaseCell.height(for: $0, tableViewSize: self.tableView.bounds.size, userID: manager?.myInfo.userID)}).reduce(0, +) > self.tableView.bounds.height {
                 self.explictJumpMessageUUID = messages[0].uuid
                 self.didStopScroll()
             }

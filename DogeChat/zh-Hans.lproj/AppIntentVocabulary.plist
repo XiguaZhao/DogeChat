@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IntentPhrases</key>
+	<array>
+		<dict>
+			<key>IntentExamples</key>
+			<array>
+				<string>用漂流瓶发消息给靓仔说</string>
+				<string>发漂流瓶给靓仔说我来啦</string>
+			</array>
+			<key>IntentName</key>
+			<string>INSendMessageIntent</string>
+		</dict>
+	</array>
+</dict>
+</plist>

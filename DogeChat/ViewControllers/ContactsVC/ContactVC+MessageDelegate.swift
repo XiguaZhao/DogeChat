@@ -108,7 +108,7 @@ extension ContactsTableViewController: MessageDelegate, ReadMessageDataSource {
         }
         var reloadIndexPaths = [IndexPath]()
         let chatVCs = findChatRoomVCs()
-        NotificationCenter.default.post(name: .receiveNewMessage, object: username, userInfo: ["friendDict" : friendDict])
+        NotificationCenter.default.post(name: .receiveNewMessage, object: self.manager, userInfo: ["messages" : messages])
         for (friendID, newMessages) in friendDict {
             guard let index = self.friends.firstIndex(where: { $0.userID == friendID }) else { continue }
             reloadIndexPaths.append(IndexPath(row: index, section: 0))
@@ -145,6 +145,9 @@ extension ContactsTableViewController: MessageDelegate, ReadMessageDataSource {
             }
             tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
             reselectFriend(nil)
+            for vc in findChatRoomVCs() {
+                vc.processJumpToUnreadButton()
+            }
         }
     }
     

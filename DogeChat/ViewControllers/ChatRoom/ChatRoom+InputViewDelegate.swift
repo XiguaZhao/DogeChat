@@ -21,7 +21,7 @@ extension ChatRoomViewController: MessageInputDelegate, VoiceRecordDelegate {
     }
     
     func toolButtonTap(_ button: UIButton, type: InputViewToolButtonType) {
-        messageInputBar.textView.resignFirstResponder()
+//        messageInputBar.textView.resignFirstResponder()
         let imagePicker = UIImagePickerController()
         imagePicker.delegate = self
         switch type {
@@ -104,7 +104,7 @@ extension ChatRoomViewController: MessageInputDelegate, VoiceRecordDelegate {
     }
             
     func addButtonTapped() {
-        messageInputBar.textViewResign()
+//        messageInputBar.textViewResign()
         let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
         let popover = actionSheet.popoverPresentationController
         popover?.sourceView = messageInputBar.addButton
@@ -120,11 +120,11 @@ extension ChatRoomViewController: MessageInputDelegate, VoiceRecordDelegate {
             }
         }
         if !friend.isGroup {
-            actionSheet.addAction(UIAlertAction(title: "语音通话", style: .default, handler: {  (action) in
+            actionSheet.addAction(UIAlertAction(title: NSLocalizedString("audioCall", comment: ""), style: .default, handler: {  (action) in
                 startCallAction()
             }))
             if debugUsers.contains(self.username) {
-                actionSheet.addAction(UIAlertAction(title: "视频通话", style: .default, handler: { (action) in
+                actionSheet.addAction(UIAlertAction(title: NSLocalizedString("videoCall", comment: ""), style: .default, handler: { (action) in
                     startCallAction()
                     Recorder.sharedInstance().needSendVideo = true
                 }))
@@ -134,16 +134,16 @@ extension ChatRoomViewController: MessageInputDelegate, VoiceRecordDelegate {
             self?.shareMusic()
         }))
         if messageInputBar.locationButton.isHidden {
-            actionSheet.addAction(UIAlertAction(title: "分享定位", style: .default, handler: { [weak self] _ in
+            actionSheet.addAction(UIAlertAction(title: NSLocalizedString("sharePosition", comment: ""), style: .default, handler: { [weak self] _ in
                 self?.locationAction()
             }))
         }
         if messageInputBar.cameraButton.isHidden {
-            actionSheet.addAction(UIAlertAction(title: "拍照/录像", style: .default, handler: { [weak self] _ in
+            actionSheet.addAction(UIAlertAction(title: NSLocalizedString("shotOrRecord", comment: ""), style: .default, handler: { [weak self] _ in
                 self?.cameraAction()
             }))
         }
-        actionSheet.addAction(UIAlertAction(title: "取消", style: .cancel, handler: nil))
+        actionSheet.addAction(UIAlertAction(title: NSLocalizedString("cancel", comment: ""), style: .cancel, handler: nil))
         present(actionSheet, animated: true, completion: nil)
     }
     

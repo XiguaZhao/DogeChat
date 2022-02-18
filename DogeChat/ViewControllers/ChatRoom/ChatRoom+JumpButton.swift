@@ -12,7 +12,7 @@ import DogeChatCommonDefines
 extension ChatRoomViewController {
     
     func makeJumpButtons() {
-        atLabel.text = "跳转@"
+        atLabel.text = localizedString("jumpTo")
         atLabel.font = .systemFont(ofSize: 13)
         atLabel.textColor = #colorLiteral(red: 0, green: 0.5130392909, blue: 1, alpha: 1)
         jumpToUnreadStack = UIStackView(arrangedSubviews: [atLabel, jumpToUnreadButton])
@@ -39,7 +39,7 @@ extension ChatRoomViewController {
             make?.width.height().mas_equalTo()(30)
         }
         let jumpToBottomLable = UILabel()
-        jumpToBottomLable.text = "回到底部"
+        jumpToBottomLable.text = localizedString("backToBottom")
         jumpToBottomStack = UIStackView(arrangedSubviews: [jumpToBottomButton])
         jumpToBottomStack.isHidden = true
         view.addSubview(jumpToBottomStack)

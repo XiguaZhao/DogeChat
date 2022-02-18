@@ -167,7 +167,7 @@ class MediaBrowserCell: UICollectionViewCell, PHLivePhotoViewDelegate, VideoView
     @objc func longPress(_ ges: UILongPressGestureRecognizer) {
         guard ges.state == .ended else { return }
         let sheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
-        sheet.addAction(UIAlertAction(title: "保存到相册", style: .default, handler: { [weak self] _ in
+        sheet.addAction(UIAlertAction(title: localizedString("saveToAlbum"), style: .default, handler: { [weak self] _ in
             guard let self = self else { return }
             switch self.messageType {
             case .image:
@@ -178,10 +178,10 @@ class MediaBrowserCell: UICollectionViewCell, PHLivePhotoViewDelegate, VideoView
                                 let request = PHAssetCreationRequest.forAsset()
                                 request.addResource(with: .photo, data: self.imageView.animatedImage.data, options: nil)
                             } completionHandler: { success, error in
-                                self.vc?.makeAutoAlert(message: (error == nil ? "成功" : error!.localizedDescription), detail: nil, showTime: 0.3, completion: nil)
+                                self.vc?.makeAutoAlert(message: (error == nil ? localizedString("success") : error!.localizedDescription), detail: nil, showTime: 0.3, completion: nil)
                             }
                         } else {
-                            self.vc?.makeAutoAlert(message: "未授权", detail: nil, showTime: 0.5, completion: nil)
+                            self.vc?.makeAutoAlert(message: localizedString("notAuthorized"), detail: nil, showTime: 0.5, completion: nil)
                         }
                     }
                 } else if let image = self.imageView.image {
@@ -200,11 +200,11 @@ class MediaBrowserCell: UICollectionViewCell, PHLivePhotoViewDelegate, VideoView
                                 request.addResource(with: .photo, fileURL: localImageURL, options: nil)
                                 request.addResource(with: .pairedVideo, fileURL: localVideoURL, options: nil)
                             } completionHandler: { success, error in
-                                self.vc?.makeAutoAlert(message: (error == nil ? "成功" : error!.localizedDescription), detail: nil, showTime: 0.3, completion: nil)
+                                self.vc?.makeAutoAlert(message: (error == nil ? localizedString("success") : error!.localizedDescription), detail: nil, showTime: 0.3, completion: nil)
                             }
                         }
                     } else {
-                        self.vc?.makeAutoAlert(message: "未授权", detail: nil, showTime: 0.5, completion: nil)
+                        self.vc?.makeAutoAlert(message: localizedString("notAuthorized"), detail: nil, showTime: 0.5, completion: nil)
                     }
                 }
                 self.requestAuth { success in
@@ -214,7 +214,7 @@ class MediaBrowserCell: UICollectionViewCell, PHLivePhotoViewDelegate, VideoView
             default: break
             }
         }))
-        sheet.addAction(UIAlertAction(title: "取消", style: .cancel, handler: nil))
+        sheet.addAction(UIAlertAction(title: localizedString("cancel"), style: .cancel, handler: nil))
         let popover = sheet.popoverPresentationController
         popover?.sourceView = self.contentView
         popover?.sourceRect = CGRect(origin: self.contentView.center, size: CGSize(width: 100, height: 100))
@@ -235,11 +235,11 @@ class MediaBrowserCell: UICollectionViewCell, PHLivePhotoViewDelegate, VideoView
     }
     
     @objc func image(image: UIImage, didFinishSavingWithError error: NSError?, contextInfo:UnsafeRawPointer) {
-        self.vc?.makeAutoAlert(message: (error == nil ? "成功" : error!.localizedDescription), detail: nil, showTime: 0.3, completion: nil)
+        self.vc?.makeAutoAlert(message: (error == nil ? localizedString("success") : error!.localizedDescription), detail: nil, showTime: 0.3, completion: nil)
     }
     
     @objc func video(videoPath: String, didFinishSavingWithError error: NSError?, contextInfo:UnsafeRawPointer) {
-        self.vc?.makeAutoAlert(message: (error == nil ? "成功" : error!.localizedDescription), detail: nil, showTime: 0.3, completion: nil)
+        self.vc?.makeAutoAlert(message: (error == nil ? localizedString("success") : error!.localizedDescription), detail: nil, showTime: 0.3, completion: nil)
     }
 
     

@@ -114,8 +114,8 @@ class PlayListViewController: DogeChatViewController, SelectContactsDelegate, Do
             tableView.allowsMultipleSelectionDuringEditing = true
             let toolBar = UIToolbar()
             view.addSubview(toolBar)
-            let selectButton = UIBarButtonItem(title: "选择", style: .plain, target: self, action: #selector(selectButtonAction(_:)))
-            let saveButton = UIBarButtonItem(title: "收藏", style: .plain, target: self, action: #selector(favoriteAction(_:)))
+            let selectButton = UIBarButtonItem(title: localizedString("select"), style: .plain, target: self, action: #selector(selectButtonAction(_:)))
+            let saveButton = UIBarButtonItem(title: localizedString("favorite"), style: .plain, target: self, action: #selector(favoriteAction(_:)))
             var items = [saveButton, selectButton]
             if #available(macCatalyst 14.0, iOS 14.0, *) {
                 items.insert(UIBarButtonItem(systemItem: .flexibleSpace), at: 0)
@@ -203,7 +203,7 @@ class PlayListViewController: DogeChatViewController, SelectContactsDelegate, Do
         let all = Set(allTracks)
         let filtered = set.subtracting(all)
         NotificationCenter.default.post(name: .tracksInfoChanged, object: username, userInfo: ["tracks": Array(filtered)])
-        makeAutoAlert(message: "已收藏", detail: nil, showTime: 0.2) {
+        makeAutoAlert(message: localizedString("success"), detail: nil, showTime: 0.2) {
             self.dismiss(animated: true, completion: nil)
         }
     }
@@ -211,7 +211,7 @@ class PlayListViewController: DogeChatViewController, SelectContactsDelegate, Do
     func configureBarButtons() {
         let searchButton = UIBarButtonItem(barButtonSystemItem: .search, target: self, action: #selector(searchAction(_:)))
         let _ = UIBarButtonItem(title: "列表", style: .plain, target: self, action: #selector(choosePlayList))
-        editButton = UIBarButtonItem(title: "编辑", style: .plain, target: self, action: #selector(editAction(_:)))
+        editButton = UIBarButtonItem(title: localizedString("edit"), style: .plain, target: self, action: #selector(editAction(_:)))
         var barItems: [UIBarButtonItem] = [editButton, searchButton]
         if type == .share {
 //            barItems.remove(at: 2)
@@ -261,11 +261,11 @@ class PlayListViewController: DogeChatViewController, SelectContactsDelegate, Do
         tableView.setEditing(!tableView.isEditing, animated: true)
 //        miniPlayerView.isHidden = tableView.isEditing
         navigationController?.setToolbarHidden(!tableView.isEditing, animated: true)
-        let allSelect = UIBarButtonItem(title: "全选", style: .plain, target: self, action: #selector(allSelectAction(_:)))
-        let downloadButton = UIBarButtonItem(title: "下载", style: .plain, target: self, action: #selector(downloadMulti(_:)))
-        let addToButton = UIBarButtonItem(title: "添加到", style: .plain, target: self, action: #selector(addMultiToAction(_:)))
-        let shareButton = UIBarButtonItem(title: "分享", style: .plain, target: self, action: #selector(shareMultiAction(_:)))
-        let deleteButton = UIBarButtonItem(title: "删除", style: .plain, target: self, action: #selector(deleteMultiAction(_:)))
+        let allSelect = UIBarButtonItem(title: localizedString("selectAll"), style: .plain, target: self, action: #selector(allSelectAction(_:)))
+        let downloadButton = UIBarButtonItem(title: localizedString("download"), style: .plain, target: self, action: #selector(downloadMulti(_:)))
+        let addToButton = UIBarButtonItem(title: localizedString("addTo"), style: .plain, target: self, action: #selector(addMultiToAction(_:)))
+        let shareButton = UIBarButtonItem(title: localizedString("share"), style: .plain, target: self, action: #selector(shareMultiAction(_:)))
+        let deleteButton = UIBarButtonItem(title: localizedString("delete"), style: .plain, target: self, action: #selector(deleteMultiAction(_:)))
         var buttons = [allSelect, downloadButton, addToButton, deleteButton, shareButton]
         if type == .share {
             buttons.remove(at: 3)
@@ -278,7 +278,7 @@ class PlayListViewController: DogeChatViewController, SelectContactsDelegate, Do
             }
         }
         setToolbarItems(buttons, animated: true)
-        sender.title = tableView.isEditing ? "完成" : "编辑"
+        sender.title = tableView.isEditing ? localizedString("done") : localizedString("edit")
     }
     
     @objc func allSelectAction(_ sender: UIBarButtonItem) {
@@ -290,12 +290,12 @@ class PlayListViewController: DogeChatViewController, SelectContactsDelegate, Do
     @objc func deleteMultiAction(_ sender: UIBarButtonItem) {
         guard let indexPaths = tableView.indexPathsForSelectedRows else { return }
         self.selectedTracks = indexPaths.map { tracks[$0.row] }
-        let alert = UIAlertController(title: "确定删除吗", message: nil, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "确定", style: .destructive, handler: { [weak self] _ in
+        let alert = UIAlertController(title: localizedString("sureDelete"), message: nil, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: localizedString("confirm"), style: .destructive, handler: { [weak self] _ in
             guard let self = self else { return }
             self.deleteTrack(self.selectedTracks)
         }))
-        alert.addAction(UIAlertAction(title: "取消", style: .cancel, handler: nil))
+        alert.addAction(UIAlertAction(title: localizedString("cancel"), style: .cancel, handler: nil))
         present(alert, animated: true, completion: nil)
     }
     
@@ -344,7 +344,7 @@ class PlayListViewController: DogeChatViewController, SelectContactsDelegate, Do
                     manager.commonWebSocket.sendWrappedMessage(message)
                     (self.splitViewController as? DogeChatSplitViewController)?.findContactVC()?.receiveNewMessages([message], isGroup: message.option == .toGroup)
                 }
-                self.makeAutoAlert(message: "发送成功", detail: nil, showTime: 0.2) {
+                self.makeAutoAlert(message: localizedString("success"), detail: nil, showTime: 0.2) {
                     self.dismiss(animated: true, completion: nil)
                 }
             }
@@ -432,7 +432,7 @@ class PlayListViewController: DogeChatViewController, SelectContactsDelegate, Do
         }
         saveTracksInfoToDisk(username: username, needUpload: true)
         reloadData()
-        makeAutoAlert(message: "已删除", detail: nil, showTime: 0.5, completion: nil)
+        makeAutoAlert(message: localizedString("success"), detail: nil, showTime: 0.5, completion: nil)
     }
     
     @objc func deleteTrackNoti(_ noti: Notification) {
@@ -453,7 +453,7 @@ class PlayListViewController: DogeChatViewController, SelectContactsDelegate, Do
             switch type {
             case .allFavorite:
                 self.tracks = tracks
-                title = "收藏"
+                title = "favorite"
             case .allDownloaded:
                 self.tracks = tracks.filter { $0.state == .downloaded }
                 title = "已下载"
@@ -472,7 +472,7 @@ class PlayListViewController: DogeChatViewController, SelectContactsDelegate, Do
                 self.tracks = tracks.filter { $0.source == .migu }
                 title = "咪咕音乐"
             }
-            navigationItem.title = title
+            navigationItem.title = localizedString(title ?? "")
         }
     }
           
@@ -531,11 +531,11 @@ extension PlayListViewController: UITableViewDelegate, UITableViewDataSource {
             let track = self.tracks[indexPath.row]
             var download: UIAction?
             if track.state != .downloaded {
-                download = UIAction(title: "下载") { _ in
+                download = UIAction(title: localizedString("download")) { _ in
                     TrackDownloadManager.shared.startDownload(track: self.tracks[indexPath.row], username: self.username)
                 }
             }
-            let delete = UIAction(title: "删除") { [weak self] _ in
+            let delete = UIAction(title: localizedString("delete")) { [weak self] _ in
                 if let self = self {
                     self.deleteTrack([self.tracks[indexPath.row]])
                 }
@@ -551,7 +551,7 @@ extension PlayListViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         guard type == .normal else { return nil }
-        let nextPlay = UIContextualAction(style: .normal, title: "插播") { [weak self] action, view, handler in
+        let nextPlay = UIContextualAction(style: .normal, title: localizedString("insertToPlay")) { [weak self] action, view, handler in
             guard let self = self else { return }
             let toBeInsertTrack = self.tracks[indexPath.row]
             PlayerManager.shared.playingList = PlayerManager.shared.playingList.filter { !($0.id == toBeInsertTrack.id) }
@@ -559,7 +559,7 @@ extension PlayListViewController: UITableViewDelegate, UITableViewDataSource {
                let index = PlayerManager.shared.playingList.firstIndex(where: { $0.id == nowPlayTrack.id }) {
                 PlayerManager.shared.playingList.insert(self.tracks[indexPath.row], at: index + 1)
                 handler(true)
-                self.makeAutoAlert(message: "已插播", detail: nil, showTime: 0.2, completion: nil)
+                self.makeAutoAlert(message: localizedString("insertedToPlay"), detail: nil, showTime: 0.2, completion: nil)
             } else {
                 handler(false)
             }
@@ -581,7 +581,7 @@ extension PlayListViewController: UITableViewDelegate, UITableViewDataSource {
         let track = self.tracks[indexPath.row]
         var download: UIContextualAction?
         if !(track.state == .downloaded) {
-            download = UIContextualAction(style: .normal, title: "下载") { [weak self] action, view, handler in
+            download = UIContextualAction(style: .normal, title: localizedString("download")) { [weak self] action, view, handler in
                 guard let self = self else { return }
                 TrackDownloadManager.shared.startDownload(track: track, username: self.username)
                 handler(true)
@@ -589,7 +589,7 @@ extension PlayListViewController: UITableViewDelegate, UITableViewDataSource {
             download?.backgroundColor = #colorLiteral(red: 0.2392156869, green: 0.6745098233, blue: 0.9686274529, alpha: 1)
 
         }
-        let addToPlayList = UIContextualAction(style: .normal, title: "分享") { [weak self] action, view, handler in
+        let addToPlayList = UIContextualAction(style: .normal, title: localizedString("share")) { [weak self] action, view, handler in
             self?.activeSwipeIndexPath = indexPath
             self?.shareMultiAction(nil)
             handler(true)

@@ -10,8 +10,6 @@
 	</array>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>ch</string>
-	<key>CFBundleDisplayName</key>
-	<string>漂流瓶</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -36,7 +34,7 @@
 		<true/>
 	</dict>
 	<key>NSCameraUsageDescription</key>
-	<string>拍美美的照片</string>
+	<string>拍照片</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>分享位置</string>
 	<key>NSLocationAlwaysUsageDescription</key>

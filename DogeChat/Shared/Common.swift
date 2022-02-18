@@ -29,7 +29,10 @@ let tableViewCellTopBottomPadding: CGFloat = 5
 var fontSizeScale: CGFloat = 1
 let maxFontSize: CGFloat = 60
 
-let debugUsers = ["赵锡光", "username2", "username", "Pino", "靓仔2号", "靓仔三号", "西瓜", "仙城最靓的仔", "最强王者", "冰淇淋", "🐷🐷"]
+let debugUsers = ["赵锡光", "username2", "username",
+                  "Pino", "靓仔2号", "靓仔三号", "西瓜",
+                  "仙城最靓的仔", "最强王者", "冰淇淋",
+                  "🐷🐷", "菠萝包"]
 
 
 public func syncOnMainThread(block: () -> Void) {

@@ -58,7 +58,7 @@ class MessageInputView: DogeChatStaticBlurView {
     let upArrowButton = UIButton()
     let voiceButton = UIButton()
     var beginY: CGFloat = 0
-    var frameShouldAnimate = true
+    var observingKeyboard = false
     var directionUp = true
     var toolStack: UIStackView!
     let cameraButton = UIButton()
@@ -308,7 +308,6 @@ class MessageInputView: DogeChatStaticBlurView {
         switch ges.state {
         case .began:
             beginY = ges.location(in: self.superview).y
-            frameShouldAnimate = false
         case .changed:
             let nowY = ges.location(in: self.superview).y
             let offset = (beginY - nowY) / 500
@@ -325,7 +324,6 @@ class MessageInputView: DogeChatStaticBlurView {
             directionUp = ges.velocity(in: self.superview).y < 0
         case .ended:
             print("end")
-            frameShouldAnimate = true
             delegate?.textViewFontSizeChangeEnded(textView)
         default:
             break

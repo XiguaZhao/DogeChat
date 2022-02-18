@@ -14,20 +14,51 @@ import DogeChatCommonDefines
 
 class FriendDetailViewController: DogeChatViewController, UITableViewDataSource, UITableViewDelegate, DogeChatVCTableDataSource {
     
-    enum RowType: String {
-        case username = "用户名"
-        case nickName = "备注"
-        case nameInGroup = "在该群名称"
-        case groupOwner = "群主"
-        case doNotDisturb = "勿扰模式"
-        case addMember = "添加成员"
-        case removeMember = "移除成员"
-        case groupMember = ""
-        case createGroup = "创建群聊"
-        case deleteGroup = "删除该群聊"
-        case history = "查看聊天记录"
-        case changeGroupAvatar = "修改群聊头像"
-        case switchMute = "消息推送"
+    enum RowType {
+        case username
+        case nickName
+        case nameInGroup
+        case groupOwner
+        case doNotDisturb
+        case addMember
+        case removeMember
+        case groupMember
+        case createGroup
+        case deleteGroup
+        case history
+        case changeGroupAvatar
+        case switchMute
+        
+        func localizedString() -> String {
+            switch self {
+            case .username:
+                return NSLocalizedString("username", comment: "")
+            case .nickName:
+                return NSLocalizedString("nickname", comment: "")
+            case .nameInGroup:
+                return NSLocalizedString("myNickName", comment: "")
+            case .groupOwner:
+                return NSLocalizedString("groupOwner", comment: "")
+            case .doNotDisturb:
+                return NSLocalizedString("doNotDisturb", comment: "")
+            case .addMember:
+                return NSLocalizedString("addGroupMember", comment: "")
+            case .removeMember:
+                return NSLocalizedString("removeGroupMember", comment: "")
+            case .groupMember:
+                return NSLocalizedString("groupMembers", comment: "")
+            case .createGroup:
+                return NSLocalizedString("createGroup", comment: "")
+            case .deleteGroup:
+                return NSLocalizedString("deleteGroup", comment: "")
+            case .history:
+                return NSLocalizedString("browseHistory", comment: "")
+            case .changeGroupAvatar:
+                return NSLocalizedString("modifyGroupAvatar", comment: "")
+            case .switchMute:
+                return NSLocalizedString("notification", comment: "")
+            }
+        }
     }
     
     var manager: WebSocketManager? {
@@ -139,7 +170,7 @@ class FriendDetailViewController: DogeChatViewController, UITableViewDataSource,
             cell = tableView.dequeueReusableCell(withIdentifier: CommonTableCell.cellID, for: indexPath)
             let commonCell = cell as! CommonTableCell
             let row = commonRows[indexPath.row]
-            var title = row.rawValue
+            var title = row.localizedString()
             var type: CommonTableCell.TrailingViewType?
             var trailingText: String?
             var switchOn: Bool?
@@ -147,7 +178,7 @@ class FriendDetailViewController: DogeChatViewController, UITableViewDataSource,
             case .nickName:
                 type = .textField
                 trailingText = friend.isGroup ? friend.username : friend.nickName
-                title = friend.isGroup ? "群名" : "备注"
+                title = friend.isGroup ? NSLocalizedString("groupName", comment: "") : NSLocalizedString("nickname", comment: "")
             case .groupOwner:
                 type = .label
                 trailingText = (friend as? Group)?.ownerUsername
@@ -189,9 +220,9 @@ class FriendDetailViewController: DogeChatViewController, UITableViewDataSource,
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         if sections[section] is [Friend] {
-            return "群成员(\(self.members.count))"
+            return NSLocalizedString("groupMembers", comment: "") + "(\(self.members.count))"
         } else if sections[section] is [RowType] {
-            return "通用设置"
+            return NSLocalizedString("commonInfo", comment: "")
         }
         return nil
     }

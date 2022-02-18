@@ -23,6 +23,27 @@ class ProfileVC: DogeChatViewController, DogeChatVCTableDataSource, UITableViewD
         case blurImage = "自定义毛玻璃"
         case trailer = "Trailers"
         case customizedColors = "自定义颜色"
+        
+        func localizedString() -> String {
+            switch self {
+            case .avatar:
+                return NSLocalizedString("avatar", comment: "")
+            case .username:
+                return NSLocalizedString("username", comment: "")
+            case .email:
+                return NSLocalizedString("email", comment: "")
+            case .createTime:
+                return NSLocalizedString("createTime", comment: "")
+            case .userID:
+                return NSLocalizedString("userID", comment: "")
+            case .blurImage:
+                return NSLocalizedString("customBlur", comment: "")
+            case .trailer:
+                return NSLocalizedString("trailer", comment: "")
+            case .customizedColors:
+                return NSLocalizedString("customColor", comment: "")
+            }
+        }
     }
     
     var manager: WebSocketManager? {
@@ -76,7 +97,7 @@ class ProfileVC: DogeChatViewController, DogeChatVCTableDataSource, UITableViewD
         let section = sections[indexPath.section]
         let row = section[indexPath.row]
         var cellID = CommonTableCell.cellID
-        let title = row.rawValue
+        let title = row.localizedString()
         var trailingType: CommonTableCell.TrailingViewType?
         var trailingText: String?
         var imageURL: String?
@@ -100,7 +121,7 @@ class ProfileVC: DogeChatViewController, DogeChatVCTableDataSource, UITableViewD
         case .trailer:
             if let firstTrack = allTracks.first {
                 trailingType = .label
-                trailingText = firstTrack.name + "等\(allTracks.count)首"
+                trailingText = String.localizedStringWithFormat(localizedString("trailerCount"), firstTrack.name, allTracks.count)
             }
         case .customizedColors:
             break
@@ -167,7 +188,7 @@ class ProfileVC: DogeChatViewController, DogeChatVCTableDataSource, UITableViewD
                       "receiveBubbleColor": colors.receiveBubble.getParams()
         ]
         manager?.httpsManager.saveTracks(nil, andBlurImage: nil, customizedData: ["customizedColor": params], completion: { [weak self] success in
-            self?.makeAutoAlert(message: success ? "成功修改" : "失败", detail: nil, showTime: 0.3, completion: {
+            self?.makeAutoAlert(message: success ? localizedString("success") : localizedString("fail"), detail: nil, showTime: 0.3, completion: {
                 self?.manager?.httpsManager.getProfile(nil)
             })
         })
@@ -186,7 +207,7 @@ class ProfileVC: DogeChatViewController, DogeChatVCTableDataSource, UITableViewD
                 guard let data = data else { return }
                 let json = JSON(data)
                 if json["status"].stringValue == "success" {
-                    self.makeAutoAlert(message: "修改成功", detail: nil, showTime: 0.3, completion: nil)
+                    self.makeAutoAlert(message: localizedString("success"), detail: nil, showTime: 0.3, completion: nil)
                     let url = json["avatarUrl"].stringValue
                     manager.httpsManager.accountInfo.avatarURL = url
                     self.makeRequest()

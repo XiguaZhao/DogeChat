@@ -23,7 +23,7 @@ class SearchMusicViewController: DogeChatViewController, DogeChatVCTableDataSour
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        navigationItem.title = "搜索"
+        navigationItem.title = localizedString("search")
         navigationItem.largeTitleDisplayMode = .never
         searchBar.delegate = self
         
@@ -33,7 +33,7 @@ class SearchMusicViewController: DogeChatViewController, DogeChatVCTableDataSour
         tableView.separatorStyle = .none
         tableView.register(TrackSearchResultCell.self, forCellReuseIdentifier: TrackSearchResultCell.cellID)
                                 
-        let loadMore = UIBarButtonItem(title: "中/美", style: .plain, target: self, action: #selector(switchCountry(_:)))
+        let loadMore = UIBarButtonItem(title: localizedString("china/us"), style: .plain, target: self, action: #selector(switchCountry(_:)))
         navigationItem.setRightBarButton(loadMore, animated: true)
         navigationItem.titleView = searchBar
     }
@@ -53,7 +53,7 @@ class SearchMusicViewController: DogeChatViewController, DogeChatVCTableDataSour
     @objc func switchCountry(_ sender: UIBarButtonItem) {
         guard let text = searchBar.text, !text.isEmpty else { return }
         page += 1
-        navigationItem.title = "切换中..."
+        navigationItem.title = localizedString("switching")
         self.country = country == .CN ? .US : .CN
         searchTapped()
     }
@@ -63,7 +63,7 @@ class SearchMusicViewController: DogeChatViewController, DogeChatVCTableDataSour
         let filteredTracks = tracks.filter { !favoritedIDs.contains($0.id) }
         self.results += filteredTracks
         DispatchQueue.main.async {
-            self.navigationItem.title = "搜索"
+            self.navigationItem.title = localizedString("search")
             self.tableView.reloadData()
             self.searchBar.resignFirstResponder()
         }
@@ -102,7 +102,7 @@ extension SearchMusicViewController: UISearchBarDelegate, UITableViewDelegate, U
     
     func searchTapped() {
         guard let text = searchBar.text, !text.isEmpty else { return }
-        self.navigationItem.title = "正在搜索..."
+        self.navigationItem.title = localizedString("searching")
         MusicHttpManager.shared.getTracks(from: .appleMusic, input: text, page: page, country: country) { tracks in
             self.results.removeAll()
             self.reloadDataWithMoreTracks(tracks)
@@ -112,7 +112,7 @@ extension SearchMusicViewController: UISearchBarDelegate, UITableViewDelegate, U
     func downloadTap(cell: TrackSearchResultCell, sender: UIButton) {
         sender.isHidden = true
         cell.favoriteButton.isHidden = true
-        makeAutoAlert(message: "已开始下载", detail: nil, showTime: 0.5) {
+        makeAutoAlert(message: localizedString("beginDownloading"), detail: nil, showTime: 0.5) {
         }
         if !MusicHttpManager.shared.favorites.contains(cell.track) {
             MusicHttpManager.shared.favorites.append(cell.track)
@@ -122,7 +122,7 @@ extension SearchMusicViewController: UISearchBarDelegate, UITableViewDelegate, U
     
     func favoriteTap(cell: TrackSearchResultCell, sender: UIButton) {
         sender.isHidden = true
-        makeAutoAlert(message: "已收藏", detail: nil, showTime: 0.5) {
+        makeAutoAlert(message: localizedString("success"), detail: nil, showTime: 0.5) {
         }
         if !MusicHttpManager.shared.favorites.contains(cell.track) {
             MusicHttpManager.shared.favorites.append(cell.track)

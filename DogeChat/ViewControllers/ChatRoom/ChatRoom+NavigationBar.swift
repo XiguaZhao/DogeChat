@@ -47,8 +47,8 @@ extension ChatRoomViewController {
     }
     
     func setupToolBar() {
-        let cancle = UIBarButtonItem(title: "取消", style: .plain, target: self, action: #selector(self.cancelItemAction))
-        let share = UIBarButtonItem(title: "转发", style: .plain, target: self, action: #selector(self.didFinishMultiSelection(_:)))
+        let cancle = UIBarButtonItem(title: localizedString("cancel"), style: .plain, target: self, action: #selector(self.cancelItemAction))
+        let share = UIBarButtonItem(title: localizedString("sendToOthers"), style: .plain, target: self, action: #selector(self.didFinishMultiSelection(_:)))
         self.toolbarItems = [cancle, share]
         if #available(iOS 14.0, *) {
             let flex = UIBarButtonItem.flexibleSpace()

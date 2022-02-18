@@ -1,0 +1,150 @@
+/* 
+  Localizable.strings
+  DogeChat
+
+  Created by 赵锡光 on 2022/2/17.
+  Copyright © 2022 Luke Parham. All rights reserved.
+*/
+"username" = "Username";
+"password" = "Password";
+"forgetPassword" = "Forget Password";
+"modifyPassword" = "Modify Password";
+"signUp" = "Sign up";
+"login" = "Login";
+
+"setting" = "Settings";
+"multiAccount" = "Multiple Accounts";
+"modifyIcon" = "Modify Icon";
+"forceDarkMode" = "Force Dark Mode";
+"blurWhenPlaying" = "Blur When Playing";
+"customBlur" = "Custom Blur";
+"doNotDisturb" = "Do Not Disturb";
+"lookUpFiles" = "Browse Files";
+"logout" = "Logout";
+
+"groupName" = "Group Name";
+"myNickName" = "My Nickname";
+"browseHistory" = "Browse History";
+"groupOwner" = "Gorup Owner";
+"notification" = "Notification";
+"modifyGroupAvatar" = "Modify Group Avatar";
+"addGroupMember" = "Add Members";
+"removeGroupMember" = "Remove Members";
+"deleteGroup" = "Delete Group";
+"commonInfo" = "Common Infos";
+"groupMembers" = "Group Members";
+"nickname" = "Nickname";
+"createGroup" = "Create Group";
+
+"audioCall" = "Audio Call";
+"videoCall" = "Video Call";
+"sharePosition" = "Share Position";
+"cancel" = "Cancel";
+"shotOrRecore" = "Take Photo/Record Video";
+
+"avatar" = "Avatar";
+"userID" = "User ID";
+"email" = "Email";
+"createTime" = "Create Time";
+"customColor" = "Custom Colors";
+"trailer" = "Trailers";
+
+"quickAction" = "Shortcuts";
+"addNewShortcut" = "Add New Shortcut";
+"delete" = "Delete";
+"enterUsernameAndPassword" = "Enter username and password";
+"exceedQuantity" = "Exceed Quantity";
+"complete" = "Complete";
+"modify" = "Modify";
+"setAsMainAccount" = "Main Account";
+
+"recoverDefault" = "Use Default";
+"confirm" = "Confirm";
+
+"video" = "Video";
+"image" = "Image";
+"livePhoto" = "Live Photo";
+"drawing" = "Drawing";
+"track" = "Track";
+"voice" = "Audio";
+"location" = "Location";
+"revoke" = "Revoke";
+"text" = "Text";
+
+"sureDelete" = "Confirm to delete?";
+"chooseFileType" = "Please choose file type";
+"deleteSomeData" = "Delete %i records";
+"totalDataCount" = "Total %i records";
+
+"alreadySend" = "Sent";
+"incompletedInfo" = "Incomplete infomation";
+"noMatchedPassword" = "Password not matched";
+"signUpSuccess" = "Sign up successfully";
+"rememberUsernameAndPassword" = "Please remember your username and password";
+
+"isYourFriendAlready" = "He(she) has been your friend!";
+"sentSuccessfully" = "Send Successfully";
+"acceptQuery" = "Accept Query?";
+"addSuccessfully" = "Add Successfully";
+"queryFailed" = "Query Failed";
+"fail" = "Fail";
+"success" = "Success";
+
+"processingAndUploadingData" = "Processing and uploading data";
+"copy" = "Copy";
+"refer" = "Refer";
+"sendToOthers" = "Send to others";
+"revoke" = "Recall";
+"saveMySelf" = "Save privately";
+"saveCommonUse" = "Save commonly";
+"multiSelect" = "Multiselect";
+"addBgcolor" = "Add backgroud color";
+"alreadySendToOthers" = "Sent";
+"loading" = "Loading...";
+"someoneRecallMessage" = "%@ recall a message";
+"jumpTo" = "Jump to @";
+"backToBottom" = "Back to bottom";
+
+"connecting" = "Connecting...";
+"logining" = "Login...";
+"infoExpire" = "Account info expired";
+"reLogin" = "Please login again";
+"looseToSend" = "Choose and hands off";
+"browseAvatar" = "Browse avatar";
+"turnOnNotification" = "Turn on notification";
+"turnOffNotification" = "Turn off notification";
+"openInSingleWindow" = "Open in single window";
+"muted" = "Muted";
+
+"huanhang" = "Return";
+"preview" = "Preview";
+"realtime" = "Realtime";
+"continue" = "Continue";
+"historyWithSomeone" = "History with %@";
+"latest" = "Latest";
+"messageDetail" = "Detail of message";
+"allPerson" = "All persons";
+"trailerCount" = "%@(%i total)";
+"copied" = "Copied";
+"send" = "Send";
+"goThere" = "Go There";
+
+"favorite" = "Favorite";
+"select" = "Select";
+"edit" = "Edit";
+"selectAll" = "Select All";
+"download" = "Download";
+"addTo" = "Add To";
+"share" = "Share";
+"done" = "Done";
+"insertedToPlay" = "Inserted";
+"insertToPlay" = "Insert to play";
+
+"serach" = "Search";
+"china/us" = "ch/us";
+"switching" = "Switching...";
+"searching" = "Searching...";
+"beginDownloading" = "Begin downloading";
+
+"saveToAlbum" = "Save to album";
+"notAuthorized" = "Not Authorized";

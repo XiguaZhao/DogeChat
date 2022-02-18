@@ -17,7 +17,7 @@ extension ChatRoomViewController: MessageTableViewCellDelegate, TransitionFromDa
     
     func processingMedia(finished: Bool) {
         DispatchQueue.main.async {
-            self.navigationItem.title = finished ? self.friendName : "正在处理、上传数据..."
+            self.navigationItem.title = finished ? self.friendName : NSLocalizedString("processingAndUploadingData", comment: "")
         }
     }
     
@@ -197,7 +197,7 @@ extension ChatRoomViewController: MessageTableViewCellDelegate, TransitionFromDa
     func pkViewTapped(_ cell: MessageBaseCell, pkView: UIView!) {
         if #available(iOS 13, *) {
             if messageInputBar.isActive {
-                messageInputBar.textViewResign()
+//                messageInputBar.textViewResign()
                 return
             }
             if let lastActive = activePKView {
@@ -306,23 +306,23 @@ extension ChatRoomViewController: MessageTableViewCellDelegate, TransitionFromDa
         activeMenuCell = cell
         let index = tableView.indexPath(for: cell)!.row
         let message = messages[index]
-        let copy = UIMenuItem(title: "复制", action: #selector(copyMenuItemAction(sender:)))
-        let refer = UIMenuItem(title: "引用", action: #selector(referAction(sender:)))
+        let copy = UIMenuItem(title: localizedString("copy"), action: #selector(copyMenuItemAction(sender:)))
+        let refer = UIMenuItem(title: localizedString("refer"), action: #selector(referAction(sender:)))
         var items = [copy, refer]
-        let sendToOthers = UIMenuItem(title: "转发", action: #selector(sendToOthersMenuItemAction(sender:)))
+        let sendToOthers = UIMenuItem(title: localizedString("sendToOthers"), action: #selector(sendToOthersMenuItemAction(sender:)))
         items.append(sendToOthers)
         if message.messageSender == .ourself {
-            let revoke = UIMenuItem(title: "撤回", action: #selector(revokeMenuItemAction(sender:)))
+            let revoke = UIMenuItem(title: localizedString("revoke"), action: #selector(revokeMenuItemAction(sender:)))
             items.append(revoke)
         }
         if message.messageType == .image {
-            let saveEmoji = UIMenuItem(title: "收藏私有", action: #selector(saveEmojiMenuItemAction(sender:)))
+            let saveEmoji = UIMenuItem(title: localizedString("saveMySelf"), action: #selector(saveEmojiMenuItemAction(sender:)))
             items.append(saveEmoji)
             if debugUsers.contains(self.username) {
-                items.append(UIMenuItem(title: "收藏公共", action: #selector(saveEmojiCommonMenuItemAction(sender:))))
+                items.append(UIMenuItem(title: localizedString("saveCommonUse"), action: #selector(saveEmojiCommonMenuItemAction(sender:))))
             }
         }
-        let multiSele = UIMenuItem(title: "多选", action: #selector(multiSeleMenuItemAction(sender:)))
+        let multiSele = UIMenuItem(title: localizedString("multiSelect"), action: #selector(multiSeleMenuItemAction(sender:)))
         items.append(multiSele)
         controller.menuItems = items
         let rect = CGRect(x: targetView.bounds.width/2, y: 5, width: 0, height: 0)
@@ -396,7 +396,7 @@ extension ChatRoomViewController: MessageTableViewCellDelegate, TransitionFromDa
     
     func saveEmoji(_ emoji: Emoji) {
         self.manager?.commonWebSocket.starAndUploadEmoji(emoji: emoji) { success in
-            self.makeAutoAlert(message: success ? "成功":"失败", detail: nil, showTime: 0.2, completion: nil)
+            self.makeAutoAlert(message: success ? localizedString("success") : localizedString("fail"), detail: nil, showTime: 0.2, completion: nil)
         }
     }
     

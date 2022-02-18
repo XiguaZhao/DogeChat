@@ -1,0 +1,24 @@
+
+/* Class = "UILabel"; text = "发送字体颜色"; ObjectID = "453-vN-TmZ"; */
+"453-vN-TmZ.text" = "Sender Text";
+
+/* Class = "UILabel"; text = "接收字体颜色"; ObjectID = "8zY-H1-5V7"; */
+"8zY-H1-5V7.text" = "Receiver Text";
+
+/* Class = "UIButton"; normalTitle = "确认"; ObjectID = "CaL-hV-fn0"; */
+"CaL-hV-fn0.normalTitle" = "Confirm";
+
+/* Class = "UILabel"; text = "@颜色"; ObjectID = "ExG-U3-sHf"; */
+"ExG-U3-sHf.text" = "@Color";
+
+/* Class = "UIButton"; configuration.title = "取消"; ObjectID = "Wfe-Ks-u2H"; */
+"Wfe-Ks-u2H.configuration.title" = "Cancel";
+
+/* Class = "UIButton"; normalTitle = "Button"; ObjectID = "Wfe-Ks-u2H"; */
+"Wfe-Ks-u2H.normalTitle" = "Cancel";
+
+/* Class = "UILabel"; text = "接收气泡颜色"; ObjectID = "fZW-EI-xFV"; */
+"fZW-EI-xFV.text" = "Receiver Bubble";
+
+/* Class = "UILabel"; text = "发送气泡颜色"; ObjectID = "lQQ-oD-7Ct"; */
+"lQQ-oD-7Ct.text" = "Sender Bubble";

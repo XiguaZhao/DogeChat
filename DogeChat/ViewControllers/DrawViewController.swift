@@ -48,20 +48,20 @@ class DrawViewController: UIViewController, PKViewAutoOffsetDelegate {
             make?.trailing.equalTo()(self.view)
         }
                 
-        let returnBarItem = UIBarButtonItem(title: "换行", style: .plain, target: self, action: #selector(returnTapAction(_:)))
+        let returnBarItem = UIBarButtonItem(title: localizedString("huanhang"), style: .plain, target: self, action: #selector(returnTapAction(_:)))
         
-        let previewBarItem = UIBarButtonItem(title: "预览", style: .plain, target: self, action: #selector(previewTapAction(_:)))
+        let previewBarItem = UIBarButtonItem(title: localizedString("preview"), style: .plain, target: self, action: #selector(previewTapAction(_:)))
         
         let realTimeLabel = UILabel()
-        realTimeLabel.text = "实时"
+        realTimeLabel.text = localizedString("realtime")
         let realTimeSwitcher = UISwitch()
         let realtimeStackView = UIStackView(arrangedSubviews: [realTimeLabel, realTimeSwitcher])
         realtimeStackView.spacing = 15
         let switcherBarItem = UIBarButtonItem(customView: realtimeStackView)
         realTimeSwitcher.isOn = message?.needRealTimeDraw ?? false
         realTimeSwitcher.addTarget(self, action: #selector(realTimerSwitchAction(_:)), for: .valueChanged)
-        let cancleButton = UIBarButtonItem(title: "取消", style: .done, target: self, action: #selector(cancelTapAction(_:)))
-        let confirmButton = UIBarButtonItem(title: "确认", style: .done, target: self, action: #selector(confirmTapAction(_:)))
+        let cancleButton = UIBarButtonItem(title: localizedString("cancel"), style: .done, target: self, action: #selector(cancelTapAction(_:)))
+        let confirmButton = UIBarButtonItem(title: localizedString("confirm"), style: .done, target: self, action: #selector(confirmTapAction(_:)))
         self.navigationItem.rightBarButtonItem = confirmButton
         
         var items = [cancleButton, previewBarItem, switcherBarItem, returnBarItem, confirmButton]
@@ -176,7 +176,7 @@ class DrawViewController: UIViewController, PKViewAutoOffsetDelegate {
     }
     
     @objc func previewTapAction(_ sender: UIBarButtonItem) {
-        let isPreview = sender.title == "预览"
+        let isPreview = sender.title == localizedString("preview")
         if isPreview { cachedOffset = pkView.contentOffset }
         pkView.minimumZoomScale = isPreview ? 0.3 : 1
         let bounds = pkView.drawing.bounds
@@ -191,7 +191,7 @@ class DrawViewController: UIViewController, PKViewAutoOffsetDelegate {
             pkView.setContentOffset(cachedOffset, animated: true)
         }
         toolPicker?.setVisible(!isPreview, forFirstResponder: pkView)
-        sender.title = isPreview ? "继续" : "预览"
+        sender.title = isPreview ? localizedString("continue") : localizedString("preview")
     }
         
     func shouldAutoOffset(_ should: Bool) {

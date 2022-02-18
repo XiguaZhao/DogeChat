@@ -73,25 +73,25 @@ extension SearchViewController: UITableViewDataSource, UITableViewDelegate, UISe
         case .search:
             let friend = friends[indexPath.row]
             if manager?.friendsDict[friend.userID] != nil {
-                self.makeAutoAlert(message: "已经是你的好友！", detail: nil, showTime: 1, completion: nil)
+                self.makeAutoAlert(message: NSLocalizedString("isYourFriendAlready", comment: ""), detail: nil, showTime: 1, completion: nil)
                 return
             }
             manager?.applyAdd(friend: self.friends[indexPath.row]) { (success) in
-                self.makeAutoAlert(message: success ? "已发送申请" : "请求失败", detail: nil, showTime: 1, completion: nil)
+                self.makeAutoAlert(message: success ? NSLocalizedString("sentSuccessfully", comment: "") : NSLocalizedString("queryFailed", comment: ""), detail: nil, showTime: 1, completion: nil)
             }
         case .accept:
             let friend = self.friends[indexPath.row]
             if manager?.friendsDict[friend.userID] != nil {
-                self.makeAutoAlert(message: "已经是你好友！", detail: nil, showTime: 1, completion: nil)
+                self.makeAutoAlert(message: NSLocalizedString("isYourFriendAlready", comment: ""), detail: nil, showTime: 1, completion: nil)
             } else {
-                let alert = UIAlertController(title: "接受申请？", message: nil, preferredStyle: .alert)
-                alert.addAction(UIAlertAction(title: "确定", style: .default, handler: { _ in
+                let alert = UIAlertController(title: NSLocalizedString("acceptQuery", comment: ""), message: nil, preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: NSLocalizedString("confirm", comment: ""), style: .default, handler: { _ in
                     self.manager?.acceptQuery(requestId: (friend as! RequestFriend).requestID!) { success in
-                        self.makeAutoAlert(message: success ? "添加成功" : "失败", detail: nil, showTime: 1, completion: nil)
+                        self.makeAutoAlert(message: success ? NSLocalizedString("addSuccessfully", comment: "") : NSLocalizedString("fail", comment: ""), detail: nil, showTime: 1, completion: nil)
                         self.delegate?.addSuccess()
                     }
                 }))
-                alert.addAction(UIAlertAction(title: "取消", style: .cancel, handler: nil))
+                alert.addAction(UIAlertAction(title: NSLocalizedString("cancel", comment: ""), style: .cancel, handler: nil))
                 self.present(alert, animated: true, completion: nil)
             }
         }

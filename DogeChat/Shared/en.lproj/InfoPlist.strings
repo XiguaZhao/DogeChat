@@ -1,0 +1,8 @@
+/* 
+  InfoPlist.strings
+  DogeChat
+
+  Created by 赵锡光 on 2022/2/18.
+  Copyright © 2022 Luke Parham. All rights reserved.
+*/
+CFBundleDisplayName = "DogeChat";

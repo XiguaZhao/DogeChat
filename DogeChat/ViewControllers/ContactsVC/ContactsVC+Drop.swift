@@ -86,7 +86,7 @@ extension ContactsTableViewController: UITableViewDropDelegate {
     
     func tableView(_ tableView: UITableView, dropSessionDidEnter session: UIDropSession) {
         guard !isMac() else { return }
-        nameLabel.text = "勾选后松手发送"
+        nameLabel.text = localizedString("looseToSend")
         tableView.allowsSelectionDuringEditing = true
         tableView.allowsMultipleSelectionDuringEditing = true
         tableView.setEditing(true, animated: true)

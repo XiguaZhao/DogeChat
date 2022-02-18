@@ -91,7 +91,7 @@ extension ChatRoomViewController: EmojiViewDelegate {
             return
         }
         manager?.commonWebSocket.starAndUploadEmoji(emoji: emoji, completion: { [weak self] success in
-            self?.makeAutoAlert(message: success ? "成功" : "失败", detail: nil, showTime: 0.3, completion: nil)
+            self?.makeAutoAlert(message: success ? localizedString("success") : localizedString("fail"), detail: nil, showTime: 0.3, completion: nil)
         })
     }
     
@@ -135,11 +135,11 @@ extension ChatRoomViewController: EmojiViewDelegate {
     }
         
     func deleteEmoji(cell: EmojiCollectionViewCell) {
-        let confirmAlert = UIAlertController(title: "确认删除？", message: nil, preferredStyle: .alert)
-        confirmAlert.addAction(UIAlertAction(title: "确认", style: .default, handler: { [weak self] _ in
+        let confirmAlert = UIAlertController(title: localizedString("sureDelete"), message: nil, preferredStyle: .alert)
+        confirmAlert.addAction(UIAlertAction(title: localizedString("confirm"), style: .default, handler: { [weak self] _ in
             self?.confirmDeleteEmoji(cell: cell)
         }))
-        confirmAlert.addAction(UIAlertAction(title: "取消", style: .cancel, handler: nil))
+        confirmAlert.addAction(UIAlertAction(title: localizedString("cancel"), style: .cancel, handler: nil))
         self.present(confirmAlert, animated: true, completion: nil)
     }
     
@@ -171,9 +171,9 @@ extension ChatRoomViewController: EmojiViewDelegate {
                 let json = JSON(data)
                 if json["status"].stringValue == "success" {
                     if #available(iOS 13.0, *) {
-                        SceneDelegate.usernameToDelegate.first?.value.splitVC.makeAutoAlert(message: "成功更换", detail: nil, showTime: 0.5, completion: nil)
+                        SceneDelegate.usernameToDelegate.first?.value.splitVC.makeAutoAlert(message: localizedString("success"), detail: nil, showTime: 0.5, completion: nil)
                     } else {
-                        AppDelegateUI.shared.navController.makeAutoAlert(message: "成功更换", detail: nil, showTime: 0.5, completion: nil)
+                        AppDelegateUI.shared.navController.makeAutoAlert(message: localizedString("success"), detail: nil, showTime: 0.5, completion: nil)
                     }
                     let avatarURL = json["avatarUrl"].stringValue
                     if append != nil {
@@ -192,7 +192,7 @@ extension ChatRoomViewController: EmojiViewDelegate {
     func confirmDeleteEmoji(cell: EmojiCollectionViewCell) {
         if let manager = manager, let id = cell.emoji?.id {
             manager.deleteEmoji(id: id) { [weak self] success in
-                self?.makeAutoAlert(message: success ? "成功" : "失败", detail: nil, showTime: 0.3, completion: nil)
+                self?.makeAutoAlert(message: success ? localizedString("success") : localizedString("fail"), detail: nil, showTime: 0.3, completion: nil)
                 manager.getEmojis { _ in
                     
                 }

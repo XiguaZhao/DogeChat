@@ -42,7 +42,7 @@ class SelectColorVC: DogeChatViewController, UIColorPickerViewControllerDelegate
             button.backgroundColor = value.color
         }
         
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "恢复默认", style: .plain, target: self, action: #selector(recoverColors))
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: NSLocalizedString("recoverDefault", comment: ""), style: .plain, target: self, action: #selector(recoverColors))
     }
 
     override func viewDidAppear(_ animated: Bool) {

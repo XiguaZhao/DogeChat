@@ -1,0 +1,21 @@
+
+/* Class = "UILabel"; text = "G"; ObjectID = "3hX-Nk-AfI"; */
+"3hX-Nk-AfI.text" = "G";
+
+/* Class = "UILabel"; text = "R"; ObjectID = "Jhp-Yf-fAq"; */
+"Jhp-Yf-fAq.text" = "R";
+
+/* Class = "UILabel"; text = "B"; ObjectID = "Sxd-8y-pqs"; */
+"Sxd-8y-pqs.text" = "B";
+
+/* Class = "UIButton"; configuration.title = "取消"; ObjectID = "UzG-Ml-44s"; */
+"UzG-Ml-44s.configuration.title" = "Cancel";
+
+/* Class = "UIButton"; normalTitle = "Button"; ObjectID = "UzG-Ml-44s"; */
+"UzG-Ml-44s.normalTitle" = "Cancel";
+
+/* Class = "UIButton"; normalTitle = "确认"; ObjectID = "hWS-w9-Sqx"; */
+"hWS-w9-Sqx.normalTitle" = "Confirm";
+
+/* Class = "UILabel"; text = "A"; ObjectID = "nRh-AX-L1s"; */
+"nRh-AX-L1s.text" = "A";

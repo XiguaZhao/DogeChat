@@ -8,6 +8,7 @@
 
 import Foundation
 import UIKit
+import DogeChatCommonDefines
 
 extension ContactsTableViewController: UITableViewDelegate, UITableViewDataSource {
     
@@ -57,16 +58,16 @@ extension ContactsTableViewController: UITableViewDelegate, UITableViewDataSourc
             vc.purpose = .peek
             return vc
         } actionProvider: { (menuElement) -> UIMenu? in
-            let avatarElement = UIAction(title: "查看头像") { [weak self] _ in
+            let avatarElement = UIAction(title: localizedString("browseAvatar")) { [weak self] _ in
                 guard let self = self else { return }
                 self.avatarTapped(nil, path: path)
             }
-            let switchMuteAction = UIAction(title: friend.isMuted ? "打开通知" : "不推送") { [weak self] _ in
+            let switchMuteAction = UIAction(title: friend.isMuted ? localizedString("turnOnNotification") : localizedString("turnOffNotification")) { [weak self] _ in
                 self?.switchMuteAction(index: indexPath.row)
             }
             var actions = [avatarElement, switchMuteAction]
             if UIApplication.shared.supportsMultipleScenes {
-                actions.append(UIAction(title: "在单独窗口打开") { [weak self] _ in
+                actions.append(UIAction(title: localizedString("openInSingleWindow")) { [weak self] _ in
                     guard let friend = self?.friends[indexPath.row] else { return }
                     let option = UIScene.ActivationRequestOptions()
                     option.requestingScene = self?.view.window?.windowScene
@@ -88,7 +89,7 @@ extension ContactsTableViewController: UITableViewDelegate, UITableViewDataSourc
     
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         let isMuted = self.friends[indexPath.row].isMuted
-        let muteAction = UIContextualAction(style: .normal, title: isMuted ? "打开通知" : "不推送") { [weak self] action, view, completion in
+        let muteAction = UIContextualAction(style: .normal, title: isMuted ? localizedString("turnOnNotification") : localizedString("turnOffNotification")) { [weak self] action, view, completion in
             self?.switchMuteAction(index: indexPath.row)
             completion(true)
         }
@@ -103,9 +104,9 @@ extension ContactsTableViewController: UITableViewDelegate, UITableViewDataSourc
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.4) {
                     self?.tableView.reloadRows(at: [IndexPath(row: index, section: 0)], with: .none)
                 }
-                self?.makeAutoAlert(message: "成功", detail: friend.isMuted ? "已静音" : "已开启提醒", showTime: 0.3, completion: nil)
+                self?.makeAutoAlert(message: localizedString("success"), detail: friend.isMuted ? localizedString("muted") : localizedString("turnOnNotification"), showTime: 0.3, completion: nil)
             } else {
-                self?.makeAutoAlert(message: "失败", detail: nil, showTime: 0.3, completion: nil)
+                self?.makeAutoAlert(message: localizedString("fail"), detail: nil, showTime: 0.3, completion: nil)
             }
         })
     }

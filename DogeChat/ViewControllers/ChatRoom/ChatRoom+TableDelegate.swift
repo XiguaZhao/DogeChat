@@ -80,7 +80,7 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
     }
     
     func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        let share = UIContextualAction(style: .normal, title: "转发") { [weak self] action, view, handler in
+        let share = UIContextualAction(style: .normal, title: localizedString("sendToOthers")) { [weak self] action, view, handler in
             guard let self = self else { return }
             handler(true)
             self.activeSwipeIndexPath = indexPath
@@ -89,7 +89,7 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
             contactVC.delegate = self
             self.present(contactVC, animated: true)
         }
-        let revoke = UIContextualAction(style: .destructive, title: "撤回") { [weak self] action, view, handler in
+        let revoke = UIContextualAction(style: .destructive, title: localizedString("revoke")) { [weak self] action, view, handler in
             guard let self = self else { return }
             self.revoke(message: self.messages[indexPath.row])
             handler(true)
@@ -106,23 +106,23 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
     
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         guard self.purpose == .chat else { return nil }
-        let saveEmoji = UIContextualAction(style: .normal, title: "收藏表情") { [weak tableView, weak self] action, view, handler in
+        let saveEmoji = UIContextualAction(style: .normal, title: localizedString("saveMySelf")) { [weak tableView, weak self] action, view, handler in
             guard let self = self else { return }
             handler(true)
             if let cell = tableView?.cellForRow(at: indexPath) as? MessageImageCell {
                 if let imageUrl = cell.message.imageURL, cell.message.sendStatus == .success {
-                    self.manager?.commonWebSocket.starAndUploadEmoji(emoji: Emoji(path: imageUrl, type: "file"))
+                    self.manager?.commonWebSocket.starAndUploadEmoji(emoji: Emoji(path: imageUrl, type: Emoji.AddEmojiType.favorite.rawValue))
                 }
             }
         }
         saveEmoji.backgroundColor = #colorLiteral(red: 0.4666666687, green: 0.7647058964, blue: 0.2666666806, alpha: 1)
-        let multiSelection = UIContextualAction(style: .normal, title: "多选") { [weak self] action, view, handler in
+        let multiSelection = UIContextualAction(style: .normal, title: localizedString("multiSelect")) { [weak self] action, view, handler in
             guard let self = self else { return }
             handler(true)
             self.makeMultiSelection(indexPath)
         }
         multiSelection.backgroundColor = #colorLiteral(red: 0.2392156869, green: 0.6745098233, blue: 0.9686274529, alpha: 1)
-        let referAction = UIContextualAction(style: .normal, title: "引用") { [weak self, weak tableView] action, view, handler in
+        let referAction = UIContextualAction(style: .normal, title: localizedString("refer")) { [weak self, weak tableView] action, view, handler in
             guard let self = self else { return }
             handler(true)
             if let cell = tableView?.cellForRow(at: indexPath) as? MessageBaseCell {
@@ -149,7 +149,7 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
         let actionProvider: ([UIMenuElement]) -> UIMenu? = { [weak self, weak cell] (menuElement) -> UIMenu? in
             guard let self = self, let cell = cell else { return nil }
             self.activeMenuCell = cell
-            let copyAction = UIAction(title: "复制") { (_) in
+            let copyAction = UIAction(title: localizedString("copy")) { (_) in
                 self.makePasteFor(message: self.messages[indexPath.row])
             }
             var revokeAction: UIAction?
@@ -158,30 +158,30 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
             var referAction: UIAction?
             var sendToOthersAction: UIAction?
             if self.messages[indexPath.row].messageSender == .ourself && self.messages[indexPath.row].messageType != .join {
-                revokeAction = UIAction(title: "撤回") { [weak self] (_) in
+                revokeAction = UIAction(title: localizedString("revoke")) { [weak self] (_) in
                     guard let self = self else { return }
                     self.revoke(message: self.messages[indexPath.row])
                 }
             }
             if let imageUrl = cell.message.imageURL, cell.message.sendStatus == .success {
-                starEmojiAction = UIAction(title: "收藏表情") { [weak self] (_) in
-                    self?.manager?.commonWebSocket.starAndUploadEmoji(emoji: Emoji(path: imageUrl, type: "file"))
+                starEmojiAction = UIAction(title: localizedString("saveMySelf")) { [weak self] (_) in
+                    self?.manager?.commonWebSocket.starAndUploadEmoji(emoji: Emoji(path: imageUrl, type: Emoji.AddEmojiType.favorite.rawValue))
                 }
             }
             if cell.message.messageType == .draw, let pkView = (cell as? MessageDrawCell)?.getPKView() {
-                addBackgroundColorAction = UIAction(title: "添加背景颜色") { _ in
+                addBackgroundColorAction = UIAction(title: localizedString("addBgcolor")) { _ in
                     pkView.backgroundColor = .lightGray
                 }
             }
             if cell.message.messageType != .join {
-                referAction = UIAction(title: "引用") { [weak self] _ in
+                referAction = UIAction(title: localizedString("refer")) { [weak self] _ in
                     self?.referAction(sender: nil)
                 }
-                sendToOthersAction = UIAction(title: "转发") { [weak self] _ in
+                sendToOthersAction = UIAction(title: localizedString("sendToOthers")) { [weak self] _ in
                     self?.sendToOthersMenuItemAction(sender: nil)
                 }
             }
-            let multiSelect = UIAction(title: "多选") { [weak self] _ in
+            let multiSelect = UIAction(title: localizedString("multiSelect")) { [weak self] _ in
                 guard let self = self else { return }
                 self.makeMultiSelection(indexPath)
             }
@@ -272,7 +272,7 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
             }
             let selectedMessages = selectedIndexPaths.map { self.messages[$0.row].copied() }
             Self.transferMessages(selectedMessages, to: contacts, manager: self.manager)
-            self.makeAutoAlert(message: "已转发", detail: contacts.map({$0.username}).joined(separator: "、"), showTime: 1, completion: nil)
+            self.makeAutoAlert(message: localizedString("alreadySendToOthers"), detail: contacts.map({$0.username}).joined(separator: "、"), showTime: 1, completion: nil)
         case .group:
             atFriends(contacts)
         }

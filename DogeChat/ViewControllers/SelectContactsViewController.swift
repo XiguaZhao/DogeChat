@@ -128,7 +128,7 @@ class SelectContactsViewController: DogeChatViewController, DogeChatVCTableDataS
     }
     
     private func wrapGroupForAt(_ group: Group) -> Group {
-        return Group(username: "所有人", nickName: nil,
+        return Group(username: localizedString("allPerson"), nickName: nil,
                      avatarURL: group.avatarURL, latesetMessage: nil,
                      userID: group.userID, isGroup: true, isMyFriend: true, isMuted: group.isMuted)
     }
@@ -157,8 +157,8 @@ class SelectContactsViewController: DogeChatViewController, DogeChatVCTableDataS
     }
     
     func buildBarButtons() {
-        confirmButton = UIBarButtonItem(title: "确定", style: .done, target: self, action: #selector(confirmAction(_:)))
-        cancelButton = UIBarButtonItem(title: "取消", style: .done, target: self, action: #selector(cancelAction(_:)))
+        confirmButton = UIBarButtonItem(title: localizedString("confirm"), style: .done, target: self, action: #selector(confirmAction(_:)))
+        cancelButton = UIBarButtonItem(title: localizedString("cancel"), style: .done, target: self, action: #selector(cancelAction(_:)))
         var items: [UIBarButtonItem] = [confirmButton, cancelButton]
         if #available(iOS 14.0, *) {
             items.insert(UIBarButtonItem(systemItem: .flexibleSpace), at: 0)

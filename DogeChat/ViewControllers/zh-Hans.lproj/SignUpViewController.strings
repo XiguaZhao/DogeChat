@@ -1,0 +1,39 @@
+
+/* Class = "UIButton"; normalTitle = "修改密码"; ObjectID = "4Os-d0-zyi"; */
+"4Os-d0-zyi.normalTitle" = "修改密码";
+
+/* Class = "UIButton"; normalTitle = "注册"; ObjectID = "DjZ-7U-VrN"; */
+"DjZ-7U-VrN.normalTitle" = "注册";
+
+/* Class = "UITextField"; placeholder = "Password"; ObjectID = "LPc-tM-18R"; */
+"LPc-tM-18R.placeholder" = "Password";
+
+/* Class = "UIButton"; normalTitle = "发送验证码"; ObjectID = "OHw-SE-CVo"; */
+"OHw-SE-CVo.normalTitle" = "发送验证码";
+
+/* Class = "UITextField"; placeholder = "Email"; ObjectID = "T4F-Cu-OFU"; */
+"T4F-Cu-OFU.placeholder" = "Email";
+
+/* Class = "UILabel"; text = "密码："; ObjectID = "V90-Ls-Lkm"; */
+"V90-Ls-Lkm.text" = "密码：";
+
+/* Class = "UITextField"; placeholder = "Username"; ObjectID = "gw8-hp-dVl"; */
+"gw8-hp-dVl.placeholder" = "Username";
+
+/* Class = "UITextField"; placeholder = "Validation Code"; ObjectID = "hEm-TJ-PXR"; */
+"hEm-TJ-PXR.placeholder" = "Validation Code";
+
+/* Class = "UILabel"; text = "账号名："; ObjectID = "nFp-uj-h4G"; */
+"nFp-uj-h4G.text" = "账号名：";
+
+/* Class = "UILabel"; text = "邮箱："; ObjectID = "nsc-W8-FaF"; */
+"nsc-W8-FaF.text" = "邮箱：";
+
+/* Class = "UILabel"; text = "确认密码："; ObjectID = "sqg-Cs-Xf3"; */
+"sqg-Cs-Xf3.text" = "确认密码：";
+
+/* Class = "UITextField"; placeholder = "Confirm Password"; ObjectID = "wys-S1-21O"; */
+"wys-S1-21O.placeholder" = "Confirm Password";
+
+/* Class = "UILabel"; text = "验证码："; ObjectID = "xoi-sD-OAF"; */
+"xoi-sD-OAF.text" = "验证码：";

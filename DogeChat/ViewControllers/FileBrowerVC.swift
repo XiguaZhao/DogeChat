@@ -10,12 +10,27 @@ import UIKit
 
 class FileBrowerVC: DogeChatViewController {
     
-    enum FileType: String {
-        case photo = "图片"
-        case video = "视频"
-        case livePhoto = "Live Photo"
-        case draw = "Drawing"
-        case track = "歌曲"
+    enum FileType {
+        case photo
+        case video
+        case livePhoto
+        case draw
+        case track
+        
+        func localizedString() -> String {
+            switch self {
+            case .photo:
+                return NSLocalizedString("image", comment: "")
+            case .video:
+                return NSLocalizedString("video", comment: "")
+            case .livePhoto:
+                return NSLocalizedString("livePhoto", comment: "")
+            case .draw:
+                return NSLocalizedString("drawing", comment: "")
+            case .track:
+                return NSLocalizedString("track", comment: "")
+            }
+        }
     }
     
     var dirTypes = [FileType: [URL]]()
@@ -61,30 +76,31 @@ class FileBrowerVC: DogeChatViewController {
             }
         }
         self.dirTypes = dirsTypes
-        let item = UIBarButtonItem(title: FileType.photo.rawValue, style: .plain, target: self, action: #selector(showSheet(sender:)))
+        let item = UIBarButtonItem(title: FileType.photo.localizedString(), style: .plain, target: self, action: #selector(showSheet(sender:)))
         navigationItem.setRightBarButton(item, animated: true)
     }
     
     @objc func showSheet(sender: UIBarButtonItem) {
-        let sheet = UIAlertController(title: "请选择文件类型", message: nil, preferredStyle: .actionSheet)
+        let sheet = UIAlertController(title: NSLocalizedString("chooseFileType", comment: ""), message: nil, preferredStyle: .actionSheet)
         let popover = sheet.popoverPresentationController
         popover?.barButtonItem = sender
         for type in dirTypes.keys {
-            let action = UIAlertAction(title: type.rawValue, style: .default) { _ in
+            let action = UIAlertAction(title: type.localizedString(), style: .default) { _ in
                 self.changeToType(type)
-                sender.title = type.rawValue
+                sender.title = type.localizedString()
             }
             sheet.addAction(action)
         }
-        sheet.addAction(UIAlertAction(title: "取消", style: .cancel, handler: nil))
+        sheet.addAction(UIAlertAction(title: NSLocalizedString("cancel", comment: ""), style: .cancel, handler: nil))
         self.present(sheet, animated: true, completion: nil)
     }
     
     func changeToType(_ type: FileType) {
         nowType = type
         if let urls = self.dirTypes[type] {
-            button.setTitle("删除\(urls.count)条数据", for: .normal)
-            button.setTitleColor(.blue, for: .normal)
+            let localized = NSLocalizedString("deleteSomeData", comment: "")
+            button.setTitle(String.localizedStringWithFormat(localized, urls.count), for: .normal)
+            button.setTitleColor(UIColor(named: "textColor"), for: .normal)
             button.sizeToFit()
         }
     }
@@ -92,15 +108,15 @@ class FileBrowerVC: DogeChatViewController {
     @objc func buttonAction(_ sender: UIButton) {
         guard let urls = self.dirTypes[nowType] else { return }
 
-        let alert = UIAlertController(title: "确定删除吗", message: "共\(urls.count)条数据", preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "确定", style: .default, handler: { _ in
+        let alert = UIAlertController(title: NSLocalizedString("sureDelete", comment: ""), message: String.localizedStringWithFormat(NSLocalizedString("totalDataCount", comment: ""), urls.count), preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: NSLocalizedString("confirm", comment: ""), style: .default, handler: { _ in
             for url in urls {
                 try? FileManager.default.removeItem(at: url)
             }
             self.makeDirs()
             self.changeToType(.photo)
         }))
-        alert.addAction(UIAlertAction(title: "取消", style: .cancel, handler: nil))
+        alert.addAction(UIAlertAction(title: NSLocalizedString("cancel", comment: ""), style: .cancel, handler: nil))
         self.present(alert, animated: true, completion: nil)
     }
 }

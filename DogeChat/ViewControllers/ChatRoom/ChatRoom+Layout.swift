@@ -27,6 +27,10 @@ extension ChatRoomViewController {
         keyboardWillChange(notification: noti, shouldDown: false)
     }
     
+    @objc func keyboardDidShow(noti: Notification) {
+        keyboardWillChange(notification: noti, shouldDown: false)
+    }
+    
     @objc func keyboardWillHide(noti: Notification) {
         keyboardWillChange(notification: noti, shouldDown: true)
     }
@@ -39,9 +43,9 @@ extension ChatRoomViewController {
         }
         var shouldDown = shouldDown
         if let userInfo = notification.userInfo, var endFrame = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
-            if let beginFrame = (userInfo[UIResponder.keyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue, beginFrame == endFrame {
-                return
-            }
+//            if let beginFrame = (userInfo[UIResponder.keyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue, beginFrame == endFrame {
+//                return
+//            }
             let height = self.navigationController?.view.bounds.height ?? UIScreen.main.bounds.height
             if height == endFrame.minY {
                 shouldDown = true

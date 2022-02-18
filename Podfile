@@ -4,11 +4,11 @@ use_modular_headers!
   use_frameworks!
 
 def commonDefinesPod
-  pod 'DogeChatCommonDefines', :path => '/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/DogeChatCommonDefines'
+  pod 'DogeChatCommonDefines', :path => '../DogeChatCommonDefines'
 end
 
 def shared_pods
-  pod 'DogeChatUniversal', :path => '/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/DogeChatUniversal'
+  pod 'DogeChatUniversal', :path => '../DogeChatUniversal'
   commonDefinesPod
 end
 
@@ -20,14 +20,14 @@ pod 'MJRefresh'
 pod 'AFNetworking'
 pod 'SwiftyJSON', :git => 'https://github.com/SwiftyJSON/SwiftyJSON.git', :commit => '2b6054efa051565954e1d2b9da831680026cd768'
 pod 'SwiftyRSA', :path => '/Users/zhaoxiguang/Workspace/SwiftyRSA'
-pod 'FLAnimatedImage', :path => '/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/FLAnimatedImage'
+pod 'FLAnimatedImage', :path => '../FLAnimatedImage'
 pod 'SDWebImage'
 pod 'Masonry'
-pod 'DogeChatNetwork', :path => '/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/DogeChatNetwork'
+pod 'DogeChatNetwork', :path => '../DogeChatNetwork'
 pod 'LookinServer', :configurations => ['Debug']
-pod 'RSAiOSWatchOS', :path => '/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/RSAiOSWatchOS'
+pod 'RSAiOSWatchOS', :path => '../RSAiOSWatchOS'
 pod 'DataCompression'
-pod 'DogeChatVideoUtil', :path => '/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/DogeChatVideoUtil'
+pod 'DogeChatVideoUtil', :path => '../DogeChatVideoUtil'
 end
 
 
@@ -36,7 +36,7 @@ target 'DogeChatWatch Extension' do
   shared_pods
   pod 'AFNetworking'
   pod 'SwiftyJSON', :git => 'https://github.com/SwiftyJSON/SwiftyJSON.git', :commit => '2b6054efa051565954e1d2b9da831680026cd768'
-  pod 'RSAiOSWatchOS', :path => '/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/RSAiOSWatchOS'
+  pod 'RSAiOSWatchOS', :path => '../RSAiOSWatchOS'
 end
 
 target 'mynotification' do
@@ -45,11 +45,11 @@ end
 
 target 'DogeChatSiri' do
   shared_pods
-  pod 'RSAiOSWatchOS', :path => '/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/RSAiOSWatchOS'
+  pod 'RSAiOSWatchOS', :path => '../RSAiOSWatchOS'
 end
 
 target 'DogeChatShare' do
   shared_pods
-  pod 'RSAiOSWatchOS', :path => '/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/RSAiOSWatchOS'
-  pod 'DogeChatVideoUtil', :path => '/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/DogeChatVideoUtil'
+  pod 'RSAiOSWatchOS', :path => '../RSAiOSWatchOS'
+  pod 'DogeChatVideoUtil', :path => '../DogeChatVideoUtil'
 end

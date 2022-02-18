@@ -44,7 +44,7 @@ class SignUpViewController: UIViewController {
         manager.sendValitionCode(to: email, for: type.rawValue) { status in
             print(status)
             if status == "success" {
-                sender.setTitle("已发送", for: .disabled)
+                sender.setTitle(NSLocalizedString("sent", comment: ""), for: .disabled)
                 sender.isEnabled = false
             } else {
                 self.makeAutoAlert(message: status, detail: nil, showTime: 2, completion: nil)
@@ -60,17 +60,17 @@ class SignUpViewController: UIViewController {
         guard let username = username.text, let password = password.text, let confirm = confirmPassword.text, let email = email.text, let code = validationCode.text,
               [username, password, confirm, email, code].filter({$0.count != 0}).count == textFields.count
         else {
-            makeAutoAlert(message: "信息不完整", detail: nil, showTime: 1, completion: nil)
+            makeAutoAlert(message: NSLocalizedString("incompletedInfo", comment: ""), detail: nil, showTime: 1, completion: nil)
             return
         }
         guard password == confirm else {
-            makeAutoAlert(message: "密码不一致", detail: nil, showTime: 1, completion: nil)
+            makeAutoAlert(message: NSLocalizedString("noMatchedPassword", comment: ""), detail: nil, showTime: 1, completion: nil)
             return
         }
         manager.signUpOrModify(type:type.rawValue, username: username, password: password, repeatPassword: confirm, email: email, validationCode: code) { (status) in
             print(status)
             if status == "success" {
-                self.makeAutoAlert(message: "注册成功", detail: "请记住用户名和密码", showTime: 2) {
+                self.makeAutoAlert(message: NSLocalizedString("", comment: "signUpSuccess"), detail: NSLocalizedString("rememberUsernameAndPassword", comment: ""), showTime: 2) {
                     self.navigationController?.popViewController(animated: true)
                     UserDefaults(suiteName: groupName)?.setValue(username, forKey: "sharedUsername")
                     UserDefaults(suiteName: groupName)?.setValue(password, forKey: "sharedPassword")
@@ -89,10 +89,10 @@ class SignUpViewController: UIViewController {
         super.viewDidLoad()
         view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard)))
         if type == .modify {
-            navigationItem.title = "修改密码"
+            navigationItem.title = NSLocalizedString("modifyPassword", comment: "modify password")
             signupButton.isHidden = true
         } else {
-            navigationItem.title = "注册"
+            navigationItem.title = NSLocalizedString("signUp", comment: "sign up")
             modifyButton.isHidden = true
         }
     }

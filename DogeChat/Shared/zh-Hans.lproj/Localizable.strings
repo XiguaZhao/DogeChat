@@ -1,0 +1,151 @@
+/* 
+  Localizable.strings
+  DogeChat
+
+  Created by 赵锡光 on 2022/2/17.
+  Copyright © 2022 Luke Parham. All rights reserved.
+*/
+"username" = "用户名";
+"password" = "密码";
+"forgetPassword" = "忘记密码";
+"modifyPassword" = "修改密码";
+"signUp" = "注册";
+"login" = "登录";
+
+"setting" = "设置";
+"multiAccount" = "多账号管理";
+"modifyIcon" = "修改图标";
+"forceDarkMode" = "毛玻璃强制暗黑";
+"blurWhenPlaying" = "播放时毛玻璃";
+"customBlur" = "自定义毛玻璃";
+"doNotDisturb" = "勿扰模式";
+"lookUpFiles" = "查看文件";
+"logout" = "退出登录";
+
+"groupName" = "群名";
+"myNickName" = "我的昵称";
+"browseHistory" = "查看聊天记录";
+"groupOwner" = "群主";
+"notification" = "消息推送";
+"modifyGroupAvatar" = "修改群头像";
+"addGroupMember" = "添加成员";
+"removeGroupMember" = "移除成员";
+"deleteGroup" = "删除群聊";
+"commonInfo" = "通用设置";
+"groupMembers" = "群成员";
+"nickname" = "备注";
+"createGroup" = "创建群聊";
+
+"audioCall" = "语音通话";
+"videoCall" = "视频通话";
+"sharePosition" = "分享定位";
+"cancel" = "取消";
+"shotOrRecore" = "拍照/录像";
+
+"avatar" = "头像";
+"userID" = "用户ID";
+"email" = "邮箱";
+"createTime" = "创建时间";
+"customColor" = "自定义颜色";
+"trailer" = "歌曲";
+
+"quickAction" = "设置快捷操作";
+"addNewShortcut" = "添加新账号";
+"delete" = "删除";
+"enterUsernameAndPassword" = "输入用户名和密码";
+"exceedQuantity" = "超过数量";
+"complete" = "完成";
+"modify" = "修改";
+"setAsMainAccount" = "设为主账号";
+
+"recoverDefault" = "恢复默认";
+"confirm" = "确认";
+
+"video" = "视频";
+"image" = "图片";
+"livePhoto" = "Live Photo";
+"drawing" = "Drawing";
+"track" = "Track";
+"voice" = "语音";
+"location" = "位置";
+"revoke" = "撤回";
+"text" = "文字";
+
+"sureDelete" = "确定删除吗";
+"chooseFileType" = "请选择文件类型";
+"deleteSomeData" = "删除%i条数据";
+"totalDataCount" = "共%i条数据";
+
+"alreadySend" = "已发送";
+"incompletedInfo" = "信息不完整";
+"noMatchedPassword" = "密码不一致";
+"signUpSuccess" = "注册成功";
+"rememberUsernameAndPassword" = "请记住用户名和密码";
+
+"isYourFriendAlready" = "已经是你好友！";
+"sentQuery" = "已发送申请";
+"acceptQuery" = "接受申请？";
+"addSuccessfully" = "添加成功";
+"queryFailed" = "请求失败";
+"fail" = "失败";
+"success" = "成功";
+
+"processingAndUploadingData" = "正在处理、上传数据";
+"copy" = "复制";
+"refer" = "引用";
+"sendToOthers" = "转发";
+"revoke" = "撤回";
+"saveMySelf" = "收藏私有";
+"saveCommonUse" = "收藏公有";
+"multiSelect" = "多选";
+"addBgcolor" = "添加背景颜色";
+"alreadySendToOthers" = "已转发";
+"loading" = "正在加载...";
+"someoneRecallMessage" = "%@撤回了一条消息";
+"jumpTo" = "跳转@";
+"backToBottom" = "回到底部";
+
+
+"connecting" = "正在连接...";
+"logining" = "正在登录...";
+"infoExpire" = "登录信息过期";
+"reLogin" = "请重新登录";
+"looseToSend" = "勾选后松手发送";
+"browserAvatar" = "查看头像";
+"turnOnNotification" = "打开推送";
+"turnOffNotification" = "关闭推送";
+"openInSingleWindow" = "在单独窗口打开";
+"muted" = "已静音";
+
+"huanhang" = "换行";
+"preview" = "预览";
+"realtime" = "实时";
+"continue" = "继续";
+"historyWithSomeone" = "%@的历史记录";
+"latest" = "最新";
+"messageDetail" = "消息详情";
+"allPerson" = "所有人";
+"trailerCount" = "%@等%i首";
+"copied" = "已复制";
+"send" = "发送";
+"goThere" = "去这儿";
+
+"favorite" = "收藏";
+"select" = "选择";
+"edit" = "编辑";
+"selectAll" = "全选";
+"download" = "下载";
+"addTo" = "添加到";
+"share" = "分享";
+"done" = "完成";
+"insertedToPlay" = "已插播";
+"insertToPlay" = "插播";
+
+"serach" = "搜索";
+"china/us" = "中/美";
+"switching" = "切换中...";
+"searching" = "搜索中...";
+"beginDownloading" = "已开始下载";
+
+"saveToAlbum" = "保存到相册";
+"notAuthorized" = "未授权";

@@ -20,8 +20,8 @@ class JoinChatViewController: DogeChatViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.title = "Doge Chat"
-        usernameLabel.text = "用户名："
-        passwordLabel.text = "密码："
+        usernameLabel.text = NSLocalizedString("username", comment: "username") + ": "
+        passwordLabel.text = NSLocalizedString("password", comment: "password") + ": "
         usernameLabel.font = UIFont.boldSystemFont(ofSize: 20)
         passwordLabel.font = UIFont.boldSystemFont(ofSize: 20)
         let labelStackView = UIStackView(arrangedSubviews: [usernameLabel, passwordLabel])
@@ -39,9 +39,9 @@ class JoinChatViewController: DogeChatViewController {
         let topStackView = UIStackView(arrangedSubviews: [labelStackView, tfStackView])
         topStackView.axis = .horizontal
         
-        loginButton.setTitle("登录", for: .normal)
-        signUpButton.setTitle("注册", for: .normal)
-        forgetButton.setTitle("忘记密码", for: .normal)
+        loginButton.setTitle(NSLocalizedString("login", comment: "login"), for: .normal)
+        signUpButton.setTitle(NSLocalizedString("signUp", comment: "sign up"), for: .normal)
+        forgetButton.setTitle(NSLocalizedString("forgetPassword", comment: "forget password"), for: .normal)
         loginButton.setTitleColor(.systemBlue, for: .normal)
         signUpButton.setTitleColor(.systemBlue, for: .normal)
         forgetButton.setTitleColor(.systemBlue, for: .normal)

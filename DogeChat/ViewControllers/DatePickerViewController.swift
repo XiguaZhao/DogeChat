@@ -30,9 +30,9 @@ class DatePickerViewController: UIViewController {
         picker.datePickerMode = .countDownTimer
         picker.countDownDuration = 60 * 60
         
-        confirmButton.setTitle("确认", for: .normal)
+        confirmButton.setTitle(NSLocalizedString("confirm", comment: ""), for: .normal)
         confirmButton.addTarget(self, action: #selector(confirmed(_:)), for: .touchUpInside)
-        cancelButton.setTitle("取消", for: .normal)
+        cancelButton.setTitle(NSLocalizedString("cancel", comment: ""), for: .normal)
         cancelButton.addTarget(self, action: #selector(cancel), for: .touchUpInside)
         let buttonStack = UIStackView(arrangedSubviews: [confirmButton, cancelButton])
         buttonStack.spacing = 30

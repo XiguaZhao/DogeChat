@@ -12,18 +12,40 @@ import DogeChatUniversal
 import DogeChatCommonDefines
 
 enum SettingType: String {
-    case shortcut = "多账号管理"
-    case changeIcon = "修改图标"
-    case doNotDisturb = "勿扰模式"
+    case shortcut
+    case changeIcon
+    case doNotDisturb
     case selectHost = "自定义host"
     case wsAddress = "自定义ws地址"
     case resetHostAndWs = "重置host&ws"
-    case switchImmersive = "播放时沉浸"
-    case customBlur = "自定义毛玻璃"
-    case forceDarkMode = "毛玻璃强制暗黑"
-    case logout = "退出登录"
-    case browseFiles = "查看文件"
+    case switchImmersive
+    case customBlur
+    case forceDarkMode
+    case logout
+    case browseFiles
     case customizedColors = "设置颜色"
+    func localizedString() -> String {
+        switch self {
+        case .shortcut:
+            return NSLocalizedString("multiAccount", comment: "Multi Accounts")
+        case .changeIcon:
+            return NSLocalizedString("modifyIcon", comment: "Modify Icon")
+        case .doNotDisturb:
+            return NSLocalizedString("doNotDisturb", comment: "Do Not Disturb")
+        case .switchImmersive:
+            return NSLocalizedString("blurWhenPlaying", comment: "Blur When Playing")
+        case .customBlur:
+            return NSLocalizedString("customBlur", comment: "Custom Blur")
+        case .forceDarkMode:
+            return NSLocalizedString("forceDarkMode", comment: "Force Dark Mode")
+        case .logout:
+            return NSLocalizedString("logout", comment: "Logout")
+        case .browseFiles:
+            return NSLocalizedString("lookUpFiles", comment: "Look Up Files")
+        default:
+            return self.rawValue
+        }
+    }
 }
 
 class SettingViewController: DogeChatViewController, DatePickerChangeDelegate, UITableViewDataSource, UITableViewDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, DogeChatVCTableDataSource, TrailingViewProtocol {
@@ -38,7 +60,7 @@ class SettingViewController: DogeChatViewController, DatePickerChangeDelegate, U
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.navigationItem.title = "设置"
+        self.navigationItem.title = NSLocalizedString("setting", comment: "settings")
         if isMac() {
             settingTypes.remove(at: 1)
         }
@@ -155,7 +177,7 @@ class SettingViewController: DogeChatViewController, DatePickerChangeDelegate, U
         let cell = tableView.dequeueReusableCell(withIdentifier: CommonTableCell.cellID) as! CommonTableCell
         var type: CommonTableCell.TrailingViewType?
         var isOn: Bool?
-        let text = settingTypes[indexPath.row].rawValue
+        let text = settingTypes[indexPath.row].localizedString()
         if settingTypes[indexPath.row] == .switchImmersive {
             isOn = UserDefaults.standard.bool(forKey: "immersive")
             type = .switcher

@@ -1,0 +1,24 @@
+
+/* Class = "UIButton"; configuration.title = "确认"; ObjectID = "ThM-kb-J8I"; */
+"ThM-kb-J8I.configuration.title" = "Confirm";
+
+/* Class = "UIButton"; normalTitle = "Button"; ObjectID = "ThM-kb-J8I"; */
+"ThM-kb-J8I.normalTitle" = "Confirm";
+
+/* Class = "UILabel"; text = "消息类型"; ObjectID = "Waf-NU-rOH"; */
+"Waf-NU-rOH.text" = "Message Type";
+
+/* Class = "UILabel"; text = "关键词"; ObjectID = "fre-cF-iUI"; */
+"fre-cF-iUI.text" = "Keyword";
+
+/* Class = "UIButton"; configuration.title = "取消"; ObjectID = "gf4-vt-TNS"; */
+"gf4-vt-TNS.configuration.title" = "Cancel";
+
+/* Class = "UIButton"; normalTitle = "Button"; ObjectID = "gf4-vt-TNS"; */
+"gf4-vt-TNS.normalTitle" = "Cancel";
+
+/* Class = "UILabel"; text = "开始日期"; ObjectID = "lSB-9V-6ae"; */
+"lSB-9V-6ae.text" = "Begin Date";
+
+/* Class = "UITextField"; placeholder = "请输入关键词"; ObjectID = "yAb-CN-CyV"; */
+"yAb-CN-CyV.placeholder" = "Please enter keyword";

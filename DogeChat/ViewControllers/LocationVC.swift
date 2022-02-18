@@ -102,10 +102,10 @@ class LocationVC: DogeChatViewController, UISearchBarDelegate, MKMapViewDelegate
     
     func makeBottomView() {
         locationLabel.font = .preferredFont(forTextStyle: .footnote)
-        sendButton.setTitle("发送", for: .normal)
+        sendButton.setTitle(NSLocalizedString("send", comment: ""), for: .normal)
         sendButton.addTarget(self, action: #selector(sendAction), for: .touchUpInside)
         
-        goToButton.setTitle("去这儿", for: .normal)
+        goToButton.setTitle(NSLocalizedString("goThere", comment: ""), for: .normal)
         goToButton.addTarget(self, action: #selector(goToAction), for: .touchUpInside)
         
         [sendButton, goToButton].forEach({ button in

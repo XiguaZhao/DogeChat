@@ -48,15 +48,15 @@ DEPENDENCIES:
   - AFNetworking
   - DACircularProgress
   - DataCompression
-  - DogeChatCommonDefines (from `/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/DogeChatCommonDefines`)
-  - DogeChatNetwork (from `/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/DogeChatNetwork`)
-  - DogeChatUniversal (from `/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/DogeChatUniversal`)
-  - DogeChatVideoUtil (from `/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/DogeChatVideoUtil`)
-  - FLAnimatedImage (from `/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/FLAnimatedImage`)
+  - DogeChatCommonDefines (from `../DogeChatCommonDefines`)
+  - DogeChatNetwork (from `../DogeChatNetwork`)
+  - DogeChatUniversal (from `../DogeChatUniversal`)
+  - DogeChatVideoUtil (from `../DogeChatVideoUtil`)
+  - FLAnimatedImage (from `../FLAnimatedImage`)
   - LookinServer
   - Masonry
   - MJRefresh
-  - RSAiOSWatchOS (from `/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/RSAiOSWatchOS`)
+  - RSAiOSWatchOS (from `../RSAiOSWatchOS`)
   - SDWebImage
   - SwiftyJSON (from `https://github.com/SwiftyJSON/SwiftyJSON.git`, commit `2b6054efa051565954e1d2b9da831680026cd768`)
   - SwiftyRSA (from `/Users/zhaoxiguang/Workspace/SwiftyRSA`)
@@ -66,26 +66,26 @@ SPEC REPOS:
     - AFNetworking
     - DACircularProgress
     - SDWebImage
-    - Starscream
   trunk:
     - DataCompression
     - LookinServer
     - Masonry
     - MJRefresh
+    - Starscream
 
 EXTERNAL SOURCES:
   DogeChatCommonDefines:
-    :path: "/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/DogeChatCommonDefines"
+    :path: "../DogeChatCommonDefines"
   DogeChatNetwork:
-    :path: "/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/DogeChatNetwork"
+    :path: "../DogeChatNetwork"
   DogeChatUniversal:
-    :path: "/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/DogeChatUniversal"
+    :path: "../DogeChatUniversal"
   DogeChatVideoUtil:
-    :path: "/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/DogeChatVideoUtil"
+    :path: "../DogeChatVideoUtil"
   FLAnimatedImage:
-    :path: "/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/FLAnimatedImage"
+    :path: "../FLAnimatedImage"
   RSAiOSWatchOS:
-    :path: "/Users/zhaoxiguang/Library/Mobile Documents/com~apple~CloudDocs/Documents/Developer/RSAiOSWatchOS"
+    :path: "../RSAiOSWatchOS"
   SwiftyJSON:
     :commit: 2b6054efa051565954e1d2b9da831680026cd768
     :git: https://github.com/SwiftyJSON/SwiftyJSON.git
@@ -115,6 +115,6 @@ SPEC CHECKSUMS:
   SwiftyJSON: 4e107719275086d9d9111e1a7ca6c484b6664574
   SwiftyRSA: 3b9c9179744217951facc6a3e9ae8d8c97061ffa
 
-PODFILE CHECKSUM: 4cbea4932ddca3d3b4f790c77cef91e8f8d865a2
+PODFILE CHECKSUM: 2a5ac8c2b5f629fa9e3982c5e613ab13e7fce2ec
 
 COCOAPODS: 1.11.0

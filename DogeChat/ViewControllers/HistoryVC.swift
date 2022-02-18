@@ -45,7 +45,7 @@ class HistoryVC: ChatRoomViewController {
         manager?.needInsertWhenWrap = false
                 
         if purpose == .history {
-            navigationItem.title = friend.username + "的历史记录"
+            navigationItem.title = String.localizedStringWithFormat(localizedString("historyWithSomeone"), friend.username)
             let header = UIRefreshControl()
             header.addTarget(self, action: #selector(refreshHeaderAction), for: .valueChanged)
             tableView.refreshControl = header
@@ -54,7 +54,7 @@ class HistoryVC: ChatRoomViewController {
             requestPage(1)
                         
             let leftLabel = UILabel()
-            leftLabel.text = "最新"
+            leftLabel.text = localizedString("latest")
             stack = UIStackView(arrangedSubviews: [leftLabel, slider, progressLabel])
             stack.spacing = 15
             slider.minimumValue = 1
@@ -66,7 +66,7 @@ class HistoryVC: ChatRoomViewController {
             self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .search, target: self, action: #selector(filterAction))
 
         } else if purpose == .referView {
-            navigationItem.title = "消息详情"
+            navigationItem.title = localizedString("messageDetail")
         }
     }
     
