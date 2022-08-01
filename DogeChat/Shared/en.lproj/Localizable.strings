@@ -40,7 +40,7 @@
 "videoCall" = "Video Call";
 "sharePosition" = "Share Position";
 "cancel" = "Cancel";
-"shotOrRecore" = "Take Photo/Record Video";
+"shotOrRecord" = "Take Photo/Record Video";
 
 "avatar" = "Avatar";
 "userID" = "User ID";
@@ -92,16 +92,16 @@
 
 "processingAndUploadingData" = "Processing and uploading data";
 "copy" = "Copy";
-"refer" = "Refer";
+"refer" = "Quote";
 "sendToOthers" = "Send to others";
 "revoke" = "Recall";
 "saveMySelf" = "Save privately";
-"saveCommonUse" = "Save commonly";
+"saveCommonUse" = "Save publicly";
 "multiSelect" = "Multiselect";
 "addBgcolor" = "Add backgroud color";
 "alreadySendToOthers" = "Sent";
 "loading" = "Loading...";
-"someoneRecallMessage" = "%@ recall a message";
+"someoneRecallMessage" = "%@ has recalled a message";
 "jumpTo" = "Jump to @";
 "backToBottom" = "Back to bottom";
 
@@ -148,3 +148,19 @@
 
 "saveToAlbum" = "Save to album";
 "notAuthorized" = "Not Authorized";
+
+"setSelfAvatar" = "Set self avatar";
+"setGroupAvatar" = "Set group Avatar";
+"addFromAlbum" = "Add from album";
+"setPublic" = "Set public";
+
+"clickToUpload" = "Click to upload";
+"clickToUploadTitle" = "iOS version lower than 14, no support now";
+"clickToUploadDetail" = "Please long press existing emojis to save";
+
+"moments" = "Moments";
+
+"shortcutLaunch" = "Shortcut(input a letter)";
+"deleteAccount" = "Delete account";
+"accountSetting" = "Account settings";
+"sticker" = "Sticker";

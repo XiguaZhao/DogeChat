@@ -24,6 +24,7 @@ enum SettingType: String {
     case logout
     case browseFiles
     case customizedColors = "设置颜色"
+    case accountSetting
     func localizedString() -> String {
         switch self {
         case .shortcut:
@@ -42,6 +43,8 @@ enum SettingType: String {
             return NSLocalizedString("logout", comment: "Logout")
         case .browseFiles:
             return NSLocalizedString("lookUpFiles", comment: "Look Up Files")
+        case .accountSetting:
+            return NSLocalizedString("accountSetting", comment: "account setting")
         default:
             return self.rawValue
         }
@@ -52,7 +55,7 @@ class SettingViewController: DogeChatViewController, DatePickerChangeDelegate, U
     
     var logoutButton: UIBarButtonItem!
     
-    var settingTypes: [SettingType] = [.shortcut, .changeIcon, .forceDarkMode, .switchImmersive, .customBlur, .doNotDisturb, .browseFiles, .logout]
+    var settingTypes: [SettingType] = [.accountSetting, .shortcut, .changeIcon, .forceDarkMode, .switchImmersive, .customBlur, .doNotDisturb, .browseFiles, .logout]
     var tableView = DogeChatTableView()
     var manager: WebSocketManager? {
         socketForUsername(username)
@@ -88,18 +91,26 @@ class SettingViewController: DogeChatViewController, DatePickerChangeDelegate, U
     }
 
     @objc func logout() {
-        NotificationCenter.default.post(name: .logout, object: username)
-        if #available(iOS 13.0, *) {
-            if let sceneDelegate = self.view.window?.windowScene?.delegate as? SceneDelegate {
-                if let contactVCNav = sceneDelegate.contactVC?.navigationController {
-                    contactVCNav.setViewControllers([JoinChatViewController()], animated: true)
+        Self.logout(vc: self, manager: self.manager)
+    }
+    
+    class func logout(vc: DogeChatViewController, manager: WebSocketManager?) {
+        NotificationCenter.default.post(name: .logout, object: vc.username)
+        manager?.commonWebSocket.sendToken("", publicKey: nil)
+        vc.makeAutoAlert(message: "正在退出", detail: nil, showTime: 1) {
+            if #available(iOS 13.0, *) {
+                if let sceneDelegate = vc.view.window?.windowScene?.delegate as? SceneDelegate {
+                    if let contactVCNav = sceneDelegate.contactVC?.navigationController {
+                        contactVCNav.setViewControllers([JoinChatViewController()], animated: true)
+                    }
                 }
+            } else {
+                AppDelegateUI.shared.makeLogininVC()
             }
-        } else {
-            AppDelegateUI.shared.makeLogininVC()
+            removeSocketForUsername(vc.username, removeScene: false)
+            vc.tabBarController?.selectedIndex = 0
         }
-        removeSocketForUsername(username, removeScene: false)
-        self.tabBarController?.selectedIndex = 0
+
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -170,6 +181,9 @@ class SettingViewController: DogeChatViewController, DatePickerChangeDelegate, U
         case .customizedColors:
             let vc = SelectColorVC()
             self.present(vc, animated: true, completion: nil)
+        case .accountSetting:
+            let profileVC = ProfileVC()
+            self.navigationController?.setViewControllersForSplitVC(vcs: [self, profileVC], firstAnimated: false, secondAnimated: false, animatedIfCollapsed: true)
         }
     }
     
@@ -230,7 +244,7 @@ class SettingViewController: DogeChatViewController, DatePickerChangeDelegate, U
         picker.modalPresentationStyle = .fullScreen
         picker.dismiss(animated: true, completion: nil)
         if let url = fileURLAt(dirName: "customBlur", fileName: userID) {
-            manager?.httpsManager.uploadPhoto(imageUrl: url, type: .image, size: compress.size, isBlurImage: false, uploadProgress: nil, success: { [weak self] path in
+            manager?.httpsManager.uploadPhoto(imageUrl: url, type: .sticker, size: compress.size, isBlurImage: false, uploadProgress: nil, success: { [weak self] path in
                 print(path)
                 self?.manager?.httpsManager.saveTracks(nil, andBlurImage: path, customizedData: nil, completion: nil)
             }, fail: nil)

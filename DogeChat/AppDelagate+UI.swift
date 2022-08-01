@@ -49,6 +49,7 @@ class AppDelegateUI {
             MediaLoader.shared.cookie = accountInfo.cookieInfo?.cookie
             contactVC.loginAndConnect()
             WebSocketManager.shared.httpsManager.accountInfo = accountInfo
+            WebSocketManager.shared.messageManager.messageDelegate = contactVC
             navController.setViewControllers([contactVC], animated: true)
         } else {
             makeLogininVC()

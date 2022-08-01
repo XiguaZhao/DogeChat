@@ -23,17 +23,24 @@
                     <rect key="frame" x="0.0" y="44" width="414" height="818"/>
                     <subviews>
                         <imageView clipsSubviews="YES" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="cat180*180.png" translatesAutoresizingMaskIntoConstraints="NO" id="I2i-Kx-XY4">
-                            <rect key="frame" x="0.0" y="0.0" width="207" height="818"/>
+                            <rect key="frame" x="0.0" y="0.0" width="138" height="818"/>
                             <gestureRecognizers/>
                             <connections>
                                 <outletCollection property="gestureRecognizers" destination="lvu-GV-ez4" appends="YES" id="Anr-4s-zSt"/>
                             </connections>
                         </imageView>
                         <imageView clipsSubviews="YES" tag="1" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="dog180*180.png" translatesAutoresizingMaskIntoConstraints="NO" id="3Tu-hf-eeU">
-                            <rect key="frame" x="207" y="0.0" width="207" height="818"/>
+                            <rect key="frame" x="138" y="0.0" width="138" height="818"/>
                             <gestureRecognizers/>
                             <connections>
                                 <outletCollection property="gestureRecognizers" destination="t7q-CB-Qvw" appends="YES" id="8hE-ai-CyQ"/>
+                            </connections>
+                        </imageView>
+                        <imageView clipsSubviews="YES" tag="2" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="bear180*180.png" translatesAutoresizingMaskIntoConstraints="NO" id="yV3-tv-26u">
+                            <rect key="frame" x="276" y="0.0" width="138" height="818"/>
+                            <gestureRecognizers/>
+                            <connections>
+                                <outletCollection property="gestureRecognizers" destination="Y9S-fh-dkH" appends="YES" id="rL7-Vn-OsG"/>
                             </connections>
                         </imageView>
                     </subviews>
@@ -59,8 +66,14 @@
                 <action selector="tapAction:" destination="-1" id="uah-vc-kyQ"/>
             </connections>
         </tapGestureRecognizer>
+        <tapGestureRecognizer id="Y9S-fh-dkH">
+            <connections>
+                <action selector="tapAction:" destination="-1" id="1J8-Eb-YVW"/>
+            </connections>
+        </tapGestureRecognizer>
     </objects>
     <resources>
+        <image name="bear180*180.png" width="180" height="180"/>
         <image name="cat180*180.png" width="180" height="180"/>
         <image name="dog180*180.png" width="180" height="180"/>
         <systemColor name="systemBackgroundColor">

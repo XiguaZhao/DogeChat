@@ -13,13 +13,7 @@ import UIKit
 import DogeChatCommonDefines
 
 extension ChatRoomViewController: ReferMessageDataSource {
-    
-    func debugText(_ text: String) {
-        if self.username == "赵锡光" {
-            self.navigationItem.title = text
-        }
-    }
-    
+        
     func insertNewMessageCell(_ messages: [Message], index: Int = 0, forceScrollBottom: Bool = false, completion: (()->Void)? = nil) {
         guard self.purpose == .chat, !messages.isEmpty else { return }
         let alreadyUUIDs = self.messagesUUIDs
@@ -28,18 +22,13 @@ extension ChatRoomViewController: ReferMessageDataSource {
         var filtered = messages.filter { filteredUUIDs.contains($0.uuid)}
         filtered = filtered.filter { message in
             if message.option != self.messageOption {
-                debugText("option匹配不上")
                 return false
             } else {
                 let match = message.friend?.userID == self.friend.userID
-                if !match {
-                    debugText("friendID不匹配")
-                }
                 return match
             }
         }
         if filtered.isEmpty {
-            debugText("过滤后为空数组")
             filtered = messages.filter({ message in
                 !self.messages.contains(where: { alreadyMessage in
                     return message.uuid == alreadyMessage.uuid }) && message.friend?.userID == self.friend.userID
@@ -71,7 +60,9 @@ extension ChatRoomViewController: ReferMessageDataSource {
             UIView.performWithoutAnimation {
                 self.tableView.insertRows(at: indexPaths, with: .none)
             }
-            needScrollToBottom = scrollToBottom
+            if scrollToBottom {
+                scrollBottom(animated: filtered.count < 10)
+            }
             if filtered.filter({ !$0.isRead }).map({ MessageBaseCell.height(for: $0, tableViewSize: self.tableView.bounds.size, userID: manager?.myInfo.userID)}).reduce(0, +) > self.tableView.bounds.height {
                 self.explictJumpMessageUUID = messages[0].uuid
                 self.didStopScroll()
@@ -114,15 +105,15 @@ extension ChatRoomViewController: ReferMessageDataSource {
     
     func checkReferMessage(_ message: Message) {
         if message.referMessage != nil { return }
-        if let referUUID = message.referMessageUUID, let friendID = message.friend?.userID {
-            manager?.httpsManager.getMessagesWith(friendID: friendID, uuid: referUUID, pageNum: nil, pageSize: nil)
+        if let referUUID = message.referMessageUUID {
+            manager?.httpsManager.historyMessages(for: friend, uuid: referUUID, needInsertWhenWrap: false, completion: nil)
         }
     }
     
     // TODO: 发送文件的也需要加到未发送数组中（比如别的app拖过来这时候还没连接上）
     
     @objc func confirmSendPhoto() {
-        let newMessages = messageSender.confirmSendPhoto(friends: [friend])
+        let newMessages = messageSender.confirmSendPhoto(friends: [friend], messageType: .photo)
         insertNewMessageCell(newMessages, forceScrollBottom: true)
     }
     

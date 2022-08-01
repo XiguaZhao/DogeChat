@@ -27,8 +27,8 @@ extension ChatRoomViewController: UITableViewDropDelegate {
                         }
                     }
                 }
-            } else if let info = item.dragItem.localObject as? [String : Any], let userID = info["userID"] as? String {
-                if userID != friend.userID, let message = info["message"] as? Message {
+            } else if let info = item.dragItem.localObject as? [String : Any], let _ = info["userID"] as? String {
+                if let message = info["message"] as? Message {
                     Self.transferMessages([message], to: [self.friend], manager: self.manager)
                 }
             } else { //这是从别的app拖过来的
@@ -66,8 +66,17 @@ extension ChatRoomViewController: UITableViewDropDelegate {
         
     func tableView(_ tableView: UITableView, dropSessionDidUpdate session: UIDropSession, withDestinationIndexPath destinationIndexPath: IndexPath?) -> UITableViewDropProposal {
         if let info = session.localDragSession?.items.first?.localObject as? [String : Any], let userID = info["userID"] as? String, userID == friend.userID {
-            return .init(operation: .forbidden)
+//            return .init(operation: .forbidden)
         }
         return .init(operation: .copy)
     }
+    
+    func tableView(_ tableView: UITableView, dropSessionDidEnter session: UIDropSession) {
+        self.customTitle = "拖拽到此处取消"
+    }
+    
+    func tableView(_ tableView: UITableView, dropSessionDidEnd session: UIDropSession) {
+        self.customTitle = self.friendName
+    }
+    
 }

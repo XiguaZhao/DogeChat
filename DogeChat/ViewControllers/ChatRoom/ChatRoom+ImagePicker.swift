@@ -47,7 +47,9 @@ extension ChatRoomViewController: UIImagePickerControllerDelegate, UINavigationC
     func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
         if let type = info[.mediaType] as? String, type == "public.movie" {
             if let videoURL = info[.mediaURL] as? URL {
-                self.messageSender.compressAndSendVideo(videoURL, friends: [friend], completion: nil)
+                self.messageSender.compressAndSendVideo(videoURL, friends: [friend], completion: { [weak self] message in
+                    self?.insertNewMessageCell(message)
+                })
             }
             picker.dismiss(animated: true, completion: nil)
             return
@@ -59,7 +61,7 @@ extension ChatRoomViewController: UIImagePickerControllerDelegate, UINavigationC
         var isGif = false
         var originalUrl: URL?
         processingMedia(finished: false)
-        if imagePickerType == .image {
+        if imagePickerType.isImage {
             if let originalUrl_ = info[.imageURL] as? URL {
                 isGif = originalUrl_.absoluteString.hasSuffix(".gif")
                 originalUrl = originalUrl_

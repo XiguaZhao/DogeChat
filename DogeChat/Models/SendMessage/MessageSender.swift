@@ -91,7 +91,7 @@ class MessageSender {
         message.at = res
     }
     
-    func confirmSendPhoto(friends: [Friend], emojiType: Emoji.AddEmojiType = .favorite) -> [Message] {
+    func confirmSendPhoto(friends: [Friend], emojiType: Emoji.AddEmojiType = .favorite, messageType: MessageType) -> [Message] {
         defer {
             self.latestPickedImageInfos.removeAll()
         }
@@ -104,14 +104,14 @@ class MessageSender {
         for (_, imageURL, size) in infos {
             var messagesWithSameURL = [Message]()
             for friend in friends {
-                guard let message = processMessageString(for: "", type: .image, friend: friend, imageURL: nil, videoURL: nil) else { continue }
+                guard let message = processMessageString(for: "", type: .sticker, friend: friend, imageURL: nil, videoURL: nil) else { continue }
                 message.imageLocalPath = imageURL
                 message.imageSize = size
                 newMessages.append(message)
                 messagesWithSameURL.append(message)
             }
             self.progressDelegate?.processingMedia(finished: false)
-            manager.uploadPhoto(imageUrl: imageURL, type: .image, size: size, clientKey: self.clientKeyProvider?.getClientPublicKey()) { [weak self] progress in
+            manager.uploadPhoto(imageUrl: imageURL, type: .sticker, size: size, clientKey: self.clientKeyProvider?.getClientPublicKey()) { [weak self] progress in
                 self?.progressDelegate?.downloadProgressUpdate(progress: progress.fractionCompleted, messages: messagesWithSameURL)
             } success: { [weak self] filePath in
                 self?.progressDelegate?.processingMedia(finished: true)
@@ -314,11 +314,11 @@ class MessageSender {
                     self.progressDelegate?.processingMedia(finished: true)
                     if error == nil, let data = res as? Data, let str = String(data: data, encoding: .utf8), let url = URL(string: str) {
                         if str.isVideo {
-                            self.compressAndSendVideo(url, friends: friends)
+                            self.compressAndSendVideo(url, friends: friends, completion: completion)
                         } else if str.isImage {
                             if let data = try? Data(contentsOf: url), let image = UIImage(data: data) {
                                 self.latestPickedImageInfos = [compressImage(image)]
-                                let messages = self.confirmSendPhoto(friends: friends)
+                                let messages = self.confirmSendPhoto(friends: friends, messageType: .photo)
                                 completion?(messages)
                             }
                         }
@@ -334,7 +334,7 @@ class MessageSender {
                         do {
                             try data.write(to: newURL)
                             self.latestPickedImageInfos = [(image, newURL, image.size)]
-                            let messages = self.confirmSendPhoto(friends: friends, emojiType: emojiType)
+                            let messages = self.confirmSendPhoto(friends: friends, emojiType: emojiType, messageType: .sticker)
                             completion?(messages)
                         } catch {
                             
@@ -347,7 +347,7 @@ class MessageSender {
                     self?.progressDelegate?.processingMedia(finished: true)
                     if let image = object as? UIImage, let self = self {
                         self.latestPickedImageInfos = [compressImage(image, saveMemory: self.type == .shareExtension)]
-                        let messages = self.confirmSendPhoto(friends: friends, emojiType: emojiType)
+                        let messages = self.confirmSendPhoto(friends: friends, emojiType: emojiType, messageType: .photo)
                         completion?(messages)
                     }
                 }
@@ -367,6 +367,7 @@ class MessageSender {
 
 
     func compressAndSendVideo(_ fileURL: URL, friends: [Friend], completion: (([Message]) -> Void)? = nil) {
+        self.progressDelegate?.processingMedia(finished: false)
         let dir = createDir(name: videoDir)
         let uuid = UUID().uuidString
         let newURL = dir.appendingPathComponent(uuid).appendingPathExtension("mov")

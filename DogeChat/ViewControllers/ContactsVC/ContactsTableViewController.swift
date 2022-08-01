@@ -22,8 +22,14 @@ class ContactsTableViewController:  DogeChatViewController,
         didSet {
             let total = unreadMessage.values.map({$0.unreadCount}).reduce(0, +)
             self.navigationItem.title = total > 0 ? "(\(total)未读)" : username
+            appDelegate.macOSBridge?.updateUnreadCount(total)
             self.navigationController?.tabBarItem.badgeValue = total > 0 ? String(total) : nil
-            UIApplication.shared.applicationIconBadgeNumber = total
+            DispatchQueue.global().async {
+                if total != oldValue.values.map({$0.unreadCount}).reduce(0, +), let userDefaults = UserDefaults(suiteName: groupName) {
+                    userDefaults.set(total, forKey: "unreadCount")
+                    userDefaults.synchronize()
+                }
+            }
         }
     }
     var friends: [Friend] = []
@@ -148,7 +154,6 @@ class ContactsTableViewController:  DogeChatViewController,
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        manager?.messageManager.messageDelegate = self
         loadAllTracks(username: username)
         setupMyAvatar()
     }
@@ -215,6 +220,10 @@ class ContactsTableViewController:  DogeChatViewController,
     }
     
     @objc func sceneDidBecomeMainNoti() {
+        pingAndConnectIfNeeded()
+    }
+    
+    func pingAndConnectIfNeeded() {
         manager?.commonWebSocket.pingWithResult({ [weak self] connected in
             if !connected {
                 self?.loginAndConnect()
@@ -431,7 +440,7 @@ class ContactsTableViewController:  DogeChatViewController,
     
     
     func makeLocalNotification(message: Message) {
-        guard let friend = message.friend else { return }
+        guard let friend = message.friend, UIApplication.shared.applicationState != .background else { return }
         let content = UNMutableNotificationContent()
         content.title = friend.username
         content.body = (friend.isGroup ? "\(message.senderUsername)：" : "") + message.summary()

@@ -121,7 +121,7 @@ class ChatRoomInterfaceController: WKInterfaceController {
     
     @objc func selectEmojiAction(_ noti: Notification) {
         let path = noti.object as! String
-        let message = Message(message: path, friend: friend, messageSender: .ourself, receiver: friendName, receiverUserID: friend.userID, sender: SocketManager.shared.messageManager.myName, senderUserID: SocketManager.shared.messageManager.myId, messageType: .image)
+        let message = Message(message: path, friend: friend, messageSender: .ourself, receiver: friendName, receiverUserID: friend.userID, sender: SocketManager.shared.messageManager.myName, senderUserID: SocketManager.shared.messageManager.myId, messageType: .sticker)
         message.imageURL = path
         insertMessages([message])
         SocketManager.shared.sendMessage(message)
@@ -159,7 +159,7 @@ class ChatRoomInterfaceController: WKInterfaceController {
             } else {
                 messageRow.nameLabel.setText(message.senderUsername)
             }
-            if message.messageType == .image, let url = message.imageURL as NSString? {
+            if message.messageType.isImage, let url = message.imageURL as NSString? {
                 messageRow.messageLabel.setHidden(true)
                 messageRow.image.setHidden(false)
                 let width = WKInterfaceDevice.current().screenBounds.width - 20
@@ -168,9 +168,9 @@ class ChatRoomInterfaceController: WKInterfaceController {
                     let height = width/size.width * size.height
                     messageRow.image.setHeight(height)
                 }
-                MediaLoader.shared.requestImage(urlStr: url_pre + (url as String), type: .image, syncIfCan: false, imageWidth: .width200, needStaticGif: true, completion: { image, data, _ in
-                    if let data = data {
-                        messageRow.image?.setImageData(data)
+                MediaLoader.shared.requestImage(urlStr: url_pre + (url as String), type: .sticker, syncIfCan: false, imageWidth: .width200, needStaticGif: true, completion: { image, data, _ in
+                    if let image = image {
+                        messageRow.image?.setImage(image)
                     }
                 }, progress: nil)
             } else {

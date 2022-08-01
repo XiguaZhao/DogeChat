@@ -131,6 +131,8 @@ extension ChatRoomViewController: EmojiViewDelegate {
             let picker = PHPickerViewController(configuration: config)
             picker.delegate = self
             self.present(picker, animated: true, completion: nil)
+        } else {
+            self.makeAutoAlert(message: localizedString("clickToUploadTitle"), detail: localizedString("clickToUploadDetail"), showTime: 3, completion: nil)
         }
     }
         
@@ -154,7 +156,7 @@ extension ChatRoomViewController: EmojiViewDelegate {
     
     
     func didSelectEmoji(emoji: Emoji) {
-        if let message = processMessageString(for: emoji.path, type: .image, imageURL: emoji.path, videoURL: nil) {
+        if let message = processMessageString(for: emoji.path, type: .sticker, imageURL: emoji.path, videoURL: nil) {
             insertNewMessageCell([message])
             manager?.commonWebSocket.sendWrappedMessage(message)
         }

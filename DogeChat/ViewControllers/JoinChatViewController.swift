@@ -84,6 +84,11 @@ class JoinChatViewController: DogeChatViewController {
         let tap = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         view.addGestureRecognizer(tap)
         
+        if !UserDefaults.standard.bool(forKey: "agreePrivacy") {
+            let privacyView = PrivacyViewController()
+            privacyView.modalPresentationStyle = .fullScreen
+            self.present(privacyView, animated: false)
+        }
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -231,6 +236,7 @@ extension JoinChatViewController: UITextFieldDelegate {
         manager.myInfo.username = username
         let adapter = WebSocketManagerAdapter(manager: manager, username: username)
         let contactsTVC = ContactsTableViewController()
+        manager.messageManager.messageDelegate = contactsTVC
         contactsTVC.setUsername(username, andPassword: password)
         WebSocketManager.usersToSocketManager[username] = manager
         WebSocketManagerAdapter.usernameToAdapter[username] = adapter

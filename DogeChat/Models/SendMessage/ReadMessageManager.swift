@@ -53,4 +53,30 @@ class ReadMessageManager {
         timer?.cancel()
     }
     
+    var observer: CFRunLoopObserver!
+    var activity: CFRunLoopActivity = .entry
+    func start() {
+        if (observer != nil) {
+            return
+        }
+        let semaphore = DispatchSemaphore(value: 0)
+        observer = CFRunLoopObserverCreateWithHandler(kCFAllocatorDefault, CFRunLoopActivity.allActivities.rawValue, true, 0, { observer, _activity in
+            self.activity = _activity
+            semaphore.signal()
+        })
+        CFRunLoopAddObserver(CFRunLoopGetMain(), observer, CFRunLoopMode.commonModes)
+        DispatchQueue.global().async {
+            while true {
+                if #available(iOS 13.0, *) {
+                    let st = semaphore.wait(timeout: .now().advanced(by: .milliseconds(50)))
+                    if (st == .timedOut) {
+                        if self.activity == .beforeSources || self.activity == .afterWaiting {
+                            print("kadun")
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
 }

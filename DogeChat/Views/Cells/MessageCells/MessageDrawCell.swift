@@ -64,8 +64,12 @@ class MessageDrawCell: MessageBaseCell {
     override func apply(message: Message) {
         super.apply(message: message)
         tapGes.isEnabled = message.messageSender == .ourself
+        if let enabled = self.delegate?.pkViewTapEnabled(self) {
+            tapGes.isEnabled = enabled && tapGes.isEnabled
+        }
         if #available(iOS 13, *) {
             downloadPKDataIfNeeded()
+            getPKView()?.isUserInteractionEnabled = tapGes.isEnabled
         } else {
             self.contentView.subviews.forEach { $0.isHidden = true }
         }

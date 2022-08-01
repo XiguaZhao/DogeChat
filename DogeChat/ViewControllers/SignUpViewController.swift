@@ -44,7 +44,7 @@ class SignUpViewController: UIViewController {
         manager.sendValitionCode(to: email, for: type.rawValue) { status in
             print(status)
             if status == "success" {
-                sender.setTitle(NSLocalizedString("sent", comment: ""), for: .disabled)
+                sender.setTitle(NSLocalizedString("alreadySend", comment: ""), for: .disabled)
                 sender.isEnabled = false
             } else {
                 self.makeAutoAlert(message: status, detail: nil, showTime: 2, completion: nil)

@@ -98,7 +98,7 @@ class DrawViewController: UIViewController, PKViewAutoOffsetDelegate {
         if #available(iOS 14, *) {
             toolPicker?.setVisible(true, forFirstResponder: pkView)
             toolPicker?.addObserver(pkViewDelegate)
-            pkView.becomeFirstResponder()
+//            pkView.becomeFirstResponder()
         }
     }
     
@@ -111,7 +111,9 @@ class DrawViewController: UIViewController, PKViewAutoOffsetDelegate {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        if #available(iOS 14, *) {} else {
+        if #available(iOS 14, *) {
+            pkView.becomeFirstResponder()
+        } else {
             if let toolPicker = toolPicker {
                 toolPicker.setVisible(true, forFirstResponder: pkView)
                 toolPicker.addObserver(pkViewDelegate)

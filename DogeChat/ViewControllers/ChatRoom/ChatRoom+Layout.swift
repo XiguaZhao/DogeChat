@@ -43,9 +43,6 @@ extension ChatRoomViewController {
         }
         var shouldDown = shouldDown
         if let userInfo = notification.userInfo, var endFrame = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
-//            if let beginFrame = (userInfo[UIResponder.keyboardFrameBeginUserInfoKey] as? NSValue)?.cgRectValue, beginFrame == endFrame {
-//                return
-//            }
             let height = self.navigationController?.view.bounds.height ?? UIScreen.main.bounds.height
             if height == endFrame.minY {
                 shouldDown = true
@@ -62,6 +59,7 @@ extension ChatRoomViewController {
     }
     
     func keyboardFrameChange(_ endFrame: CGRect, shouldDown: Bool, duration: TimeInterval? = nil) {
+        guard !self.messageInputBar.isHidden else { return }
         let additionalOffset: CGFloat = safeArea.bottom / 2
         let messageBarHeight = self.messageInputBar.bounds.height
         var point = CGPoint(x: self.messageInputBar.center.x, y: endFrame.origin.y - messageBarHeight/2.0)
@@ -80,21 +78,30 @@ extension ChatRoomViewController {
         let duration = duration ?? 0.25
         point.y += shouldDown ? 0 : additionalOffset
         offsetY += shouldDown ? 0 : additionalOffset
-        UIView.animate(withDuration: duration) { [self] in
+        let needAnimation = !messageInputBar.activeWhenEnterBackground
+        let animations = { [self] in
             self.messageInputBar.center = point
             self.emojiSelectView.frame = CGRect(x: 0, y: messageInputBar.frame.maxY, width: messageInputBar.frame.width, height: self.view.bounds.height - messageInputBar.frame.maxY)
             self.tableView.contentInset = inset
             let contentHeight = contentHeight()
-            if !shouldDown && contentHeight > messageInputBar.frame.minY {
+            if !shouldDown && contentHeight > messageInputBar.frame.minY && !self.messages.isEmpty {
                 let lastIndexPath = IndexPath(row: messages.count - 1, section: 0)
                 if (tableView.indexPathsForVisibleRows ?? []).contains(lastIndexPath) {
                     self.tableView.setContentOffset(CGPoint(x: 0, y: contentHeight - messageInputBar.frame.minY - messageInputBar.topConstraint.constant), animated: false)
                 } else {
-                    self.tableView.scrollToRow(at: lastIndexPath, at: .bottom, animated: true)
+                    self.tableView.scrollToRow(at: lastIndexPath, at: .bottom, animated: needAnimation)
                 }
             }
-        } completion: { finished in
-            self.didStopScroll()
+        }
+        if needAnimation {
+            UIView.animate(withDuration: duration) {
+                animations()
+            } completion: { finished in
+                self.didStopScroll()
+            }
+        } else {
+            animations()
+            didStopScroll()
         }
     }
     
@@ -243,9 +250,9 @@ extension ChatRoomViewController {
             return
         }
         let text = textView.text ?? ""
-        if isMac() && textView.selectedRange.location == text.count && text.last == Character("@") {
-            atAction()
-        }
+//        if isMac() && textView.selectedRange.location == text.count && text.last == Character("@") {
+//            atAction()
+//        }
         let oldFrame = messageInputBar.frame
         let newTextViewSize = textView.contentSize
         var heightChanged = newTextViewSize.height - lastTextViewHeight

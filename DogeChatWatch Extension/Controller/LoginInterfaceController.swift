@@ -13,8 +13,8 @@ class LoginInterfaceController: WKInterfaceController, ASAuthorizationController
 
     @IBOutlet weak var usernameTF: WKInterfaceTextField!
     @IBOutlet weak var passwordTF: WKInterfaceTextField!
-    var username = ""
-    var password = ""
+    var username = "赵锡光"
+    var password = "dogechat123"
     
     override func awake(withContext context: Any?) {
         NotificationCenter.default.addObserver(self, selector: #selector(getWCSessionMessage(_:)), name: .wcSessionMessage, object: nil)

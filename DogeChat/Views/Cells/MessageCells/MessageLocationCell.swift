@@ -46,7 +46,7 @@ class MessageLocationCell: MessageBaseCell {
         let tap = UITapGestureRecognizer(target: self, action: #selector(tapAction))
         mapView.addGestureRecognizer(tap)
         
-        mapView.isScrollEnabled = !isMac()
+        mapView.isScrollEnabled = false
     }
     
     required init?(coder aDecoder: NSCoder) {

@@ -62,7 +62,7 @@ extension ChatRoomViewController {
     }
     
     @objc func jumpToBottom() {
-        self.needScrollToBottom = true
+        scrollBottom(animated: true)
         jumpToBottomStack.isHidden = true
     }
     
@@ -116,7 +116,7 @@ extension ChatRoomViewController {
             index = _index
         }
         if let index = index {
-            tableView.scrollToRow(at: IndexPath(row: index, section: 0), at: .middle, animated: true)
+            tableView.scrollToRow(at: IndexPath(row: index, section: 0), at: .middle, animated: false)
         }
         explictJumpMessageUUID = nil
         self.messages.forEach({ $0.isRead = true })

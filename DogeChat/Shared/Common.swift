@@ -175,9 +175,9 @@ extension Dictionary where Key == String {
     
 }
 
-func compressEmojis(_ image: UIImage, imageWidth: ImageWidth = .width100, isGIF: Bool = false, data: Data? = nil, scale: CGFloat? = nil) -> Data {
+func compressEmojis(_ image: UIImage, imageWidth: ImageWidth = .width100, isGIF: Bool = false, data: Data? = nil, scale: CGFloat? = nil) -> (UIImage, Data) {
     if imageWidth == .original {
-        return image.jpegData(compressionQuality: 0.3) ?? Data()
+        return (image, image.jpegData(compressionQuality: 0.3) ?? Data())
     }
     let width = imageWidth.rawValue
     var size = CGSize(width: width, height: floor(image.size.height * (width / image.size.width)))
@@ -190,7 +190,7 @@ func compressEmojis(_ image: UIImage, imageWidth: ImageWidth = .width100, isGIF:
     image.draw(in: rect)
     res = UIGraphicsGetImageFromCurrentImageContext()
     UIGraphicsEndImageContext()
-    return res?.jpegData(compressionQuality: 0.3) ?? Data()
+    return (res ?? UIImage(), res?.jpegData(compressionQuality: 0.3) ?? Data())
 }
 
 
@@ -257,7 +257,7 @@ public func getTimestampFromStr(_ str: String) -> TimeInterval {
 
 public func dirNameForType(_ type: MessageType) -> String {
     switch type {
-    case .image:
+    case .sticker:
         return photoDir
     case .video:
         return videoDir

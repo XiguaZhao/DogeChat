@@ -23,16 +23,16 @@ extension ChatRoomViewController: UITableViewDragDelegate {
         
     func wrapItmesWithIndexPath(_ indexPath: IndexPath) -> [UIDragItem] {
         let message = messages[indexPath.row]
-        guard message.messageType == .image || message.messageType == .text || message.messageType == .draw || message.messageType == .voice || message.messageType == .video else { return [] }
+        guard message.messageType.isImage || message.messageType == .text || message.messageType == .draw || message.messageType == .voice || message.messageType == .video else { return [] }
         var items = [UIDragItem]()
         if message.messageType == .text {
             let str = message.text as NSString
             let item = UIDragItem(itemProvider: NSItemProvider(object: str))
             items.append(item)
-        } else if message.messageType == .image || message.messageType == .voice || message.messageType == .video {
+        } else if message.messageType.isImage || message.messageType == .voice || message.messageType == .video {
             let type = message.messageType
-            let dirName = type == .image ? photoDir : (type == .video ? videoDir : voiceDir)
-            let urlStr = type == .image ? message.imageURL : (type == .video ? message.videoURL : message.voiceURL)
+            let dirName = type.isImage ? photoDir : (type == .video ? videoDir : voiceDir)
+            let urlStr = type.isImage ? message.imageURL : (type == .video ? message.videoURL : message.voiceURL)
             var imagePath = urlStr ?? "/"
             if imagePath.isEmpty {
                 imagePath = "/"
@@ -47,8 +47,8 @@ extension ChatRoomViewController: UITableViewDragDelegate {
             if #available(iOS 13.0, *) {
                 if let url = fileURLAt(dirName: drawDir, fileName: (message.pkDataURL ?? "").components(separatedBy: "/").last ?? ""), let data = try? Data(contentsOf: url), let draw = try? PKDrawing(data: data) {
 #if !targetEnvironment(macCatalyst)
-                    let image = draw.image(from: draw.bounds, scale: UIScreen.main.scale)
-                    let item = UIDragItem(itemProvider: NSItemProvider(object: image))
+                    let sticker = draw.image(from: draw.bounds, scale: UIScreen.main.scale)
+                    let item = UIDragItem(itemProvider: NSItemProvider(object: sticker))
                     items.append(item)
 #endif
                 }
@@ -65,10 +65,12 @@ extension ChatRoomViewController: UITableViewDragDelegate {
         guard var rect = rect, let targetView = cell.indicationNeighborView else {
             return nil
         }
-        let offset = cell.bounds.width - cell.contentView.bounds.width
+        let offset = cell.bounds.width - cell.contentView.bounds.width - tableView.safeAreaInsets.left
         rect.origin.x += offset
         let path = UIBezierPath(roundedRect: rect, cornerRadius: targetView.layer.cornerRadius)
-        let avatarPath = UIBezierPath(roundedRect: cell.avatarContainer.frame, cornerRadius: cell.avatarContainer.layer.cornerRadius)
+        var avatarRect = cell.avatarContainer.frame
+        avatarRect.origin.x += tableView.safeAreaInsets.left
+        let avatarPath = UIBezierPath(roundedRect: avatarRect, cornerRadius: cell.avatarContainer.layer.cornerRadius)
         path.append(avatarPath)
         preview.visiblePath = path
         return preview

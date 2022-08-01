@@ -27,6 +27,7 @@ protocol MessageTableViewCellDelegate: DownloadUploadProgressDelegate {
     func textCellDoubleTap(_ cell: MessageBaseCell)
     func textCellSingleTap(_ cell: MessageBaseCell)
     func mapViewTap(_ cell: MessageBaseCell, latitude: Double, longitude: Double)
+    func pkViewTapEnabled(_ cell: MessageBaseCell) -> Bool
 }
 
 class MessageBaseCell: DogeChatTableViewCell {
@@ -133,11 +134,7 @@ class MessageBaseCell: DogeChatTableViewCell {
         referViewLeading?.isActive = false
         referViewTrailing?.isActive = false
     }
-    
-    override var canBecomeFirstResponder: Bool {
-        return true
-    }
-    
+        
     override func layoutSubviews() {
         super.layoutSubviews()
         self.layer.masksToBounds = false
@@ -280,7 +277,7 @@ class MessageBaseCell: DogeChatTableViewCell {
         } else {
             url = message.avatarUrl
         }
-        if let url = message.imageLocalPath?.absoluteString ?? url {
+        if let url = url {
             delegate?.mediaViewTapped(self, path: url, isAvatar: true)
         }
     }
@@ -294,10 +291,10 @@ class MessageBaseCell: DogeChatTableViewCell {
         let block: (String) -> Void = { [self] url in
             let isGif = url.hasSuffix(".gif")
             let captured = message
-            MediaLoader.shared.requestImage(urlStr: url, type: .image, cookie: nil, syncIfCan: false) { image, data, _ in
+            MediaLoader.shared.requestImage(urlStr: url, type: .sticker, cookie: nil, syncIfCan: false) { image, data, _ in
                 guard captured?.uuid == self.message.uuid, let data = data else { return }
                 if !isGif { // is photo
-                    self.avatarImageView.image = UIImage(data: data)
+                    self.avatarImageView.image = image
                 } else { // gif图处理
                     self.avatarImageView.animatedImage = FLAnimatedImage(gifData: data)
                 }
@@ -357,10 +354,10 @@ class MessageBaseCell: DogeChatTableViewCell {
             let messageHeight = Self.computeTextSizeForMessage(message, viewSize: tableViewSize, userID: userID).height
             rowHeight = nameHeight + messageHeight + 32 + 2 * Label.verticalPadding
             rowHeight = min(rowHeight, maxTextHeight)
-        case .image, .livePhoto, .video:
+        case .photo, .sticker, .livePhoto, .video:
             let minHeight: CGFloat = 35
             if let size = sizeForImageOrVideo(message) {
-                let scale: CGFloat = message.messageType == .image ? 0.5 : 0.65
+                let scale: CGFloat = message.messageType.isImage ? 0.5 : 0.65
                 if screenWidth < screenHeight {
                     let width = max(minHeight, min(screenWidth * scale, size.width))
                     rowHeight = size.height * width / size.width
@@ -373,6 +370,7 @@ class MessageBaseCell: DogeChatTableViewCell {
                 rowHeight = nameHeight + 150
             }
             rowHeight = min(screenHeight * 0.6, rowHeight)
+            rowHeight = min(rowHeight, 250)
         case .draw:
             if #available(iOS 13, *) {
                 rowHeight = nameHeight + pkViewHeight
@@ -420,7 +418,7 @@ class MessageBaseCell: DogeChatTableViewCell {
     
     class func computeTextSizeForMessage(_ message: Message, viewSize: CGSize, userID: String?) -> CGSize {
         let screenWidth = viewSize.width
-        var maxSize = CGSize(width: 2*(screenWidth/3), height: CGFloat.greatestFiniteMagnitude)
+        var maxSize = CGSize(width: floor(2*(screenWidth/3)), height: CGFloat.greatestFiniteMagnitude)
 
         if !message.emojisInfo.isEmpty {
             maxSize.width = 0.45 * screenWidth
@@ -511,7 +509,7 @@ extension MessageBaseCell {
             contentView.bringSubviewToFront(imageView)
             emojis[emojiInfo] = imageView
             let path = emojiInfo.imageLink
-            let displayBlock: (Data) -> Void = { data in
+            let displayBlock: (UIImage, Data) -> Void = { image, data in
                 if path.hasSuffix(".gif") {
                     DispatchQueue.global().async {
                         let image = FLAnimatedImage(gifData: data)
@@ -520,12 +518,12 @@ extension MessageBaseCell {
                         }
                     }
                 } else {
-                    imageView.image = UIImage(data: data)
+                    imageView.image = image
                 }
             }
-            MediaLoader.shared.requestImage(urlStr: path, type: .image, syncIfCan: false, completion: { image, data, _ in
+            MediaLoader.shared.requestImage(urlStr: path, type: .sticker, syncIfCan: false, completion: { image, data, _ in
                 guard self.message == capturedMessage, let data = data else { return }
-                displayBlock(data)
+                displayBlock(image ?? UIImage(), data)
             }, progress: nil)
             imageView.isUserInteractionEnabled = true
             let beginReceiveGes = UITapGestureRecognizer(target: self, action: #selector(beginReceiveGes(_:)))

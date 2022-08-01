@@ -84,7 +84,7 @@ class SocketManager: NSObject, URLSessionDelegate, URLSessionWebSocketDelegate, 
     
     func sendToken() {
         guard let token = ExtensionDelegate.shared.deviceToken else { return }
-        commonSocket.sendToken(token)
+        commonSocket.sendToken(token, publicKey: nil)
     }
         
     func onReceive() {

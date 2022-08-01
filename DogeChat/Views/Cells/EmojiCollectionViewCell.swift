@@ -77,10 +77,10 @@ class EmojiCollectionViewCell: DogeChatBaseCollectionViewCell {
     func displayEmoji(emoji: Emoji) {
         self.emoji = emoji
         let path = emoji.path
-        MediaLoader.shared.requestImage(urlStr: path, type: .image, needStaticGif: true, completion: { [weak self] image, data, localURL in
+        MediaLoader.shared.requestImage(urlStr: path, type: .sticker, needStaticGif: true, completion: { [weak self] image, data, localURL in
             guard let self = self, self.emoji?.path == path else { return }
             if let data = data {
-                self.emojiView.image = UIImage(data: data)
+                self.emojiView.image = image
             }
         }) { [weak self] progress in
             if let self = self, self.emoji?.path == path {

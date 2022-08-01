@@ -184,8 +184,8 @@ class ContactInterfaceController: WKInterfaceController {
         row.usernameLabel.setText(friend.username)
         let text = contentForSpecialType(friend.latestMessage) ?? friend.getLatestMessageStr()
         row.latestMessageLabel.setText(text);
-        MediaLoader.shared.requestImage(urlStr: urlStr, type: .image, syncIfCan: false, imageWidth: .width40, needStaticGif: true, completion: { image, data, _ in
-            row.avatarImageView?.setImageData(data)
+        MediaLoader.shared.requestImage(urlStr: urlStr, type: .sticker, syncIfCan: false, imageWidth: .width40, needStaticGif: true, completion: { image, data, _ in
+            row.avatarImageView?.setImage(image)
         }, progress: nil)
     }
     

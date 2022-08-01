@@ -53,7 +53,7 @@ class MessageImageCell: MessageImageKindCell {
     }
     
     func loadImageIfNeeded() {
-        if message.messageType == .image {
+        if message.messageType.isImage {
             downloadImageIfNeeded()
         }
     }
@@ -98,12 +98,12 @@ class MessageImageCell: MessageImageKindCell {
         }
         let capturedMessage = message
         // 接下来进入下载操作
-        MediaLoader.shared.requestImage(urlStr: imageUrl, type: .image, syncIfCan: message.syncGetMedia, imageWidth: (isGif || message.drawImagePath != nil) ? .original : .width300, onlyDataWhenImage: message.drawImagePath != nil) { [self] image, data, _ in
+        MediaLoader.shared.requestImage(urlStr: imageUrl, type: .sticker, syncIfCan: message.syncGetMedia, imageWidth: (isGif || message.drawImagePath != nil) ? .original : .width300, onlyDataWhenImage: message.drawImagePath != nil) { [self] image, data, _ in
                 guard let capturedMessage = capturedMessage, capturedMessage.imageURL == message.imageURL, let data = data else {
                     return
                 }
                 if !isGif { // is photo
-                    animatedImageView.image = UIImage(data: data)
+                    animatedImageView.image = image
                 } else { // gif图处理
                     animatedImageView.animatedImage = FLAnimatedImage(gifData: data)
                 }

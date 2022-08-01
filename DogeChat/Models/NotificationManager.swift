@@ -105,8 +105,8 @@ class NotificationManager: NSObject {
                 if !success {
                     login {
                     } fail: {
-                        if let call = (sceneDelegate as? SceneDelegate)?.callManager.callWithUUID(uuid) {
-                            (sceneDelegate as? SceneDelegate)?.callManager.end(call: call)
+                        if let call = (self.sceneDelegate as? SceneDelegate)?.callManager.callWithUUID(uuid) {
+                            (self.sceneDelegate as? SceneDelegate)?.callManager.end(call: call)
                         }
                     }
                 }

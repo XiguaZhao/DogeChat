@@ -35,6 +35,8 @@ class EmojiSelectView: DogeChatBaseCollectionViewCell {
     }
     var manager: WebSocketManager?
     
+    weak var activeEmojiCell: EmojiCollectionViewCell?
+    
     let button = UIButton()
     
     static let cellID = "EmojiSelectView"
@@ -52,7 +54,7 @@ class EmojiSelectView: DogeChatBaseCollectionViewCell {
         collectionView.backgroundColor = .clear
         
         self.contentView.addSubview(button)
-        button.setTitle("点击上传或从别处长按保存", for: .normal)
+        button.setTitle(localizedString("clickToUpload"), for: .normal)
         button.setTitleColor(.systemBlue, for: .normal)
         button.addTarget(self, action: #selector(onButtonTap), for: .touchUpInside)
 
@@ -87,74 +89,87 @@ extension EmojiSelectView: UICollectionViewDataSource, UICollectionViewDelegateF
     
     func didLongPressEmojiCell(_ cell: EmojiCollectionViewCell) {
         guard let menuItems = self.delegate?.emojiSelectViewCellMenus(cell, parentCell: self), !menuItems.isEmpty else { return }
+        self.activeEmojiCell = cell
         var items = [UIMenuItem]()
         let controller = UIMenuController.shared
         for menuItem in menuItems {
             let selector: Selector
             switch menuItem {
             case .delete:
-                selector = #selector(deleteMenuItemAction(sender:))
+                selector = #selector(dogechat_deleteMenuItemAction(sender:))
             case .useAsGroupAvatar:
-                selector = #selector(useAsGroupAvatar(sender:))
+                selector = #selector(dogechat_useAsGroupAvatar(sender:))
             case .useAsSelfAvatar:
-                selector = #selector(useAsAvatar(sender:))
+                selector = #selector(dogechat_useAsAvatar(sender:))
             case .addEmojis:
-                selector = #selector(addEmojiMenuItemAction(sender:))
+                selector = #selector(dogechat_addEmojiMenuItemAction(sender:))
             case .preview:
-                selector = #selector(previewEmojiMenuItemAction(sender:))
+                selector = #selector(dogechat_previewEmojiMenuItemAction(sender:))
             case .addToCommon:
-                selector = #selector(addToCommon(sender:))
+                selector = #selector(dogechat_addToCommon(sender:))
             case .favorite:
-                selector = #selector(favorite(sender:))
+                selector = #selector(dogechat_favorite(sender:))
             }
-            items.append(UIMenuItem(title: menuItem.rawValue, action: selector))
+            items.append(UIMenuItem(title: menuItem.localizedString(), action: selector))
         }
         controller.menuItems = items
-        cell.becomeFirstResponder()
-        let rect = CGRect(x: cell.bounds.width/2, y: 10, width: 0, height: 0)
+        self.becomeFirstResponder()
+        let rect = cell.convert(cell.bounds, to: self)
         if #available(iOS 13.0, *) {
-            controller.showMenu(from: cell, rect: rect)
+            controller.showMenu(from: self, rect: rect)
         } else {
+            controller.setTargetRect(rect, in: self)
             controller.setMenuVisible(true, animated: true)
         }
+    }
+    
+    override var canBecomeFirstResponder: Bool {
+        return true
+    }
+    
+    override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
+        if NSStringFromSelector(action).hasPrefix("dogechat") {
+            return true
+        }
+        return super.canPerformAction(action, withSender: sender)
     }
             
     func updateDownloadProgress(_ cell: EmojiCollectionViewCell, progress: Double, path: String) {
         
     }
     
-    @objc func favorite(sender: UIMenuController) {
-        guard let cell = sender.value(forKey: "targetView") as? EmojiCollectionViewCell else { return }
+    @objc func dogechat_favorite(sender: UIMenuController) {
+        guard let cell = self.activeEmojiCell else { return }
         self.delegate?.didSelectMenuItem(cell, parentCell: self, item: .favorite)
     }
     
-    @objc func addToCommon(sender: UIMenuController) {
-        guard let cell = sender.value(forKey: "targetView") as? EmojiCollectionViewCell else { return }
+    @objc func dogechat_addToCommon(sender: UIMenuController) {
+        guard let cell = self.activeEmojiCell else { return }
         self.delegate?.didSelectMenuItem(cell, parentCell: self, item: .addToCommon)
     }
         
-    @objc func useAsAvatar(sender: UIMenuController) {
-        guard let cell = sender.value(forKey: "targetView") as? EmojiCollectionViewCell else { return }
+    @objc func dogechat_useAsAvatar(sender: UIMenuController) {
+        guard let cell = self.activeEmojiCell else { return }
         self.delegate?.didSelectMenuItem(cell, parentCell: self, item: .useAsSelfAvatar)
     }
 
-    @objc func useAsGroupAvatar(sender: UIMenuController) {
-        guard let cell = sender.value(forKey: "targetView") as? EmojiCollectionViewCell else { return }
+    @objc func dogechat_useAsGroupAvatar(sender: UIMenuController) {
+        guard let cell = self.activeEmojiCell else { return }
         self.delegate?.didSelectMenuItem(cell, parentCell: self, item: .useAsGroupAvatar)
     }
 
-    @objc func deleteMenuItemAction(sender: UIMenuController) {
-        guard let cell = sender.value(forKey: "targetView") as? EmojiCollectionViewCell else { return }
+    @objc func dogechat_deleteMenuItemAction(sender: UIMenuController) {
+        guard let cell = self.activeEmojiCell else { return }
         self.delegate?.didSelectMenuItem(cell, parentCell: self, item: .delete)
     }
     
-    @objc func addEmojiMenuItemAction(sender: UIMenuController) {
-        guard let cell = sender.value(forKey: "targetView") as? EmojiCollectionViewCell else { return }
+    @objc func dogechat_addEmojiMenuItemAction(sender: UIMenuController) {
+        guard let cell = self.activeEmojiCell else { return }
         self.delegate?.didSelectMenuItem(cell, parentCell: self, item: .addEmojis)
     }
     
-    @objc func previewEmojiMenuItemAction(sender: UIMenuController) {
-        guard let cell = sender.value(forKey: "targetView") as? EmojiCollectionViewCell else { return }
+    @objc func dogechat_previewEmojiMenuItemAction(sender: UIMenuController) {
+        guard let cell = self.activeEmojiCell else { return }
         self.delegate?.didSelectMenuItem(cell, parentCell: self, item: .preview)
     }
     
@@ -195,7 +210,12 @@ extension EmojiSelectView: UICollectionViewDataSource, UICollectionViewDelegateF
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
         if !isMac() { return nil }
         let identifier = "\(indexPath.row)" as NSString
-        return UIContextMenuConfiguration(identifier: identifier, previewProvider: nil) { [weak self] elements -> UIMenu? in
+        return UIContextMenuConfiguration(identifier: identifier, previewProvider: { [weak self] in
+            guard let self = self else { return nil }
+            let vc = MediaBrowserViewController()
+            vc.imagePaths = [self.emojis[indexPath.item].path]
+            return vc
+        }) { [weak self] elements -> UIMenu? in
             return self?.makeMenus(for: indexPath)
         }
     }
@@ -205,7 +225,7 @@ extension EmojiSelectView: UICollectionViewDataSource, UICollectionViewDelegateF
         guard let cell = collectionView.cellForItem(at: indexPath) as? EmojiCollectionViewCell, let items = self.delegate?.emojiSelectViewCellMenus(cell, parentCell: self), !items.isEmpty else { return nil }
         var res = [UIAction]()
         for item in items {
-            let action = UIAction(title: item.rawValue) { [weak self, weak cell] _ in
+            let action = UIAction(title: item.localizedString()) { [weak self, weak cell] _ in
                 if let self = self, let cell = cell {
                     self.delegate?.didSelectMenuItem(cell, parentCell: self, item: item)
                 }

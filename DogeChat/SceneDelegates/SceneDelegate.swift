@@ -245,6 +245,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let vc = ContactsTableViewController()
         self.contactVC = vc
         vc.username = username
+        self.socketManager.messageManager.messageDelegate = vc
         navigationController = tabbarController.viewControllers![0] as? UINavigationController
         navigationController.setViewControllers([vc], animated: false)
         return vc
@@ -302,7 +303,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
         if let socket = self.socketManager {
             if !isMac() {
-                socket.disconnect()
+                AppDelegate.shared.startBackgroundTask(socket: socket)
+//                socket.disconnect()
             }
         }
         if let friends = self.contactVC?.friends, let userID = accountInfo?.userID {
@@ -405,8 +407,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             NotificationCenter.default.post(name: .cookieExpire, object: username)
             return
         }
-        if !isMac() || !socketManager.connected {
+        if !socketManager.connected {
             socketManager.commonWebSocket.loginAndConnect(username: username, password: password, needContact: (contactVC?.friends.isEmpty ?? true), completion: nil)
+        } else {
+            contactVC?.pingAndConnectIfNeeded()
         }
     }
     

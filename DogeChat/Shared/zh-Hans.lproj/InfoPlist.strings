@@ -6,3 +6,11 @@
   Copyright © 2022 Luke Parham. All rights reserved.
 */
 CFBundleDisplayName = "漂流瓶";
+NSPhotoLibraryAddUsageDescription = "添加图片";
+NSCameraUsageDescription = "拍摄分享";
+NSLocationAlwaysAndWhenInUseUsageDescription = "分享位置";
+NSLocationAlwaysUsageDescription = "分享位置";
+NSLocationWhenInUseUsageDescription = "分享位置";
+NSMicrophoneUsageDescription = "语音通话/消息";
+NSPhotoLibraryUsageDescription = "发送照片给朋友";
+NSSiriUsageDescription = "让Siri发消息给你的朋友";

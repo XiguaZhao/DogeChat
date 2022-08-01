@@ -25,7 +25,7 @@ class MediaBrowserCell: UICollectionViewCell, PHLivePhotoViewDelegate, VideoView
     var videoView = VideoView()
     var imagePath: String!
     var scrollView: UIScrollView!
-    var messageType = MessageType.image
+    var messageType = MessageType.sticker
     var longPress: UILongPressGestureRecognizer!
     weak var vc: UIViewController?
     var tap: UITapGestureRecognizer!
@@ -47,6 +47,7 @@ class MediaBrowserCell: UICollectionViewCell, PHLivePhotoViewDelegate, VideoView
         scrollView.isDirectionalLockEnabled = true
         contentView.addSubview(scrollView)
         imageView.contentMode = .scaleAspectFit
+        imageView.ignoreChecking = true
         livePhotoView.contentMode = .scaleAspectFit
         scrollView.addSubview(container)
         container.addSubview(imageView)
@@ -101,7 +102,7 @@ class MediaBrowserCell: UICollectionViewCell, PHLivePhotoViewDelegate, VideoView
     func getView() -> UIView? {
         var targetView: UIView?
         switch self.messageType {
-        case .image:
+        case .sticker:
             targetView = imageView
         case .livePhoto:
             targetView = livePhotoView
@@ -120,13 +121,13 @@ class MediaBrowserCell: UICollectionViewCell, PHLivePhotoViewDelegate, VideoView
             messageType = .video
             videoView.showSliderAnimated(true, show: true, delay: 0)
         } else {
-            messageType = .image
+            messageType = .sticker
         }
         doubleTap.isEnabled = messageType != .video
-        imageView.isHidden = messageType != .image
+        imageView.isHidden = messageType != .sticker
         videoView.isHidden = messageType != .video
         livePhotoView.isHidden = messageType != .livePhoto
-        if messageType == .image {
+        if messageType.isImage {
             let block: (String, Data) -> Void = { [self] imagePath, data in
                 if imagePath.hasSuffix(".gif") {
                     imageView.animatedImage = FLAnimatedImage(gifData: data)
@@ -134,7 +135,7 @@ class MediaBrowserCell: UICollectionViewCell, PHLivePhotoViewDelegate, VideoView
                     imageView.image = UIImage(data: data)
                 }
             }
-            MediaLoader.shared.requestImage(urlStr: imagePath, type: .image, imageWidth: .original, needCache: false) { image, data, _ in
+            MediaLoader.shared.requestImage(urlStr: imagePath, type: .sticker, imageWidth: .original, needCache: false) { image, data, _ in
                 guard self.imagePath == imagePath, let data = data else { return }
                 block(imagePath, data)
             }
@@ -170,7 +171,7 @@ class MediaBrowserCell: UICollectionViewCell, PHLivePhotoViewDelegate, VideoView
         sheet.addAction(UIAlertAction(title: localizedString("saveToAlbum"), style: .default, handler: { [weak self] _ in
             guard let self = self else { return }
             switch self.messageType {
-            case .image:
+            case .sticker:
                 if self.imageView.animatedImage != nil {
                     self.requestAuth { success in
                         if success {

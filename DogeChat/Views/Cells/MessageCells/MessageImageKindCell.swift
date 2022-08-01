@@ -49,7 +49,7 @@ class MessageImageKindCell: MessageBaseCell {
         size.width *= scale
         size.height *= scale
         targetView.bounds = CGRect(origin: .zero, size: size)
-        targetView.layer.cornerRadius = min(size.width, size.height) / 12
+        targetView.layer.cornerRadius = min(size.width, size.height) / 14
     }
     
 }

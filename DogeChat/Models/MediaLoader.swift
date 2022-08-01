@@ -30,7 +30,7 @@ class MediaLoader: NSObject, URLSessionDownloadDelegate {
     
     var downloadingInfos = [String: [ImageRequest]]()
     
-    var cache = [String : Data]()
+    var cache = [String : (image: UIImage, data: Data)]()
     var cacheSize = [String : Int]()
     let lock = NSLock()
     lazy var session: URLSession = {
@@ -46,6 +46,18 @@ class MediaLoader: NSObject, URLSessionDownloadDelegate {
         
         return sesssion
     }()
+    
+    override init() {
+        super.init()
+        #if TARGET_OS_IOS
+        NotificationCenter.default.addObserver(self, selector: #selector(receiveMemoryWarning), name: UIApplication.didReceiveMemoryWarningNotification, object: nil)
+        #endif
+    }
+    
+    @objc func receiveMemoryWarning() {
+        cache.removeAll()
+        cacheSize.removeAll()
+    }
     
     func checkIfShouldRemoveCache() {
         DispatchQueue.main.async {
@@ -82,9 +94,9 @@ class MediaLoader: NSObject, URLSessionDownloadDelegate {
             }
             fileName = fileName.replacingOccurrences(of: "%2B", with: "+")
             let cacheKey = fileName.fileNameWithWidth(imageWidth)
-            if let data = cache[cacheKey] {
+            if let image = cache[cacheKey] {
                 syncOnMainThread {
-                    completion?(nil, data, fileURLAt(dirName: photoDir, fileName: fileName) ?? url)
+                    completion?(image.image, image.data, fileURLAt(dirName: photoDir, fileName: fileName) ?? url)
                 }
                 return
             }
@@ -92,7 +104,7 @@ class MediaLoader: NSObject, URLSessionDownloadDelegate {
                 let block: () -> Void = {
                     var data: Data?
                     var image: UIImage?
-                    if type == .image {
+                    if type.isImage {
                         data = try? Data(contentsOf: localURL)
                         if let data = data {
                             self.lock.lock()
@@ -104,14 +116,14 @@ class MediaLoader: NSObject, URLSessionDownloadDelegate {
                             self.requestImage(urlStr: urlStr, type: type, cookie: cookie, syncIfCan: syncIfCan, completion: completion, progress: progress)
                             return
                         }
-                        if let image = image {
+                        if var image = image {
                             if imageWidth != .original {
-                                data = compressEmojis(image, imageWidth: imageWidth)
+                                (image, data) = compressEmojis(image, imageWidth: imageWidth)
                             }
                             if needCache {
                                 DispatchQueue.main.async {
                                     if let data = data {
-                                        self.cache[cacheKey] = data
+                                        self.cache[cacheKey] = (image, data)
                                         self.cacheSize[cacheKey] = data.count
                                     }
                                 }
@@ -132,7 +144,7 @@ class MediaLoader: NSObject, URLSessionDownloadDelegate {
                 return
             } else {
                 syncOnMainThread {
-                    let requestUrl = URL(string: "https://\(dogeChatIP)/star/fileDownload/\(url.lastPathComponent.replacingOccurrences(of: "+", with: "%2B"))")!
+                    guard let requestUrl = URL(string: "https://\(dogeChatIP)/star/fileDownload/\(url.lastPathComponent.replacingOccurrences(of: "+", with: "%2B"))") else { return }
                     var request = URLRequest(url: requestUrl)
                     let _cookie = cookie ?? self.cookie
                     if let cookie = _cookie, !cookie.isEmpty {
@@ -178,7 +190,7 @@ class MediaLoader: NSObject, URLSessionDownloadDelegate {
         }
         var data: Data!
         var image: UIImage?
-        if type == .image {
+        if type.isImage {
             if let _data = try? Data(contentsOf: location) {
                 data = _data
                 image = UIImage(data: data)
@@ -191,25 +203,25 @@ class MediaLoader: NSObject, URLSessionDownloadDelegate {
         DispatchQueue.main.async { [self] in
             if let requests = self.downloadingInfos.remove(key: fileName) {
                 for request in requests {
-                    if request.type != .image {
+                    if !request.type.isImage {
                         request.completionHandler?(image, data, localURL!)
                     } else {
                         var data = data
                         let cacheKey = fileName.fileNameWithWidth(request.imageWidth)
-                        if let cached = cache[cacheKey] {
-                            data = cached
-                            request.completionHandler?(image, data, localURL!)
+                        if let cachedImage = cache[cacheKey] {
+                            image = cachedImage.image
+                            request.completionHandler?(cachedImage.image, data, localURL!)
                         } else {
                             DispatchQueue.global().async {
-                                if let image = image, !request.onlyDataWhenImage {
+                                if var image = image, !request.onlyDataWhenImage {
                                     if (fileName.isGif && request.needStaticGif) || !fileName.isGif {
-                                        data = compressEmojis(image, imageWidth: request.imageWidth, isGIF: fileName.isGif)
+                                        (image, data) = compressEmojis(image, imageWidth: request.imageWidth, isGIF: fileName.isGif)
                                     }
                                 }
                                 DispatchQueue.main.async {
                                     if let data = data {
-                                        cache[cacheKey] = data
-                                        cacheSize[cacheKey] = data.count
+                                        self.cache[cacheKey] = (image ?? UIImage(), data)
+                                        self.cacheSize[cacheKey] = data.count
                                     }
                                     request.completionHandler?(image, data, localURL!)
                                 }

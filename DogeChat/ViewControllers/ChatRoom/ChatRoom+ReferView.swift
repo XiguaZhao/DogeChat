@@ -12,7 +12,7 @@ import DogeChatCommonDefines
 
 extension ChatRoomViewController: ReferViewDelegate {
     
-    @objc func referAction(sender: UIMenuController!) {
+    @objc func dogechat_referAction(sender: UIMenuController!) {
         menuItemDone()
         guard let cell = activeMenuCell,
               let index = tableView.indexPath(for: cell)?.row else { return }
@@ -39,7 +39,7 @@ extension ChatRoomViewController: ReferViewDelegate {
 
     }
     
-    func atAction(_ referView: ReferView) {
+    func atAction(with referView: ReferView) {
         if let message = referView.message {
             findGroupMember(userID: message.senderUserID) { [weak self] friend in
                 if let friend = friend {
@@ -70,7 +70,7 @@ extension ChatRoomViewController: ReferViewDelegate {
         guard let message = message else {
             return
         }
-        if message.messageType == .image || message.messageType == .livePhoto || message.messageType == .video {
+        if message.messageType.isImage || message.messageType == .livePhoto || message.messageType == .video {
             self.makeBrowser(paths: [message.text], targetIndex: 0, purpose: .avatar)
         } else if let index = self.messages.firstIndex(of: message) {
             let indexPath = IndexPath(row: index, section: 0)

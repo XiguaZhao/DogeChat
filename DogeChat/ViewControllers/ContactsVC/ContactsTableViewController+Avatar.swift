@@ -26,7 +26,7 @@ extension ContactsTableViewController: ContactTableViewCellDelegate, UIContextMe
     }
     
     func createMyAvatar() {
-        nameLabel.font = .boldSystemFont(ofSize: 17)
+        nameLabel.font = .preferredFont(forTextStyle: .headline)
         nameLabel.text = self.username
         avatarImageView.contentMode = .scaleAspectFill
         avatarContainer.layer.masksToBounds = true
@@ -118,7 +118,7 @@ extension ContactsTableViewController: ContactTableViewCellDelegate, UIContextMe
                 make?.height.mas_equalTo()(finalSize.height)
             }
         }
-        MediaLoader.shared.requestImage(urlStr: url, type: .image, cookie: manager?.cookie) { [self] image, data, _ in
+        MediaLoader.shared.requestImage(urlStr: url, type: .sticker, cookie: manager?.cookie) { [self] image, data, _ in
             guard let data = data else { return }
             if url.hasSuffix(".gif") {
                 avatarImageView.animatedImage = FLAnimatedImage(gifData: data)

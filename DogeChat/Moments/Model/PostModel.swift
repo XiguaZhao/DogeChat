@@ -7,42 +7,29 @@
 //
 
 import Foundation
-import DogeChatUniversal
-
-protocol PostMeta {
-    
-}
+import DogeChatCommonDefines
 
 struct PostModel {
     
-    struct PostLocation: PostMeta {
+    struct Location {
         let latitude: Double
         let longitude: Double
     }
 
-    struct PostImage: PostMeta {
+    struct PostImage {
         let imageURL: String?
         let videoURL: String?
     }
-
-    struct PostVideo: PostMeta {
-        let videoURL: String?
-    }
-
-    struct PostDrawing: PostMeta {
-        let drawURL: String?
-    }
     
-    struct PostTrack: PostMeta {
-        let postURL: String?
-    }
-    
-    struct PostText: PostMeta {
+    struct PostComment {
         let text: String
+        let image: String
     }
     
-    var metas: [PostMeta]
-    
-    
+    let images: [PostImage]?
+    let drawURL: NSString?
+    let tracks: [Track]?
+    let location: Location?
+    let comments: [PostComment]
 }
 

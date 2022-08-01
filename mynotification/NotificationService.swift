@@ -10,13 +10,14 @@ import UserNotifications
 import PencilKit
 import WidgetKit
 import DogeChatCommonDefines
+import RSAiOSWatchOS
 
 class NotificationService: UNNotificationServiceExtension {
     
     var contentHandler: ((UNNotificationContent) -> Void)?
     var bestAttemptContent: UNMutableNotificationContent?
     
-    var loadMedia = false
+    var loadMedia = true
         
     func complete() {
         if let bestAttemptContent = bestAttemptContent {
@@ -26,10 +27,18 @@ class NotificationService: UNNotificationServiceExtension {
     
     override func didReceive(_ request: UNNotificationRequest, withContentHandler contentHandler: @escaping (UNNotificationContent) -> Void) {
         self.contentHandler = contentHandler
-        bestAttemptContent = (request.content.mutableCopy() as? UNMutableNotificationContent)
-        
+        let content = (request.content.mutableCopy() as? UNMutableNotificationContent)
+        content?.body = EncryptMessage().decriptContent(content?.body ?? "", using: UserDefaults(suiteName: groupName)?.string(forKey: "privateKey"))
+        bestAttemptContent = content
+        var needBadge = true
+        if let unreadCount = UserDefaults(suiteName: groupName)?.integer(forKey: "unreadCount"), unreadCount != 0 {
+            bestAttemptContent?.badge = unreadCount as NSNumber
+            needBadge = false
+        }
         UNUserNotificationCenter.current().getDeliveredNotifications { [self] delivered in
-            bestAttemptContent?.badge = NSNumber(value: delivered.count + 1)
+            if needBadge {
+                bestAttemptContent?.badge = NSNumber(value: delivered.count + 1)
+            }
             
             processRevoke(request: request, delivered: delivered)
             
@@ -41,11 +50,16 @@ class NotificationService: UNNotificationServiceExtension {
                 
                 if let aps = request.content.userInfo["aps"] as? [String : Any],
                    var path = aps["url"] as? String, !path.isEmpty {
-                    guard let type = aps["type"] as? String else {
+                    guard let type = aps["type"] as? String, let messageType = getTypeFor(typeStr: type) else {
                         complete()
                         return
                     }
-                    if type == "livePhoto" {
+                    let acceptedTypes: [MessageType] = [.photo, .draw, .livePhoto, .voice]
+                    guard acceptedTypes.contains(where: { $0 == messageType }) else {
+                        complete()
+                        return
+                    }
+                    if messageType == .livePhoto {
                         if let imagePath = path.components(separatedBy: " ").first {
                             path = imagePath
                         }
@@ -56,10 +70,10 @@ class NotificationService: UNNotificationServiceExtension {
                             complete()
                             return
                         }
-                        if type == "video" {
+                        if messageType == .video {
                             self.bestAttemptContent?.body = "[视频]"
                         }
-                        if type == "livePhoto" {
+                        if messageType == .livePhoto {
                             self.bestAttemptContent?.body = "[Live Photo]"
                         }
                         guard let cookie = UserDefaults(suiteName: groupName)?.value(forKey: "sharedCookie") as? String, !cookie.isEmpty else {
@@ -71,7 +85,7 @@ class NotificationService: UNNotificationServiceExtension {
                         MediaLoader.shared.requestImage(urlStr: path, type: .voice, syncIfCan: false, needCache: false, completion: { _, data, localURL in
                             var localURL = localURL
 #if !targetEnvironment(macCatalyst)
-                            if type == "draw" {
+                            if messageType == .draw {
                                 if #available(iOSApplicationExtension 13.0, *) {
                                     if let data = try? Data(contentsOf: localURL),
                                        let draw = try? PKDrawing(data: data) {
@@ -89,7 +103,7 @@ class NotificationService: UNNotificationServiceExtension {
                             if let attachment = try? UNNotificationAttachment(identifier: path, url: localURL, options: nil) {
                                 self.bestAttemptContent?.attachments = [attachment]
                             }
-                            complete()
+                            self.complete()
                         }, progress: nil)
                     } else {
                         complete()

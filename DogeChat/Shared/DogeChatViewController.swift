@@ -19,6 +19,7 @@ class DogeChatViewController: UIViewController, UIPopoverPresentationControllerD
     
     var blurView: UIImageView!
     var username = ""
+    var didDisappearBlock: (() -> Void)?
         
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
@@ -41,6 +42,11 @@ class DogeChatViewController: UIViewController, UIPopoverPresentationControllerD
             NotificationCenter.default.addObserver(self, selector: #selector(self.immersive(noti:)), name: .immersive, object: nil)
         }
         toggleBlurView(needBlur: AppDelegate.shared.immersive, needAnimation: false)
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        didDisappearBlock?()
     }
     
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {

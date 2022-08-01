@@ -42,7 +42,7 @@ class ProfileAvatarCell: DogeChatTableViewCell {
         guard let url = url else {
             return
         }
-        MediaLoader.shared.requestImage(urlStr: url, type: .image, cookie: nil, syncIfCan: false, imageWidth: .original, needStaticGif: false, needCache: false, completion: { [weak self] image, data, _ in
+        MediaLoader.shared.requestImage(urlStr: url, type: .sticker, cookie: nil, syncIfCan: false, imageWidth: .original, needStaticGif: false, needCache: false, completion: { [weak self] image, data, _ in
             guard let data = data else { return }
             if url.isGif {
                 self?.avatarImageView.animatedImage = FLAnimatedImage(gifData: data)

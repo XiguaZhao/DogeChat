@@ -7,6 +7,7 @@ import PhotosUI
 import FLAnimatedImage
 import PencilKit
 import DogeChatCommonDefines
+import MJRefresh
 
 enum ChatRoomSceneType {
     case normal
@@ -63,7 +64,7 @@ class ChatRoomViewController: DogeChatViewController, DogeChatVCTableDataSource 
             }
         }
     }
-    var imagePickerType: MessageType = .image
+    var imagePickerType: MessageType = .sticker
     var pickerPurpose: PickerPurpose = .send
     var addEmojiType: Emoji.AddEmojiType = .favorite
     var heightCache = [String : CGFloat]()
@@ -77,6 +78,7 @@ class ChatRoomViewController: DogeChatViewController, DogeChatVCTableDataSource 
     let titleAvatarContainer = UIView()
     var pagesAndCurNum = (pages: 1, curNum: 1)
     var activeSwipeIndexPath: IndexPath?
+    var isFetchingHistory = false
     lazy var messageSender: MessageSender = {
         let sender = MessageSender()
         sender.progressDelegate = self
@@ -109,13 +111,6 @@ class ChatRoomViewController: DogeChatViewController, DogeChatVCTableDataSource 
     var hapticInputIndex = 0
     var pan: UIScreenEdgePanGestureRecognizer?
     var ignoreKeyboardChange = false
-    var needScrollToBottom = false {
-        didSet {
-            if needScrollToBottom {
-                scrollBotton()
-            }
-        }
-    }
     
     var lastIndexPath: IndexPath {
         return IndexPath(row: messages.count-1, section: 0)
@@ -148,13 +143,14 @@ class ChatRoomViewController: DogeChatViewController, DogeChatVCTableDataSource 
         NotificationCenter.default.addObserver(self, selector: #selector(mediaBrowserPathChange(_:)), name: .mediaBrowserPathChange, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(friendChangeAvatar(_:)), name: .friendChangeAvatar, object: nil)
         NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: .main) { [weak self] _ in
+            guard let self = self else { return }
             if isMac() {
-                self?.messageInputBar.textView.becomeFirstResponder()
+                self.messageInputBar.textView.becomeFirstResponder()
             } else {
-                if self?.messageInputBar.textView.isFirstResponder ?? false {
-                }
+                self.messageInputBar.activeWhenEnterBackground = false
             }
         }
+        NotificationCenter.default.addObserver(self, selector: #selector(didEnterBackground), name: UIApplication.didEnterBackgroundNotification, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(playToEnd(_:)), name: .AVPlayerItemDidPlayToEndTime, object: nil)
         if #available(iOS 13.0, *) {
             NotificationCenter.default.addObserver(self, selector: #selector(enterForeground(_:)), name: UIScene.willEnterForegroundNotification, object: nil)
@@ -183,6 +179,7 @@ class ChatRoomViewController: DogeChatViewController, DogeChatVCTableDataSource 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         if messageInputBar.observingKeyboard {
+            messageInputBar.textViewResign()
             if isPad() {
                 if !isMac() {
                     NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
@@ -198,6 +195,7 @@ class ChatRoomViewController: DogeChatViewController, DogeChatVCTableDataSource 
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
+        self.friend.messages.forEach({ $0.isRead = true })
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -272,16 +270,19 @@ class ChatRoomViewController: DogeChatViewController, DogeChatVCTableDataSource 
             }
         }
     }
+    
+    override func pressesEnded(_ presses: Set<UIPress>, with event: UIPressesEvent?) {
+        super.pressesEnded(presses, with: event)
+    }
+    
 
     func contentHeight() -> CGFloat {
         return heightCache.values.reduce(0, +)
     }
     
-    func scrollBotton() {
-        if self.needScrollToBottom {
-            if messages.count > 1 {
-                tableView.scrollToRow(at: IndexPath(row: messages.count - 1, section: 0), at: .bottom, animated: true)
-            }
+    func scrollBottom(animated: Bool = false) {
+        if messages.count > 1 {
+            tableView.scrollToRow(at: IndexPath(row: messages.count - 1, section: 0), at: .bottom, animated: animated)
         }
     }
     
@@ -302,6 +303,13 @@ class ChatRoomViewController: DogeChatViewController, DogeChatVCTableDataSource 
     @objc func enterForeground(_ noti: Notification) {
         if isPad() && !isMac() {
             scrollToBottomWithoutAnimation()
+        }
+    }
+    
+    @objc func didEnterBackground() {
+        if !isMac() {
+            messageInputBar.activeWhenEnterBackground = messageInputBar.textView.isFirstResponder
+            messageInputBar.textView.resignFirstResponder()
         }
     }
     
@@ -363,18 +371,6 @@ class ChatRoomViewController: DogeChatViewController, DogeChatVCTableDataSource 
 extension ChatRoomViewController {
     
     @objc func receiveNewMessageNotification(_ notification: Notification) {
-//        guard notification.object as? String == self.username, let dict = notification.userInfo?["friendDict"] as? [String : [Message]] else {
-//            debugText("username不匹配noti")
-//            return
-//        }
-//        for (friendID, newMessages) in dict {
-//            if friendID == self.friend.userID {
-//                if newMessages.isEmpty {
-//                    debugText("newMessage为空")
-//                }
-//                insertNewMessageCell(newMessages)
-//            }
-//        }
         let messages = notification.userInfo?["messages"] as! [Message]
         let filter = messages.filter({ $0.friend?.userID == self.friend.userID })
         insertNewMessageCell(filter)
@@ -386,21 +382,26 @@ extension ChatRoomViewController {
 extension ChatRoomViewController {
     //MARK: Refresh
     func addRefreshController() {
-        let controller = UIRefreshControl()
-        controller.addTarget(self, action: #selector(displayHistory), for: .valueChanged)
-        tableView.refreshControl = controller
+        if isMac() {
+            let controller = UIRefreshControl()
+            controller.addTarget(self, action: #selector(displayHistory), for: .valueChanged)
+            tableView.refreshControl = controller
+        }
     }
     
     @objc func displayHistory() {
+        isFetchingHistory = true
         customTitle = localizedString("loading")
         pagesAndCurNum.curNum = (self.messages.count / ChatRoomViewController.numberOfHistory) + 1
-        manager?.historyMessages(for: friend, pageNum: pagesAndCurNum.curNum)
+        manager?.historyMessages(for: friend, pageNum: pagesAndCurNum.curNum, pageSize: Self.numberOfHistory)
         pagesAndCurNum.curNum += 1
+        tableView.mj_header?.endRefreshing()
     }
     
     @objc func receiveHistoryMessages(_ noti: Notification) {
         defer {
             tableView.refreshControl?.endRefreshing()
+            isFetchingHistory = false
         }
         guard noti.object as? String == self.username else { return }
         if purpose == .chat && self.navigationController?.visibleViewController != self { return }
@@ -429,6 +430,7 @@ extension ChatRoomViewController {
             return
         }
         let alreadyMin = self.messages.max(by: { $0.id > $1.id })?.id ?? Int.max
+        let oldStateEmpty = self.messages.isEmpty
         self.messages.insert(contentsOf: filtered, at: 0)
         if filtered.contains(where: { $0.id > alreadyMin }) {
             self.messages.sort(by: { $0.id < $1.id })
@@ -445,19 +447,27 @@ extension ChatRoomViewController {
                 othersIndexPaths.append(indexPath)
             }
         }
-        tableView.performBatchUpdates {
-            self.tableView.insertRows(at: myselfIndexPaths, with: .right)
-            self.tableView.insertRows(at: othersIndexPaths, with: .left)
-        } completion: { _ in
-            if empty && !indexPaths.isEmpty{
-                self.tableView.scrollToRow(at: IndexPath(row: self.tableView.numberOfRows(inSection: 0) - 1, section: 0), at: .bottom, animated: true)
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) { [weak self] in
-                    guard let self = self else { return }
-                    self.scrollViewDidEndDecelerating(self.tableView)
+        if oldStateEmpty || isMac() {
+            tableView.performBatchUpdates {
+                self.tableView.insertRows(at: myselfIndexPaths, with: .right)
+                self.tableView.insertRows(at: othersIndexPaths, with: .left)
+            } completion: { _ in
+                self.isFetchingHistory = true
+                if empty && !indexPaths.isEmpty{
+                    self.tableView.scrollToRow(at: IndexPath(row: self.tableView.numberOfRows(inSection: 0) - 1, section: 0), at: .bottom, animated: true)
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) { [weak self] in
+                        guard let self = self else { return }
+                        self.scrollViewDidEndDecelerating(self.tableView)
+                        self.isFetchingHistory = false
+                    }
+                } else {
+                    self.tableView.refreshControl?.endRefreshing()
+                    self.isFetchingHistory = false
                 }
-            } else {
-                self.tableView.refreshControl?.endRefreshing()
             }
+        } else {
+            tableView.reloadData()
+            tableView.scrollToRow(at: IndexPath(row: indexPaths.last!.row + 1, section: 0), at: .top, animated: false)
         }
     }
     
@@ -490,6 +500,8 @@ extension ChatRoomViewController {
 extension ChatRoomViewController: UITextViewDelegate {
         
     func textViewShouldBeginEditing(_ textView: UITextView) -> Bool {
+        UIMenuController.shared.menuItems?.removeAll(where: { NSStringFromSelector($0.action).hasPrefix("dogechat")} )
+        scrollBottom(animated: false)
         showEmojiButton(textView.text.isEmpty)
         messageInputBar.recoverEmojiButton()
         emojiSelectView.pageIndicator.isHidden = true

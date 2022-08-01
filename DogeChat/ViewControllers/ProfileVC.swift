@@ -10,19 +10,22 @@ import UIKit
 import DogeChatCommonDefines
 import DogeChatNetwork
 import SwiftyJSON
+import Foundation
 
 class ProfileVC: DogeChatViewController, DogeChatVCTableDataSource, UITableViewDataSource, UITableViewDelegate, UINavigationControllerDelegate, UIImagePickerControllerDelegate {
     
     
-    enum ProfileCellType: String {
-        case avatar = "头像"
-        case username = "用户名"
-        case email = "注册邮箱"
-        case createTime = "创建时间"
-        case userID = "用户ID"
-        case blurImage = "自定义毛玻璃"
-        case trailer = "Trailers"
-        case customizedColors = "自定义颜色"
+    enum ProfileCellType: Int {
+        case avatar //= "头像"
+        case username //= "用户名"
+        case email //= "注册邮箱"
+        case createTime //= "创建时间"
+        case userID //= "用户ID"
+        case blurImage// = "自定义毛玻璃"
+        case trailer //= "Trailers"
+        case customizedColors// = "自定义颜色"
+        case shortcut //= "快捷键打开"
+        case deleteAccount
         
         func localizedString() -> String {
             switch self {
@@ -42,6 +45,10 @@ class ProfileVC: DogeChatViewController, DogeChatVCTableDataSource, UITableViewD
                 return NSLocalizedString("trailer", comment: "")
             case .customizedColors:
                 return NSLocalizedString("customColor", comment: "")
+            case .shortcut:
+                return NSLocalizedString("shortcutLaunch", comment: "")
+            case .deleteAccount:
+                return NSLocalizedString("deleteAccount", comment: "")
             }
         }
     }
@@ -51,10 +58,16 @@ class ProfileVC: DogeChatViewController, DogeChatVCTableDataSource, UITableViewD
     }
     
     var tableView: DogeChatTableView = DogeChatTableView()
-    let sections: [[ProfileCellType]] = [
-        [.avatar],
-        [.username, .userID, .email, .createTime, .blurImage, .trailer, .customizedColors]
-    ]
+    let sections: [[ProfileCellType]] = {
+        var arr: [[ProfileCellType]] = [
+            [.avatar],
+            [.username, .userID, .email, .createTime, .blurImage, .trailer, .customizedColors, .deleteAccount]
+        ]
+        #if targetEnvironment(macCatalyst)
+        arr[1].append(.shortcut)
+        #endif
+        return arr
+    }()
     var info: AccountInfo?
 
     override func viewDidLoad() {
@@ -125,12 +138,20 @@ class ProfileVC: DogeChatViewController, DogeChatVCTableDataSource, UITableViewD
             }
         case .customizedColors:
             break
+        case .shortcut:
+            trailingType = .textField
+            if let letter = info?.shortcutLetter?.first {
+                trailingText = "control+command+\(letter)"
+            }
+        case .deleteAccount:
+            break
         }
         let cell = tableView.dequeueReusableCell(withIdentifier: cellID, for: indexPath)
         if let avatarCell = cell as? ProfileAvatarCell {
             avatarCell.apply(url: info?.avatarURL)
         } else if let userInfoCell = cell as? CommonTableCell? {
             userInfoCell?.apply(title: title, subTitle: nil, imageURL: imageURL, trailingViewType: trailingType, trailingText: trailingText, switchOn: nil, imageIsLeft: false)
+            userInfoCell?.delegate = self
         }
         return cell
     }
@@ -141,6 +162,7 @@ class ProfileVC: DogeChatViewController, DogeChatVCTableDataSource, UITableViewD
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
+        self.setEditing(false, animated: true)
         let type = sections[indexPath.section][indexPath.row]
         if type == .avatar {
             changeAvatar()
@@ -150,6 +172,21 @@ class ProfileVC: DogeChatViewController, DogeChatVCTableDataSource, UITableViewD
                 self?.didSelectColors(colors)
             }
             self.navigationController?.pushViewController(vc, animated: true)
+        } else if type == .deleteAccount {
+            let alert = UIAlertController(title: "确定注销吗", message: nil, preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: localizedString("confirm"), style: .default, handler: { [weak self] _ in
+                if let self = self {
+                    self.manager?.httpsManager.deleteAccount(completion: { success in
+                        self.makeAutoAlert(message: success ? "成功" : "失败", detail: nil, showTime: 2) {
+                            if success, let contactVC = (self.splitViewController as? DogeChatSplitViewController)?.findContactVC() {
+                                SettingViewController.logout(vc: contactVC, manager: self.manager)
+                            }
+                        }
+                    })
+                }
+            }))
+            alert.addAction(UIAlertAction(title: localizedString("cancel"), style: .cancel))
+            self.present(alert, animated: true)
         }
         if let cell = tableView.cellForRow(at: indexPath) as? CommonTableCell {
             var text: String?
@@ -216,4 +253,26 @@ class ProfileVC: DogeChatViewController, DogeChatVCTableDataSource, UITableViewD
         }
     }
 
+}
+
+extension ProfileVC: TrailingViewProtocol {
+    func didSwitch(cell: CommonTableCell, isOn: Bool) {
+        
+    }
+    
+    func textFieldDidEndInputing(cell: CommonTableCell, text: String) {
+        if let indexPath = tableView.indexPath(for: cell) {
+            if sections[indexPath.section][indexPath.row] == .shortcut {
+                if text.count == 1 && text.first!.isLetter {
+                    AppDelegate.shared.macOSBridge?.makeGlobalShortcut(with: text)
+                    cell.textField.text = "control+command+\(text)"
+                    manager?.httpsManager.saveTracks(nil, andBlurImage: nil, customizedData: ["shortcut": text], completion: { [weak self] success in
+                        self?.makeAutoAlert(message: success ? localizedString("success") : localizedString("fail"), detail: nil, showTime: 0.3, completion: {
+                            self?.manager?.httpsManager.getProfile(nil)
+                        })
+                    })
+                }
+            }
+        }
+    }
 }

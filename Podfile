@@ -1,7 +1,7 @@
 # Uncomment the next line to define a global platform for your project
 # platform :ios, '9.0'
 use_modular_headers!
-  use_frameworks!
+use_frameworks!
 
 def commonDefinesPod
   pod 'DogeChatCommonDefines', :path => '../DogeChatCommonDefines'
@@ -19,7 +19,7 @@ pod 'DACircularProgress'
 pod 'MJRefresh'
 pod 'AFNetworking'
 pod 'SwiftyJSON', :git => 'https://github.com/SwiftyJSON/SwiftyJSON.git', :commit => '2b6054efa051565954e1d2b9da831680026cd768'
-pod 'SwiftyRSA', :path => '/Users/zhaoxiguang/Workspace/SwiftyRSA'
+pod 'SwiftyRSA'
 pod 'FLAnimatedImage', :path => '../FLAnimatedImage'
 pod 'SDWebImage'
 pod 'Masonry'
@@ -41,6 +41,7 @@ end
 
 target 'mynotification' do
   commonDefinesPod
+  pod 'RSAiOSWatchOS', :path => '../RSAiOSWatchOS'
 end
 
 target 'DogeChatSiri' do

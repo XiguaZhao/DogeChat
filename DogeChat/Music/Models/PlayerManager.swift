@@ -162,7 +162,7 @@ class PlayerManager: NSObject {
                 } else {
                     let compressed = compressEmojis(image, imageWidth: .width400)
                     self.blurSource = .albumImage
-                    self.nowAlbumImage = UIImage(data: compressed)
+                    self.nowAlbumImage = compressed.0
                 }
             }
         }
@@ -267,7 +267,7 @@ class PlayerManager: NSObject {
             MPMediaItemPropertyArtist: nowPlayingTrack.artist,
             MPMediaItemPropertyArtwork: MPMediaItemArtwork(boundsSize: nowAlbumImage.size, requestHandler: { [self] (size) -> UIImage in
                 let imageData = compressEmojis(nowAlbumImage, imageWidth: .width200)
-                return UIImage(data: imageData)!
+                return imageData.0
             }),
             MPMediaItemPropertyPlaybackDuration: CMTimeGetSeconds(player.currentItem?.duration ?? CMTime(seconds: 99, preferredTimescale: 1)),
             MPNowPlayingInfoPropertyElapsedPlaybackTime: player.currentItem?.currentTime().seconds ?? 0,

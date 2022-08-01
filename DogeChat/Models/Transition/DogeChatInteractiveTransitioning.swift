@@ -58,12 +58,16 @@ import UIKit
     func continueAction() {
         if displayLink == nil {
             displayLink = CADisplayLink(target: self, selector: #selector(UIChange(displayLink:)))
+            displayLink.preferredFramesPerSecond = UIScreen.main.maximumFramesPerSecond
             displayLink.add(to: .current, forMode: .common)
         }
     }
     
     @objc func UIChange(displayLink: CADisplayLink) {
-        let timeDistance = 1/(CGFloat(UIScreen.main.maximumFramesPerSecond) * DogeChatVCTransitioning.duration)
+        var timeDistance = 1/(CGFloat(UIScreen.main.maximumFramesPerSecond) * DogeChatVCTransitioning.duration)
+        if ProcessInfo.processInfo.isLowPowerModeEnabled {
+            timeDistance *= 2
+        }
         if (beginV * v > 0) {
             v = abs(v)
             beginV = abs(beginV)

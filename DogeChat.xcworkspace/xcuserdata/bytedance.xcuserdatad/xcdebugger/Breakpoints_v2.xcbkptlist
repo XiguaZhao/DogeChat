@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Bucket
+   uuid = "9376FE9B-9BD7-48F1-B5EB-2F30515B1316"
+   type = "0"
+   version = "2.0">
+   <Breakpoints>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "91EF0C20-41D4-4FE9-B58F-622C7B59A317"
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "../DogeChatUniversal/DogeChatUniversal/Classes/HttpRequests.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "551"
+            endingLineNumber = "551"
+            landmarkName = "saveTracks(_:andBlurImage:customizedData:completion:)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "91EF0C20-41D4-4FE9-B58F-622C7B59A317 - 24297a5e70c62a76"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "DogeChatUniversal.HttpRequestsManager.saveTracks(_: Swift.Optional&lt;Swift.String&gt;, andBlurImage: Swift.Optional&lt;Swift.String&gt;, customizedData: Swift.Optional&lt;Swift.Dictionary&lt;Swift.String, Any&gt;&gt;, completion: Swift.Optional&lt;(Swift.Bool) -&gt; ()&gt;) -&gt; ()"
+                  moduleName = "DogeChatUniversal"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/bytedance/Library/Mobile%20Documents/com~apple~CloudDocs/Documents/Developer/DogeChatUniversal/DogeChatUniversal/Classes/HttpRequests.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "551"
+                  endingLineNumber = "551"
+                  offsetFromSymbolStart = "2544">
+               </Location>
+               <Location
+                  uuid = "91EF0C20-41D4-4FE9-B58F-622C7B59A317 - 4689de81275820fd"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 (Swift.Optional&lt;Foundation.Data&gt;, Swift.Optional&lt;__C.NSURLResponse&gt;, Swift.Optional&lt;Swift.Error&gt;) -&gt; () in DogeChatUniversal.HttpRequestsManager.saveTracks(_: Swift.Optional&lt;Swift.String&gt;, andBlurImage: Swift.Optional&lt;Swift.String&gt;, customizedData: Swift.Optional&lt;Swift.Dictionary&lt;Swift.String, Any&gt;&gt;, completion: Swift.Optional&lt;(Swift.Bool) -&gt; ()&gt;) -&gt; ()"
+                  moduleName = "DogeChatUniversal"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/bytedance/Library/Mobile%20Documents/com~apple~CloudDocs/Documents/Developer/DogeChatUniversal/DogeChatUniversal/Classes/HttpRequests.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "552"
+                  endingLineNumber = "552"
+                  offsetFromSymbolStart = "272">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+   </Breakpoints>
+</Bucket>

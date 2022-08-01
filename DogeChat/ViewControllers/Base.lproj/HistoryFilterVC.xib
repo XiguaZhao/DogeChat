@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="19529" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="20037" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19519"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="20020"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -13,6 +13,7 @@
             <connections>
                 <outlet property="datePicker" destination="IdX-Yy-LoP" id="wPz-mp-sXi"/>
                 <outlet property="keywordTF" destination="yAb-CN-CyV" id="ruy-eT-ZBf"/>
+                <outlet property="stackView" destination="dBg-Nv-PYK" id="Iv9-gJ-XXk"/>
                 <outlet property="typePicker" destination="VeK-Rn-yvh" id="zyy-jS-dvc"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
@@ -57,7 +58,10 @@
                                     </connections>
                                 </switch>
                                 <pickerView hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="VeK-Rn-yvh">
-                                    <rect key="frame" x="196" y="-92.5" width="0.0" height="216"/>
+                                    <rect key="frame" x="196" y="-34.5" width="0.0" height="100"/>
+                                    <constraints>
+                                        <constraint firstAttribute="height" relation="lessThanOrEqual" constant="100" id="0tS-eO-kSs"/>
+                                    </constraints>
                                 </pickerView>
                             </subviews>
                         </stackView>
@@ -77,7 +81,10 @@
                                     </connections>
                                 </switch>
                                 <datePicker hidden="YES" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" datePickerMode="date" style="wheels" translatesAutoresizingMaskIntoConstraints="NO" id="IdX-Yy-LoP">
-                                    <rect key="frame" x="196" y="-92.5" width="0.0" height="216"/>
+                                    <rect key="frame" x="196" y="-34.5" width="0.0" height="100"/>
+                                    <constraints>
+                                        <constraint firstAttribute="height" relation="lessThanOrEqual" constant="100" id="gnq-oD-IuZ"/>
+                                    </constraints>
                                     <locale key="locale" localeIdentifier="zh_CN"/>
                                 </datePicker>
                             </subviews>
@@ -109,12 +116,10 @@
             <viewLayoutGuide key="safeArea" id="fnl-2z-Ty3"/>
             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
             <constraints>
-                <constraint firstItem="dBg-Nv-PYK" firstAttribute="centerY" secondItem="i5M-Pr-FkT" secondAttribute="centerY" id="GLz-IT-nsM"/>
-                <constraint firstItem="dBg-Nv-PYK" firstAttribute="top" relation="greaterThanOrEqual" secondItem="fnl-2z-Ty3" secondAttribute="top" constant="50" id="TYR-Rg-JXC"/>
-                <constraint firstItem="fnl-2z-Ty3" firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="dBg-Nv-PYK" secondAttribute="bottom" constant="50" id="Wzf-Lt-cMt"/>
-                <constraint firstItem="dBg-Nv-PYK" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="12" id="ZKF-hc-ef8"/>
-                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="dBg-Nv-PYK" secondAttribute="trailing" constant="12" id="eQb-fz-Xhq"/>
-                <constraint firstItem="dBg-Nv-PYK" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="skW-uG-GK9"/>
+                <constraint firstItem="fnl-2z-Ty3" firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="dBg-Nv-PYK" secondAttribute="trailing" constant="30" id="HR1-yS-fot"/>
+                <constraint firstItem="dBg-Nv-PYK" firstAttribute="centerY" secondItem="i5M-Pr-FkT" secondAttribute="centerY" id="N7M-Po-Yzt"/>
+                <constraint firstItem="dBg-Nv-PYK" firstAttribute="centerX" secondItem="i5M-Pr-FkT" secondAttribute="centerX" id="rBj-D0-Kko"/>
+                <constraint firstItem="dBg-Nv-PYK" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="fnl-2z-Ty3" secondAttribute="leading" constant="30" id="wJ3-ja-Lce"/>
             </constraints>
             <point key="canvasLocation" x="139" y="93"/>
         </view>

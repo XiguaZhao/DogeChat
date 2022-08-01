@@ -15,22 +15,27 @@ import DogeChatCommonDefines
 class HistoryVC: ChatRoomViewController {
         
     let slider = UISlider()
-    let progressLabel = UILabel()
+    let progressButton = UIButton()
     var stack: UIStackView!
     var params: [String : Any?]?
+    var targetMessageUUID: String?
     var totalPages = 0 {
         didSet {
-            progressLabel.text = "\(nowPage)/\(totalPages)"
+            progressButton.setTitle("\(nowPage)/\(totalPages)", for: .normal)
         }
     }
     var nowPage = 0 {
         didSet {
-            progressLabel.text = "\(nowPage)/\(totalPages)"
+            progressButton.setTitle("\(nowPage)/\(totalPages)", for: .normal)
             slider.value = Float(nowPage)
+            if nowPage == 1 {
+                (tableView.mj_footer as? MJRefreshAutoStateFooter)?.state = .noMoreData
+            }
         }
     }
     var upNowPage = 1
     var downNowPage = 1
+    var filterVC: HistoryFilterVC?
     
     convenience init(purpose: ChatRoomPurpose) {
         self.init()
@@ -50,12 +55,11 @@ class HistoryVC: ChatRoomViewController {
             header.addTarget(self, action: #selector(refreshHeaderAction), for: .valueChanged)
             tableView.refreshControl = header
             
-            nowPage = 1
-            requestPage(1)
-                        
+            configFooter()
+            
             let leftLabel = UILabel()
             leftLabel.text = localizedString("latest")
-            stack = UIStackView(arrangedSubviews: [leftLabel, slider, progressLabel])
+            stack = UIStackView(arrangedSubviews: [leftLabel, slider, progressButton])
             stack.spacing = 15
             slider.minimumValue = 1
             slider.isContinuous = false
@@ -63,11 +67,31 @@ class HistoryVC: ChatRoomViewController {
 
             self.navigationController?.setToolbarHidden(false, animated: true)
             self.setToolbarItems([UIBarButtonItem(customView: stack)], animated: true)
-            self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .search, target: self, action: #selector(filterAction))
-
+            self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .search, target: self, action: #selector(filterAction(_:)))
+            
+            if let params = params {
+                if let id = params["id"] as? Int {
+                    self.manager?.httpsManager.historyMessages(for: friend, id: id, needInsertWhenWrap: false) { [weak self] params in
+                        self?.receiveHistoryMessages(params: params)
+                    }
+                    self.params = nil
+                } else {
+                    if params["timestamp"] == nil {
+                        self.requestPage(1)
+                    } else {
+                        self.requestPage(-1)
+                    }
+                }
+            } else {
+                nowPage = 1
+                requestPage(1)
+            }
+                        
         } else if purpose == .referView {
             navigationItem.title = localizedString("messageDetail")
         }
+        
+        progressButton.addTarget(self, action: #selector(self.progressButtonAction(_:)), for: .touchUpInside)
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -83,17 +107,44 @@ class HistoryVC: ChatRoomViewController {
         tableView.frame = view.bounds
     }
     
+    override func displayHistoryIfNeeded() {
+    }
+    
     deinit {
         manager?.needInsertWhenWrap = true
     }
     
-    private func configRefresh() {
+    @objc private func progressButtonAction(_ button: UIButton) {
+        let vc = DogeChatViewController()
+        let view = vc.view
+        let picker = UIPickerView()
+        view?.addSubview(picker)
+        picker.mas_makeConstraints { make in
+            make?.center.equalTo()(view)
+        }
+        picker.dataSource = self
+        picker.selectRow(nowPage - 1, inComponent: 0, animated: false)
+        picker.delegate = self
+        vc.modalPresentationStyle = .popover
+        vc.preferredContentSize = CGSize(width: 100, height: 200)
+        vc.didDisappearBlock = { [weak self] in
+            self?.navigationController?.interactivePopGestureRecognizer?.isEnabled = true
+        }
+        let popoverController = vc.popoverPresentationController
+        popoverController?.sourceView = button
+        popoverController?.sourceRect = button.bounds
+        popoverController?.delegate = self
+        self.present(vc, animated: true)
+        self.navigationController?.interactivePopGestureRecognizer?.isEnabled = false
+    }
+    
+    private func configFooter() {
         let footer = MJRefreshAutoStateFooter(refreshingTarget: self, refreshingAction: #selector(refreshFooterAction))
         tableView.mj_footer = footer
     }
         
-    @objc func filterAction() {
-        let vc = HistoryFilterVC()
+    @objc func filterAction(_ sender: UIBarButtonItem?) {
+        let vc = self.filterVC ?? HistoryFilterVC()
         vc.didConfirm = { [weak self] params in
             guard let self = self else { return }
             self.messages.removeAll()
@@ -105,8 +156,14 @@ class HistoryVC: ChatRoomViewController {
                 self.requestPage(-1)
             }
         }
-        configRefresh()
+//        if let sender = sender {
+//            vc.modalPresentationStyle = .popover
+//            let popoverController = vc.popoverPresentationController
+//            popoverController?.barButtonItem = sender
+//            popoverController?.delegate = self
+//        }
         self.present(vc, animated: true, completion: nil)
+        self.filterVC = vc
     }
                 
     @objc func sliderAction(_ slider: UISlider) {
@@ -117,15 +174,14 @@ class HistoryVC: ChatRoomViewController {
         downNowPage = nowPage
         upNowPage = nowPage
         requestPage(nowPage)
-        if tableView.mj_footer == nil {
-            configRefresh()
-        }
     }
     
     
     func requestPage(_ page: Int) {
         nowPage = page
-        self.manager?.commonWebSocket.historyMessages(for: self.friend, pageNum: page, pageSize: ChatRoomViewController.numberOfHistory, uuid: nil, type: params?["type"] as? String, beginDate: params?["timestamp"] as? String, keyWord: params?["keyword"] as? String)
+        self.manager?.httpsManager.historyMessages(for: self.friend, pageNum: page, pageSize: ChatRoomViewController.numberOfHistory, uuid: nil, type: params?["type"] as? String, beginDate: params?["timestamp"] as? String, keyWord: params?["keyword"] as? String, needInsertWhenWrap: false) { [weak self] params in
+            self?.receiveHistoryMessages(params: params)
+        }
     }
     
     @objc func refreshFooterAction() {
@@ -134,7 +190,7 @@ class HistoryVC: ChatRoomViewController {
             nowPage = downNowPage
             requestPage(nowPage)
         } else {
-            tableView.mj_footer?.endRefreshing()
+            tableView.mj_footer?.endRefreshingWithNoMoreData()
         }
     }
     
@@ -149,11 +205,16 @@ class HistoryVC: ChatRoomViewController {
     }
     
     override func receiveHistoryMessages(_ noti: Notification) {
+        
+    }
+    
+    func receiveHistoryMessages(params: [String : Any]) {
         defer {
             tableView.refreshControl?.endRefreshing()
             tableView.mj_footer?.endRefreshing()
         }
-        guard let messages = noti.userInfo?["messages"] as? [Message], !messages.isEmpty, let pages = noti.userInfo?["pages"] as? Int, let current = noti.userInfo?["current"] as? Int else { return }
+        guard let messages = params["messages"] as? [Message], !messages.isEmpty, let pages = params["pages"] as? Int, let current = params["current"] as? Int else { return }
+        slider.maximumValue = Float(pages)
         if nowPage < 0 {
             upNowPage = current
             downNowPage = current
@@ -162,7 +223,6 @@ class HistoryVC: ChatRoomViewController {
         self.totalPages = pages
         self.nowPage = current
         if filtered.isEmpty { return }
-        slider.maximumValue = Float(pages)
         let indexPaths: [IndexPath]
         let isFooter = filtered[0].id > (self.messages.last?.id ?? 0)
         if isFooter {
@@ -175,8 +235,52 @@ class HistoryVC: ChatRoomViewController {
             indexPaths = (0..<filtered.count).map { IndexPath(row: $0, section: 0) }
             self.messages.insert(contentsOf: filtered, at: 0)
         }
-        tableView.insertRows(at: indexPaths, with: (isFooter ? .top : .bottom))
+        tableView.performBatchUpdates {
+            self.tableView.insertRows(at: indexPaths, with: (isFooter ? .top : .bottom))
+        } completion: { _ in
+            if let targetMessageUUID = self.targetMessageUUID, let index = filtered.firstIndex(where: { $0.uuid == targetMessageUUID }) {
+                self.tableView.selectRow(at: IndexPath(row: index, section: 0), animated: true, scrollPosition: .middle)
+                self.targetMessageUUID = nil
+            }
+        }
+
     }
     
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        guard self.params != nil else { return }
+        let message = messages[indexPath.row]
+        let newVC = HistoryVC(purpose: .history)
+        newVC.friend = self.friend
+        newVC.targetMessageUUID = message.uuid
+        newVC.params = ["id" : message.id]
+        newVC.nowPage = -1
+        newVC.filterVC = self.filterVC
+        self.navigationController?.pushViewController(newVC, animated: true)
+//        self.targetMessageUUID = message.uuid
+//        self.messages.removeAll()
+//        tableView.reloadData()
+//        nowPage = -1
+//        params = nil
+//        manager?.commonWebSocket.historyMessages(for: friend, id: message.id)
+    }
 }
 
+extension HistoryVC: UIPickerViewDataSource, UIPickerViewDelegate {
+    
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        return 1
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        return totalPages
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        return String(row + 1)
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        slider.value = Float(row + 1)
+        sliderAction(slider)
+    }
+}

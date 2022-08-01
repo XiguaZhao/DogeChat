@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="19529" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="Ker-fq-rFq">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="20037" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="Ker-fq-rFq">
     <device id="retina6_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19519"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="20020"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -68,7 +68,7 @@
                     <connections>
                         <segue destination="73m-2C-Avi" kind="relationship" relationship="viewControllers" id="dF3-Gi-WRe"/>
                         <segue destination="WrQ-ga-1RZ" kind="relationship" relationship="viewControllers" id="tA1-lx-2nr"/>
-                        <segue destination="QJ7-1B-WKH" kind="relationship" relationship="viewControllers" id="xSx-Hl-TZc"/>
+                        <segue destination="QJ7-1B-WKH" kind="relationship" relationship="viewControllers" id="RfS-wa-TFI"/>
                     </connections>
                 </tabBarController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="QFR-kt-v9I" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -104,10 +104,10 @@
             </objects>
             <point key="canvasLocation" x="750" y="-17"/>
         </scene>
-        <!--Doge Chat View Controller-->
+        <!--MomentsVC-->
         <scene sceneID="IZl-6w-rR5">
             <objects>
-                <viewController id="6RS-GR-4Rj" customClass="DogeChatViewController" customModule="DogeChat" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="6RS-GR-4Rj" customClass="MomentsVC" customModule="DogeChat" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="y6N-Wa-yif">
                         <rect key="frame" x="0.0" y="0.0" width="428" height="926"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -118,7 +118,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Grd-fQ-a44" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-311" y="599"/>
+            <point key="canvasLocation" x="-29" y="577"/>
         </scene>
         <!--Preview-->
         <scene sceneID="TSg-da-ryh">
@@ -170,7 +170,7 @@
                 </navigationController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="nHO-h1-PQZ" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-921" y="599"/>
+            <point key="canvasLocation" x="-939" y="577"/>
         </scene>
     </scenes>
     <resources>

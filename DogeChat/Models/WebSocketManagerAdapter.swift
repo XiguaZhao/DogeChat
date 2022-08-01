@@ -105,7 +105,19 @@ class WebSocketManagerAdapter: NSObject {
             }
             manager.commonWebSocket.sendVoipToken(AppDelegate.shared.pushKitToken)
         }
-        manager.commonWebSocket.sendToken((UIApplication.shared.delegate as! AppDelegate).deviceToken)
+        var sendPublicKey = UserDefaults(suiteName: groupName)?.string(forKey: "publicKey")
+        if let ud = UserDefaults(suiteName: groupName) {
+            if ud.string(forKey: "publicKey") == nil || ud.string(forKey: "privateKey") == nil {
+                let publicKey = manager.messageManager.encrypt.getPublicKey()
+                let privateKey = manager.messageManager.encrypt.getPrivateKey()
+                if !publicKey.isEmpty && privateKey != "privateKey fail" {
+                    ud.set(publicKey, forKey: "publicKey")
+                    ud.set(privateKey, forKey: "privateKey")
+                    sendPublicKey = publicKey
+                }
+            }
+        }
+        manager.commonWebSocket.sendToken((UIApplication.shared.delegate as! AppDelegate).deviceToken, publicKey: sendPublicKey)
     }
     
     @objc func startCall(noti: Notification) {

@@ -14,14 +14,33 @@ import DogeChatCommonDefines
 
 class EmojiView: DogeChatStaticBlurView {
     
-    enum EmojiCellMenuItem: String {
-        case useAsSelfAvatar = "设为自己头像"
-        case useAsGroupAvatar = "设为群聊头像"
-        case delete = "删除"
-        case addEmojis = "从相册添加"
-        case preview = "预览"
-        case addToCommon = "所有人可见"
-        case favorite = "收藏"
+    enum EmojiCellMenuItem {
+        case useAsSelfAvatar
+        case useAsGroupAvatar
+        case delete
+        case addEmojis
+        case preview
+        case addToCommon
+        case favorite 
+        
+        func localizedString() -> String {
+            switch self {
+            case .useAsSelfAvatar:
+                return NSLocalizedString("setSelfAvatar", comment: "")
+            case .useAsGroupAvatar:
+                return NSLocalizedString("setGroupAvatar", comment: "")
+            case .delete:
+                return NSLocalizedString("delete", comment: "")
+            case .addEmojis:
+                return NSLocalizedString("addFromAlbum", comment: "")
+            case .preview:
+                return NSLocalizedString("preview", comment: "")
+            case .addToCommon:
+                return NSLocalizedString("setPublic", comment: "")
+            case .favorite:
+                return NSLocalizedString("favorite", comment: "")
+            }
+        }
     }
     
     let pageIndicator = UIPageControl()

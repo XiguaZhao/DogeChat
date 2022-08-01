@@ -10,7 +10,7 @@ import UIKit
 
 class ChangeIconVC: DogeChatViewController {
     
-    let icons = ["cat", "dog"]
+    let icons = ["cat", "dog", "bear"]
     
     override func viewDidLoad() {
         super.viewDidLoad()

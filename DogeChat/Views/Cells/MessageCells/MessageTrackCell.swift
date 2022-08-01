@@ -14,7 +14,7 @@ import DogeChatCommonDefines
 let sharedTracksImageCache = NSCache<NSString, NSData>()
 
 func compressImage(image: UIImage, imageWidth: ImageWidth = .width100) -> Data {
-    return compressEmojis(image, imageWidth: imageWidth)
+    return compressEmojis(image, imageWidth: imageWidth).1
 }
 
 class MessageTrackCell: MessageBaseCell {

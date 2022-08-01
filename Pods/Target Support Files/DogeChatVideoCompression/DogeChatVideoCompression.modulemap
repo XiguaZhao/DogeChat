@@ -1,6 +1,0 @@
-module DogeChatVideoCompression {
-  umbrella header "DogeChatVideoCompression-umbrella.h"
-
-  export *
-  module * { export * }
-}

@@ -20,7 +20,13 @@ class DogeChatSplitViewController: UISplitViewController {
         vcDelegate.splitVC = self
         self.preferredPrimaryColumnWidthFraction = 0.35
         self.preferredDisplayMode = .allVisible
-        
+        NotificationCenter.default.addObserver(self, selector: #selector(self.logout(note:)), name: .logout, object: nil)
+    }
+    
+    @objc func logout(note: Notification) {
+        if findContactVC()?.username == note.object as? String, !self.isCollapsed {
+            self.showDetailViewController(DogeChatViewController(), sender: nil)
+        }
     }
     
     
@@ -49,7 +55,7 @@ class DogeChatSplitViewController: UISplitViewController {
         if self.isCollapsed {
             nav = self.findContactVC()?.navigationController
         } else {
-            if let _nav = self.viewControllers[1] as? UINavigationController {
+            if self.viewControllers.count >= 2, let _nav = self.viewControllers[1] as? UINavigationController {
                 nav = _nav
             }
         }

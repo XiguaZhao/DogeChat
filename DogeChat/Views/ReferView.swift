@@ -14,7 +14,7 @@ import DogeChatCommonDefines
 protocol ReferViewDelegate: AnyObject {
     func referViewTapAction(_ referView: ReferView, message: Message?)
     func cancleAction(_ referView: ReferView)
-    func atAction(_ referView: ReferView)
+    func atAction(with referView: ReferView)
 }
 
 enum ReferViewType {
@@ -104,7 +104,7 @@ class ReferView: UIView {
     }
     
     @objc func atButtonAction() {
-        delegate?.atAction(self)
+        delegate?.atAction(with: self)
     }
     
     func apply(message: Message) {
@@ -115,7 +115,7 @@ class ReferView: UIView {
         switch message.messageType {
         case .text, .join:
             text = message.text
-        case .image:
+        case .sticker, .photo:
             makeImage()
         case .video:
             text = "[视频]"
@@ -154,7 +154,7 @@ class ReferView: UIView {
         let captured = self.message
         guard let imageURL = message?.imageURL else { return }
         MediaLoader.shared.requestImage(urlStr:imageURL,
-                                        type: .image,
+                                        type: .sticker,
                                         syncIfCan: false,
                                         imageWidth: .width100,
                                         needStaticGif: true,

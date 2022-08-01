@@ -13,9 +13,9 @@ class DogeChatBaseCollectionView: UICollectionView {
     override init(frame: CGRect, collectionViewLayout layout: UICollectionViewLayout) {
         super.init(frame: frame, collectionViewLayout: layout)
         NotificationCenter.default.addObserver(self, selector: #selector(forceDarkMode(noti:)), name: .immersive, object: nil)
-        if AppDelegate.shared.immersive {
+//        if AppDelegate.shared.immersive {
             self.backgroundColor = .clear
-        }
+//        }
     }
 
     required init?(coder: NSCoder) {

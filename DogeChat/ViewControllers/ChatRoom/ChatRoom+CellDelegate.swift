@@ -14,6 +14,9 @@ import DogeChatCommonDefines
 
 extension ChatRoomViewController: MessageTableViewCellDelegate, TransitionFromDataSource, TransitionToDataSource {
     
+    func pkViewTapEnabled(_ cell: MessageBaseCell) -> Bool {
+        return self.purpose == .chat
+    }
     
     func processingMedia(finished: Bool) {
         DispatchQueue.main.async {
@@ -90,7 +93,7 @@ extension ChatRoomViewController: MessageTableViewCellDelegate, TransitionFromDa
         let paths: [String]
         var targetIndex = 0
         if !isAvatar {
-            let messages = (self.messages.filter { $0.messageType == .image || $0.messageType == .livePhoto || $0.messageType == .video })
+            let messages = (self.messages.filter { $0.messageType.isImage || $0.messageType == .livePhoto || $0.messageType == .video })
             paths = messages.map { $0.text }
             if let index = self.tableView.indexPath(for: cell)?.row {
                 targetIndex = messages.firstIndex(of: self.messages[index]) ?? 0
@@ -129,7 +132,7 @@ extension ChatRoomViewController: MessageTableViewCellDelegate, TransitionFromDa
         let path = userInfo["path"] as? String,
         let purpose = userInfo["purpose"] as? MediaVCPurpose else { return }
         if purpose == .normal {
-            let mediaMessages = (self.messages.filter { $0.messageType == .image || $0.messageType == .livePhoto || $0.messageType == .video })
+            let mediaMessages = (self.messages.filter { $0.messageType.isImage || $0.messageType == .livePhoto || $0.messageType == .video })
             var index: Int?
             if mediaMessages.count > targetIndex {
                 index = self.messages.firstIndex(of: mediaMessages[targetIndex])
@@ -300,42 +303,49 @@ extension ChatRoomViewController: MessageTableViewCellDelegate, TransitionFromDa
         guard purpose == .chat, ges.state == .ended, cell.message.messageType != .join else { return }
         let controller = UIMenuController.shared
         guard let targetView = cell.indicationNeighborView else { return }
-        if !messageInputBar.textView.isFirstResponder {
-            cell.becomeFirstResponder()
-        }
         activeMenuCell = cell
         let index = tableView.indexPath(for: cell)!.row
         let message = messages[index]
-        let copy = UIMenuItem(title: localizedString("copy"), action: #selector(copyMenuItemAction(sender:)))
-        let refer = UIMenuItem(title: localizedString("refer"), action: #selector(referAction(sender:)))
+        let copy = UIMenuItem(title: localizedString("copy"), action: #selector(dogechat_copyMenuItemAction(sender:)))
+        let refer = UIMenuItem(title: localizedString("refer"), action: #selector(dogechat_referAction(sender:)))
         var items = [copy, refer]
-        let sendToOthers = UIMenuItem(title: localizedString("sendToOthers"), action: #selector(sendToOthersMenuItemAction(sender:)))
+        let sendToOthers = UIMenuItem(title: localizedString("sendToOthers"), action: #selector(dogechat_sendToOthersMenuItemAction(sender:)))
         items.append(sendToOthers)
         if message.messageSender == .ourself {
-            let revoke = UIMenuItem(title: localizedString("revoke"), action: #selector(revokeMenuItemAction(sender:)))
+            let revoke = UIMenuItem(title: localizedString("revoke"), action: #selector(dogechat_revokeMenuItemAction(sender:)))
             items.append(revoke)
         }
-        if message.messageType == .image {
-            let saveEmoji = UIMenuItem(title: localizedString("saveMySelf"), action: #selector(saveEmojiMenuItemAction(sender:)))
+        if message.messageType.isImage {
+            let saveEmoji = UIMenuItem(title: localizedString("saveMySelf"), action: #selector(dogechat_saveEmojiMenuItemAction(sender:)))
             items.append(saveEmoji)
             if debugUsers.contains(self.username) {
-                items.append(UIMenuItem(title: localizedString("saveCommonUse"), action: #selector(saveEmojiCommonMenuItemAction(sender:))))
+                items.append(UIMenuItem(title: localizedString("saveCommonUse"), action: #selector(dogechat_saveEmojiCommonMenuItemAction(sender:))))
             }
         }
-        let multiSele = UIMenuItem(title: localizedString("multiSelect"), action: #selector(multiSeleMenuItemAction(sender:)))
+        let multiSele = UIMenuItem(title: localizedString("multiSelect"), action: #selector(dogechat_multiSeleMenuItemAction(sender:)))
         items.append(multiSele)
         controller.menuItems = items
-        let rect = CGRect(x: targetView.bounds.width/2, y: 5, width: 0, height: 0)
+        let rect = targetView.convert(targetView.bounds, to: self.view)
         messageInputBar.textView.ignoreActions = true
+        self.becomeFirstResponder()
         if #available(iOS 13.0, *) {
-            controller.showMenu(from: targetView, rect: rect)
+            controller.showMenu(from: self.view, rect: rect)
         } else {
-            if let targetView = cell.indicationNeighborView {
-                controller.setTargetRect(CGRect(x: targetView.bounds.width / 2, y: 0, width: 100, height: 100), in: targetView)
-                controller.setMenuVisible(true, animated: true)
-            }
+            controller.setTargetRect(rect, in: self.view)
+            controller.setMenuVisible(true, animated: true)
         }
         messageInputBar.textView.ignoreActions = false
+    }
+    
+    override var canBecomeFirstResponder: Bool {
+        return true
+    }
+    
+    override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
+        if NSStringFromSelector(action).hasPrefix("dogechat") {
+            return true
+        }
+        return super.canPerformAction(action, withSender: sender)
     }
     
     func menuItemDone() {
@@ -343,7 +353,7 @@ extension ChatRoomViewController: MessageTableViewCellDelegate, TransitionFromDa
         activeMenuCell?.resignFirstResponder()
     }
     
-    @objc func copyMenuItemAction(sender: UIMenuController) {
+    @objc func dogechat_copyMenuItemAction(sender: UIMenuController) {
         menuItemDone()
         guard let cell = activeMenuCell,
               let index = tableView.indexPath(for: cell)?.row else { return }
@@ -358,14 +368,14 @@ extension ChatRoomViewController: MessageTableViewCellDelegate, TransitionFromDa
         }
     }
     
-    @objc func revokeMenuItemAction(sender: UIMenuController) {
+    @objc func dogechat_revokeMenuItemAction(sender: UIMenuController) {
         menuItemDone()
         guard let cell = activeMenuCell,
               let index = tableView.indexPath(for: cell)?.row else { return }
         revoke(message: messages[index])
     }
     
-    @objc func sendToOthersMenuItemAction(sender: UIMenuController?) {
+    @objc func dogechat_sendToOthersMenuItemAction(sender: UIMenuController?) {
         menuItemDone()
         guard let cell = activeMenuCell,
               let indexPath = tableView.indexPath(for: cell) else { return }
@@ -376,7 +386,7 @@ extension ChatRoomViewController: MessageTableViewCellDelegate, TransitionFromDa
         self.present(contactVC, animated: true)
     }
     
-    @objc func saveEmojiMenuItemAction(sender: UIMenuController) {
+    @objc func dogechat_saveEmojiMenuItemAction(sender: UIMenuController) {
         menuItemDone()
         guard let cell = activeMenuCell else { return }
         if let imageUrl = cell.message.imageURL, cell.message.sendStatus == .success {
@@ -385,7 +395,7 @@ extension ChatRoomViewController: MessageTableViewCellDelegate, TransitionFromDa
         }
     }
     
-    @objc func saveEmojiCommonMenuItemAction(sender: UIMenuController) {
+    @objc func dogechat_saveEmojiCommonMenuItemAction(sender: UIMenuController) {
         menuItemDone()
         guard let cell = activeMenuCell else { return }
         if let imageUrl = cell.message.imageURL, cell.message.sendStatus == .success {
@@ -400,7 +410,7 @@ extension ChatRoomViewController: MessageTableViewCellDelegate, TransitionFromDa
         }
     }
     
-    @objc func multiSeleMenuItemAction(sender: UIMenuController) {
+    @objc func dogechat_multiSeleMenuItemAction(sender: UIMenuController) {
         menuItemDone()
         guard let cell = activeMenuCell,
               let indexPath = tableView.indexPath(for: cell) else { return }

@@ -211,7 +211,7 @@ class LocationVC: DogeChatViewController, UISearchBarDelegate, MKMapViewDelegate
     }
     
     func mapViewDidChangeVisibleRegion(_ mapView: MKMapView) {
-        searchBar.resignFirstResponder()
+//        searchBar.resignFirstResponder()
     }
 
     

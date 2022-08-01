@@ -30,7 +30,7 @@ extension ChatRoomViewController: MessageInputDelegate, VoiceRecordDelegate {
         case .camera:
             cameraAction()
         case .photo:
-            imagePickerType = .image
+            imagePickerType = .sticker
             pickerPurpose = .send
             if #available(iOS 14, *) {
                 var config = PHPickerConfiguration()
@@ -75,11 +75,11 @@ extension ChatRoomViewController: MessageInputDelegate, VoiceRecordDelegate {
         case .location:
             locationAction()
         case .at:
-            atAction()
+            onClickAt()
         }
     }
     
-    func atAction() {
+    @objc func onClickAt() {
         if let group = self.friend as? Group {
             let selectVC = SelectContactsViewController(username: self.username, group: group, members: self.groupMembers)
             selectVC.delegate = self

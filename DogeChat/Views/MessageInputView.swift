@@ -52,6 +52,7 @@ class MessageInputView: DogeChatStaticBlurView {
     static let offset: CGFloat = 12
     let width: CGFloat = 30
     var emojiButtonStatus: EmojiButtonStatus = .normal
+    var activeWhenEnterBackground = false
     let textView = DogeChatTextView()
     let addButton = UIButton()
     let emojiButton = UIButton()

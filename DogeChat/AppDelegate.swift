@@ -33,7 +33,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var backgroundSessionCompletionHandler: (() -> Void)?
     let voipRegistry = PKPushRegistry(queue: DispatchQueue.main)
     var lastAppEnterBackgroundTime = NSDate().timeIntervalSince1970
+    var backgroundTaskID: UIBackgroundTaskIdentifier?
     weak var remoteNotiDelegate: RemoteNotificationDelegate?
+    var macOSBridge: Bridge?
     var latestRemoteNotiInfo: RemoteNotificationInfo? {
         didSet {
             if let latestRemoteNotiInfo = latestRemoteNotiInfo {
@@ -106,6 +108,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         if #available(iOS 13, *) {} else {
             AppDelegateUI.shared.makeWindow()
         }
+        
+        registerMacOSBridge()
+        
         return true
     }
     
@@ -116,9 +121,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             PlayerManager.shared.customImage = nil
             return
         }
-        MediaLoader.shared.requestImage(urlStr: url, type: .image, completion: { image, data, _ in
+        MediaLoader.shared.requestImage(urlStr: url, type: .sticker, completion: { image, data, _ in
             if let data = data {
                 saveFileToDisk(dirName: "customBlur", fileName: userID, data: data)
+            } else if let image = image {
+                saveFileToDisk(dirName: "customBlur", fileName: userID, data: image.jpegData(compressionQuality: 1) ?? Data())
             }
             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                 PlayerManager.shared.blurSource = .customBlur

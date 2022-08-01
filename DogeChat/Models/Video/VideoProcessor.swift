@@ -51,10 +51,16 @@ import ARKit
             
             supportHEVC = AVOutputSettingsAssistant.availableOutputSettingsPresets().contains(.hevc1920x1080)
             
+            var codeType: CMVideoCodecType = kCMVideoCodecType_HEVC
+            if !supportHEVC {
+                codeType = kCMVideoCodecType_H264
+                supportHEVC = true
+            }
+            
             let status = VTCompressionSessionCreate(allocator: nil,
                                                     width: videoWidth,
                                                     height: videoHeight,
-                                                    codecType: kCMVideoCodecType_HEVC,
+                                                    codecType: codeType,
                                                     encoderSpecification: nil,
                                                     imageBufferAttributes: nil,
                                                     compressedDataAllocator: nil,

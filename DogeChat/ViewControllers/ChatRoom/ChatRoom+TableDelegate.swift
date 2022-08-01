@@ -18,7 +18,7 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
             cellID = MessageTextCell.cellID
         case .voice:
             cellID = MessageAudioCell.audioCellID()
-        case .image:
+        case .photo, .sticker:
             cellID = MessageImageCell.cellID
         case .livePhoto:
             cellID = MessageLivePhotoCell.cellID
@@ -50,11 +50,8 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
     }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        if let cell = cell as? MessageBaseCell {
-            cell.message?.isRead = true
-        }
+        self.messages[indexPath.row].isRead = true
         (cell as? DogeChatTableViewCell)?.willDisplayBlock?(cell as! DogeChatTableViewCell, tableView)
-        
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -69,6 +66,13 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
 
                 
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        guard scrollView == tableView else { return }
+        if !isMac() && self.purpose == .chat {
+            let offsetY = scrollView.contentOffset.y + scrollView.adjustedContentInset.top
+            if offsetY <= 50 && !isFetchingHistory && !scrollView.isDragging {
+                displayHistory()
+            }
+        }
     }
     
     func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
@@ -127,12 +131,12 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
             handler(true)
             if let cell = tableView?.cellForRow(at: indexPath) as? MessageBaseCell {
                 self.activeMenuCell = cell
-                self.referAction(sender: nil)
+                self.dogechat_referAction(sender: nil)
             }
         }
         referAction.backgroundColor = #colorLiteral(red: 0.2392156869, green: 0.6745098233, blue: 0.9686274529, alpha: 1)
         var actions = [multiSelection]
-        if messages[indexPath.row].messageType == .image {
+        if messages[indexPath.row].messageType.isImage {
             actions.append(saveEmoji)
         }
         actions = [referAction]
@@ -175,10 +179,10 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
             }
             if cell.message.messageType != .join {
                 referAction = UIAction(title: localizedString("refer")) { [weak self] _ in
-                    self?.referAction(sender: nil)
+                    self?.dogechat_referAction(sender: nil)
                 }
                 sendToOthersAction = UIAction(title: localizedString("sendToOthers")) { [weak self] _ in
-                    self?.sendToOthersMenuItemAction(sender: nil)
+                    self?.dogechat_sendToOthersMenuItemAction(sender: nil)
                 }
             }
             let multiSelect = UIAction(title: localizedString("multiSelect")) { [weak self] _ in
@@ -386,7 +390,9 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
             return
         }
         if messageInputBar.emojiButtonStatus == .normal {
-            messageInputBar.textViewResign()
+            if !isMac() {
+                messageInputBar.textViewResign()
+            }
         }
         if #available(iOS 13.0, *) {
             UIMenuController.shared.hideMenu()

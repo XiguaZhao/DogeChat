@@ -59,9 +59,9 @@ class EmojiInterfaceController: WKInterfaceController {
                 } else {
                     row.rightPath = emojiPath
                 }
-                MediaLoader.shared.requestImage(urlStr: emojiPath, type: .image, syncIfCan: false, imageWidth: .width80, needStaticGif: true, completion: { image, data, _ in
+                MediaLoader.shared.requestImage(urlStr: emojiPath, type: .sticker, syncIfCan: false, imageWidth: .width80, needStaticGif: true, completion: { image, data, _ in
                     let imageView = index % 2 == 0 ? row.leftImageView : row.rightImageView
-                    imageView?.setImageData(data)
+                    imageView?.setImage(image)
                 }, progress: nil)
             }
         }

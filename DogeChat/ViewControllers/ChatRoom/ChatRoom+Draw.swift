@@ -81,7 +81,7 @@ extension ChatRoomViewController: PKViewChangeDelegate {
                 if let pngData = image.pngData() {
                     let localUrl = URL(string: "file://" + NSTemporaryDirectory() + UUID().uuidString + ".jpg")!
                     try pngData.write(to: localUrl)
-                    self.manager?.httpsManager.uploadPhoto(imageUrl: localUrl, type: .image, size: size, uploadProgress: nil, success: { path in
+                    self.manager?.httpsManager.uploadPhoto(imageUrl: localUrl, type: .sticker, size: size, uploadProgress: nil, success: { path in
                         try? FileManager.default.removeItem(at: localUrl)
                         message.drawImagePath = path
                         group.leave()

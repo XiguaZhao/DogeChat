@@ -152,12 +152,12 @@ class ContactTableViewCell: UITableViewCell {
         if !info.avatarURL.isEmpty {
             let avatarUrl = info.avatarURL
             let isGif = avatarUrl.hasSuffix(".gif")
-            MediaLoader.shared.requestImage(urlStr: avatarUrl, type: .image, syncIfCan: false) { [self] image, data, _ in
+            MediaLoader.shared.requestImage(urlStr: avatarUrl, type: .sticker, syncIfCan: false) { [self] image, data, _ in
                 guard info.username == self.info.username, let data = data else {
                     return
                 }
                 if !isGif { // is photo
-                    avatarImageView.image = UIImage(data: data)
+                    avatarImageView.image = image
                 } else { // gif图处理
                     avatarImageView.animatedImage = FLAnimatedImage(gifData: data)
                 }

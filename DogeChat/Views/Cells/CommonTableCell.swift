@@ -128,11 +128,11 @@ class CommonTableCell: DogeChatTableViewCell, UITextFieldDelegate {
                 stackView.removeArrangedSubview(leadingImageView)
                 stackView.addArrangedSubview(leadingImageView)
             }
-            MediaLoader.shared.requestImage(urlStr: imageURL, type: .image, completion: { [weak self] image, data, _ in
+            MediaLoader.shared.requestImage(urlStr: imageURL, type: .sticker, completion: { [weak self] image, data, _ in
                 if imageURL.isGif {
                     self?.leadingImageView.animatedImage = FLAnimatedImage(gifData: data)
                 } else {
-                    self?.leadingImageView.image = UIImage(data: data ?? Data())
+                    self?.leadingImageView.image = image
                 }
             }, progress: nil)
         }

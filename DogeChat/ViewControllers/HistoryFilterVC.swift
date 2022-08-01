@@ -12,6 +12,7 @@ import DogeChatNetwork
 
 class HistoryFilterVC: DogeChatViewController, UIPickerViewDataSource, UIPickerViewDelegate, UITextFieldDelegate {
 
+    @IBOutlet weak var stackView: UIStackView!
     @IBOutlet weak var keywordTF: UITextField!
     
     @IBOutlet weak var typePicker: UIPickerView!
@@ -38,6 +39,7 @@ class HistoryFilterVC: DogeChatViewController, UIPickerViewDataSource, UIPickerV
         
         keywordTF.delegate = self
         keywordTF.returnKeyType = .search
+        keywordTF.becomeFirstResponder()
         
         self.view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tap)))
     }

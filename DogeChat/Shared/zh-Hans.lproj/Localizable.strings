@@ -111,7 +111,7 @@
 "infoExpire" = "登录信息过期";
 "reLogin" = "请重新登录";
 "looseToSend" = "勾选后松手发送";
-"browserAvatar" = "查看头像";
+"browseAvatar" = "查看头像";
 "turnOnNotification" = "打开推送";
 "turnOffNotification" = "关闭推送";
 "openInSingleWindow" = "在单独窗口打开";
@@ -149,3 +149,19 @@
 
 "saveToAlbum" = "保存到相册";
 "notAuthorized" = "未授权";
+
+"setSelfAvatar" = "设为自己头像";
+"setGroupAvatar" = "设为群聊头像";
+"addFromAlbum" = "从相册添加";
+"setPublic" = "所有人可见";
+
+"clickToUpload" = "点击上传或从别处长按保存";
+"clickToUploadTitle" = "iOS版本低于14，暂不支持";
+"clickToUploadDetail" = "请从已有的图片长按保存";
+
+"moments" = "时刻";
+
+"shortcutLaunch" = "快捷键（输入一个字母）";
+"deleteAccount" = "注销账号";
+"accountSetting" = "账号设置";
+"sticker" = "动画表情";

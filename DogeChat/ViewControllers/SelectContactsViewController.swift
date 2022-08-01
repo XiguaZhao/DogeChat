@@ -21,7 +21,7 @@ protocol SelectContactsDelegate: AnyObject {
     func didFetchContacts(_ contacts: [Friend], vc: SelectContactsViewController)
 }
 
-class SelectContactsViewController: DogeChatViewController, DogeChatVCTableDataSource {
+class SelectContactsViewController: DogeChatViewController, DogeChatVCTableDataSource, UITableViewDelegate {
     
     enum ContactsType {
         case all
@@ -46,6 +46,7 @@ class SelectContactsViewController: DogeChatViewController, DogeChatVCTableDataS
     }
     var tableView: DogeChatTableView = SelectContactTableView()
     let toolBar = UIToolbar()
+    var multiSelectButton: UIBarButtonItem!
     var confirmButton: UIBarButtonItem!
     var cancelButton: UIBarButtonItem!
     weak var delegate: SelectContactsDelegate?
@@ -102,7 +103,7 @@ class SelectContactsViewController: DogeChatViewController, DogeChatVCTableDataS
             make?.left.right().bottom().equalTo()(self?.view)
             make?.top.equalTo()(self?.toolBar.mas_bottom)
         }
-        tableView.setEditing(true, animated: false)
+        tableView.delegate = self
         tableView.allowsMultipleSelection = true
         tableView.allowsMultipleSelectionDuringEditing = true
         
@@ -157,13 +158,18 @@ class SelectContactsViewController: DogeChatViewController, DogeChatVCTableDataS
     }
     
     func buildBarButtons() {
+        multiSelectButton = UIBarButtonItem(title: localizedString("multiSelect"), style: .done, target: self, action: #selector(multiSelectAction(_:)))
         confirmButton = UIBarButtonItem(title: localizedString("confirm"), style: .done, target: self, action: #selector(confirmAction(_:)))
         cancelButton = UIBarButtonItem(title: localizedString("cancel"), style: .done, target: self, action: #selector(cancelAction(_:)))
-        var items: [UIBarButtonItem] = [confirmButton, cancelButton]
+        var items: [UIBarButtonItem] = [multiSelectButton, confirmButton, cancelButton]
         if #available(iOS 14.0, *) {
             items.insert(UIBarButtonItem(systemItem: .flexibleSpace), at: 0)
         }
         toolBar.setItems(items, animated: true)
+    }
+    
+    @objc func multiSelectAction(_ sender: UIBarButtonItem!) {
+        tableView.setEditing(!tableView.isEditing, animated: true)
     }
     
     @objc func confirmAction(_ sender: UIBarButtonItem!) {
@@ -177,6 +183,15 @@ class SelectContactsViewController: DogeChatViewController, DogeChatVCTableDataS
     @objc func cancelAction(_ sender: UIBarButtonItem) {
         self.dismiss(animated: true) {
             self.delegate?.didCancelSelectContacts(self)
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        guard !tableView.isEditing else { return }
+        let contact = [displayedFriends[indexPath.row]]
+        self.dismiss(animated: true) {
+            self.delegate?.didSelectContacts(contact, vc: self)
+            self.didSelectContacts?(contact)
         }
     }
 
