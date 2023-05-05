@@ -65,6 +65,7 @@ class MessageSender {
                               sendStatus: .fail,
                               fontSize: fontSize)
         message.referMessage = self.referMessageDataSource?.referMessage()
+        message.lastMessage = friend.messages.last
         processAtForMessage(message)
         self.at.removeAll()
         return message
@@ -104,7 +105,7 @@ class MessageSender {
         for (_, imageURL, size) in infos {
             var messagesWithSameURL = [Message]()
             for friend in friends {
-                guard let message = processMessageString(for: "", type: .sticker, friend: friend, imageURL: nil, videoURL: nil) else { continue }
+                guard let message = processMessageString(for: "", type: messageType, friend: friend, imageURL: nil, videoURL: nil) else { continue }
                 message.imageLocalPath = imageURL
                 message.imageSize = size
                 newMessages.append(message)
@@ -229,6 +230,8 @@ class MessageSender {
                 guard let message = processMessageString(for: "", type: .livePhoto, friend: friend, imageURL: nil, videoURL: nil) else { continue }
                 message.imageURL = livePhoto.imageURL.absoluteString
                 message.videoURL = livePhoto.videoURL.absoluteString
+                message.imageLocalPath = livePhoto.imageURL
+                message.videoLocalPath = livePhoto.videoURL
                 message.livePhoto = livePhoto.live
                 message.imageSize = livePhoto.size
                 newMessages.append(message)
@@ -269,7 +272,7 @@ class MessageSender {
         return newMessages
     }
 
-    func processItemProviders(_ items: [NSItemProvider], friends: [Friend], emojiType: Emoji.AddEmojiType = .favorite, completion: (([Message]) -> Void)? = nil) {
+    func processItemProviders(_ items: [NSItemProvider], friends: [Friend], emojiType: Emoji.AddEmojiType = .favorite, completion: (([Message]) -> Void)? = nil, canSendData:((Any) -> Bool)? = nil) {
         for item in items {
             if item.hasItemConformingToTypeIdentifier(videoIdentifier) { // drop
                 progressDelegate?.processingMedia(finished: false)
@@ -355,6 +358,9 @@ class MessageSender {
                 let myName = self.manager?.myName
                 _ = item.loadObject(ofClass: String.self) { str, error in
                     if let str = str {
+                        if let canSendData = canSendData, !canSendData(str) {
+                            return
+                        }
                         for friend in friends {
                             let message = self.processMessageString(for: str, type: .text, friend: friend, imageURL: nil, videoURL: nil)
                             NotificationCenter.default.post(name: .uploadSuccess, object: myName, userInfo: ["message": message as Any])

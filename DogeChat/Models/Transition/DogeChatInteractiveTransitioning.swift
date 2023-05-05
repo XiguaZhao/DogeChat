@@ -64,20 +64,19 @@ import UIKit
     }
     
     @objc func UIChange(displayLink: CADisplayLink) {
-        var timeDistance = 1/(CGFloat(UIScreen.main.maximumFramesPerSecond) * DogeChatVCTransitioning.duration)
-        if ProcessInfo.processInfo.isLowPowerModeEnabled {
-            timeDistance *= 2
-        }
+        let duration = DogeChatVCTransitioning.duration
+        let timeOffset = displayLink.targetTimestamp - displayLink.timestamp;
+        let step = timeOffset / duration
         if (beginV * v > 0) {
             v = abs(v)
             beginV = abs(beginV)
             if (percent > backPercentage || v > backVelocity) {
-                percent += timeDistance
+                percent += step
             } else {
-                percent -= timeDistance
+                percent -= step
             }
         } else {
-            percent -= timeDistance
+            percent -= step
         }
         update(percent)
         if percent >= 1 {

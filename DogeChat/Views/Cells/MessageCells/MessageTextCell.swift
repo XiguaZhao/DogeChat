@@ -9,7 +9,7 @@
 import UIKit
 import DogeChatNetwork
 import DogeChatUniversal
-import AVFoundation
+import YYText
 import DogeChatCommonDefines
 
 class MessageTextCell: MessageBaseCell {
@@ -26,9 +26,10 @@ class MessageTextCell: MessageBaseCell {
     static let receiveBubbleDefaultColor = #colorLiteral(red: 0.09282096475, green: 0.7103053927, blue: 1, alpha: 1)
 
     
-    static let macCatalystMaxTextLength = 200
-    static let iosMaxTextLength = 5000
+    static let macCatalystMaxTextLength = Int.max
+    static let iosMaxTextLength = Int.max
     static let cellID = "MessageTextCell"
+    static let macCatalystFontSizeOffset: CGFloat = 0
     static let paraStyle: NSParagraphStyle = {
         let para = NSMutableParagraphStyle()
         para.lineSpacing = Label.lineSpacing
@@ -42,12 +43,12 @@ class MessageTextCell: MessageBaseCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
+        messageLabel.displaysAsynchronously = true
         messageLabel.layer.masksToBounds = true
         messageLabel.textColor = .white
         messageLabel.numberOfLines = 0
+        messageLabel.textAlignment = .left
         messageLabel.isUserInteractionEnabled = true
-        messageLabel.lineBreakMode = .byTruncatingTail
-        messageLabel.adjustsFontSizeToFitWidth = true
         contentView.addSubview(messageLabel)
         indicationNeighborView = messageLabel
         
@@ -75,25 +76,18 @@ class MessageTextCell: MessageBaseCell {
     override func layoutSubviews() {
         super.layoutSubviews()
         guard message != nil else { return }
-        if message.messageType == .text || message.messageType == .voice {
-            layoutForTextMessage()
-            layoutIndicatorViewAndMainView()
-        } else {
-            layoutForRevokeMessage()
-        }
+        layoutForTextMessage()
+        layoutIndicatorViewAndMainView()
         messageLabel.layer.cornerRadius = min(messageLabel.bounds.size.height/2.0, 20)
     }
     
     override func apply(message: Message) {
         super.apply(message: message)
-        if message.messageType == .text && messageLabel.textAlignment != .left {
-            messageLabel.textAlignment = .left
-        }
         textLabelDoubleTap.isEnabled = message.messageType == .text
         let textURLAndRange = message.text.webUrlifyWithountChange()
         textLabelSingleTap.isEnabled = textURLAndRange != nil
         
-        messageLabel.font = UIFont(name: "Helvetica", size: min(maxFontSize, message.fontSize * fontSizeScale) + (isMac() ? 3 : 0))
+        messageLabel.font = UIFont(name: "Helvetica", size: min(maxFontSize, message.fontSize * fontSizeScale + (isMac() ? Self.macCatalystFontSizeOffset : 0)))
         
         if message.messageSender == .ourself {
             messageLabel.backgroundColor = Self.sendBubbleColor
@@ -102,8 +96,9 @@ class MessageTextCell: MessageBaseCell {
             messageLabel.backgroundColor = Self.receiveBubbleColor
             messageLabel.textColor = Self.receiveTextColor
         }
+        messageLabel.layer.backgroundColor = messageLabel.backgroundColor?.cgColor
 
-        if message.messageType == .text || message.messageType == .join {
+        if message.messageType == .text {
             let attrStr = NSMutableAttributedString(attributedString: processText())
             if let textURLAndRange = textURLAndRange {
                 let range = textURLAndRange.range
@@ -119,6 +114,7 @@ class MessageTextCell: MessageBaseCell {
             let str = Array(repeating: " ", count: count).joined()
             messageLabel.text = message.messageSender == .someoneElse ? str + "\(message.voiceDuration)''" : "\(message.voiceDuration)''" + str
         }
+        setNeedsLayout()
     }
     
     func processText() -> NSAttributedString {
@@ -130,7 +126,9 @@ class MessageTextCell: MessageBaseCell {
         if text.count > length {
             text = text.prefix(length) + "..."
         }
-        let attr = NSAttributedString(string: text, attributes: [.paragraphStyle : Self.paraStyle])
+        let attr = NSAttributedString(string: text, attributes: [.paragraphStyle : Self.paraStyle,
+                                                                 .font : messageLabel.font!,
+                                                                 .foregroundColor : messageLabel.textColor!])
         return attr
     }
     
@@ -161,33 +159,21 @@ class MessageTextCell: MessageBaseCell {
     }
     
     func layoutForTextMessage() {
-        var size = MessageBaseCell.computeTextSizeForMessage(self.message, viewSize: contentView.bounds.size, userID: manager?.myInfo.userID)
-        let extraHeight = (nameLabel.isHidden ? 0 : nameLabel.bounds.height) + (self.message.referMessage == nil ? 0 : ReferView.height + ReferView.margin) + 4 * Label.verticalPadding
-        size.height = min(size.height, maxTextHeight - (3 * nameLabelStartY) - extraHeight)
-        size.height = min(size.height, contentView.bounds.height - extraHeight)
-        messageLabel.bounds = CGRect(x: 0, y: 0, width: size.width + 2 * Label.horizontalPadding, height: size.height + 2 * Label.verticalPadding)
+        let size = MessageBaseCell.computeTextSizeForMessage(self.message, viewSize: contentView.bounds.size, userID: manager?.myInfo.userID)
+        let width = min(size.width, self.contentView.bounds.width * MessageBaseCell.maxWidthRatio) + 2 * Label.horizontalPadding
+        messageLabel.bounds = CGRect(x: 0, y: 0, width: width, height: size.height + 2 * Label.verticalPadding)
     }
     
-    func layoutForRevokeMessage() {
-        messageLabel.isHidden = false
-        messageLabel.font = UIFont.systemFont(ofSize: 10)
-        messageLabel.textColor = .lightGray
-        messageLabel.backgroundColor = UIColor(red: 247/255, green: 247/255, blue: 247/255, alpha: 1.0)
-        messageLabel.textAlignment = .center
-        var size = messageLabel.sizeThatFits(CGSize.zero)
-        size.width += 50
-        size.height += 10
-        let center = CGPoint(x: bounds.size.width/2, y: bounds.size.height/2.0)
-        messageLabel.frame = .init(center: center, size: size)
-    }
+//    func layoutForRevokeMessage() {
+//        messageLabel.isHidden = false
+//        messageLabel.font = UIFont.systemFont(ofSize: 10)
+//        messageLabel.textColor = .lightGray
+//        messageLabel.backgroundColor = UIColor(red: 247/255, green: 247/255, blue: 247/255, alpha: 1.0)
+//        messageLabel.layer.backgroundColor = messageLabel.backgroundColor?.cgColor
+//        var size = MessageBaseCell.size(forText: message.text, fontSize: 10, maxSize: CGSize(width: self.contentView.bounds.width, height: .greatestFiniteMagnitude), message: nil, userID: nil)
+//        size.width += 50
+//        size.height += 10
+//        messageLabel.frame = .init(center: self.contentView.center, size: size)
+//    }
     
-    func isJoinOrQuitMessage() -> Bool {
-        if let words = messageLabel.text?.components(separatedBy: " ") {
-            if words.count >= 2 && words[words.count - 2] == "has" && (words[words.count - 1] == "joined" || words[words.count - 1] == "quited") {
-                return true
-            }
-        }
-        return false
-    }
-
 }

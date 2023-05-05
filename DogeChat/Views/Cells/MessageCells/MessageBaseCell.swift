@@ -7,12 +7,14 @@ import PhotosUI
 import DACircularProgress
 import PencilKit
 import DogeChatCommonDefines
+import YYText
 
 let nameLabelStartX: CGFloat = 40 + 5 + 5
-let nameLabelStartY: CGFloat = 10
+let nameLabelMainViewMargin: CGFloat = 10
 let avatarWidth: CGFloat = 40
 let avatarMargin: CGFloat = 5
 var hapticIndex = 0
+let cellBottomPadding: CGFloat = 6
 
 protocol MessageTableViewCellDelegate: DownloadUploadProgressDelegate {
     func mediaViewTapped(_ cell: MessageBaseCell, path: String, isAvatar: Bool)
@@ -45,7 +47,6 @@ class MessageBaseCell: DogeChatTableViewCell {
     var indexPath: IndexPath!
     let nameLabel = UILabel()
     let referView = ReferView(type: .chatRoomCell)
-    var isHistory = true
     var tapContentView: UITapGestureRecognizer!
     let indicator = UIActivityIndicatorView()
     var emojis = [EmojiInfo: FLAnimatedImageView]()
@@ -56,6 +57,7 @@ class MessageBaseCell: DogeChatTableViewCell {
     var activeEmojiView: UIView?
     static let emojiWidth: CGFloat = 130
     static let pkViewHeight: CGFloat = 100
+    static let maxWidthRatio = CGFloat(2) / CGFloat(3)
     lazy var longPressGes: UILongPressGestureRecognizer = {
         return UILongPressGestureRecognizer(target: self, action: #selector(onLongPress(_:)))
     }()
@@ -72,7 +74,6 @@ class MessageBaseCell: DogeChatTableViewCell {
     let avatarImageView = FLAnimatedImageView()
     let avatarDoubleTapGes = UITapGestureRecognizer()
     let avatapSingleTapGes = UITapGestureRecognizer()
-    let timeLabel = UILabel()
     var referViewLeading: NSLayoutConstraint?
     var referViewTrailing: NSLayoutConstraint?
     var referViewWidth: NSLayoutConstraint?
@@ -101,15 +102,10 @@ class MessageBaseCell: DogeChatTableViewCell {
         addDoubleTapForAvatar()
         
         
-        timeLabel.font = .systemFont(ofSize: 12)
-        timeLabel.numberOfLines = 2
-        timeLabel.adjustsFontSizeToFitWidth = true
-        timeLabel.isHidden = true
         
         contentView.addSubview(avatarContainer)
         contentView.addSubview(nameLabel)
         contentView.addSubview(indicator)
-        contentView.addSubview(timeLabel)
         contentView.addSubview(progress)
         contentView.addSubview(referView)
         
@@ -140,9 +136,6 @@ class MessageBaseCell: DogeChatTableViewCell {
         self.layer.masksToBounds = false
         guard let message = message else { return }
         if message.messageSender == .someoneElse {
-            nameLabel.isHidden = false
-            nameLabel.sizeToFit()
-            nameLabel.frame = CGRect(x: nameLabelStartX, y: nameLabelStartY, width: nameLabel.bounds.width, height: nameLabel.bounds.height)
             indicator.isHidden = true
         } else {
             nameLabel.isHidden = true
@@ -165,10 +158,6 @@ class MessageBaseCell: DogeChatTableViewCell {
             nameLabel.isHidden = true
         }
         layoutEmojis()
-        timeLabel.sizeToFit()
-        var timeLabelCenter = contentView.center
-        timeLabelCenter.x += (contentView.bounds.width / 2 + 5 + timeLabel.bounds.width / 2)
-        timeLabel.center = timeLabelCenter
     }
     
     func addConstraintForReferView() {
@@ -190,7 +179,7 @@ class MessageBaseCell: DogeChatTableViewCell {
     }
     
     @objc func onAvatarLongPress(_ ges: UILongPressGestureRecognizer) {
-        guard ges.state == .ended else { return }
+        guard ges.state == .began else { return }
         delegate?.longPressAvatar(self, ges: ges)
     }
     
@@ -239,15 +228,18 @@ class MessageBaseCell: DogeChatTableViewCell {
                 name = nickname
             }
         }
-        if isHistory {
-            name += "   " + (message.date).replacingOccurrences(of: "\n", with: "  ")
+        let isSameAsLastMessage = !Self.shouldCalculateNameHeight(message: message)
+        nameLabel.isHidden = isSameAsLastMessage || message.option == .toOne
+        avatarImageView.isHidden = message.isSameSenderAsLastMessage()
+        if !isSameAsLastMessage {
+            nameLabel.text = name
         }
-        nameLabel.text = name
         avatarDoubleTapGes.isEnabled = message.messageSender == .someoneElse
         referViewLeading?.isActive = message.messageSender == .someoneElse
         referViewTrailing?.isActive = message.messageSender == .ourself
-        timeLabel.text = message.date
-        loadAvatar()
+        if (!avatarImageView.isHidden) {
+            loadAvatar()
+        }
         addEmojis()
     }
     
@@ -320,19 +312,24 @@ class MessageBaseCell: DogeChatTableViewCell {
             referWidth += ReferView.height
         }
         let contentViewWidth = contentView.bounds.width
+        let spaceForReferView = hasRefer ? ReferView.height + ReferView.margin : 0
+        let targetCenterY = contentView.bounds.height - (cellBottomPadding + targetView.bounds.height / 2 + spaceForReferView)
         switch message.messageSender {
         case .ourself:
-            let y: CGFloat = contentView.center.y - (hasRefer ? ReferView.height + ReferView.margin : 0) / 2
-            targetView.center = CGPoint(x: contentView.bounds.width - (targetView.bounds.width / 2) - nameLabelStartX, y: y)
+            targetView.center = CGPoint(x: contentView.bounds.width - (targetView.bounds.width / 2) - nameLabelStartX, y: targetCenterY)
             indicator.center = CGPoint(x: targetView.frame.minX - 30, y: targetView.center.y)
             var avatarCenter = targetView.center
             avatarCenter.x = targetView.frame.maxX + avatarMargin + avatarWidth / 2
             avatarContainer.center = avatarCenter
         case .someoneElse:
-            let spaceForReferView = hasRefer ? ReferView.height + ReferView.margin : 0
-            targetView.center = CGPoint(x: targetView.bounds.width / 2 + nameLabelStartX, y: contentView.center.y + (nameLabel.bounds.height + nameLabelStartY - spaceForReferView) / 2)
+            targetView.center = CGPoint(x: targetView.bounds.width / 2 + nameLabelStartX, y: targetCenterY)
             avatarContainer.center = CGPoint(x: avatarMargin + avatarWidth / 2, y: targetView.center.y)
             indicator.center = CGPoint(x: targetView.frame.maxX + 30, y: targetView.center.y)
+            if !nameLabel.isHidden {
+                nameLabel.sizeToFit()
+                nameLabel.left = targetView.left
+                nameLabel.bottom = targetView.top - nameLabelMainViewMargin
+            }
         }
         progress.center = indicator.center
         if hasRefer {
@@ -340,19 +337,26 @@ class MessageBaseCell: DogeChatTableViewCell {
         }
     }
     
+    class func shouldCalculateNameHeight(message: Message) -> Bool {
+        return message.option == .toGroup && !message.isSameSenderAsLastMessage()
+    }
     
     // 计算高度
     class func height(for message: Message, tableViewSize: CGSize, userID: String?) -> CGFloat {
         let screenWidth = tableViewSize.width
         let screenHeight = tableViewSize.height
-        let maxSize = CGSize(width: 2*(screenWidth/3), height: CGFloat.greatestFiniteMagnitude)
-        let nameHeight = message.messageSender == .ourself ? 0 : (size(forText: message.senderUsername, fontSize: 10, maxSize: maxSize, message: nil, userID: nil).height + 4 )
+        let maxSize = CGSize(width: screenWidth * Self.maxWidthRatio, height: CGFloat.greatestFiniteMagnitude)
+        let hideName = !shouldCalculateNameHeight(message: message)
+        var nameHeight = message.messageSender == .ourself ? 0 : (size(forText: message.senderUsername, fontSize: 10, maxSize: maxSize, message: nil, userID: nil).height)
+        if hideName {
+            nameHeight = 0
+        }
         var rowHeight: CGFloat
         let type = message.messageType
         switch type {
         case .join, .text, .voice:
             let messageHeight = Self.computeTextSizeForMessage(message, viewSize: tableViewSize, userID: userID).height
-            rowHeight = nameHeight + messageHeight + 32 + 2 * Label.verticalPadding
+            rowHeight = nameHeight + messageHeight + (hideName ? (2*cellBottomPadding) : 30) + 2 * Label.verticalPadding
             rowHeight = min(rowHeight, maxTextHeight)
         case .photo, .sticker, .livePhoto, .video:
             let minHeight: CGFloat = 35
@@ -365,7 +369,7 @@ class MessageBaseCell: DogeChatTableViewCell {
                     rowHeight = max(minHeight, min(screenHeight * scale, size.height))
                 }
                 message.imageSize = size
-                rowHeight += nameHeight + 30
+                rowHeight += nameHeight + (hideName ? (2*cellBottomPadding) : 30)
             } else {
                 rowHeight = nameHeight + 150
             }
@@ -374,13 +378,14 @@ class MessageBaseCell: DogeChatTableViewCell {
         case .draw:
             if #available(iOS 13, *) {
                 rowHeight = nameHeight + pkViewHeight
+                let verticalPadding: CGFloat = hideName ? (2*cellBottomPadding) : 30
                 let block: (CGRect) -> CGFloat = { bounds in
-                    let maxWidth = screenWidth * 0.8
+                    let maxWidth = screenWidth * 0.8 + 20
                     if bounds.maxX > maxWidth {
                         let ratio = maxWidth / bounds.maxX
-                        return bounds.height * ratio + nameHeight + bounds.origin.y * ratio + 30
+                        return bounds.height * ratio + nameHeight + bounds.origin.y * ratio + verticalPadding
                     } else {
-                        return nameHeight + bounds.maxY + 30
+                        return nameHeight + bounds.maxY + verticalPadding
                     }
                 }
                 if let bounds = message.drawBounds {
@@ -423,7 +428,8 @@ class MessageBaseCell: DogeChatTableViewCell {
         if !message.emojisInfo.isEmpty {
             maxSize.width = 0.45 * screenWidth
         }
-        let fontSize = min(maxFontSize, message.messageType == .join ? 10 : message.fontSize * fontSizeScale) + (isMac() ? 3 : 0)
+        var fontSize = message.messageType == .join ? 10 : message.fontSize * fontSizeScale + (isMac() ? MessageTextCell.macCatalystFontSizeOffset : 0)
+        fontSize = min(maxFontSize, fontSize)
         let text: String
         if message.messageType == .voice {
             var count = message.voiceDuration
@@ -468,8 +474,8 @@ class MessageBaseCell: DogeChatTableViewCell {
                 }
             }
         }
-        let textSize = attrString.boundingRect(with: maxSize, options: .usesLineFragmentOrigin, context: nil).size
-        return CGSize(width: ceil(textSize.width), height: ceil(textSize.height))
+        let layout = YYTextLayout(containerSize: maxSize, text: attrString)
+        return layout?.textBoundingRect.size ?? .zero
     }
     
     class func getHashFor(text: String, fontSize: CGFloat, maxSize: CGSize) -> Int {

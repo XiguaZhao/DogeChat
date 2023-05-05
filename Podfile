@@ -1,5 +1,5 @@
 # Uncomment the next line to define a global platform for your project
-# platform :ios, '9.0'
+ platform :ios, '13.0'
 use_modular_headers!
 use_frameworks!
 
@@ -22,12 +22,13 @@ pod 'SwiftyJSON', :git => 'https://github.com/SwiftyJSON/SwiftyJSON.git', :commi
 pod 'SwiftyRSA'
 pod 'FLAnimatedImage', :path => '../FLAnimatedImage'
 pod 'SDWebImage'
-pod 'Masonry'
+pod 'Masonry', :path => '../Masonry'
 pod 'DogeChatNetwork', :path => '../DogeChatNetwork'
 pod 'LookinServer', :configurations => ['Debug']
 pod 'RSAiOSWatchOS', :path => '../RSAiOSWatchOS'
 pod 'DataCompression'
 pod 'DogeChatVideoUtil', :path => '../DogeChatVideoUtil'
+pod 'YYText'
 end
 
 

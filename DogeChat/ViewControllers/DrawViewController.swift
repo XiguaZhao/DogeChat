@@ -123,6 +123,10 @@ class DrawViewController: UIViewController, PKViewAutoOffsetDelegate {
         }
     }
     
+    override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+        return isPad() ? .all : .landscape
+    }
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
     }

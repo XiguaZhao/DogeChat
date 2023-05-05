@@ -10,15 +10,7 @@ extension ChatRoomViewController {
         self.messageInputBar.textViewResign()
         layout(requireSize: size)
     }
-    
-    @objc func sizeCategoryChange(_ noti: Notification) {
-        if let size = noti.userInfo?["UIContentSizeCategoryNewValueKey"] as? UIContentSizeCategory {
-            let scale = getScaleForSizeCategory(size)
-            fontSizeScale = scale
-            tableView.reloadData()
-        }
-    }
-    
+        
     @objc func keyboardFrameChangeNoti(_ noti: Notification) {
         keyboardWillChange(notification: noti, shouldDown: false)
     }
@@ -41,6 +33,7 @@ extension ChatRoomViewController {
             ignoreKeyboardChange = false
             return
         }
+        let duration = notification.userInfo?[UIResponder.keyboardAnimationDurationUserInfoKey] as? TimeInterval
         var shouldDown = shouldDown
         if let userInfo = notification.userInfo, var endFrame = (userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
             let height = self.navigationController?.view.bounds.height ?? UIScreen.main.bounds.height
@@ -54,7 +47,7 @@ extension ChatRoomViewController {
             } else if shouldDown {
                 endFrame = CGRect(x: 0, y: height, width: 0, height: 100)
             }
-            keyboardFrameChange(endFrame, shouldDown: shouldDown)
+            keyboardFrameChange(endFrame, shouldDown: shouldDown, duration: duration)
         }
     }
     
@@ -83,14 +76,18 @@ extension ChatRoomViewController {
             self.messageInputBar.center = point
             self.emojiSelectView.frame = CGRect(x: 0, y: messageInputBar.frame.maxY, width: messageInputBar.frame.width, height: self.view.bounds.height - messageInputBar.frame.maxY)
             self.tableView.contentInset = inset
+            self.view.layoutIfNeeded()
             let contentHeight = contentHeight()
             if !shouldDown && contentHeight > messageInputBar.frame.minY && !self.messages.isEmpty {
-                let lastIndexPath = IndexPath(row: messages.count - 1, section: 0)
-                if (tableView.indexPathsForVisibleRows ?? []).contains(lastIndexPath) {
-                    self.tableView.setContentOffset(CGPoint(x: 0, y: contentHeight - messageInputBar.frame.minY - messageInputBar.topConstraint.constant), animated: false)
+                let lastIndexPath = IndexPath(row: 0, section: messages.count - 1)
+                if lastRowVisible() {
+//                    self.tableView.setContentOffset(CGPoint(x: 0, y: contentHeight - messageInputBar.frame.minY - messageInputBar.topConstraint.constant), animated: false)
+                    scrollBottom()
                 } else {
                     self.tableView.scrollToRow(at: lastIndexPath, at: .bottom, animated: needAnimation)
                 }
+            } else if messageInputBar.emojiButtonStatus == .normal {
+                scrollBottom()
             }
         }
         if needAnimation {
@@ -103,6 +100,12 @@ extension ChatRoomViewController {
             animations()
             didStopScroll()
         }
+    }
+    
+    func lastRowVisible() -> Bool {
+        guard !messages.isEmpty else { return false }
+        let lastIndexPath = IndexPath(row: 0, section: messages.count - 1)
+        return (tableView.indexPathsForVisibleRows ?? []).contains(lastIndexPath)
     }
     
     override func viewWillLayoutSubviews() {
@@ -130,13 +133,14 @@ extension ChatRoomViewController {
         navigationItem.backBarButtonItem?.title = "Run!"
         tableView.backgroundColor = .clear
         tableView.showsVerticalScrollIndicator = false
+        tableView.estimatedRowHeight = 0
+        tableView.sectionHeaderHeight = 0
+        tableView.sectionFooterHeight = 0
         tableView.dataSource = self
         tableView.delegate = self
         tableView.dropDelegate = self
         tableView.dragDelegate = self
-        tableView.estimatedRowHeight = 0
-        tableView.estimatedSectionHeaderHeight = 0
-        tableView.estimatedSectionFooterHeight = 0
+//        tableView.tableFooterView = UIView(frame: .init(x: 0, y: 0, width: 0, height: 0.1))
         view.addSubview(tableView)
         
         view.addSubview(messageInputBar)
@@ -149,7 +153,9 @@ extension ChatRoomViewController {
 
         layoutViews(size: view.bounds.size)
         scrollToBottomWithoutAnimation()
+        tableView.register(TimeHeader.self, forHeaderFooterViewReuseIdentifier: TimeHeader.id)
         tableView.register(MessageTextCell.self, forCellReuseIdentifier: MessageTextCell.cellID)
+        tableView.register(MessageIndicateCell.self, forCellReuseIdentifier: MessageIndicateCell.cellID)
         tableView.register(MessageImageCell.self, forCellReuseIdentifier: MessageImageCell.cellID)
         tableView.register(MessageDrawCell.self, forCellReuseIdentifier: MessageDrawCell.cellID)
         tableView.register(MessageTrackCell.self, forCellReuseIdentifier: MessageTrackCell.cellID)
@@ -190,11 +196,9 @@ extension ChatRoomViewController {
             tableView.reloadData()
             let offset = CGPoint(x: 0, y: CGFloat.greatestFiniteMagnitude)
             tableView.contentOffset = offset
-            if isPad() {
                 DispatchQueue.main.async {
-                    self.tableView.scrollToRow(at: IndexPath(row: self.messages.count-1, section: 0), at: .bottom, animated: true)
+                    self.scrollBottom()
                 }
-            }
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
                 self.scrollViewDidEndDecelerating(self.tableView)
                 self.didStopScroll()
@@ -220,7 +224,6 @@ extension ChatRoomViewController {
         switch pan.state {
         case .began:
             tableView.layer.masksToBounds = false
-            tableView.visibleCells.forEach { ($0 as? MessageBaseCell)?.timeLabel.isHidden = false }
         case .changed:
             let startX = view.bounds.width
             let endX = pan.location(in: view).x
@@ -238,59 +241,12 @@ extension ChatRoomViewController {
             self.tableView.layer.transform = CATransform3DIdentity
         }, completion: { _ in
             self.tableView.layer.masksToBounds = true
-            self.tableView.visibleCells.forEach { ($0 as? MessageBaseCell)?.timeLabel.isHidden = true }
         })
     }
     
     
-    func textViewDidChange(_ textView: UITextView) {
-        showEmojiButton(textView.text.isEmpty)
-        if let markRange = textView.markedTextRange,
-           textView.position(from: markRange.start, offset: 0) != nil {
-            return
-        }
-        let text = textView.text ?? ""
-//        if isMac() && textView.selectedRange.location == text.count && text.last == Character("@") {
-//            atAction()
-//        }
-        let oldFrame = messageInputBar.frame
-        let newTextViewSize = textView.contentSize
-        var heightChanged = newTextViewSize.height - lastTextViewHeight
-        var tableViewInset = tableView.contentInset
-        if text.isEmpty {
-            heightChanged = messageBarHeight - oldFrame.height
-            textView.font = .systemFont(ofSize: MessageInputView.textViewDefaultFontSize)
-        }
-        let inputBarHeight = oldFrame.height+heightChanged
-        if inputBarHeight > MessageInputView.maxHeight {
-            heightChanged = MessageInputView.maxHeight - oldFrame.height
-        }
-        if inputBarHeight < messageBarHeight {
-            heightChanged = messageBarHeight - oldFrame.height
-        }
-        let finalFrame = CGRect(x: oldFrame.origin.x, y: oldFrame.origin.y-heightChanged, width: oldFrame.width, height: oldFrame.height+heightChanged)
-        tableViewInset.bottom += heightChanged
-        if abs(heightChanged) > 5 || scrollByTextViewChange() {
-            DispatchQueue.main.async {
-                UIView.animate(withDuration: 0.3, animations: { [weak self] in
-                    guard let self = self else { return }
-                    self.messageInputBar.frame = finalFrame
-                    self.tableView.contentInset = tableViewInset
-                    if self.needScrollBottom() {
-                        self.tableView.contentOffset = CGPoint(x: 0, y: self.tableView.contentSize.height - finalFrame.minY + abs(self.messageInputBar.topConstraint.constant))
-                    }
-                }) { _ in
-                    self.updateTextViewOffset()
-                    self.lastTextViewHeight = textView.frame.height
-                }
-            }
-        } else {
-            updateTextViewOffset()
-        }
-    }
-        
     func needScrollBottom() -> Bool {
-        if self.messages.count < 20 && heightCache.values.reduce(0, +) < messageInputBar.frame.minY  {
+        if self.messages.count < 20 && contentHeight() < messageInputBar.frame.minY  {
             return false
         }
         return true

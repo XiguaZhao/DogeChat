@@ -41,6 +41,16 @@ class DogeChatViewController: UIViewController, UIPopoverPresentationControllerD
             guard let self = self else { return }
             NotificationCenter.default.addObserver(self, selector: #selector(self.immersive(noti:)), name: .immersive, object: nil)
         }
+        if isMac() {
+            NotificationCenter.default.addObserver(forName: UIContentSizeCategory.didChangeNotification, object: nil, queue: .main) { [weak self] noti in
+                if let size = noti.userInfo?["UIContentSizeCategoryNewValueKey"] as? UIContentSizeCategory {
+                    fontSizeScale = getScaleForSizeCategory(size)
+                    if let tableViewVC = self as? DogeChatVCTableDataSource {
+                        tableViewVC.tableView.reloadData()
+                    }
+                }
+            }
+        }
         toggleBlurView(needBlur: AppDelegate.shared.immersive, needAnimation: false)
     }
     

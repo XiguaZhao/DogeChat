@@ -117,6 +117,7 @@ class NotificationManager: NSObject {
     func processReplyAction(replyContent: String) {
         if !self.nowPushInfo.sender.isEmpty {
             let receiver = nowPushInfo.sender
+            httpMessage.httpManager.friends = self.manager?.friends ?? []
             httpMessage.sendText(replyContent, to: receiver, userID: nowPushInfo.senderID) { [weak self] success, _ in
                 if success {
                     print("快捷回复成功")

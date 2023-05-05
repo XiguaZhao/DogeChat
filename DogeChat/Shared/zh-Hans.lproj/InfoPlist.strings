@@ -5,7 +5,7 @@
   Created by 赵锡光 on 2022/2/18.
   Copyright © 2022 Luke Parham. All rights reserved.
 */
-CFBundleDisplayName = "漂流瓶";
+CFBundleDisplayName = "DogeChat";
 NSPhotoLibraryAddUsageDescription = "添加图片";
 NSCameraUsageDescription = "拍摄分享";
 NSLocationAlwaysAndWhenInUseUsageDescription = "分享位置";

@@ -70,8 +70,7 @@ class DogeChatVCTransitioning: NSObject, UIViewControllerAnimatedTransitioning {
     func present(transitionContext: UIViewControllerContextTransitioning) {
         guard let fromView = transitionContext.view(forKey: .from),
               let toView = transitionContext.view(forKey: .to),
-              let sourceView = fromDataSource?.transitionSourceView,
-              let sourceViewSnapshot = sourceView.snapshotView(afterScreenUpdates: false) else {
+              var sourceView = fromDataSource?.transitionSourceView else {
                   if let toView = transitionContext.view(forKey: .to) {
                       transitionContext.containerView.addSubview(toView)
                   }
@@ -79,25 +78,25 @@ class DogeChatVCTransitioning: NSObject, UIViewControllerAnimatedTransitioning {
                   return
               }
         let container = transitionContext.containerView
-        let sourceViewWindowFrame = sourceView.convert(sourceView.bounds, to: nil)
-        sourceViewSnapshot.frame = sourceViewWindowFrame
-        sourceViewSnapshot.layer.masksToBounds = true
-        sourceViewSnapshot.layer.cornerRadius = fromDataSource?.transitionFromCornerRadiusView?.layer.cornerRadius ?? 0
+        var sourceViewWindowFrame = sourceView.frame
+        sourceView.frame = sourceViewWindowFrame
+        sourceView.layer.masksToBounds = true
+        sourceView.layer.cornerRadius = fromDataSource?.transitionFromCornerRadiusView?.layer.cornerRadius ?? 0
         
-        container.addSubview(sourceViewSnapshot)
+        container.addSubview(sourceView)
         container.addSubview(toView)
         toView.alpha = 0
         let size = getSizeFromViewSize(toView.bounds.size, animateViewSize: sourceViewWindowFrame.size)
         let newFrame = CGRect(center: toView.center, size: size)
         UIView.animate(withDuration: getDuration(), delay: 0, usingSpringWithDamping: getDamping(), initialSpringVelocity: self.initialV, options: self.options) {
-            sourceViewSnapshot.frame = newFrame
-            sourceViewSnapshot.layer.cornerRadius = 0
+            sourceView.frame = newFrame
+            sourceView.layer.cornerRadius = 0
             fromView.alpha = 0
         } completion: { finish in
             toView.alpha = 1
             fromView.alpha = 1
             sourceView.alpha = 1
-            sourceViewSnapshot.removeFromSuperview()
+            sourceView.removeFromSuperview()
             transitionContext.completeTransition(!transitionContext.transitionWasCancelled)
         }
     }

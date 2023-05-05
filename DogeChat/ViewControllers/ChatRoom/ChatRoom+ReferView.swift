@@ -15,7 +15,7 @@ extension ChatRoomViewController: ReferViewDelegate {
     @objc func dogechat_referAction(sender: UIMenuController!) {
         menuItemDone()
         guard let cell = activeMenuCell,
-              let index = tableView.indexPath(for: cell)?.row else { return }
+              let index = tableView.indexPath(for: cell)?.section else { return }
         messageInputBar.referView.apply(message: messages[index])
         messageInputBar.layoutIfNeeded()
         let keyboardVisible = messageInputBar.isActive
@@ -73,7 +73,7 @@ extension ChatRoomViewController: ReferViewDelegate {
         if message.messageType.isImage || message.messageType == .livePhoto || message.messageType == .video {
             self.makeBrowser(paths: [message.text], targetIndex: 0, purpose: .avatar)
         } else if let index = self.messages.firstIndex(of: message) {
-            let indexPath = IndexPath(row: index, section: 0)
+            let indexPath = IndexPath(row: 0, section: index)
             tableView.selectRow(at: indexPath, animated: true, scrollPosition: .middle)
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [self] in
                 tableView.deselectRow(at: indexPath, animated: true)

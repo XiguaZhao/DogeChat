@@ -12,12 +12,12 @@ import DogeChatNetwork
 
 class HistoryFilterVC: DogeChatViewController, UIPickerViewDataSource, UIPickerViewDelegate, UITextFieldDelegate {
 
-    @IBOutlet weak var stackView: UIStackView!
-    @IBOutlet weak var keywordTF: UITextField!
+    var stackView: UIStackView!
+    var keywordTF: UITextField!
     
-    @IBOutlet weak var typePicker: UIPickerView!
+    var typePicker: UIPickerView!
     
-    @IBOutlet weak var datePicker: UIDatePicker!
+    var datePicker: UIDatePicker!
     
     let types: [MessageType] = {
         var res = MessageType.allCases
@@ -34,13 +34,108 @@ class HistoryFilterVC: DogeChatViewController, UIPickerViewDataSource, UIPickerV
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        typePicker.dataSource = self
-        typePicker.delegate = self
+        let keyWordLabel = UILabel()
+        keyWordLabel.text = localizedString("keyword") + "："
         
+        keywordTF = UITextField()
+        keywordTF.placeholder = localizedString("enterKeyword")
+        
+        let spacing: CGFloat = 20
+        
+        let keywordStack = UIStackView(arrangedSubviews: [keyWordLabel, keywordTF])
+        keywordStack.spacing = spacing
+        
+        var typeStack: UIStackView?
+        if #available(iOS 15, *) {
+            
+            let typeLabel = UILabel()
+            typeLabel.text = localizedString("messageType") + "："
+
+            let popupButton = UIButton()
+            popupButton.showsMenuAsPrimaryAction = true
+            popupButton.changesSelectionAsPrimaryAction = true
+            let allTypeAction = UIAction(title: localizedString("allType")) { [weak self] _ in
+                self?.params.removeValue(forKey: "type")
+            }
+            let actions = types.map { type in
+                return UIAction(title: type.Chinese()) { [weak self] _ in
+                    self?.params["type"] = type.rawValue
+                }
+            }
+            popupButton.menu = UIMenu(children: [allTypeAction] + actions)
+            typeStack = UIStackView(arrangedSubviews: [typeLabel, popupButton])
+            typeStack?.spacing = spacing
+        } else {
+            if !isMac() {
+                let typeLabel = UILabel()
+                typeLabel.text = localizedString("messageType") + "："
+                
+                let typeSwitcher = UISwitch()
+                typeSwitcher.isOn = false
+                typeSwitcher.addTarget(self, action: #selector(typeSwicher(_:)), for: .valueChanged)
+                typeSwitcher.setContentHuggingPriority(.required, for: .vertical)
+                            
+                typePicker = UIPickerView()
+                typePicker.isHidden = true
+                
+                typeStack = UIStackView(arrangedSubviews: [typeLabel, typeSwitcher, typePicker])
+                typeStack?.spacing = spacing
+                
+                typeSwitcher.mas_makeConstraints { make in
+                    make?.centerY.equalTo()(typeLabel)
+                }
+            }
+        }
+        
+        let dateLabel = UILabel()
+        dateLabel.text = localizedString("date") + "："
+        
+        let dateSwitcher = UISwitch()
+        dateSwitcher.isOn = false
+        dateSwitcher.addTarget(self, action: #selector(dateSwitcher(_:)), for: .valueChanged)
+        
+        datePicker = UIDatePicker()
+        datePicker.isHidden = true
+        
+        let dateStack = UIStackView(arrangedSubviews: [dateLabel, dateSwitcher, datePicker])
+        dateStack.spacing = spacing
+        
+        let confirmButton = UIButton()
+        confirmButton.setTitle(localizedString("confirm"), for: .normal)
+        confirmButton.addTarget(self, action: #selector(confirm(_:)), for: .touchUpInside)
+        
+        let cancelButton = UIButton()
+        cancelButton.setTitle(localizedString("cancel"), for: .normal)
+        cancelButton.addTarget(self, action: #selector(cancel(_:)), for: .touchUpInside)
+        
+        let buttonStack = UIStackView(arrangedSubviews: [cancelButton, confirmButton])
+        buttonStack.spacing = spacing
+        buttonStack.distribution = .fillEqually
+
+        stackView = UIStackView(arrangedSubviews: [keywordStack, dateStack, buttonStack])
+        stackView.axis = .vertical
+        stackView.spacing = spacing
+        stackView.setCustomSpacing(spacing + 12, after: dateStack)
+        
+        if let typeStack = typeStack {
+            stackView.insertArrangedSubview(typeStack, at: 1)
+        }
+        
+        self.view.addSubview(stackView)
+        
+        stackView.mas_makeConstraints { make in
+            make?.center.equalTo()(self.view)
+            make?.leading.greaterThanOrEqualTo()(self.view)?.offset()(10)
+            make?.trailing.lessThanOrEqualTo()(self.view)?.offset()(-10)
+        }
+        
+        typePicker?.dataSource = self
+        typePicker?.delegate = self
+
         keywordTF.delegate = self
         keywordTF.returnKeyType = .search
         keywordTF.becomeFirstResponder()
-        
+
         self.view.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tap)))
     }
     
@@ -57,21 +152,31 @@ class HistoryFilterVC: DogeChatViewController, UIPickerViewDataSource, UIPickerV
     @IBAction func typeSwicher(_ sender: UISwitch) {
         sender.isHidden = sender.isOn
         typePicker.isHidden = !sender.isOn
+        typePicker.mas_remakeConstraints { make in
+            make?.width.mas_lessThanOrEqualTo()(200)
+            make?.height.mas_equalTo()(100)
+        }
+
     }
     
     @IBAction func confirm(_ sender: UIButton!) {
         if !datePicker.isHidden {
             self.params["timestamp"] = "\(Int(self.datePicker.date.timeIntervalSince1970 * 1000))"
         }
-        if !typePicker.isHidden {
+        if typePicker != nil && !typePicker.isHidden {
             self.params["type"] = types[self.typePicker.selectedRow(inComponent: 0)].rawValue
         }
         if let text = keywordTF.text, !text.isEmpty {
             self.params["keyword"] = text
         }
         guard !self.params.isEmpty else { return }
-        self.dismiss(animated: true) { [weak self] in
-            guard let self = self else { return }
+        if self.isBeingPresented {
+            self.dismiss(animated: true) { [weak self] in
+                guard let self = self else { return }
+                self.didConfirm?(self.params)
+            }
+        } else {
+            self.navigationController?.popViewController(animated: true)
             self.didConfirm?(self.params)
         }
     }

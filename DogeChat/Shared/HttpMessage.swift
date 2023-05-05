@@ -49,7 +49,7 @@ class HttpMessage {
         if !httpManager.friends.isEmpty {
             completion(httpManager.friends)
         } else {
-            httpManager.getContacts { contacts, error in
+            httpManager.getContacts(force: false) { contacts, error in
                 if !contacts.isEmpty, error == nil {
                     completion(contacts)
                 } else {

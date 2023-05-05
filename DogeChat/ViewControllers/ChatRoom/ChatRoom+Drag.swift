@@ -14,15 +14,17 @@ import DogeChatCommonDefines
 extension ChatRoomViewController: UITableViewDragDelegate {
     
     func tableView(_ tableView: UITableView, itemsForAddingTo session: UIDragSession, at indexPath: IndexPath, point: CGPoint) -> [UIDragItem] {
-        return wrapItmesWithIndexPath(indexPath)
+        return wrapItemsWithIndexPath(indexPath)
     }
     
     func tableView(_ tableView: UITableView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
-        return wrapItmesWithIndexPath(indexPath)
+        self.messageInputBar.textViewResign()
+        return wrapItemsWithIndexPath(indexPath)
     }
         
-    func wrapItmesWithIndexPath(_ indexPath: IndexPath) -> [UIDragItem] {
-        let message = messages[indexPath.row]
+    func wrapItemsWithIndexPath(_ indexPath: IndexPath) -> [UIDragItem] {
+        playHaptic()
+        let message = messages[indexPath.section]
         guard message.messageType.isImage || message.messageType == .text || message.messageType == .draw || message.messageType == .voice || message.messageType == .video else { return [] }
         var items = [UIDragItem]()
         if message.messageType == .text {
@@ -68,10 +70,12 @@ extension ChatRoomViewController: UITableViewDragDelegate {
         let offset = cell.bounds.width - cell.contentView.bounds.width - tableView.safeAreaInsets.left
         rect.origin.x += offset
         let path = UIBezierPath(roundedRect: rect, cornerRadius: targetView.layer.cornerRadius)
-        var avatarRect = cell.avatarContainer.frame
-        avatarRect.origin.x += tableView.safeAreaInsets.left
-        let avatarPath = UIBezierPath(roundedRect: avatarRect, cornerRadius: cell.avatarContainer.layer.cornerRadius)
-        path.append(avatarPath)
+        if !cell.avatarImageView.isHidden {
+            var avatarRect = cell.avatarContainer.frame
+            avatarRect.origin.x += tableView.safeAreaInsets.left
+            let avatarPath = UIBezierPath(roundedRect: avatarRect, cornerRadius: cell.avatarContainer.layer.cornerRadius)
+            path.append(avatarPath)
+        }
         preview.visiblePath = path
         return preview
 

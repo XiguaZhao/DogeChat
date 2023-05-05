@@ -8,7 +8,15 @@
 	<array>
 		<string>Default</string>
 	</array>
+	<key>com.apple.developer.associated-domains</key>
+	<array>
+		<string>webcredentials:124.223.58.61?mode=developer</string>
+	</array>
+	<key>com.apple.developer.push-to-talk</key>
+	<true/>
 	<key>com.apple.developer.siri</key>
+	<true/>
+	<key>com.apple.developer.usernotifications.communication</key>
 	<true/>
 	<key>com.apple.security.app-sandbox</key>
 	<true/>
@@ -28,5 +36,9 @@
 	<true/>
 	<key>com.apple.security.personal-information.photos-library</key>
 	<true/>
+	<key>keychain-access-groups</key>
+	<array>
+		<string>$(AppIdentifierPrefix)com.zhaoxiguang.dogechat</string>
+	</array>
 </dict>
 </plist>

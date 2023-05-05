@@ -164,3 +164,19 @@
 "deleteAccount" = "Delete account";
 "accountSetting" = "Account settings";
 "sticker" = "Sticker";
+
+"mine" = "Me";
+"contacts" = "Contacts";
+"preview" = "Preview";
+
+"keyword" = "Keyword";
+"enterKeyword" = "Please enter keyword";
+"messageType" = "Message type";
+"date" = "Date";
+
+"allType" = "All types";
+"newWindow" = "New account";
+
+"getContacts" = "Getting contacts";
+
+"more" = "More";

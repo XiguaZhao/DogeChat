@@ -15,6 +15,18 @@ typedef NS_ENUM(NSUInteger, AudioRoute) {
     AudioRouteHeadphone
 };
 
+typedef NS_ENUM(NSUInteger, AudioType) {
+    AudioTypeVideo = 1,
+    AudioTypeVOIP = 2,
+    AudioTypePTT = 3,
+};
+
+typedef NS_ENUM(NSUInteger, AudioPurpose) {
+    AudioPurposeDefault = 0,
+    AudioPurposeWantVideo = 1,
+    AudioPurposeNeedEnd = 2,
+};
+
 @protocol VoiceDelegate <NSObject>
 
 - (void)timeToSendData:(NSData *)data;
@@ -22,11 +34,17 @@ typedef NS_ENUM(NSUInteger, AudioRoute) {
 @end
 @interface Recorder : NSObject
 
+@property (assign, nonatomic) BOOL isRecording;  //录音开关状态
+@property (assign, nonatomic) BOOL isPlaying;    //放音开关状态
 @property (nonatomic, weak) id<VoiceDelegate> delegate;
 @property (nonatomic, strong, nullable) NSMutableData *receivedData;
 @property (nonatomic, assign) BOOL needSendVideo;
 @property (nonatomic, assign) AudioRoute nowRoute;
+@property (nonatomic, assign) AudioType audioType;
+@property (nonatomic, assign) AudioPurpose audioPurpose;
 @property (nonatomic, strong) NSMutableData *recordedData;
+@property (nonatomic, strong) NSString *uuid;
+@property (nonatomic, strong) NSMutableData *pttAudioData;
 
 + (instancetype)sharedInstance;
 - (void)startRecord; //开始录音

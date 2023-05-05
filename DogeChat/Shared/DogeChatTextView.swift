@@ -43,7 +43,9 @@ class DogeChatTextView: UITextView, UITextPasteDelegate {
     func textPasteConfigurationSupporting(_ textPasteConfigurationSupporting: UITextPasteConfigurationSupporting, transform item: UITextPasteItem) {
         if item.itemProvider.hasItemConformingToTypeIdentifier("public.file-url") {
             item.setNoResult()
-            NotificationCenter.default.post(name: .pasteImage, object: self, userInfo: ["itemProvider": item.itemProvider])
+            if isPhone() {
+                NotificationCenter.default.post(name: .pasteImage, object: self, userInfo: ["itemProvider": item.itemProvider])
+            }
             return
         }
         if item.itemProvider.canLoadObject(ofClass: String.self) {

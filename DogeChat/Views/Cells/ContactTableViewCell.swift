@@ -44,15 +44,15 @@ class ContactTableViewCell: UITableViewCell {
         latestMessageLabel.textColor = .lightGray
         latestMessageLabel.numberOfLines = 1
         latestMessageLabel.lineBreakMode = .byTruncatingTail
-        latestMessageLabel.font = .preferredFont(forTextStyle: .footnote)// UIFont.systemFont(ofSize: nameLabel.font.pointSize - 3)
         
+        let avatarWidth: CGFloat = isMac() ? 34 : 48
         avatarImageView.layer.masksToBounds = true
-        avatarImageView.layer.cornerRadius = 24
+        avatarImageView.layer.cornerRadius = avatarWidth / 2
         avatarImageView.contentMode = .scaleAspectFill
         avatarImageView.isUserInteractionEnabled = true
         
         avatarImageView.mas_makeConstraints { make in
-            make?.width.height().mas_equalTo()(48)
+            make?.width.height().mas_equalTo()(avatarWidth)
         }
         
         labelStackView = UIStackView(arrangedSubviews: [nameLabel, latestMessageLabel])
@@ -113,7 +113,7 @@ class ContactTableViewCell: UITableViewCell {
             title += titleMore
         }
         let attributedTitle = NSMutableAttributedString(string: title + " ", attributes: [
-            .font : UIFont.preferredFont(forTextStyle: .body)
+            .font : titleFont
         ])
         if info.isMuted {
             let imageAttach = NSTextAttachment()
@@ -122,6 +122,7 @@ class ContactTableViewCell: UITableViewCell {
             attributedTitle.append(NSAttributedString(attachment: imageAttach))
         }
         self.nameLabel.attributedText = attributedTitle
+        latestMessageLabel.font = subtitleFont
         var text = ""
         var latestMessageText: String?
         if let message = info.latestMessage {
@@ -156,6 +157,7 @@ class ContactTableViewCell: UITableViewCell {
                 guard info.username == self.info.username, let data = data else {
                     return
                 }
+//                self.saveAvatarData(data, avatarURL: avatarUrl)
                 if !isGif { // is photo
                     avatarImageView.image = image
                 } else { // gif图处理
@@ -165,5 +167,14 @@ class ContactTableViewCell: UITableViewCell {
         }
     }
     
-    
+    func saveAvatarData(_ data: Data, avatarURL: String) {
+        if isMac() { return }
+        guard let fm = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: groupName) else { return }
+        let wholeURL = fm.appendingPathComponent(photoDir).appendingPathComponent(avatarURL.fileName)
+        if !FileManager.default.fileExists(atPath: wholeURL.filePath) {
+            DispatchQueue.global().async {
+                saveFileToDisk(dirName: photoDir, fileName: avatarURL.fileName, data: data)
+            }
+        }
+    }
 }

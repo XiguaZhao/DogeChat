@@ -9,6 +9,7 @@
 import UIKit
 import DogeChatCommonDefines
 import AVFoundation
+import VisionKit
 
 protocol MediaBrowserCellDelegate: AnyObject {
     func livePhotoWillBegin(_ cell: MediaBrowserCell, livePhotoView: PHLivePhotoView)
@@ -41,13 +42,14 @@ class MediaBrowserCell: UICollectionViewCell, PHLivePhotoViewDelegate, VideoView
         scrollView.showsVerticalScrollIndicator = false
         scrollView.showsHorizontalScrollIndicator = false
         scrollView.bounds = scrollView.frame
-        scrollView.maximumZoomScale = 4
+        scrollView.maximumZoomScale = 10
         scrollView.contentInsetAdjustmentBehavior = .never
         scrollView.delegate = self
         scrollView.isDirectionalLockEnabled = true
         contentView.addSubview(scrollView)
         imageView.contentMode = .scaleAspectFit
         imageView.ignoreChecking = true
+        imageView.isUserInteractionEnabled = true
         livePhotoView.contentMode = .scaleAspectFit
         scrollView.addSubview(container)
         container.addSubview(imageView)
@@ -67,10 +69,34 @@ class MediaBrowserCell: UICollectionViewCell, PHLivePhotoViewDelegate, VideoView
         self.contentView.addGestureRecognizer(doubleTap)
         tap.require(toFail: doubleTap)
         tap.require(toFail: videoView.doubleTap)
-
+        
         livePhotoView.delegate = self
         NotificationCenter.default.addObserver(self, selector: #selector(mediaDownloadFinishNoti(_:)), name: .mediaDownloadFinished, object: nil)
+#if !targetEnvironment(macCatalyst)
+        if #available(iOS 16, *) {
+            let interaction = ImageAnalysisInteraction()
+            interaction.preferredInteractionTypes = .automatic
+            imageView.addInteraction(interaction)
+        }
+#endif
     }
+    
+    #if !targetEnvironment(macCatalyst)
+    @available(iOS 16, *)
+    func analysisInteraction() -> ImageAnalysisInteraction? {
+        return imageView.interactions.first(where: {$0 is ImageAnalysisInteraction}) as? ImageAnalysisInteraction
+    }
+    
+    
+    @objc func analysisImage() async {
+        if #available(iOS 16, *), let image = imageView.image, let interaction = analysisInteraction() {
+            let configuration = ImageAnalyzer.Configuration([.text, .machineReadableCode])
+            let analyzer = ImageAnalyzer()
+            let analysis = try? await analyzer.analyze(image, configuration: configuration)
+            interaction.analysis = analysis
+        }
+    }
+    #endif
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -132,8 +158,14 @@ class MediaBrowserCell: UICollectionViewCell, PHLivePhotoViewDelegate, VideoView
                 if imagePath.hasSuffix(".gif") {
                     imageView.animatedImage = FLAnimatedImage(gifData: data)
                 } else  {
-                    imageView.image = UIImage(data: data)
+                    let image = UIImage(data: data)
+                    imageView.image = image
                 }
+#if !targetEnvironment(macCatalyst)
+                Task {
+                    await analysisImage()
+                }
+#endif
             }
             MediaLoader.shared.requestImage(urlStr: imagePath, type: .sticker, imageWidth: .original, needCache: false) { image, data, _ in
                 guard self.imagePath == imagePath, let data = data else { return }
@@ -166,7 +198,7 @@ class MediaBrowserCell: UICollectionViewCell, PHLivePhotoViewDelegate, VideoView
     }
     
     @objc func longPress(_ ges: UILongPressGestureRecognizer) {
-        guard ges.state == .ended else { return }
+        guard ges.state == .began else { return }
         let sheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
         sheet.addAction(UIAlertAction(title: localizedString("saveToAlbum"), style: .default, handler: { [weak self] _ in
             guard let self = self else { return }
@@ -247,9 +279,10 @@ class MediaBrowserCell: UICollectionViewCell, PHLivePhotoViewDelegate, VideoView
     @objc func doubleTapAction(_ ges: UITapGestureRecognizer) {
         let location = ges.location(in: self.contentView)
         let scale: CGFloat = scrollView.zoomScale == 1 ? 2 : 1
-        scrollView.setZoomScale(scale, animated: true)
         if scale != 1 {
-            scrollView.zoom(to: CGRect(center: location, size: .zero), animated: true)
+            scrollView.zoom(to: zoomRectForScale(scale: scrollView.maximumZoomScale/3, center: location), animated: true)
+        } else {
+            scrollView.setZoomScale(1, animated: true)
         }
     }
         
@@ -323,5 +356,17 @@ extension MediaBrowserCell: UIScrollViewDelegate {
         tap.isEnabled = false
         delegate?.livePhotoWillBegin(self, livePhotoView: livePhotoView)
     }
+    
+    func zoomRectForScale(scale : CGFloat, center : CGPoint) -> CGRect {
+        var zoomRect = CGRect.zero
+        let imageV = self.container
+        zoomRect.size.height = imageV.frame.size.height / scale;
+        zoomRect.size.width  = imageV.frame.size.width  / scale;
+        let newCenter = imageV.convert(center, from: self)
+        zoomRect.origin.x = newCenter.x - ((zoomRect.size.width / 2.0));
+        zoomRect.origin.y = newCenter.y - ((zoomRect.size.height / 2.0));
+        return zoomRect;
+    }
+
 }
 

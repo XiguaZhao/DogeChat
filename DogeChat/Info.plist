@@ -2,6 +2,8 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+    <key>NSAppleMusicUsageDescription</key>
+    <string>使用您的音乐数据</string>
 	<key>BGTaskSchedulerPermittedIdentifiers</key>
 	<array>
 		<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
@@ -26,6 +28,16 @@
 					<string>bear152*152</string>
 					<string>bear167*167</string>
 					<string>bear180*180</string>
+				</array>
+			</dict>
+			<key>girl</key>
+			<dict>
+				<key>CFBundleIconFiles</key>
+				<array>
+					<string>girl120*120</string>
+					<string>girl152*152</string>
+					<string>girl167*167</string>
+					<string>girl180*180</string>
 				</array>
 			</dict>
 			<key>cat</key>
@@ -91,6 +103,7 @@
 	<string>发送消息</string>
 	<key>NSUserActivityTypes</key>
 	<array>
+		<string>INSendMessageIntent</string>
 		<string>com.zhaoxiguang.dogechat</string>
 	</array>
 	<key>UIAppFonts</key>
@@ -137,6 +150,7 @@
 	<array>
 		<string>audio</string>
 		<string>processing</string>
+		<string>push-to-talk</string>
 		<string>remote-notification</string>
 		<string>voip</string>
 	</array>

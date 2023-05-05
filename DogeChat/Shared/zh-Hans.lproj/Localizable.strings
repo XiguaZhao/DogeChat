@@ -165,3 +165,19 @@
 "deleteAccount" = "注销账号";
 "accountSetting" = "账号设置";
 "sticker" = "动画表情";
+
+"mine" = "我的";
+"contacts" = "联系人";
+"preview" = "Preview";
+
+"keyword" = "关键词";
+"enterKeyword" = "请输入关键词";
+"messageType" = "消息类型";
+"date" = "日期";
+
+"allType" = "所有类型";
+"newWindow" = "登陆新账号";
+
+"getContacts" = "正在获取联系人";
+
+"more" = "更多";

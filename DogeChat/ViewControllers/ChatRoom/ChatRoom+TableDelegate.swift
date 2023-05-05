@@ -7,15 +7,21 @@ import DogeChatCommonDefines
 extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, SelectContactsDelegate {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return messages.count
+        return 1
+    }
+    
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return self.messages.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let message = messages[indexPath.row]
+        let message = messages[indexPath.section]
         var cellID: String?
         switch message.messageType {
-        case .join, .text:
+        case .text:
             cellID = MessageTextCell.cellID
+        case .join:
+            cellID = MessageIndicateCell.cellID
         case .voice:
             cellID = MessageAudioCell.audioCellID()
         case .photo, .sticker:
@@ -50,26 +56,33 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
     }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        self.messages[indexPath.row].isRead = true
+        messages.safe_objectAt(indexPath.section)?.isRead = true
         (cell as? DogeChatTableViewCell)?.willDisplayBlock?(cell as! DogeChatTableViewCell, tableView)
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        let height = MessageBaseCell.height(for: messages[indexPath.item], tableViewSize: tableView.frame.size, userID: manager?.myInfo.userID)
-        heightCache[messages[indexPath.row].uuid] = height
+        guard let message = messages.safe_objectAt(indexPath.section) else { return 0 }
+        let height = MessageBaseCell.height(for: message, tableViewSize: tableView.frame.size, userID: manager?.myInfo.userID)
+        updateCachedHeight(uuid: message.uuid, header: nil, row: height)
         return height
     }
-    
+
     func scrollViewShouldScrollToTop(_ scrollView: UIScrollView) -> Bool {
         return true
     }
 
+    func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
+        if velocity.y > 0.5 && scrollView.contentSize.height - scrollView.contentOffset.y < scrollView.height {
+            self.messageInputBar.textView.becomeFirstResponder()
+        }
+    }
                 
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
         guard scrollView == tableView else { return }
-        if !isMac() && self.purpose == .chat {
-            let offsetY = scrollView.contentOffset.y + scrollView.adjustedContentInset.top
-            if offsetY <= 50 && !isFetchingHistory && !scrollView.isDragging {
+        let extra: CGFloat = isMac() ? 0 : 50
+        let offsetY = scrollView.contentOffset.y + scrollView.adjustedContentInset.top
+        if offsetY <= extra && !isFetchingHistory {
+            if isMac() || !tableView.isDragging {
                 displayHistory()
             }
         }
@@ -95,17 +108,26 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
         }
         let revoke = UIContextualAction(style: .destructive, title: localizedString("revoke")) { [weak self] action, view, handler in
             guard let self = self else { return }
-            self.revoke(message: self.messages[indexPath.row])
+            self.revoke(message: self.messages[indexPath.section])
             handler(true)
         }
-        share.backgroundColor = #colorLiteral(red: 0.2392156869, green: 0.6745098233, blue: 0.9686274529, alpha: 1)
-        var actions = [share]
-        if messages[indexPath.item].messageSender == .ourself {
-            actions.append(revoke)
+        let at = UIContextualAction(style: .normal, title: "@") { [weak self] action, view, handler in
+            guard let _self = self else { return }
+            _self.findGroupMember(userID: _self.messages[indexPath.section].senderUserID) { friend in
+                if let friend = friend {
+                    self?.atFriends([friend])
+                }
+            }
+            handler(true)
+        }
+        at.backgroundColor = #colorLiteral(red: 0.2392156869, green: 0.6745098233, blue: 0.9686274529, alpha: 1)
+        var actions: [UIContextualAction] = []
+        if messages[indexPath.section].option == .toGroup {
+            actions.append(at)
         }
         let configuration = UISwipeActionsConfiguration(actions: actions)
         configuration.performsFirstActionWithFullSwipe = true
-        return nil
+        return configuration
     }
     
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
@@ -136,7 +158,7 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
         }
         referAction.backgroundColor = #colorLiteral(red: 0.2392156869, green: 0.6745098233, blue: 0.9686274529, alpha: 1)
         var actions = [multiSelection]
-        if messages[indexPath.row].messageType.isImage {
+        if messages[indexPath.section].messageType.isImage {
             actions.append(saveEmoji)
         }
         actions = [referAction]
@@ -149,27 +171,31 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
     @available(iOS 13.0, *)
     func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
         let cell = tableView.cellForRow(at: indexPath) as! MessageBaseCell
-        let identifier = "\(indexPath.row)" as NSString
+        let identifier = "\(indexPath.section)" as NSString
         let actionProvider: ([UIMenuElement]) -> UIMenu? = { [weak self, weak cell] (menuElement) -> UIMenu? in
             guard let self = self, let cell = cell else { return nil }
             self.activeMenuCell = cell
             let copyAction = UIAction(title: localizedString("copy")) { (_) in
-                self.makePasteFor(message: self.messages[indexPath.row])
+                self.makePasteFor(message: self.messages[indexPath.section])
             }
             var revokeAction: UIAction?
-            var starEmojiAction: UIAction?
+            var starMySelfAction: UIAction?
+            var starPublicAction: UIAction?
             var addBackgroundColorAction: UIAction?
             var referAction: UIAction?
             var sendToOthersAction: UIAction?
-            if self.messages[indexPath.row].messageSender == .ourself && self.messages[indexPath.row].messageType != .join {
+            if self.messages[indexPath.section].messageSender == .ourself && self.messages[indexPath.section].messageType != .join {
                 revokeAction = UIAction(title: localizedString("revoke")) { [weak self] (_) in
                     guard let self = self else { return }
-                    self.revoke(message: self.messages[indexPath.row])
+                    self.revoke(message: self.messages[indexPath.section])
                 }
             }
             if let imageUrl = cell.message.imageURL, cell.message.sendStatus == .success {
-                starEmojiAction = UIAction(title: localizedString("saveMySelf")) { [weak self] (_) in
+                starMySelfAction = UIAction(title: localizedString("saveMySelf")) { [weak self] (_) in
                     self?.manager?.commonWebSocket.starAndUploadEmoji(emoji: Emoji(path: imageUrl, type: Emoji.AddEmojiType.favorite.rawValue))
+                }
+                starPublicAction = UIAction(title: localizedString("saveCommonUse")) { [weak self] (_) in
+                    self?.manager?.commonWebSocket.starAndUploadEmoji(emoji: Emoji(path: imageUrl, type: Emoji.AddEmojiType.common.rawValue))
                 }
             }
             if cell.message.messageType == .draw, let pkView = (cell as? MessageDrawCell)?.getPKView() {
@@ -197,7 +223,8 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
                 children.append(sendToOthersAction)
             }
             if revokeAction != nil { children.append(revokeAction!) }
-            if starEmojiAction != nil { children.append(starEmojiAction!) }
+            if starMySelfAction != nil { children.append(starMySelfAction!) }
+            if starPublicAction != nil { children.append(starPublicAction!) }
             if addBackgroundColorAction != nil { children.append(addBackgroundColorAction!) }
             let menu = UIMenu(title: "", image: nil, children: children)
             return menu
@@ -274,7 +301,7 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
             guard let selectedIndexPaths = selectedIndexPaths else {
                 return
             }
-            let selectedMessages = selectedIndexPaths.map { self.messages[$0.row].copied() }
+            let selectedMessages = selectedIndexPaths.map { self.messages[$0.section] }
             Self.transferMessages(selectedMessages, to: contacts, manager: self.manager)
             self.makeAutoAlert(message: localizedString("alreadySendToOthers"), detail: contacts.map({$0.username}).joined(separator: "、"), showTime: 1, completion: nil)
         case .group:
@@ -298,6 +325,7 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
         let index = String.Index.init(utf16Offset: location, in: originalText)
         originalText.insert(contentsOf: append, at: index)
         self.messageInputBar.textView.text = originalText
+        self.messageInputBar.textView.selectedRange = NSRange(location: location + NSString(string: append).length, length: 0)
         self.textViewDidChange(self.messageInputBar.textView)
         DispatchQueue.main.async {
             self.messageInputBar.textView.becomeFirstResponder()
@@ -328,7 +356,7 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
 
     
     func decelerate() {
-        if let uuids = self.tableView.indexPathsForVisibleRows?.map({ self.messages[$0.row].uuid }) {
+        if let uuids = self.tableView.indexPathsForVisibleRows?.map({ self.messages[$0.section].uuid }) {
             if uuids.contains(self.explictJumpMessageUUID ?? "") {
                 self.explictJumpMessageUUID = nil
             }
@@ -411,7 +439,7 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
         guard let (_, _, friend) = noti.userInfo?["receiverAndSender"] as? (String, String, Friend), let message = noti.userInfo?["message"] as? Message else { return }
         if friend.userID == self.friend.userID {
             if let index = messages.firstIndex(of: message) { // 消息存在
-                let indexPath = IndexPath(item: index, section: 0)
+                let indexPath = IndexPath(item: 0, section: index)
                 tableView.reloadRows(at: [indexPath], with: .none)
             } else { // 最好就是加载到这条消息为止
                 

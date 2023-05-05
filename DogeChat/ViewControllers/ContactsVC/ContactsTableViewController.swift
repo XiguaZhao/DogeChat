@@ -13,6 +13,7 @@ import DogeChatUniversal
 import WatchConnectivity
 import Foundation
 import DogeChatCommonDefines
+import MJRefresh
 
 class ContactsTableViewController:  DogeChatViewController,
                                     DogeChatVCTableDataSource,
@@ -24,12 +25,8 @@ class ContactsTableViewController:  DogeChatViewController,
             self.navigationItem.title = total > 0 ? "(\(total)未读)" : username
             appDelegate.macOSBridge?.updateUnreadCount(total)
             self.navigationController?.tabBarItem.badgeValue = total > 0 ? String(total) : nil
-            DispatchQueue.global().async {
-                if total != oldValue.values.map({$0.unreadCount}).reduce(0, +), let userDefaults = UserDefaults(suiteName: groupName) {
-                    userDefaults.set(total, forKey: "unreadCount")
-                    userDefaults.synchronize()
-                }
-            }
+            UIApplication.shared.applicationIconBadgeNumber = total
+            UserDefaults(suiteName: groupName)?.set(total, forKey: "unreadCount")
         }
     }
     var friends: [Friend] = []
@@ -40,6 +37,7 @@ class ContactsTableViewController:  DogeChatViewController,
     var loginCount = 0
     let avatarImageView = FLAnimatedImageView()
     let avatarContainer = UIView()
+    var avatarStack: UIStackView!
     var manager: WebSocketManager? {
         return socketForUsername(username)
     }
@@ -74,8 +72,8 @@ class ContactsTableViewController:  DogeChatViewController,
         }
     }
     
-    weak var transitionSourceView: UIView!
-    weak var transitionFromCornerRadiusView: UIView?
+    var transitionSourceView: UIView!
+    var transitionFromCornerRadiusView: UIView?
     var transitionPreferDuration: TimeInterval?
     var transitionPreferDamping: CGFloat?
     weak var transitionToView: UIView!
@@ -84,7 +82,9 @@ class ContactsTableViewController:  DogeChatViewController,
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        fontSizeScale = getScaleForSizeCategory(UIScreen.main.traitCollection.preferredContentSizeCategory)
+        if !isMac() {
+            fontSizeScale = getScaleForSizeCategory(UIScreen.main.traitCollection.preferredContentSizeCategory)
+        }
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationItem.largeTitleDisplayMode = .never
         view.addSubview(tableView)
@@ -127,12 +127,15 @@ class ContactsTableViewController:  DogeChatViewController,
         NotificationCenter.default.addObserver(self, selector: #selector(doubleTapBadge), name: NSNotification.Name("doubleTapBadge"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(cookieExpireNoti(_:)), name: .cookieExpire, object: nil)
         AppDelegate.shared.remoteNotiDelegate = self
-        setupRefreshControl()
+        if !isMac() {
+            setupRefreshControl()
+        }
         let barItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(presentSearchVC))
         self.navigationItem.rightBarButtonItem = barItem
         self.barItem = barItem
         createMyAvatar()
         setupMyAvatar()
+        self.navigationController?.tabBarItem.title = localizedString("contacts")
         readMessageManager.username = username
         readMessageManager.dataSource = self
         readMessageManager.fileTimer()
@@ -217,6 +220,7 @@ class ContactsTableViewController:  DogeChatViewController,
     
     @objc func enterForeground(_ noti: Notification) {
         UIApplication.shared.applicationIconBadgeNumber = unreadMessage.values.map({$0.unreadCount}).reduce(0, +)
+        UNUserNotificationCenter.current().removeAllDeliveredNotifications()
     }
     
     @objc func sceneDidBecomeMainNoti() {
@@ -245,7 +249,7 @@ class ContactsTableViewController:  DogeChatViewController,
         navigationItem.title = username
         nameLabel.text = username
         processUserActivity()
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2) { [weak self] in
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) { [weak self] in
             self?.refreshContacts(completion: nil)
             self?.manager?.inspectQuery(completion: { requests in
                 let lateset = requests.map({ getTimestampFromStr($0.requestTime) }).max() ?? 0
@@ -264,6 +268,9 @@ class ContactsTableViewController:  DogeChatViewController,
                         NotificationManager.checkRevokeMessages()
                         UserDefaults(suiteName: groupName)?.set(true, forKey: "hostActive")
                         self?.sceneDidBecomeMainNoti()
+                    }
+                    NotificationCenter.default.addObserver(forName: .init("NSWindowDidResignMainNotification"), object: nil, queue: .main) { _ in
+                        UserDefaults(suiteName: groupName)?.set(false, forKey: "hostActive")
                     }
                 }
             }
@@ -284,6 +291,9 @@ class ContactsTableViewController:  DogeChatViewController,
     }
     
     @objc func refreshContactsNoti(_ noti: Notification) {
+        defer {
+            nameLabel.text = username
+        }
         guard noti.object as? String == self.username, let friends = noti.userInfo?["contacts"] as? [Friend] else { return }
         self.friends = friends
         tableView.reloadData()
@@ -505,6 +515,7 @@ class ContactsTableViewController:  DogeChatViewController,
     func chatroomVC(for indexPath: IndexPath) -> ChatRoomViewController {
         let chatRoomVC = ChatRoomViewController()
         let friend = self.friends[indexPath.row]
+        print("new chatroom")
         friend.messages.sort(by: { $0.id < $1.id })
         chatRoomVC.username = username
         chatRoomVC.friend = friend

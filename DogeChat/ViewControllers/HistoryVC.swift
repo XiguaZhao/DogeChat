@@ -51,14 +51,15 @@ class HistoryVC: ChatRoomViewController {
                 
         if purpose == .history {
             navigationItem.title = String.localizedStringWithFormat(localizedString("historyWithSomeone"), friend.username)
-            let header = UIRefreshControl()
-            header.addTarget(self, action: #selector(refreshHeaderAction), for: .valueChanged)
-            tableView.refreshControl = header
+//            let header = UIRefreshControl()
+//            header.addTarget(self, action: #selector(refreshHeaderAction), for: .valueChanged)
+//            tableView.refreshControl = header
             
             configFooter()
             
             let leftLabel = UILabel()
             leftLabel.text = localizedString("latest")
+            progressButton.setTitleColor(UIColor(named: "textColor"), for: .normal)
             stack = UIStackView(arrangedSubviews: [leftLabel, slider, progressButton])
             stack.spacing = 15
             slider.minimumValue = 1
@@ -94,6 +95,11 @@ class HistoryVC: ChatRoomViewController {
         progressButton.addTarget(self, action: #selector(self.progressButtonAction(_:)), for: .touchUpInside)
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        self.navigationController?.setToolbarHidden(false, animated: true)
+    }
+    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
     }
@@ -112,6 +118,10 @@ class HistoryVC: ChatRoomViewController {
     
     deinit {
         manager?.needInsertWhenWrap = true
+    }
+    
+    override func shouldShowTimeForMessage(_ message: Message) -> Bool {
+        return true
     }
     
     @objc private func progressButtonAction(_ button: UIButton) {
@@ -134,8 +144,10 @@ class HistoryVC: ChatRoomViewController {
         popoverController?.sourceView = button
         popoverController?.sourceRect = button.bounds
         popoverController?.delegate = self
-        self.present(vc, animated: true)
-        self.navigationController?.interactivePopGestureRecognizer?.isEnabled = false
+        if !isMac() {
+            self.present(vc, animated: true)
+            self.navigationController?.interactivePopGestureRecognizer?.isEnabled = false
+        }
     }
     
     private func configFooter() {
@@ -162,7 +174,7 @@ class HistoryVC: ChatRoomViewController {
 //            popoverController?.barButtonItem = sender
 //            popoverController?.delegate = self
 //        }
-        self.present(vc, animated: true, completion: nil)
+        self.navigationController?.pushViewController(vc, animated: true)
         self.filterVC = vc
     }
                 
@@ -178,8 +190,9 @@ class HistoryVC: ChatRoomViewController {
     
     
     func requestPage(_ page: Int) {
+        navigationItem.title = localizedString("loading")
         nowPage = page
-        self.manager?.httpsManager.historyMessages(for: self.friend, pageNum: page, pageSize: ChatRoomViewController.numberOfHistory, uuid: nil, type: params?["type"] as? String, beginDate: params?["timestamp"] as? String, keyWord: params?["keyword"] as? String, needInsertWhenWrap: false) { [weak self] params in
+        self.manager?.httpsManager.historyMessages(for: self.friend, pageNum: page, pageSize: numberOfHistory, uuid: nil, type: params?["type"] as? String, beginDate: params?["timestamp"] as? String, keyWord: params?["keyword"] as? String, needInsertWhenWrap: false) { [weak self] params in
             self?.receiveHistoryMessages(params: params)
         }
     }
@@ -199,9 +212,14 @@ class HistoryVC: ChatRoomViewController {
             upNowPage += 1
             nowPage = upNowPage
             requestPage(nowPage)
+            isFetchingHistory = true
         } else {
             tableView.refreshControl?.endRefreshing()
         }
+    }
+    
+    override func displayHistory() {
+        refreshHeaderAction()
     }
     
     override func receiveHistoryMessages(_ noti: Notification) {
@@ -212,7 +230,11 @@ class HistoryVC: ChatRoomViewController {
         defer {
             tableView.refreshControl?.endRefreshing()
             tableView.mj_footer?.endRefreshing()
+            if self.purpose == .history {
+                navigationItem.title = String.localizedStringWithFormat(localizedString("historyWithSomeone"), friend.username)
+            }
         }
+        let oldStateEmpty = self.messages.isEmpty
         guard let messages = params["messages"] as? [Message], !messages.isEmpty, let pages = params["pages"] as? Int, let current = params["current"] as? Int else { return }
         slider.maximumValue = Float(pages)
         if nowPage < 0 {
@@ -228,27 +250,47 @@ class HistoryVC: ChatRoomViewController {
         if isFooter {
             print(messages.map { $0.id })
             let alreadyCount = self.messages.count
-            indexPaths = (alreadyCount..<alreadyCount+filtered.count).map { IndexPath(row: $0, section: 0) }
+            indexPaths = (alreadyCount..<alreadyCount+filtered.count).map { IndexPath(row: 0, section: $0) }
             self.messages.append(contentsOf: filtered)
         } else {
             print(messages.map { $0.id })
-            indexPaths = (0..<filtered.count).map { IndexPath(row: $0, section: 0) }
+            indexPaths = (0..<filtered.count).map { IndexPath(row: 0, section: $0) }
             self.messages.insert(contentsOf: filtered, at: 0)
         }
-        tableView.performBatchUpdates {
-            self.tableView.insertRows(at: indexPaths, with: (isFooter ? .top : .bottom))
-        } completion: { _ in
+        guard !indexPaths.isEmpty else { return }
+        let scrollToTargetBlock = {
             if let targetMessageUUID = self.targetMessageUUID, let index = filtered.firstIndex(where: { $0.uuid == targetMessageUUID }) {
-                self.tableView.selectRow(at: IndexPath(row: index, section: 0), animated: true, scrollPosition: .middle)
+                self.tableView.selectRow(at: IndexPath(row: 0, section: index), animated: true, scrollPosition: .middle)
                 self.targetMessageUUID = nil
             }
         }
+        let indexSet = IndexSet(indexPaths.map{$0.section})
+        if oldStateEmpty {
+            tableView.performBatchUpdates({
+                self.tableView.insertSections(indexSet, with: .top)
+            }) { _ in
+                scrollToTargetBlock()
+                self.isFetchingHistory = false
+            }
+        } else {
+            UIView.setAnimationsEnabled(false)
+            tableView.beginUpdates()
+            tableView.insertSections(indexSet, with: .none)
+            tableView.endUpdates()
+            UIView.setAnimationsEnabled(true)
+            if !isFooter {
+                tableView.scrollToRow(at: IndexPath(row: 0, section: indexPaths.last!.section + (oldStateEmpty ? 0 : 1)), at: .top, animated: false)
+            }
+            scrollToTargetBlock()
+            isFetchingHistory = false
+        }
+
 
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         guard self.params != nil else { return }
-        let message = messages[indexPath.row]
+        let message = messages[indexPath.section]
         let newVC = HistoryVC(purpose: .history)
         newVC.friend = self.friend
         newVC.targetMessageUUID = message.uuid
@@ -256,12 +298,6 @@ class HistoryVC: ChatRoomViewController {
         newVC.nowPage = -1
         newVC.filterVC = self.filterVC
         self.navigationController?.pushViewController(newVC, animated: true)
-//        self.targetMessageUUID = message.uuid
-//        self.messages.removeAll()
-//        tableView.reloadData()
-//        nowPage = -1
-//        params = nil
-//        manager?.commonWebSocket.historyMessages(for: friend, id: message.id)
     }
 }
 

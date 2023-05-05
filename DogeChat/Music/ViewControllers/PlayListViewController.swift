@@ -81,6 +81,12 @@ class PlayListViewController: DogeChatViewController, SelectContactsDelegate, Do
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        if #available(iOS 15, *) {
+            Task {
+                await MusicManager.shared.requestAuthIfNeeded()
+            }
+        }
+
         navigationItem.largeTitleDisplayMode = .always
         view.addSubview(tableView)
         tableView.estimatedRowHeight = 60
@@ -91,9 +97,12 @@ class PlayListViewController: DogeChatViewController, SelectContactsDelegate, Do
         tableView.dataSource = self
         tableView.register(PlayListTrackCell.self, forCellReuseIdentifier: PlayListTrackCell.cellID)
         
-        let refresh = UIRefreshControl()
-        refresh.addTarget(self, action: #selector(refreshAction), for: .valueChanged)
-        tableView.refreshControl = refresh
+        self.navigationController?.tabBarItem.title = localizedString("preview")
+        if !isMac() {
+            let refresh = UIRefreshControl()
+            refresh.addTarget(self, action: #selector(refreshAction), for: .valueChanged)
+            tableView.refreshControl = refresh
+        }
 
         tableView.translatesAutoresizingMaskIntoConstraints = false
         switch type {

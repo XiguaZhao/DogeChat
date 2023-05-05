@@ -67,8 +67,8 @@ extension ChatRoomViewController {
     }
     
     func processJumpToBottomButton() {
-        guard self.purpose == .chat, let visibleIndexPaths = tableView.indexPathsForVisibleRows else { return }
-        jumpToBottomStack.isHidden = visibleIndexPaths.contains(IndexPath(row: self.messages.count - 1, section: 0))
+        guard let visibleIndexPaths = tableView.indexPathsForVisibleRows else { return }
+        jumpToBottomStack.isHidden = visibleIndexPaths.contains(IndexPath(row: 0, section: self.messages.count - 1))
     }
     
     func processJumpToUnreadButton() {
@@ -116,7 +116,7 @@ extension ChatRoomViewController {
             index = _index
         }
         if let index = index {
-            tableView.scrollToRow(at: IndexPath(row: index, section: 0), at: .middle, animated: false)
+            tableView.scrollToRow(at: IndexPath(row: 0, section: index), at: .middle, animated: false)
         }
         explictJumpMessageUUID = nil
         self.messages.forEach({ $0.isRead = true })

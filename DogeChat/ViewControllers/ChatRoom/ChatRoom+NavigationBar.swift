@@ -19,7 +19,7 @@ extension ChatRoomViewController {
             let item = UIBarButtonItem(title: "关闭", style: .done, target: self, action: #selector(doneWithSingle))
             self.navigationItem.leftBarButtonItem = item
         }
-        if self.sceneType == .normal && UIApplication.shared.supportsMultipleScenes {
+        if self.purpose == .chat && self.sceneType == .normal && UIApplication.shared.supportsMultipleScenes {
             let item = UIBarButtonItem(image: UIImage(systemName: "rectangle.portrait.split.2x1"), style: .plain, target: self, action: #selector(openNewScene))
             var items = [item]
             if let detailItem = self.navigationItem.rightBarButtonItem {
@@ -132,18 +132,22 @@ extension ChatRoomViewController {
             return
         }
         playHaptic()
-        let browser = MediaBrowserViewController()
-        browser.imagePaths = [self.friendAvatarUrl]
-        browser.purpose = .avatar
-        browser.modalPresentationStyle = .fullScreen
-        browser.transitioningDelegate = DogeChatTransitionManager.shared
-        DogeChatTransitionManager.shared.fromDataSource = self
-        DogeChatTransitionManager.shared.toDataSource = self
-        self.transitionSourceView = titleAvatar
-        self.transitionToView = titleAvatar
-        self.transitionToRadiusView = titleAvatarContainer
-        self.transitionFromCornerRadiusView = titleAvatarContainer
-        self.present(browser, animated: true, completion: nil)
+        MediaLoader.shared.requestImage(urlStr: self.friendAvatarUrl, type: .photo, syncIfCan: true, imageWidth: .original) { [self] image, _, _ in
+            DogeChatTransitionManager.shared.fromDataSource = self
+            DogeChatTransitionManager.shared.toDataSource = self
+            let imageView = UIImageView(image: image)
+            imageView.frame = titleAvatar.convert(titleAvatar.bounds, to: nil)
+            self.transitionSourceView = imageView
+            self.transitionToView = titleAvatar
+            self.transitionToRadiusView = titleAvatarContainer
+            self.transitionFromCornerRadiusView = titleAvatarContainer
+            let browser = MediaBrowserViewController()
+            browser.imagePaths = [self.friendAvatarUrl]
+            browser.purpose = .avatar
+            browser.modalPresentationStyle = .fullScreen
+            browser.transitioningDelegate = DogeChatTransitionManager.shared
+            self.present(browser, animated: true, completion: nil)
+        }
     }
     
     @objc func groupInfoChange(noti: Notification) {

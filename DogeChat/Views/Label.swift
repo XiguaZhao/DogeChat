@@ -1,43 +1,31 @@
 
 import UIKit
+import YYText
 
-class Label: UILabel {
+class InsetLabel: UILabel {
+    static let horizontalPadding: CGFloat = 12
+    static let verticalPadding: CGFloat = 8
+    override func drawText(in rect: CGRect) {
+        let insets = UIEdgeInsets.init(top: Self.verticalPadding, left: Self.horizontalPadding, bottom: Self.verticalPadding, right: Self.horizontalPadding)
+        super.drawText(in: rect.inset(by: insets))
+    }
+}
+
+class Label: YYLabel {
     
     static let verticalPadding: CGFloat = 10
     static let horizontalPadding: CGFloat = 16
-    static let lineSpacing: CGFloat = 5
+    static let lineSpacing: CGFloat = 2
     
     override init(frame: CGRect) {
         super.init(frame: frame)
+        self.textContainerInset = UIEdgeInsets.init(top: 0, left: Self.horizontalPadding, bottom: 0, right: Self.horizontalPadding)
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-    override func drawText(in rect: CGRect) {
-        let insets = UIEdgeInsets.init(top: Self.verticalPadding, left: Self.horizontalPadding, bottom: Self.verticalPadding, right: Self.horizontalPadding)
-        super.drawText(in: rect.inset(by: insets))
-    }
-        
-//    override func display(_ layer: CALayer) {
-//        let size = self.bounds.size
-//        let scale = UIScreen.main.scale
-//        DispatchQueue.global().async {
-//            UIGraphicsBeginImageContextWithOptions(size, false, scale)
-//            guard let context = UIGraphicsGetCurrentContext() else {
-//                return
-//            }
-//            self.draw(context: context, size: size)
-//            let image = UIGraphicsGetImageFromCurrentImageContext()
-//            UIGraphicsEndImageContext()
-//            let contents = image?.cgImage
-//            DispatchQueue.main.async {
-//                layer.contents = contents
-//            }
-//        }
-//    }
-    
+            
     private func draw(context: CGContext, size: CGSize) {
         context.textMatrix = CGAffineTransform.identity
         context.translateBy(x: 0, y: size.height)

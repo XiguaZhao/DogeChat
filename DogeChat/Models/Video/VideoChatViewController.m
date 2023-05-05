@@ -83,11 +83,11 @@ API_AVAILABLE(ios(13.0))
             NSMutableData *mData = [[NSMutableData alloc] init];
             NSData *headData = [strongSelf bytewithInt:60000];//协议头 4位 (0-4)
             NSData *countData = [strongSelf bytewithInt:strongSelf->_count];//发到第几个包 4位 (4-8)
-            NSData *legnthData = [strongSelf bytewithInt:(int)data.length];//当前包的长度 4位 (8-12)
+            NSData *lengthData = [strongSelf bytewithInt:(int)data.length];//当前包的长度 4位 (8-12)
             NSData *dataType = [strongSelf bytewithInt:1];//type 1为视频
             [mData appendData:headData];
             [mData appendData:countData];
-            [mData appendData:legnthData];
+            [mData appendData:lengthData];
             [mData appendData:dataType];
             [mData appendData:data];
             NSMutableData *recordedAudioData = Recorder.sharedInstance.recordedData;

@@ -22,6 +22,7 @@ extension ChatRoomViewController: MessageInputDelegate, VoiceRecordDelegate {
     
     func toolButtonTap(_ button: UIButton, type: InputViewToolButtonType) {
 //        messageInputBar.textView.resignFirstResponder()
+        playHaptic()
         let imagePicker = UIImagePickerController()
         imagePicker.delegate = self
         switch type {
@@ -75,14 +76,19 @@ extension ChatRoomViewController: MessageInputDelegate, VoiceRecordDelegate {
         case .location:
             locationAction()
         case .at:
-            onClickAt()
+            onClickAt(sender: button)
         }
     }
     
-    @objc func onClickAt() {
+    @objc func onClickAt(sender: UIView) {
         if let group = self.friend as? Group {
             let selectVC = SelectContactsViewController(username: self.username, group: group, members: self.groupMembers)
             selectVC.delegate = self
+            selectVC.modalPresentationStyle = .popover
+            let popover = selectVC.popoverPresentationController
+            popover?.sourceView = sender
+            popover?.delegate = self
+            popover?.permittedArrowDirections = .down
             self.present(selectVC, animated: true, completion: nil)
         }
     }
@@ -188,8 +194,15 @@ extension ChatRoomViewController: MessageInputDelegate, VoiceRecordDelegate {
     }
         
     func processItemProviders(_ items: [NSItemProvider]) {
-        messageSender.processItemProviders(items, friends: [self.friend]) { messages in
+        messageSender.processItemProviders(items, friends: [self.friend], completion: { messages in
             self.insertNewMessageCell(messages)
+        }) { [weak self] data in
+            guard let self = self else { return true }
+            if isPhone() { return true }
+            if data is String {
+                return !self.messageInputBar.textView.isFirstResponder
+            }
+            return true
         }
     }
         

@@ -7,47 +7,102 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "91EF0C20-41D4-4FE9-B58F-622C7B59A317"
+            uuid = "09B77F8A-3A00-4684-AF6C-88C8E1902436"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "DogeChat/ViewControllers/ChatRoom/ChatRoom+TableDelegate.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "83"
+            endingLineNumber = "83"
+            landmarkName = "scrollViewDidScroll(_:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "AA25CA6A-C86D-4500-9268-DDA52D06CE7A"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
-            filePath = "../DogeChatUniversal/DogeChatUniversal/Classes/HttpRequests.swift"
+            filePath = "DogeChatWatch Extension/Controller/ContactInterfaceController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "551"
-            endingLineNumber = "551"
-            landmarkName = "saveTracks(_:andBlurImage:customizedData:completion:)"
+            startingLineNumber = "82"
+            endingLineNumber = "82"
+            landmarkName = "canGetContacts()"
             landmarkType = "7">
             <Locations>
                <Location
-                  uuid = "91EF0C20-41D4-4FE9-B58F-622C7B59A317 - 24297a5e70c62a76"
+                  uuid = "AA25CA6A-C86D-4500-9268-DDA52D06CE7A - fdce75363df0a176"
                   shouldBeEnabled = "Yes"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
-                  symbolName = "DogeChatUniversal.HttpRequestsManager.saveTracks(_: Swift.Optional&lt;Swift.String&gt;, andBlurImage: Swift.Optional&lt;Swift.String&gt;, customizedData: Swift.Optional&lt;Swift.Dictionary&lt;Swift.String, Any&gt;&gt;, completion: Swift.Optional&lt;(Swift.Bool) -&gt; ()&gt;) -&gt; ()"
-                  moduleName = "DogeChatUniversal"
+                  symbolName = "DogeChatWatch_Extension.ContactInterfaceController.canGetContacts() -&gt; ()"
+                  moduleName = "DogeChatWatch Extension"
                   usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/bytedance/Library/Mobile%20Documents/com~apple~CloudDocs/Documents/Developer/DogeChatUniversal/DogeChatUniversal/Classes/HttpRequests.swift"
+                  urlString = "file:///Users/bytedance/Library/Mobile%20Documents/com~apple~CloudDocs/Documents/Developer/DogeChat/DogeChatWatch%20Extension/Controller/ContactInterfaceController.swift"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "551"
-                  endingLineNumber = "551"
-                  offsetFromSymbolStart = "2544">
+                  startingLineNumber = "82"
+                  endingLineNumber = "82"
+                  offsetFromSymbolStart = "44">
                </Location>
                <Location
-                  uuid = "91EF0C20-41D4-4FE9-B58F-622C7B59A317 - 4689de81275820fd"
+                  uuid = "AA25CA6A-C86D-4500-9268-DDA52D06CE7A - 265e3f3012339c32"
                   shouldBeEnabled = "Yes"
                   ignoreCount = "0"
                   continueAfterRunningActions = "No"
-                  symbolName = "closure #1 (Swift.Optional&lt;Foundation.Data&gt;, Swift.Optional&lt;__C.NSURLResponse&gt;, Swift.Optional&lt;Swift.Error&gt;) -&gt; () in DogeChatUniversal.HttpRequestsManager.saveTracks(_: Swift.Optional&lt;Swift.String&gt;, andBlurImage: Swift.Optional&lt;Swift.String&gt;, customizedData: Swift.Optional&lt;Swift.Dictionary&lt;Swift.String, Any&gt;&gt;, completion: Swift.Optional&lt;(Swift.Bool) -&gt; ()&gt;) -&gt; ()"
-                  moduleName = "DogeChatUniversal"
+                  symbolName = "closure #1 (Swift.Array&lt;DogeChatCommonDefines.Friend&gt;, Swift.Optional&lt;Swift.Error&gt;) -&gt; () in DogeChatWatch_Extension.ContactInterfaceController.canGetContacts() -&gt; ()"
+                  moduleName = "DogeChatWatch Extension"
                   usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/bytedance/Library/Mobile%20Documents/com~apple~CloudDocs/Documents/Developer/DogeChatUniversal/DogeChatUniversal/Classes/HttpRequests.swift"
+                  urlString = "file:///Users/bytedance/Library/Mobile%20Documents/com~apple~CloudDocs/Documents/Developer/DogeChat/DogeChatWatch%20Extension/Controller/ContactInterfaceController.swift"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "552"
-                  endingLineNumber = "552"
-                  offsetFromSymbolStart = "272">
+                  startingLineNumber = "83"
+                  endingLineNumber = "83"
+                  offsetFromSymbolStart = "52">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "6144892B-4F50-472E-8689-8CC3D7A7F0E3"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "DogeChat/Views/Cells/MessageCells/MessageBaseCell.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "383"
+            endingLineNumber = "383"
+            landmarkName = "height(for:tableViewSize:userID:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.SymbolicBreakpoint">
+         <BreakpointContent
+            uuid = "DA1BAA5A-42D1-4A92-B23F-31D6A1979121"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            symbolName = "-[UITableView setContentOffset:]"
+            moduleName = "">
+            <Locations>
+               <Location
+                  uuid = "DA1BAA5A-42D1-4A92-B23F-31D6A1979121 - b4ff4b81f0686544"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "-[UITableView setContentOffset:]"
+                  moduleName = "UIKitCore"
+                  usesParentBreakpointCondition = "Yes"
+                  offsetFromSymbolStart = "0">
                </Location>
             </Locations>
          </BreakpointContent>

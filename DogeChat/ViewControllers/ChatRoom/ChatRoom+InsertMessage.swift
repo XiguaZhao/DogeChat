@@ -48,7 +48,7 @@ extension ChatRoomViewController: ReferMessageDataSource {
             var indexPaths: [IndexPath] = []
             let alreadyMax = self.messages.max(by: { $0.id < $1.id })?.id ?? 0
             for message in filtered {
-                indexPaths.append(IndexPath(row: self.messages.count, section: 0))
+                indexPaths.append(IndexPath(item: 0, section: self.messages.count))
                 self.messages.append(message)
             }
             if filtered.contains(where: { $0.id < alreadyMax }) {
@@ -57,8 +57,9 @@ extension ChatRoomViewController: ReferMessageDataSource {
                 completion?()
                 return
             }
+            let indexSet = IndexSet(indexPaths.map{$0.section})
             UIView.performWithoutAnimation {
-                self.tableView.insertRows(at: indexPaths, with: .none)
+                self.tableView.insertSections(indexSet, with: .none)
             }
             if scrollToBottom {
                 scrollBottom(animated: filtered.count < 10)
@@ -72,7 +73,7 @@ extension ChatRoomViewController: ReferMessageDataSource {
     }
     
     func processMessageString(for string: String, type: MessageType, imageURL: String?, videoURL: String?) -> Message? {
-        let message = messageSender.processMessageString(for: string, type: type, friend: self.friend, fontSize: messageInputBar.textView.font?.pointSize ?? 17, imageURL: imageURL, videoURL: videoURL)
+        let message = messageSender.processMessageString(for: string, type: type, friend: self.friend, fontSize: messageInputBar.textView.font!.pointSize/fontSizeScale, imageURL: imageURL, videoURL: videoURL)
         return message
     }
     
@@ -134,7 +135,6 @@ extension ChatRoomViewController: ReferMessageDataSource {
     
     func sendWasTapped(content: String) {
         guard !content.isEmpty else { return }
-        playHaptic()
         if let wrappedMessage = processMessageString(for: content, type: .text, imageURL: nil, videoURL: nil) {
             insertNewMessageCell([wrappedMessage])
             manager?.commonWebSocket.sendWrappedMessage(wrappedMessage)

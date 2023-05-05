@@ -71,7 +71,23 @@ class MessageImageCell: MessageImageKindCell {
         
     
     @objc func imageTapped() {
-        delegate?.mediaViewTapped(self, path: message.text, isAvatar: false)
+        if let path = Self.getLocalPathIfNeeded(message: self.message), !path.isEmpty {
+            delegate?.mediaViewTapped(self, path: message.text, isAvatar: false)
+        }
+    }
+    
+    static func getLocalPathIfNeeded(message: Message) -> String? {
+        var path: String? = message.text
+        if path!.isEmpty {
+            if message.messageType == .photo || message.messageType == .sticker {
+                path = message.imageLocalPath?.absoluteString
+            } else if message.messageType == .livePhoto {
+                path = (message.imageLocalPath?.absoluteString ?? "") + " " + (message.videoLocalPath?.absoluteString ?? "")
+            } else if message.messageType == .video {
+                path = message.videoLocalPath?.absoluteString
+            }
+        }
+        return path
     }
     
     func layoutImageView() {

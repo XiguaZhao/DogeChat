@@ -12,6 +12,7 @@ import FLAnimatedImage
 protocol TrailingViewProtocol: AnyObject {
     func didSwitch(cell: CommonTableCell, isOn: Bool)
     func textFieldDidEndInputing(cell: CommonTableCell, text: String)
+    func textFieldDidBeginEditing(cell: CommonTableCell)
 }
 
 class CommonTableCell: DogeChatTableViewCell, UITextFieldDelegate {
@@ -40,20 +41,18 @@ class CommonTableCell: DogeChatTableViewCell, UITextFieldDelegate {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         
-        trailingLabel.font = .preferredFont(forTextStyle: .footnote)
         trailingLabel.numberOfLines = 0
-        textField.font = .preferredFont(forTextStyle: .footnote)
         textField.returnKeyType = .done
         trailingLabel.textAlignment = .right
         textField.textAlignment = .right
         
         let middleStack = UIStackView(arrangedSubviews: [titleLabel, subTitleLabel])
-        titleLabel.font = .preferredFont(forTextStyle: .body)
-        subTitleLabel.font = .preferredFont(forTextStyle: .footnote)
         middleStack.spacing = 5
         middleStack.axis = .vertical
         
         let rightStack = UIStackView(arrangedSubviews: [trailingLabel, textField, switcher])
+        rightStack.axis = .vertical
+        rightStack.alignment = .trailing
         textField.setContentCompressionResistancePriority(.required, for: .horizontal)
         trailingLabel.setContentCompressionResistancePriority(.required, for: .horizontal)
         rightStack.setContentCompressionResistancePriority(.required, for: .horizontal)
@@ -101,6 +100,10 @@ class CommonTableCell: DogeChatTableViewCell, UITextFieldDelegate {
     }
     
     func apply(title: String, subTitle: String?, imageURL: String?, trailingViewType: TrailingViewType?, trailingText: String?, switchOn: Bool? = nil, imageIsLeft: Bool = true) {
+        trailingLabel.font = subtitleFont
+        textField.font = subtitleFont
+        titleLabel.font = titleFont
+        subTitleLabel.font = subtitleFont
         self.trailingType = trailingViewType
         titleLabel.text = title
         subTitleLabel.text = subTitle
@@ -149,5 +152,9 @@ class CommonTableCell: DogeChatTableViewCell, UITextFieldDelegate {
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
         return true
+    }
+    
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        delegate?.textFieldDidBeginEditing(cell: self)
     }
 }

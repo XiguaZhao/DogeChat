@@ -189,10 +189,9 @@ class SelectContactsViewController: DogeChatViewController, DogeChatVCTableDataS
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         guard !tableView.isEditing else { return }
         let contact = [displayedFriends[indexPath.row]]
-        self.dismiss(animated: true) {
-            self.delegate?.didSelectContacts(contact, vc: self)
-            self.didSelectContacts?(contact)
-        }
+        self.dismiss(animated: true)
+        self.delegate?.didSelectContacts(contact, vc: self)
+        self.didSelectContacts?(contact)
     }
 
 }

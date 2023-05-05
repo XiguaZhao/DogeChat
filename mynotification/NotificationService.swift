@@ -11,50 +11,100 @@ import PencilKit
 import WidgetKit
 import DogeChatCommonDefines
 import RSAiOSWatchOS
+import Intents
 
 class NotificationService: UNNotificationServiceExtension {
     
     var contentHandler: ((UNNotificationContent) -> Void)?
     var bestAttemptContent: UNMutableNotificationContent?
+    var avatar: String?
+    var senderID: String?
     
     var loadMedia = true
         
     func complete() {
+        
         if let bestAttemptContent = bestAttemptContent {
-            contentHandler?(bestAttemptContent)
+            if #available(iOSApplicationExtension 14.0, *), let avatarPath = avatar {
+                guard let wholeURL = fileURLAt(dirName: photoDir, fileName: avatarPath.fileName) else {
+                    contentHandler?(bestAttemptContent)
+                    return
+                }
+                let handle = INPersonHandle(value: "unique-user-id-1", type: .unknown)
+                let avatar = INImage(url: wholeURL)
+                let sender = INPerson(personHandle: handle,
+                                      nameComponents: nil,
+                                      displayName: bestAttemptContent.title,
+                                      image: avatar,
+                                      contactIdentifier: nil,
+                                      customIdentifier: nil)
+                
+                let intent = INSendMessageIntent(recipients: nil,
+                                                 outgoingMessageType: .outgoingMessageText,
+                                                 content: bestAttemptContent.body,
+                                                 speakableGroupName: nil,
+                                                 conversationIdentifier: self.senderID ?? UUID().uuidString,
+                                                 serviceName: nil,
+                                                 sender: sender,
+                                                 attachments: nil)
+                
+                let interaction = INInteraction(intent: intent, response: nil)
+                interaction.direction = .incoming
+                interaction.donate { error in
+                    if #available(iOS 15, macCatalystApplicationExtension 15.0, *) {
+                        if let updatedContent = try? bestAttemptContent.updating(from: intent) {
+                            self.contentHandler?(updatedContent)
+                        } else {
+                            self.contentHandler?(bestAttemptContent)
+                        }
+                    }
+                    else {
+                        self.contentHandler?(bestAttemptContent)
+                    }
+                }
+            } else {
+                contentHandler?(bestAttemptContent)
+            }
         }
     }
     
     override func didReceive(_ request: UNNotificationRequest, withContentHandler contentHandler: @escaping (UNNotificationContent) -> Void) {
+        let hostAppActive = UserDefaults(suiteName: groupName)?.bool(forKey: "hostActive") == true
         self.contentHandler = contentHandler
         let content = (request.content.mutableCopy() as? UNMutableNotificationContent)
         content?.body = EncryptMessage().decriptContent(content?.body ?? "", using: UserDefaults(suiteName: groupName)?.string(forKey: "privateKey"))
         bestAttemptContent = content
-        var needBadge = true
-        if let unreadCount = UserDefaults(suiteName: groupName)?.integer(forKey: "unreadCount"), unreadCount != 0 {
-            bestAttemptContent?.badge = unreadCount as NSNumber
-            needBadge = false
+        #if targetEnvironment(macCatalyst)
+        bestAttemptContent?.categoryIdentifier = ""
+        #endif
+        guard let aps = request.content.userInfo["aps"] as? [String : Any] else {
+            complete()
+            return
         }
+        if aps["type"] as? String == "intercom", let uuid = aps["uuid"] {
+            UserDefaults(suiteName: groupName)?.set(uuid, forKey: "channelId")
+        }
+        self.avatar = aps["avatarURL"] as? String
+        self.senderID = aps["senderId"] as? String
         UNUserNotificationCenter.current().getDeliveredNotifications { [self] delivered in
-            if needBadge {
-                bestAttemptContent?.badge = NSNumber(value: delivered.count + 1)
-            }
+            
+            bestAttemptContent?.badge = hostAppActive ? nil : NSNumber(value: delivered.count + 1)
             
             processRevoke(request: request, delivered: delivered)
             
             if loadMedia {
-                if UserDefaults(suiteName: groupName)?.bool(forKey: "hostActive") == true {
+                if hostAppActive {
                     complete()
                     return
                 }
                 
-                if let aps = request.content.userInfo["aps"] as? [String : Any],
-                   var path = aps["url"] as? String, !path.isEmpty {
+                
+                if var path = aps["url"] as? String, !path.isEmpty {
                     guard let type = aps["type"] as? String, let messageType = getTypeFor(typeStr: type) else {
                         complete()
                         return
                     }
-                    let acceptedTypes: [MessageType] = [.photo, .draw, .livePhoto, .voice]
+                    let acceptedTypes: [MessageType] = [.photo, .draw, .livePhoto, .voice, .sticker]
                     guard acceptedTypes.contains(where: { $0 == messageType }) else {
                         complete()
                         return
@@ -66,10 +116,6 @@ class NotificationService: UNNotificationServiceExtension {
                     }
                     let wholePath = "https://\(dogeChatIP)" + path
                     if let _ = URL(string: wholePath) {
-                        guard !path.hasSuffix(".gif") else {
-                            complete()
-                            return
-                        }
                         if messageType == .video {
                             self.bestAttemptContent?.body = "[视频]"
                         }
@@ -82,7 +128,7 @@ class NotificationService: UNNotificationServiceExtension {
                         }
                         MediaLoader.shared.cookie = cookie
                         MediaLoader.shared.type = .defaultSession
-                        MediaLoader.shared.requestImage(urlStr: path, type: .voice, syncIfCan: false, needCache: false, completion: { _, data, localURL in
+                        MediaLoader.shared.requestImage(urlStr: path, type: messageType, syncIfCan: false, needCache: false, completion: { _, data, localURL in
                             var localURL = localURL
 #if !targetEnvironment(macCatalyst)
                             if messageType == .draw {
@@ -100,6 +146,10 @@ class NotificationService: UNNotificationServiceExtension {
                                 }
                             }
 #endif
+                            if let tmpURL = URL(string: "file://" + NSTemporaryDirectory() + localURL.lastPathComponent) {
+                                try? FileManager.default.copyItem(at: localURL, to: tmpURL)
+                                localURL = tmpURL
+                            }
                             if let attachment = try? UNNotificationAttachment(identifier: path, url: localURL, options: nil) {
                                 self.bestAttemptContent?.attachments = [attachment]
                             }

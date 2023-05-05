@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="20037" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="Ker-fq-rFq">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="21507" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="Ker-fq-rFq">
     <device id="retina6_7" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="20020"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21505"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--Doge Chat Navigation Controller-->
+        <!--联系人-->
         <scene sceneID="52K-xt-9hQ">
             <objects>
                 <navigationController id="73m-2C-Avi" customClass="DogeChatNavigationController" customModule="DogeChat" customModuleProvider="target" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" systemItem="contacts" id="qFt-lo-DEp"/>
+                    <tabBarItem key="tabBarItem" title="联系人" image="contact" id="qFt-lo-DEp"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="03O-YF-ybZ">
-                        <rect key="frame" x="0.0" y="44" width="428" height="44"/>
+                        <rect key="frame" x="0.0" y="47" width="428" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                 </navigationController>
@@ -85,14 +85,14 @@
             </objects>
             <point key="canvasLocation" x="1514" y="-17"/>
         </scene>
-        <!--Doge Chat Navigation Controller-->
+        <!--我的-->
         <scene sceneID="g9u-DR-5dM">
             <objects>
                 <navigationController automaticallyAdjustsScrollViewInsets="NO" id="QJ7-1B-WKH" customClass="DogeChatNavigationController" customModule="DogeChat" customModuleProvider="target" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" systemItem="more" id="2T8-9p-W6V"/>
+                    <tabBarItem key="tabBarItem" title="我的" image="setting" id="2T8-9p-W6V"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" largeTitles="YES" id="vU6-Pv-CSs">
-                        <rect key="frame" x="0.0" y="44" width="428" height="96"/>
+                        <rect key="frame" x="0.0" y="47" width="428" height="96"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <nil name="viewControllers"/>
@@ -124,9 +124,9 @@
         <scene sceneID="TSg-da-ryh">
             <objects>
                 <navigationController id="WrQ-ga-1RZ" customClass="DogeChatNavigationController" customModule="DogeChat" customModuleProvider="target" sceneMemberID="viewController">
-                    <tabBarItem key="tabBarItem" title="Preview" image="music.note.list" catalog="system" id="z3a-74-ie0"/>
+                    <tabBarItem key="tabBarItem" title="Preview" image="music 1" id="z3a-74-ie0"/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" largeTitles="YES" id="bjc-Id-bWg">
-                        <rect key="frame" x="0.0" y="44" width="428" height="96"/>
+                        <rect key="frame" x="0.0" y="47" width="428" height="96"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <connections>
@@ -160,7 +160,7 @@
                     <tabBarItem key="tabBarItem" title="动态" image="square.and.pencil" catalog="system" id="ynX-sm-nhH"/>
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" id="ep3-Ki-H0F">
-                        <rect key="frame" x="0.0" y="44" width="428" height="44"/>
+                        <rect key="frame" x="0.0" y="47" width="428" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
                     <nil name="viewControllers"/>
@@ -172,10 +172,46 @@
             </objects>
             <point key="canvasLocation" x="-939" y="577"/>
         </scene>
+        <!--PTT-->
+        <scene sceneID="n0G-R3-W8F">
+            <objects>
+                <navigationController id="7xI-Hn-OBW" sceneMemberID="viewController">
+                    <tabBarItem key="tabBarItem" title="PTT" image="mic.circle" catalog="system" id="4M5-EP-Dnf"/>
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="aSx-jE-wqD">
+                        <rect key="frame" x="0.0" y="47" width="428" height="44"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                    </navigationBar>
+                    <connections>
+                        <segue destination="rNY-Jj-Yjj" kind="relationship" relationship="rootViewController" id="x5E-lO-kOx"/>
+                    </connections>
+                </navigationController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="oW5-rZ-Evt" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-939" y="1273"/>
+        </scene>
+        <!--View Controller-->
+        <scene sceneID="8Tn-UO-bKC">
+            <objects>
+                <viewController id="rNY-Jj-Yjj" customClass="PTTViewController" customModule="DogeChat" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="83X-Ry-jBI">
+                        <rect key="frame" x="0.0" y="0.0" width="428" height="926"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <viewLayoutGuide key="safeArea" id="XaG-xr-wRR"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                    <navigationItem key="navigationItem" id="Mtp-0Z-HsY"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="v0Z-R5-Nfb" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-182" y="1273"/>
+        </scene>
     </scenes>
     <resources>
-        <image name="music.note.list" catalog="system" width="128" height="115"/>
-        <image name="square.and.pencil" catalog="system" width="128" height="115"/>
+        <image name="contact" width="24" height="24"/>
+        <image name="mic.circle" catalog="system" width="128" height="123"/>
+        <image name="music 1" width="24" height="24"/>
+        <image name="setting" width="24" height="24"/>
+        <image name="square.and.pencil" catalog="system" width="128" height="113"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>

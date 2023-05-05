@@ -1,20 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="20037" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
-    <device id="retina6_1" orientation="portrait" appearance="light"/>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21208.1" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_1" orientation="portrait" appearance="dark"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="20020"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21191"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <objects>
-        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="HistoryFilterVC" customModule="DogeChat" customModuleProvider="target">
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner">
             <connections>
                 <outlet property="datePicker" destination="IdX-Yy-LoP" id="wPz-mp-sXi"/>
                 <outlet property="keywordTF" destination="yAb-CN-CyV" id="ruy-eT-ZBf"/>
                 <outlet property="stackView" destination="dBg-Nv-PYK" id="Iv9-gJ-XXk"/>
-                <outlet property="typePicker" destination="VeK-Rn-yvh" id="zyy-jS-dvc"/>
+                <outlet property="typePicker" destination="VeK-Rn-yvh" id="szc-y2-LZV"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
         </placeholder>
@@ -24,7 +24,7 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="52" translatesAutoresizingMaskIntoConstraints="NO" id="dBg-Nv-PYK">
-                    <rect key="frame" x="109" y="306.5" width="196" height="283"/>
+                    <rect key="frame" x="109" y="305" width="196" height="286.5"/>
                     <subviews>
                         <stackView opaque="NO" contentMode="scaleToFill" spacing="30" translatesAutoresizingMaskIntoConstraints="NO" id="haY-Gc-H7f">
                             <rect key="frame" x="0.0" y="0.0" width="196" height="34"/>
@@ -46,7 +46,7 @@
                             <rect key="frame" x="0.0" y="86" width="196" height="31"/>
                             <subviews>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="751" text="消息类型" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Waf-NU-rOH">
-                                    <rect key="frame" x="0.0" y="5.5" width="147" height="20.5"/>
+                                    <rect key="frame" x="0.0" y="5" width="147" height="20.5"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                     <nil key="textColor"/>
                                     <nil key="highlightedColor"/>
@@ -69,7 +69,7 @@
                             <rect key="frame" x="0.0" y="169" width="196" height="31"/>
                             <subviews>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="751" text="开始日期" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lSB-9V-6ae">
-                                    <rect key="frame" x="0.0" y="5.5" width="147" height="20.5"/>
+                                    <rect key="frame" x="0.0" y="5" width="147" height="20.5"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                     <nil key="textColor"/>
                                     <nil key="highlightedColor"/>
@@ -90,10 +90,10 @@
                             </subviews>
                         </stackView>
                         <stackView opaque="NO" contentMode="scaleToFill" spacing="52" translatesAutoresizingMaskIntoConstraints="NO" id="VNW-cs-S0T">
-                            <rect key="frame" x="0.0" y="252" width="196" height="31"/>
+                            <rect key="frame" x="0.0" y="252" width="196" height="34.5"/>
                             <subviews>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ThM-kb-J8I">
-                                    <rect key="frame" x="0.0" y="0.0" width="72" height="31"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="72" height="34.5"/>
                                     <state key="normal" title="Button"/>
                                     <buttonConfiguration key="configuration" style="plain" title="确认"/>
                                     <connections>
@@ -101,7 +101,7 @@
                                     </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gf4-vt-TNS">
-                                    <rect key="frame" x="124" y="0.0" width="72" height="31"/>
+                                    <rect key="frame" x="124" y="0.0" width="72" height="34.5"/>
                                     <state key="normal" title="Button"/>
                                     <buttonConfiguration key="configuration" style="plain" title="取消"/>
                                     <connections>

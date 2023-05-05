@@ -38,6 +38,7 @@ class MediaBrowserViewController: UIViewController, TransitionFromDataSource {
     var targetIndex = 0 {
         didSet {
             DispatchQueue.main.async { [self] in
+                guard targetIndex >= 0 && targetIndex < imagePaths.count else { return }
                 NotificationCenter.default.post(name: .mediaBrowserPathChange, object:self, userInfo: [
                     "targetIndex": targetIndex,
                     "path": imagePaths[targetIndex],
@@ -103,11 +104,7 @@ class MediaBrowserViewController: UIViewController, TransitionFromDataSource {
         
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        if !isMac() {
-            flowLayout.itemSize = view.frame.size
-        } else {
-            flowLayout.itemSize = CGSize(width: view.frame.width, height: view.frame.height - view.safeAreaInsets.top)
-        }
+        flowLayout.itemSize = view.frame.size
         scrollToIndex(targetIndex)
     }
     

@@ -139,7 +139,7 @@ class ContactInterfaceController: WKInterfaceController {
     
     func login(username: String, password: String?) {
         self.username = username
-        SocketManager.shared.commonSocket.loginAndConnect(username: username, password: password, needContact: friends.isEmpty) { success in
+        SocketManager.shared.commonSocket.loginAndConnect(username: username, password: password, force: false, needContact: friends.isEmpty) { success in
             if success {
                 UserDefaults.standard.set(username, forKey: "username")
                 UserDefaults.standard.set(password, forKey: "password")

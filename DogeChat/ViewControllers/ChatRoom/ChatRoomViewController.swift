@@ -28,11 +28,10 @@ class ChatRoomViewController: DogeChatViewController, DogeChatVCTableDataSource 
         case addEmoji
     }
         
-    static let numberOfHistory = 10
     var manager: WebSocketManager? {
         return socketForUsername(username)
     }
-    var tableView = DogeChatTableView()
+    var tableView = DogeChatTableView(frame: .zero, style: .grouped)
     var sceneType: ChatRoomSceneType = .normal
     var purpose = ChatRoomPurpose.chat
     let messageInputBar = MessageInputView()
@@ -67,7 +66,7 @@ class ChatRoomViewController: DogeChatViewController, DogeChatVCTableDataSource 
     var imagePickerType: MessageType = .sticker
     var pickerPurpose: PickerPurpose = .send
     var addEmojiType: Emoji.AddEmojiType = .favorite
-    var heightCache = [String : CGFloat]()
+    var heightCache = [String : (header: CGFloat, row: CGFloat)]()
     var jumpToUnreadStack: UIStackView!
     let jumpToUnreadButton = UIImageView()
     var jumpToBottomStack: UIStackView!
@@ -101,8 +100,8 @@ class ChatRoomViewController: DogeChatViewController, DogeChatVCTableDataSource 
     }()
     weak var contactVC: ContactsTableViewController?
     weak var activeMenuCell: MessageBaseCell?
-    weak var transitionSourceView: UIView!
-    weak var transitionToView: UIView!
+    var transitionSourceView: UIView!
+    var transitionToView: UIView!
     weak var transitionToRadiusView: UIView?
     weak var transitionFromCornerRadiusView: UIView?
     var transitionPreferDuration: TimeInterval?
@@ -113,21 +112,31 @@ class ChatRoomViewController: DogeChatViewController, DogeChatVCTableDataSource 
     var ignoreKeyboardChange = false
     
     var lastIndexPath: IndexPath {
-        return IndexPath(row: messages.count-1, section: 0)
+        return IndexPath(row: 0, section: messages.count-1)
     }
     
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
         hidesBottomBarWhenPushed = true
+        registerNotifications()
+        registerUpdateTime()
     }
     
     required init?(coder: NSCoder) {
         super.init(coder: coder)
     }
-    
+        
     override func viewDidLoad() {
         super.viewDidLoad()
         makeDetailRightBarButton()
+        navigationItem.largeTitleDisplayMode = .never
+//        addRefreshController()
+        loadViews()
+        displayHistoryIfNeeded()
+        checkMyNameInGroup()
+    }
+    
+    func registerNotifications() {
         NotificationCenter.default.addObserver(self, selector: #selector(sendSuccess(notification:)), name: .sendSuccess, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(receiveNewMessageNotification(_:)), name: .receiveNewMessage, object: self.manager)
         NotificationCenter.default.addObserver(self, selector: #selector(confirmSendPhoto), name: .confirmSendPhoto, object: nil)
@@ -136,7 +145,6 @@ class ChatRoomViewController: DogeChatViewController, DogeChatVCTableDataSource 
         NotificationCenter.default.addObserver(self, selector: #selector(receiveHistoryMessages(_:)), name: .receiveHistoryMessages, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(connected(_:)), name: .connected, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(pasteImageAction(_:)), name: .pasteImage, object: messageInputBar.textView)
-        NotificationCenter.default.addObserver(self, selector: #selector(sizeCategoryChange(_:)), name: UIContentSizeCategory.didChangeNotification, object: nil)
         NotificationCenter.default.addObserver(forName: .logout, object: username, queue: .main) { [weak self] _ in
             self?.navigationController?.viewControllers = []
         }
@@ -144,6 +152,7 @@ class ChatRoomViewController: DogeChatViewController, DogeChatVCTableDataSource 
         NotificationCenter.default.addObserver(self, selector: #selector(friendChangeAvatar(_:)), name: .friendChangeAvatar, object: nil)
         NotificationCenter.default.addObserver(forName: UIApplication.willEnterForegroundNotification, object: nil, queue: .main) { [weak self] _ in
             guard let self = self else { return }
+            self.tableView.reloadData()
             if isMac() {
                 self.messageInputBar.textView.becomeFirstResponder()
             } else {
@@ -158,11 +167,6 @@ class ChatRoomViewController: DogeChatViewController, DogeChatVCTableDataSource 
             
         }
         NotificationCenter.default.addObserver(self, selector: #selector(groupInfoChange(noti:)), name: .groupInfoChange, object: username)
-        navigationItem.largeTitleDisplayMode = .never
-        addRefreshController()
-        loadViews()
-        displayHistoryIfNeeded()
-        checkMyNameInGroup()
     }
         
     override func viewWillAppear(_ animated: Bool) {
@@ -255,34 +259,65 @@ class ChatRoomViewController: DogeChatViewController, DogeChatVCTableDataSource 
         super.pressesBegan(presses, with: event)
         if let key = presses.first?.key {
             let keyCode = key.keyCode
-            if keyCode == .keyboardUpArrow {
-                contactVC?.arrowUp(messageInputBar.textView)
-            } else if keyCode == .keyboardDownArrow {
-                contactVC?.arrowDown(messageInputBar.textView)
-            } else if keyCode == .keyboardV && key.modifierFlags == .command {
-                processItemProviders(UIPasteboard.general.itemProviders)
-            } else if keyCode == .keyboardEscape {
-                if messageInputBar.referView.alpha == 1 {
-                    cancleAction(messageInputBar.referView)
-                }
+            if keyCode == .keyboardEscape {
             } else if !messageInputBar.textView.isFirstResponder {
                 messageInputBar.textView.becomeFirstResponder()
             }
         }
     }
     
+    override var keyCommands: [UIKeyCommand]? {
+        var arr = super.keyCommands ?? []
+        arr.append(UIKeyCommand(input: UIKeyCommand.inputEscape, modifierFlags: UIKeyModifierFlags(), action: #selector(escapeCommand)))
+        return arr
+    }
+    
+    @objc func escapeCommand() {
+        if messageInputBar.isActive {
+            messageInputBar.textViewResign()
+        } else if messageInputBar.referView.alpha == 1 {
+            cancleAction(messageInputBar.referView)
+        }
+    }
+    
     override func pressesEnded(_ presses: Set<UIPress>, with event: UIPressesEvent?) {
         super.pressesEnded(presses, with: event)
+        if let key = presses.first?.key {
+            let keyCode = key.keyCode
+            if keyCode == .keyboardUpArrow {
+                contactVC?.arrowUp(messageInputBar.textView)
+            } else if keyCode == .keyboardDownArrow {
+                contactVC?.arrowDown(messageInputBar.textView)
+            } else if keyCode == .keyboardV && key.modifierFlags == .command {
+                processItemProviders(UIPasteboard.general.itemProviders)
+            }
+        }
     }
     
 
     func contentHeight() -> CGFloat {
-        return heightCache.values.reduce(0, +)
+        return self.tableView.contentSize.height
+//        return heightCache.values.reduce(0) { partialResult, heights in
+//            return partialResult + heights.header + heights.row
+//        }
+    }
+    
+    func updateCachedHeight(uuid: String, header: CGFloat?, row: CGFloat?) {
+        if heightCache[uuid] == nil {
+            heightCache[uuid] = (header ?? 0, row ?? 0)
+        } else {
+            if let row = row {
+                heightCache[uuid]?.row = row
+            }
+            if let header = header {
+                heightCache[uuid]?.header = header
+            }
+        }
     }
     
     func scrollBottom(animated: Bool = false) {
         if messages.count > 1 {
-            tableView.scrollToRow(at: IndexPath(row: messages.count - 1, section: 0), at: .bottom, animated: animated)
+            tableView.scrollToRow(at: IndexPath(row: 0, section: messages.count - 1), at: .bottom, animated: animated)
         }
     }
     
@@ -350,7 +385,7 @@ class ChatRoomViewController: DogeChatViewController, DogeChatVCTableDataSource 
         if let index = messages.firstIndex(of: message)  {
             messages[index].sendStatus = .success
             messages[index].id = message.id
-            let indexPath = IndexPath(row: index, section: 0)
+            let indexPath = IndexPath(row: 0, section: index)
             if let cell = tableView.cellForRow(at: indexPath) as? MessageBaseCell {
                 cell.message.sendStatus = .success
                 cell.indicator.isHidden = true
@@ -366,6 +401,23 @@ class ChatRoomViewController: DogeChatViewController, DogeChatVCTableDataSource 
         }
     }
     
+    func shouldShowTimeForMessage(_ message: Message) -> Bool {
+        return secondsFromLastShowTimeMessage(message) > TimeHeader.secondThreshold || distanceFromLastShowTime(message: message).distance > TimeHeader.countThreshold
+    }
+
+}
+
+private var MessageShowTimeKey: UInt8 = 0
+
+extension Message {
+    @objc var showTime: Bool {
+        get {
+            return (objc_getAssociatedObject(self, &MessageShowTimeKey) as? NSNumber)?.boolValue ?? false
+        }
+        set {
+            objc_setAssociatedObject(self, &MessageShowTimeKey, NSNumber(value: newValue), .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        }
+    }
 }
 
 extension ChatRoomViewController {
@@ -374,6 +426,8 @@ extension ChatRoomViewController {
         let messages = notification.userInfo?["messages"] as! [Message]
         let filter = messages.filter({ $0.friend?.userID == self.friend.userID })
         insertNewMessageCell(filter)
+        print(">>>>>>>>>>>>>>>")
+        print(self.customTitle, filter.count)
     }
         
     
@@ -392,8 +446,8 @@ extension ChatRoomViewController {
     @objc func displayHistory() {
         isFetchingHistory = true
         customTitle = localizedString("loading")
-        pagesAndCurNum.curNum = (self.messages.count / ChatRoomViewController.numberOfHistory) + 1
-        manager?.historyMessages(for: friend, pageNum: pagesAndCurNum.curNum, pageSize: Self.numberOfHistory)
+        pagesAndCurNum.curNum = (self.messages.count / numberOfHistory) + 1
+        manager?.historyMessages(for: friend, pageNum: pagesAndCurNum.curNum, pageSize: numberOfHistory)
         pagesAndCurNum.curNum += 1
         tableView.mj_header?.endRefreshing()
     }
@@ -401,19 +455,15 @@ extension ChatRoomViewController {
     @objc func receiveHistoryMessages(_ noti: Notification) {
         defer {
             tableView.refreshControl?.endRefreshing()
-            isFetchingHistory = false
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                self.isFetchingHistory = false
+            }
         }
         guard noti.object as? String == self.username else { return }
         if purpose == .chat && self.navigationController?.visibleViewController != self { return }
         var empty = true
-        var tempHeight: CGFloat = 0
-        for message in self.messages.reversed() {
-            tempHeight += self.heightCache[message.uuid] ?? 0
-            if tempHeight >= tableView.bounds.height * 0.7 {
-                empty = false
-                break
-            }
-        }
+        let tempHeight = contentHeight()
+        
         customTitle = friend.nickName ?? friendName
         guard let messages = noti.userInfo?["messages"] as? [Message], !messages.isEmpty, let pages = noti.userInfo?["pages"] as? Int else { return }
         if messages[0].option != messageOption {
@@ -431,13 +481,16 @@ extension ChatRoomViewController {
         }
         let alreadyMin = self.messages.max(by: { $0.id > $1.id })?.id ?? Int.max
         let oldStateEmpty = self.messages.isEmpty
+        if !oldStateEmpty {
+            tableView.reloadRows(at: [IndexPath(row: 0, section: 0)], with: .none)
+        }
         self.messages.insert(contentsOf: filtered, at: 0)
         if filtered.contains(where: { $0.id > alreadyMin }) {
             self.messages.sort(by: { $0.id < $1.id })
             self.tableView.reloadData()
             return
         }
-        let indexPaths = [Int](0..<filtered.count).map{ IndexPath(item: $0, section: 0) }
+        let indexPaths = [Int](0..<filtered.count).map{ IndexPath(item: 0, section: $0) }
         var myselfIndexPaths = [IndexPath]()
         var othersIndexPaths = [IndexPath]()
         for (index, indexPath) in indexPaths.enumerated() {
@@ -447,14 +500,16 @@ extension ChatRoomViewController {
                 othersIndexPaths.append(indexPath)
             }
         }
-        if oldStateEmpty || isMac() {
+        if oldStateEmpty {
+            let myIndexSet = IndexSet(myselfIndexPaths.map { $0.section })
+            let othersIndexSet = IndexSet(othersIndexPaths.map { $0.section })
             tableView.performBatchUpdates {
-                self.tableView.insertRows(at: myselfIndexPaths, with: .right)
-                self.tableView.insertRows(at: othersIndexPaths, with: .left)
+                self.tableView.insertSections(myIndexSet, with: .right)
+                self.tableView.insertSections(othersIndexSet, with: .left)
             } completion: { _ in
                 self.isFetchingHistory = true
                 if empty && !indexPaths.isEmpty{
-                    self.tableView.scrollToRow(at: IndexPath(row: self.tableView.numberOfRows(inSection: 0) - 1, section: 0), at: .bottom, animated: true)
+                    self.tableView.scrollToRow(at: IndexPath(row: 0, section: self.tableView.numberOfSections - 1), at: .bottom, animated: true)
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) { [weak self] in
                         guard let self = self else { return }
                         self.scrollViewDidEndDecelerating(self.tableView)
@@ -466,8 +521,13 @@ extension ChatRoomViewController {
                 }
             }
         } else {
-            tableView.reloadData()
-            tableView.scrollToRow(at: IndexPath(row: indexPaths.last!.row + 1, section: 0), at: .top, animated: false)
+            let indexSet = IndexSet(indexPaths.map{$0.section})
+            UIView.setAnimationsEnabled(false)
+            tableView.beginUpdates()
+            tableView.insertSections(indexSet, with: .none)
+            tableView.endUpdates()
+            UIView.setAnimationsEnabled(true)
+            tableView.scrollToRow(at: IndexPath(row: 0, section: indexPaths.last!.section + 1), at: .top, animated: false)
         }
     }
     
@@ -487,7 +547,7 @@ extension ChatRoomViewController {
         message.messageType = .join
         message.referMessage = nil
         message.referMessageUUID = nil
-        let indexPath = IndexPath(row: index, section: 0)
+        let indexPath = IndexPath(row: 0, section: index)
         tableView.reloadRows(at: [indexPath], with: .fade)
     }
     
@@ -497,31 +557,8 @@ extension ChatRoomViewController {
     }
 }
 
-extension ChatRoomViewController: UITextViewDelegate {
+extension ChatRoomViewController {
         
-    func textViewShouldBeginEditing(_ textView: UITextView) -> Bool {
-        UIMenuController.shared.menuItems?.removeAll(where: { NSStringFromSelector($0.action).hasPrefix("dogechat")} )
-        scrollBottom(animated: false)
-        showEmojiButton(textView.text.isEmpty)
-        messageInputBar.recoverEmojiButton()
-        emojiSelectView.pageIndicator.isHidden = true
-        return true
-    }
-    
-    func textViewShouldEndEditing(_ textView: UITextView) -> Bool {
-        showEmojiButton(true)
-        return true
-    }
-    
-    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
-        if text == "\n" {
-            messageInputBar.sendTapped()
-            messageInputBar.textView.font = .systemFont(ofSize: MessageInputView.textViewDefaultFontSize)
-            return false
-        }
-        return true
-    }
-    
     func showEmojiButton(_ show: Bool) {
         if messageInputBar.emojiButton.isHidden == !show {
             return

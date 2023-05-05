@@ -140,9 +140,8 @@ class ProfileVC: DogeChatViewController, DogeChatVCTableDataSource, UITableViewD
             break
         case .shortcut:
             trailingType = .textField
-            if let letter = info?.shortcutLetter?.first {
-                trailingText = "control+command+\(letter)"
-            }
+            let letter = info?.shortcutLetter?.first ?? "D"
+            trailingText = "control+command+\(letter)"
         case .deleteAccount:
             break
         }
@@ -272,6 +271,14 @@ extension ProfileVC: TrailingViewProtocol {
                         })
                     })
                 }
+            }
+        }
+    }
+    
+    func textFieldDidBeginEditing(cell: CommonTableCell) {
+        if let indexPath = tableView.indexPath(for: cell) {
+            if sections[indexPath.section][indexPath.row] == .shortcut {
+                cell.textField.text = nil
             }
         }
     }

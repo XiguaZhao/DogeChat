@@ -12,6 +12,24 @@ import DogeChatUniversal
 import UIKit
 import DogeChatCommonDefines
 
+var titleFont: UIFont {
+    if !isMac() {
+        return UIFont.preferredFont(forTextStyle: .body)
+    } else {
+        return .systemFont(ofSize: 16 * fontSizeScale)
+    }
+}
+
+var subtitleFont: UIFont {
+    if !isMac() {
+        return .preferredFont(forTextStyle: .footnote)
+    } else {
+        return .systemFont(ofSize: 12 * fontSizeScale)
+    }
+}
+
+var fontSizeScale: CGFloat = getScaleForSizeCategory((UserDefaults.standard.value(forKey: "sizeCategory") as? UIContentSizeCategory) ?? .medium)
+
 func playHaptic(_ intensity: CGFloat = 1) {
     if #available(iOS 13.0, *) {
         HapticManager.shared.playHapticTransient(time: 0, intensity: Float(intensity), sharpness: 1)
@@ -75,6 +93,81 @@ func isCatalyst() -> Bool {
         return ProcessInfo.processInfo.isMacCatalystApp
     } else {
         return false
+    }
+}
+
+func makeToast(message: String, detail: String? = nil, showTime: TimeInterval = 0.5, completion: (() -> Void)? = nil) {
+    var window: UIWindow?
+    if #available(iOS 13, *) {
+        window = UIApplication.shared.windows.first
+    } else {
+        window = UIApplication.shared.keyWindow
+    }
+    guard let window = window else { return }
+    window.rootViewController?.makeAutoAlert(message: message, detail: detail, showTime: showTime, completion: completion)
+}
+
+public extension UIView {
+    
+    var left: CGFloat {
+        get {
+            return self.frame.origin.x
+        }
+        set {
+            var frame = self.frame
+            frame.origin.x = newValue
+            self.frame = frame
+        }
+    }
+        
+    var right: CGFloat {
+        get {
+            return self.frame.maxX
+        }
+        set {
+            var frame = self.frame
+            frame.origin.x += (newValue - frame.maxX)
+            self.frame = frame
+        }
+    }
+        
+    var top: CGFloat {
+        get {
+            return self.frame.origin.y
+        }
+        set {
+            var frame = self.frame
+            frame.origin.y = newValue
+            self.frame = frame
+        }
+    }
+    
+    
+    var bottom: CGFloat {
+        get {
+            return self.frame.maxY
+        }
+        set {
+            frame.origin.y += (newValue - frame.maxY)
+        }
+    }
+    
+    var width: CGFloat {
+        get {
+            return self.frame.width
+        }
+        set {
+            frame.size.width = newValue
+        }
+    }
+    
+    var height: CGFloat {
+        get {
+            return self.frame.height
+        }
+        set {
+            frame.size.height = newValue
+        }
     }
 }
 
@@ -222,3 +315,64 @@ func getScaleForSizeCategory(_ sizeCategory: UIContentSizeCategory) -> CGFloat {
     return fontSizeScale
 }
 
+func getBiggerSizeCategoryForSizeCategory(_ sizeCategory: UIContentSizeCategory) -> UIContentSizeCategory {
+    switch sizeCategory {
+    case .accessibilityExtraExtraExtraLarge:
+        return .accessibilityExtraExtraExtraLarge
+    case .accessibilityExtraExtraLarge:
+        return .accessibilityExtraExtraExtraLarge
+    case .accessibilityExtraLarge:
+        return .accessibilityExtraExtraLarge
+    case .accessibilityLarge:
+        return .accessibilityExtraLarge
+    case .accessibilityMedium:
+        return .accessibilityLarge
+    case .extraExtraExtraLarge:
+        return .accessibilityMedium
+    case .extraExtraLarge:
+        return .extraExtraExtraLarge
+    case .extraLarge:
+        return .extraExtraLarge
+    case .large:
+        return .extraLarge
+    case .medium:
+        return .large
+    case .small:
+        return .medium
+    case .extraSmall:
+        return .small
+    default:
+        return .medium
+    }
+}
+
+func getSmallerCategoryForSizeCategory(_ sizeCategory: UIContentSizeCategory) -> UIContentSizeCategory {
+    switch sizeCategory {
+    case .accessibilityExtraExtraExtraLarge:
+        return .accessibilityExtraExtraLarge
+    case .accessibilityExtraExtraLarge:
+        return .accessibilityExtraLarge
+    case .accessibilityExtraLarge:
+        return .accessibilityLarge
+    case .accessibilityLarge:
+        return .accessibilityMedium
+    case .accessibilityMedium:
+        return .extraExtraExtraLarge
+    case .extraExtraExtraLarge:
+        return .extraExtraLarge
+    case .extraExtraLarge:
+        return .extraLarge
+    case .extraLarge:
+        return .large
+    case .large:
+        return .medium
+    case .medium:
+        return .small
+    case .small:
+        return .extraSmall
+    case .extraSmall:
+        return .extraSmall
+    default:
+        return .medium
+    }
+}

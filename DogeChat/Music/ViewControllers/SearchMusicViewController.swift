@@ -11,6 +11,12 @@ import DogeChatCommonDefines
 import DogeChatNetwork
 
 class SearchMusicViewController: DogeChatViewController, DogeChatVCTableDataSource {
+    
+    enum MoreButtonType {
+        case switchCountry
+        case musicKit
+    }
+    
     let searchBar = UISearchBar()
     var tableView = DogeChatTableView()
     var page = 1
@@ -20,6 +26,8 @@ class SearchMusicViewController: DogeChatViewController, DogeChatVCTableDataSour
     let sources: [TrackSource] = [.appleMusic]
     
     var results = [Track]()
+    
+    var moreButtonType = MoreButtonType.switchCountry
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -36,6 +44,27 @@ class SearchMusicViewController: DogeChatViewController, DogeChatVCTableDataSour
         let loadMore = UIBarButtonItem(title: localizedString("china/us"), style: .plain, target: self, action: #selector(switchCountry(_:)))
         navigationItem.setRightBarButton(loadMore, animated: true)
         navigationItem.titleView = searchBar
+        
+        Task {
+            if #available(iOS 15, *) {
+                let isMembership = await MusicManager.shared.canPlayAppleMusicContents()
+                if isMembership {
+                    let switchCountry = UIAction(title: localizedString("china/us")) { [weak self] action in
+                        self?.moreButtonType = .switchCountry
+                        self?.switchCountry(nil)
+                    }
+                    let musicKit = UIAction(title: "MusicKit") { [weak self] action in
+                        self?.page = 0
+                        self?.moreButtonType = .musicKit
+                        self?.searchUsingMusicKit()
+                    }
+                    let menu = UIMenu(children: [switchCountry, musicKit])
+                    let loadMore = UIBarButtonItem(title: localizedString("more"), menu: menu)
+                    loadMore.changesSelectionAsPrimaryAction = true
+//                    navigationItem.setRightBarButton(loadMore, animated: true)
+                }
+            }
+        }
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -50,12 +79,22 @@ class SearchMusicViewController: DogeChatViewController, DogeChatVCTableDataSour
     }
     
     
-    @objc func switchCountry(_ sender: UIBarButtonItem) {
+    @objc func switchCountry(_ sender: UIBarButtonItem!) {
         guard let text = searchBar.text, !text.isEmpty else { return }
         page += 1
         navigationItem.title = localizedString("switching")
         self.country = country == .CN ? .US : .CN
         searchTapped()
+    }
+    
+    func searchUsingMusicKit() {
+        guard let text = searchBar.text, !text.isEmpty else { return }
+        Task {
+            if #available(iOS 15, *) {
+                await MusicManager.shared.search(text, page: page)
+            }
+            page += 1
+        }
     }
     
     func reloadDataWithMoreTracks(_ tracks: [Track]) {

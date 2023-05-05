@@ -71,6 +71,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     var socketManager: WebSocketManager! {
         didSet {
             accountInfo = nil
+            if #available(iOS 16, *), let socketManager = socketManager {
+#if !targetEnvironment(macCatalyst)
+                PTChannel.shared.socketManager = socketManager
+#endif
+            }
         }
     }
     var socketAdapter: WebSocketManagerAdapter! {
@@ -110,11 +115,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         callWindow.windowScene = window?.windowScene
         switcherWindow.windowScene = window?.windowScene
         
-        if #available(iOS 14, *) {} else {
-            tabbarController.viewControllers![1].tabBarItem.image = UIImage(named: "music")
-        }
         if let windowScene = scene as? UIWindowScene {
-            windowScene.sizeRestrictions?.maximumSize = CGSize(width: 900, height: 1000)
+            if let size = UserDefaults.standard.value(forKey: "windowSize") as? [CGFloat] {
+                windowScene.sizeRestrictions?.maximumSize = CGSize(width: size[0], height: size[1])
+            } else {
+                windowScene.sizeRestrictions?.maximumSize = CGSize(width: 900, height: 1000)
+            }
             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                 windowScene.sizeRestrictions?.maximumSize = CGSize(width: CGFloat.greatestFiniteMagnitude, height: CGFloat.greatestFiniteMagnitude)
             }
@@ -374,7 +380,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             state = .none
             return
         }
-        self.processReloginOrReConnect()
+        if let nav = self.navigationController, !(nav.visibleViewController is JoinChatViewController) {
+            self.processReloginOrReConnect()
+        }
     }
     
     func windowScene(_ windowScene: UIWindowScene, performActionFor shortcutItem: UIApplicationShortcutItem, completionHandler: @escaping (Bool) -> Void) {

@@ -29,7 +29,6 @@ class MessageTrackCell: MessageBaseCell {
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         if dontShow {
-            timeLabel.isHidden = true
             avatarImageView.isHidden = true
             return
         }

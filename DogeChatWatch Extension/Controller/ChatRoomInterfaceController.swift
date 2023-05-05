@@ -29,6 +29,15 @@ class ChatRoomInterfaceController: WKInterfaceController {
     
     @IBOutlet weak var inputTF: WKInterfaceTextField!
     var input = ""
+    var isFetchingHistory = false {
+        didSet {
+            if isFetchingHistory {
+                self.setTitle("正在加载...")
+            } else {
+                self.setTitle(SocketManager.shared.messageManager.myName)
+            }
+        }
+    }
     @IBAction func inputAction(_ value: NSString?) {
         if let input = value {
             self.input = input as String
@@ -128,7 +137,11 @@ class ChatRoomInterfaceController: WKInterfaceController {
     }
     
     @objc func receiveHistory(noti: Notification) {
-        guard let messages = noti.userInfo?["messages"] as? [Message], let pages = noti.userInfo?["pages"] as? Int else { return }
+        receiveHistoryMessages(params: noti.userInfo)
+    }
+        
+    func receiveHistoryMessages(params: [AnyHashable : Any]?) {
+        guard let messages = params?["messages"] as? [Message], let pages = params?["pages"] as? Int else { return }
         self.pagesAndCurNum.pages = pages
         let filtered = messages.filter { !self.messagesUUIDs.contains($0.uuid) }.reversed() as [Message]
         let oldIndex = min(self.messages.count, filtered.count)
@@ -137,7 +150,7 @@ class ChatRoomInterfaceController: WKInterfaceController {
         self.table.insertRows(at: indexSet, withRowType: messageRowType)
         insertAlreadyAndHistoryMessages(filtered, oldIndex: oldIndex, toBottom: false)
     }
-        
+    
     func insertMessages(_ messages: [Message]) {
         let alreadyCount = self.messages.count
         let messages = messages.filter({ !messagesUUIDs.contains($0.uuid) })
@@ -195,12 +208,17 @@ class ChatRoomInterfaceController: WKInterfaceController {
     
     
     @objc func displayHistory() {
-        guard pagesAndCurNum.curNum <= pagesAndCurNum.pages else {
+        guard !isFetchingHistory, pagesAndCurNum.curNum <= pagesAndCurNum.pages else {
             return
         }
         pagesAndCurNum.curNum = (self.messages.count / ChatRoomInterfaceController.numberOfHistory) + 1
         manager.commonSocket.historyMessages(for: friend, pageNum: pagesAndCurNum.curNum)
-        pagesAndCurNum.curNum += 1
+        isFetchingHistory = true
+        manager.httpManager.historyMessages(for: self.friend, pageNum: pagesAndCurNum.curNum, pageSize: ChatRoomInterfaceController.numberOfHistory, needInsertWhenWrap: false) { [weak self] params in
+            self?.receiveHistoryMessages(params: params)
+            self?.pagesAndCurNum.curNum += 1
+            self?.isFetchingHistory = false
+        }
     }
     
     @IBAction func emojiAction() {

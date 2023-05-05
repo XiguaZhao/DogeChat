@@ -76,6 +76,12 @@ class MediaLoader: NSObject, URLSessionDownloadDelegate {
     
 
     func requestImage(urlStr: String, type: MessageType, cookie: String? = nil, syncIfCan: Bool = false, imageWidth: ImageWidth = .width100, needStaticGif: Bool = false, needCache: Bool = true, onlyDataWhenImage: Bool = false, completion: ((UIImage?, Data?, URL) -> Void)? = nil, progress: ((Double) -> Void)? = nil) {
+        if urlStr.hasPrefix("file://") {
+            if let url = URL(string: urlStr), let data = try? Data(contentsOf: url) {
+                completion?(UIImage(data: data), data, url)
+            }
+            return
+        }
         syncOnMainThread {
             if urlStr.isEmpty {
                 return

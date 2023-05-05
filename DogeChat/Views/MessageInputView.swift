@@ -47,10 +47,10 @@ class MessageInputView: DogeChatStaticBlurView {
     }
     static let textViewMaxHeight: CGFloat = 160
     static let defaultHeight: CGFloat = 86
-    static let textViewDefaultFontSize: CGFloat = 17
+    static let textViewDefaultFontSize: CGFloat = 17 + MessageTextCell.macCatalystFontSizeOffset
     static let ratioOfEmojiView: CGFloat = 0.45
     static let offset: CGFloat = 12
-    let width: CGFloat = 30
+    static let width: CGFloat = 30
     var emojiButtonStatus: EmojiButtonStatus = .normal
     var activeWhenEnterBackground = false
     let textView = DogeChatTextView()
@@ -71,6 +71,7 @@ class MessageInputView: DogeChatStaticBlurView {
     let atButton = UIButton()
     let referView = ReferView(type: .inputView)
     var lastInset: UIEdgeInsets = .zero
+    var lastFontSize: CGFloat = 0
     weak var referViewBottomContraint: NSLayoutConstraint!
     var isActive: Bool {
         return textView.isFirstResponder || self.frame.maxY < (self.superview?.bounds.height)!
@@ -79,18 +80,13 @@ class MessageInputView: DogeChatStaticBlurView {
     override init(frame: CGRect) {
         super.init(frame: frame)
                 
-        textView.translatesAutoresizingMaskIntoConstraints = false
+        textView.enablesReturnKeyAutomatically = true
         textView.layer.cornerRadius = 8
-        textView.layer.borderColor = UIColor(red: 200/255, green: 200/255, blue: 200/255, alpha: 0.6).cgColor
+        textView.layer.borderColor = UIColor(red: 73/255, green: 142/255, blue: 247/255, alpha: 1).cgColor
         textView.layer.borderWidth = 2
-        textView.font = UIFont.systemFont(ofSize: MessageInputView.textViewDefaultFontSize)
+        textView.font = UIFont.systemFont(ofSize: MessageInputView.textViewDefaultFontSize * fontSizeScale)
         textView.returnKeyType = .send
         textView.backgroundColor = .clear
-        referView.translatesAutoresizingMaskIntoConstraints = false
-        addButton.translatesAutoresizingMaskIntoConstraints = false
-        emojiButton.translatesAutoresizingMaskIntoConstraints = false
-        upArrowButton.translatesAutoresizingMaskIntoConstraints = false
-        voiceButton.translatesAutoresizingMaskIntoConstraints = false
         recoverEmojiButton()
         if #available(iOS 13, *) {
             let largeConfig = Self.largeConfig as! UIImage.Configuration
@@ -132,6 +128,7 @@ class MessageInputView: DogeChatStaticBlurView {
 
         addButton.addTarget(self, action: #selector(addButtonTapped), for: .touchUpInside)
         emojiButton.addTarget(self, action: #selector(emojiButtonTapped), for: .touchUpInside)
+        upArrowButton.addTarget(self, action: #selector(sendTapped), for: .touchUpInside)
         voiceButton.addTarget(self, action: #selector(voiceButtonTapped(_:)), for: .touchUpInside)
         cameraButton.addTarget(self, action: #selector(cameraButtonTapped(_:)), for: .touchUpInside)
         photoButton.addTarget(self, action: #selector(photoButtonTapped(_:)), for: .touchUpInside)
@@ -162,14 +159,14 @@ class MessageInputView: DogeChatStaticBlurView {
         if #available(iOS 13, *) {
             toolStack.arrangedSubviews.forEach { button in
                 button.mas_makeConstraints { make in
-                    make?.width.height().mas_lessThanOrEqualTo()(width)
+                    make?.width.height().mas_lessThanOrEqualTo()(Self.width)
                 }
             }
         } else {
             toolStack.arrangedSubviews.forEach { button in
                 (button as? UIButton)?.imageView?.contentMode = .scaleAspectFit
                 button.mas_makeConstraints { make in
-                    make?.width.height().mas_lessThanOrEqualTo()(width - 5)
+                    make?.width.height().mas_lessThanOrEqualTo()(Self.width - 5)
                 }
             }
         }
@@ -183,7 +180,7 @@ class MessageInputView: DogeChatStaticBlurView {
         emojiButton.mas_makeConstraints { make in
             make?.right.equalTo()(self.mas_safeAreaLayoutGuideRight)?.offset()(-Self.offset)
             make?.centerY.equalTo()(self.textView)
-            make?.width.height().mas_equalTo()(width)
+            make?.width.height().mas_equalTo()(Self.width)
         }
         
         NSLayoutConstraint.activate([
@@ -206,7 +203,7 @@ class MessageInputView: DogeChatStaticBlurView {
     
     override func updateConstraints() {
         
-        let width: CGFloat = 30
+        let width: CGFloat = Self.width
 
         toolStack.mas_updateConstraints { make in
             make?.left.equalTo()(self.mas_safeAreaLayoutGuideLeft)?.offset()(Self.offset)
@@ -309,6 +306,7 @@ class MessageInputView: DogeChatStaticBlurView {
         switch ges.state {
         case .began:
             beginY = ges.location(in: self.superview).y
+            lastFontSize = textView.font!.pointSize
         case .changed:
             let nowY = ges.location(in: self.superview).y
             let offset = (beginY - nowY) / 500
@@ -316,8 +314,10 @@ class MessageInputView: DogeChatStaticBlurView {
             var newSize = textView.font!.pointSize + offset
             newSize = min(50, newSize)
             newSize = max(7, newSize)
-            textView.font = .systemFont(ofSize: newSize)
-            delegate?.textViewFontSizeChange(textView, oldSize: oldSize, newSize: newSize)
+            if lastFontSize != newSize {
+                textView.font = .systemFont(ofSize: newSize)
+                delegate?.textViewFontSizeChange(textView, oldSize: oldSize, newSize: newSize)
+            }
             let nowDirectionUp = ges.velocity(in: self.superview).y < 0
             if nowDirectionUp != directionUp {
                 beginY = nowY
@@ -366,8 +366,8 @@ class MessageInputView: DogeChatStaticBlurView {
         guard let toolStack = self.toolStack else { return }
         let pendings = [cameraButton, locationButton]
         let single: CGFloat = 1.6
-        let totalWidth = CGFloat(toolStack.arrangedSubviews.count - pendings.count) * width * single
-        let remain = (self.bounds.width - totalWidth) / width
+        let totalWidth = CGFloat(toolStack.arrangedSubviews.count - pendings.count) * Self.width * single
+        let remain = (self.bounds.width - totalWidth) / Self.width
         cameraButton.isHidden = remain < single
         locationButton.isHidden = remain < single * 2
     }

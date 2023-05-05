@@ -53,7 +53,7 @@ extension ChatRoomViewController: PKViewChangeDelegate {
             let height = Int(bounds.size.height)
             message.drawBounds = bounds
             if let index = self.messages.firstIndex(where: { $0.uuid == message.uuid }) {
-                tableView.reloadRows(at: [IndexPath(item: index, section: 0)], with: .none)
+                tableView.reloadRows(at: [IndexPath(item: 0, section: index)], with: .none)
             }
             insertNewMessageCell([message], forceScrollBottom: true)
             let group = DispatchGroup()

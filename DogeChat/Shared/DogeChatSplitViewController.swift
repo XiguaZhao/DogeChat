@@ -29,6 +29,10 @@ class DogeChatSplitViewController: UISplitViewController {
         }
     }
     
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        super.viewWillTransition(to: size, with: coordinator)
+        UserDefaults.standard.set([size.width, size.height], forKey: "windowSize")
+    }
     
     func findContactVC() -> ContactsTableViewController? {
         if let tabBarController = self.viewControllers.first as? UITabBarController {

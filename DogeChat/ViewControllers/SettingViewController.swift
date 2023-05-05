@@ -64,6 +64,7 @@ class SettingViewController: DogeChatViewController, DatePickerChangeDelegate, U
     override func viewDidLoad() {
         super.viewDidLoad()
         self.navigationItem.title = NSLocalizedString("setting", comment: "settings")
+        self.navigationController?.tabBarItem.title = localizedString("mine")
         if isMac() {
             settingTypes.remove(at: 1)
         }
@@ -218,6 +219,7 @@ class SettingViewController: DogeChatViewController, DatePickerChangeDelegate, U
     func customBlur(isOn: Bool) {
         if !isOn {
             deleteFile(dirName: "customBlur", fileName: userID)
+            NotificationCenter.default.post(name: .immersive, object: false)
             PlayerManager.shared.customImage = nil
             manager?.httpsManager.saveTracks(nil, andBlurImage: "", customizedData: nil, completion: nil)
             return
@@ -301,5 +303,8 @@ class SettingViewController: DogeChatViewController, DatePickerChangeDelegate, U
         
     }
     
+    func textFieldDidBeginEditing(cell: CommonTableCell) {
+        
+    }
 }
 

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="19529" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21225" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="19519"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21207"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -20,27 +20,34 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="UvR-cw-6Nm">
-                    <rect key="frame" x="0.0" y="44" width="414" height="818"/>
+                    <rect key="frame" x="0.0" y="48" width="414" height="814"/>
                     <subviews>
                         <imageView clipsSubviews="YES" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="cat180*180.png" translatesAutoresizingMaskIntoConstraints="NO" id="I2i-Kx-XY4">
-                            <rect key="frame" x="0.0" y="0.0" width="138" height="818"/>
+                            <rect key="frame" x="0.0" y="0.0" width="103.5" height="814"/>
                             <gestureRecognizers/>
                             <connections>
                                 <outletCollection property="gestureRecognizers" destination="lvu-GV-ez4" appends="YES" id="Anr-4s-zSt"/>
                             </connections>
                         </imageView>
                         <imageView clipsSubviews="YES" tag="1" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="dog180*180.png" translatesAutoresizingMaskIntoConstraints="NO" id="3Tu-hf-eeU">
-                            <rect key="frame" x="138" y="0.0" width="138" height="818"/>
+                            <rect key="frame" x="103.5" y="0.0" width="103.5" height="814"/>
                             <gestureRecognizers/>
                             <connections>
                                 <outletCollection property="gestureRecognizers" destination="t7q-CB-Qvw" appends="YES" id="8hE-ai-CyQ"/>
                             </connections>
                         </imageView>
                         <imageView clipsSubviews="YES" tag="2" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="bear180*180.png" translatesAutoresizingMaskIntoConstraints="NO" id="yV3-tv-26u">
-                            <rect key="frame" x="276" y="0.0" width="138" height="818"/>
+                            <rect key="frame" x="207" y="0.0" width="103.5" height="814"/>
                             <gestureRecognizers/>
                             <connections>
                                 <outletCollection property="gestureRecognizers" destination="Y9S-fh-dkH" appends="YES" id="rL7-Vn-OsG"/>
+                            </connections>
+                        </imageView>
+                        <imageView clipsSubviews="YES" tag="3" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="girl180*180.png" translatesAutoresizingMaskIntoConstraints="NO" id="D3f-cg-o5b">
+                            <rect key="frame" x="310.5" y="0.0" width="103.5" height="814"/>
+                            <gestureRecognizers/>
+                            <connections>
+                                <outletCollection property="gestureRecognizers" destination="8KR-er-vCc" appends="YES" id="pfg-qV-1ao"/>
                             </connections>
                         </imageView>
                     </subviews>
@@ -71,11 +78,17 @@
                 <action selector="tapAction:" destination="-1" id="1J8-Eb-YVW"/>
             </connections>
         </tapGestureRecognizer>
+        <tapGestureRecognizer id="8KR-er-vCc">
+            <connections>
+                <action selector="tapAction:" destination="-1" id="Ner-FD-rsg"/>
+            </connections>
+        </tapGestureRecognizer>
     </objects>
     <resources>
         <image name="bear180*180.png" width="180" height="180"/>
         <image name="cat180*180.png" width="180" height="180"/>
         <image name="dog180*180.png" width="180" height="180"/>
+        <image name="girl180*180.png" width="177.53424072265625" height="177.53424072265625"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>

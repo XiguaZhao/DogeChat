@@ -33,6 +33,7 @@ extension ContactsTableViewController: ContactTableViewCellDelegate, UIContextMe
         avatarContainer.layer.cornerRadius = 22;
         avatarContainer.addSubview(avatarImageView)
         let stackView = UIStackView(arrangedSubviews: [avatarContainer, nameLabel])
+        self.avatarStack = stackView
         stackView.spacing = 10
         let longPress = UILongPressGestureRecognizer(target: self, action: #selector(longPressRightButton(sender:)))
         longPress.minimumPressDuration = 0.2
@@ -48,6 +49,13 @@ extension ContactsTableViewController: ContactTableViewCellDelegate, UIContextMe
     func setupMyAvatar() {
         DispatchQueue.main.async { [self] in
             if let bar = navigationController?.navigationBar {
+                if isMac() {
+                    if let superview = avatarStack.superview {
+                        avatarStack.mas_remakeConstraints { make in
+                            make?.top.bottom().equalTo()(superview)
+                        }
+                    }
+                }
                 avatarContainer.layer.cornerRadius = bar.bounds.height / 2
                 avatarContainer.mas_updateConstraints { make in
                     make?.width.height().mas_equalTo()(bar.bounds.height)
@@ -66,19 +74,23 @@ extension ContactsTableViewController: ContactTableViewCellDelegate, UIContextMe
         guard let manager = manager, sender.state == .ended else {
             return
         }
-        self.transitionSourceView = avatarImageView
-        self.transitionToView = avatarImageView
-        self.transitionToRadiusView = avatarContainer
-        self.transitionFromCornerRadiusView = avatarContainer
-        let browser = MediaBrowserViewController()
-        browser.imagePaths = [manager.httpsManager.myAvatarUrl]
-        browser.purpose = .avatar
-        browser.modalPresentationStyle = .fullScreen
-        browser.transitioningDelegate = DogeChatTransitionManager.shared
-        DogeChatTransitionManager.shared.fromDataSource = self
-        DogeChatTransitionManager.shared.toDataSource = self
-        self.present(browser, animated: true, completion: nil)
+        MediaLoader.shared.requestImage(urlStr: manager.httpsManager.myAvatarUrl, type: .photo, syncIfCan: true, imageWidth: .original) { [self] image, _, _ in
+            DogeChatTransitionManager.shared.fromDataSource = self
+            DogeChatTransitionManager.shared.toDataSource = self
+            let imageView = UIImageView(image: image)
+            imageView.frame = avatarImageView.convert(avatarImageView.bounds, to: nil)
+            self.transitionSourceView = imageView
+            self.transitionToView = avatarImageView
+            self.transitionToRadiusView = avatarContainer
+            self.transitionFromCornerRadiusView = avatarContainer
+            let browser = MediaBrowserViewController()
+            browser.imagePaths = [manager.httpsManager.myAvatarUrl]
+            browser.purpose = .avatar
+            browser.modalPresentationStyle = .fullScreen
+            browser.transitioningDelegate = DogeChatTransitionManager.shared
 
+            self.present(browser, animated: true, completion: nil)
+        }
         playHaptic()
     }
         

@@ -58,6 +58,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         UserDefaults(suiteName: groupName)?.set(true, forKey: "hostActive")
         registerPushAction()
+        moveToContainerIfNeeded()
         if UserDefaults.standard.value(forKey: "forceDarkMode") == nil {
             UserDefaults.standard.setValue(true, forKey: "forceDarkMode")
         }
@@ -198,6 +199,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             completionHandler([])
             return
         }
+        registerChannelManager()
+        if #available(iOS 16, *), infos["type"] as? String == "intercom" {
+            PTChannel.shared.processPTTInviteNotification()
+        }
         processRevoke(infos)
         if let delegate = self.remoteNotiDelegate, delegate.shouldPresentRemoteNotification(infos) {
             completionHandler([.alert])
@@ -232,7 +237,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         center.requestAuthorization(options: [.badge, .sound, .alert]) { (granted, error) in
             if (error == nil && granted) {
                 DispatchQueue.main.async {
-                    UIApplication.shared.registerForRemoteNotifications();
+                    UIApplication.shared.registerForRemoteNotifications()
                 }
             } else {
                 print("请求通知权限被拒绝了")
@@ -243,6 +248,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
         self.deviceToken = deviceToken.map { String(format: "%02.2hhx", arguments: [$0]) }.joined()
         print(self.deviceToken!)
+    }
+    
+    func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
+        
     }
         
     // 点击推送通知才会调用
@@ -337,6 +346,7 @@ extension AppDelegate: PKPushRegistryDelegate {
 extension AppDelegate: UNUserNotificationCenterDelegate {
     
     private func registerPushAction() {
+        guard !isMac() else { return }
         let replyAction = UNTextInputNotificationAction(identifier: "REPLY_ACTION", title: "回复", options: UNNotificationActionOptions(rawValue: 0), textInputButtonTitle: "回复", textInputPlaceholder: "")
 //        let doNotDisturbAction = UNNotificationAction(identifier: "DO_NOT_DISTURT_ACTION", title: "勿扰4小时", options: .init(rawValue: 0))
         let categoryForPersonal = UNNotificationCategory(identifier: "MESSAGE", actions: [replyAction], intentIdentifiers: [], hiddenPreviewsBodyPlaceholder: "", options: .customDismissAction)

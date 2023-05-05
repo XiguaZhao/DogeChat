@@ -38,8 +38,8 @@ class MessageImageKindCell: MessageBaseCell {
             return
         }
         let maxSize = CGSize(width: 2*self.contentView.frame.width/3, height: CGFloat.greatestFiniteMagnitude)
-        let nameHeight = message.messageSender == .ourself ? 0 : nameLabel.bounds.height
-        let height = contentView.bounds.height - 30 - nameHeight - (message.referMessage == nil ? 0 : ReferView.height + ReferView.margin)
+        let nameHeight = (nameLabel.isHidden || message.messageSender == .ourself) ? 0 : nameLabel.bounds.height
+        let height = contentView.bounds.height - (!MessageBaseCell.shouldCalculateNameHeight(message: self.message) ? (2*cellBottomPadding) : 30) - nameHeight - (message.referMessage == nil ? 0 : ReferView.height + ReferView.margin)
         let width = message.imageSize.width * height / message.imageSize.height
         var size = CGSize(width: width, height: height)
         var scale: CGFloat = 1

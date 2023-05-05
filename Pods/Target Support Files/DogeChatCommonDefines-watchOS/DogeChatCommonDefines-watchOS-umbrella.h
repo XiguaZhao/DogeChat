@@ -10,6 +10,7 @@
 #endif
 #endif
 
+#import "DateTranslate.h"
 
 FOUNDATION_EXPORT double DogeChatCommonDefinesVersionNumber;
 FOUNDATION_EXPORT const unsigned char DogeChatCommonDefinesVersionString[];

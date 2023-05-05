@@ -32,7 +32,7 @@ extension ContactsTableViewController: UITableViewDropDelegate {
             let items = coordinator.items.map { $0.dragItem.itemProvider }
             let chatRooms = findChatRoomVCs()
             if let selectedContacts = tableView.indexPathsForSelectedRows?.map({ self.friends[$0.row] }) {
-                self.messageSender.processItemProviders(items, friends: selectedContacts) { messages in
+                self.messageSender.processItemProviders(items, friends: selectedContacts, completion: { messages in
                     for message in messages {
                         if let friend = message.friend {
                             friend.messages.append(message)
@@ -43,7 +43,7 @@ extension ContactsTableViewController: UITableViewDropDelegate {
                     for chatRoom in chatRooms {
                         chatRoom.insertNewMessageCell(messages, forceScrollBottom: true)
                     }
-                }
+                })
             }
         }
     }

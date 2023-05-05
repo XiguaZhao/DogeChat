@@ -50,6 +50,9 @@ extension ChatRoomViewController: UIImagePickerControllerDelegate, UINavigationC
                 self.messageSender.compressAndSendVideo(videoURL, friends: [friend], completion: { [weak self] message in
                     self?.insertNewMessageCell(message)
                 })
+                if picker.sourceType == .camera && picker.cameraCaptureMode == .video {
+                    UISaveVideoAtPathToSavedPhotosAlbum(videoURL.filePath, nil, nil, nil)
+                }
             }
             picker.dismiss(animated: true, completion: nil)
             return
@@ -61,6 +64,9 @@ extension ChatRoomViewController: UIImagePickerControllerDelegate, UINavigationC
         var isGif = false
         var originalUrl: URL?
         processingMedia(finished: false)
+        if picker.sourceType == .camera && picker.cameraCaptureMode == .photo {
+            UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil)
+        }
         if imagePickerType.isImage {
             if let originalUrl_ = info[.imageURL] as? URL {
                 isGif = originalUrl_.absoluteString.hasSuffix(".gif")

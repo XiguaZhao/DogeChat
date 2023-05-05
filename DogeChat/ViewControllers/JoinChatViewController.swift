@@ -6,6 +6,17 @@ import RSAiOSWatchOS
 import AuthenticationServices
 import DogeChatUniversal
 import DogeChatCommonDefines
+import SwiftyJSON
+import CoreTelephony
+
+let kSecClassValue = NSString(format: kSecClass)
+let kSecAttrAccountValue = NSString(format: kSecAttrAccount)
+let kSecValueDataValue = NSString(format: kSecValueData)
+let kSecClassGenericPasswordValue = NSString(format: kSecClassGenericPassword)
+let kSecAttrServiceValue = NSString(format: kSecAttrService)
+let kSecMatchLimitValue = NSString(format: kSecMatchLimit)
+let kSecReturnDataValue = NSString(format: kSecReturnData)
+let kSecMatchLimitOneValue = NSString(format: kSecMatchLimitOne)
 
 class JoinChatViewController: DogeChatViewController {
     
@@ -30,6 +41,8 @@ class JoinChatViewController: DogeChatViewController {
         
         usernameTF.placeholder = "Username"
         passwordTF.placeholder = "Password"
+        usernameTF.textContentType = .username
+        passwordTF.textContentType = .newPassword
         usernameTF.borderStyle = .roundedRect
         passwordTF.borderStyle = .roundedRect
         let tfStackView = UIStackView(arrangedSubviews: [usernameTF, passwordTF])
@@ -93,8 +106,32 @@ class JoinChatViewController: DogeChatViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        if let username = UserDefaults(suiteName: groupName)?.value(forKey: "sharedUsername") as? String,
-           let password = UserDefaults(suiteName: groupName)?.value(forKey: "sharedPassword") as? String {
+        
+        #if !targetEnvironment(macCatalyst)
+        if CTCellularData().restrictedState == .restrictedStateUnknown {
+            URLSession.shared.dataTask(with: URL(string: "https://baidu.com")!).resume()
+        }
+        #endif
+        let keychainQuery = [kSecClassValue : kSecClassGenericPasswordValue,
+                       kSecAttrServiceValue : "dogechat",
+                        kSecReturnDataValue : kCFBooleanTrue!,
+                        kSecMatchLimitValue : kSecMatchLimitOneValue] as NSMutableDictionary
+
+        var dataTypeRef :AnyObject?
+
+        // Search for the keychain items
+        let status: OSStatus = SecItemCopyMatching(keychainQuery, &dataTypeRef)
+
+        if status == errSecSuccess {
+            if let retrievedData = dataTypeRef as? Data,
+               let contentsOfKeychain = String(data: retrievedData, encoding: .utf8) {
+                print(contentsOfKeychain)
+                let json = JSON(parseJSON: contentsOfKeychain)
+                usernameTF.text = json["username"].stringValue
+                passwordTF.text = json["password"].stringValue
+            }
+        } else if let username = UserDefaults(suiteName: groupName)?.value(forKey: "sharedUsername") as? String,
+                  let password = UserDefaults(suiteName: groupName)?.value(forKey: "sharedPassword") as? String {
             usernameTF.text = username
             passwordTF.text = password
         }
@@ -265,6 +302,27 @@ extension JoinChatViewController: UITextFieldDelegate {
             let info = AccountInfo(username: username, avatarURL: "", password: password, userID: userID, cookieInfo: cookieInfo)
             SelectShortcutTVC.namesAndPasswords.append(info)
             SelectShortcutTVC.updateShortcuts()
+        }
+        if let password = password {
+            let usernameAndPassword = [
+                "username" : username,
+                "password" : password
+            ]
+            let dataFromString = try! JSONSerialization.data(withJSONObject: usernameAndPassword)
+
+            // Instantiate a new default keychain query
+            let keychainQuery = [
+                kSecClassValue : kSecClassGenericPasswordValue,
+                kSecAttrServiceValue : "dogechat",
+                kSecValueDataValue : dataFromString
+            ] as NSMutableDictionary
+
+            // Delete any existing items
+            SecItemDelete(keychainQuery as CFDictionary)
+
+            // Add the new keychain item
+            let result = SecItemAdd(keychainQuery as CFDictionary, nil)
+            print(result)
         }
     }
 }

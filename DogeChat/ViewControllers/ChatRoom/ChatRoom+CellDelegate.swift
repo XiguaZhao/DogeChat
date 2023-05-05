@@ -25,7 +25,7 @@ extension ChatRoomViewController: MessageTableViewCellDelegate, TransitionFromDa
     }
     
     func longPressAvatar(_ cell: MessageBaseCell, ges: UILongPressGestureRecognizer!) {
-        if let index = tableView.indexPath(for: cell)?.row {
+        if let index = tableView.indexPath(for: cell)?.section {
             let message = messages[index]
             findGroupMember(userID: message.senderUserID) { [weak self] targetMember in
                 if let friend = targetMember {
@@ -39,7 +39,7 @@ extension ChatRoomViewController: MessageTableViewCellDelegate, TransitionFromDa
         syncOnMainThread {
             for message in messages {
                 if let index = self.messages.firstIndex(where: { $0.uuid == message.uuid }) {
-                    let hud = (self.tableView.cellForRow(at: IndexPath(row: index, section: 0)) as? MessageBaseCell)?.progress
+                    let hud = (self.tableView.cellForRow(at: IndexPath(item: 0, section: index)) as? MessageBaseCell)?.progress
                     hud?.isHidden = progress >= 1
                     hud?.setProgress(CGFloat(progress), animated: false)
                 }
@@ -82,40 +82,57 @@ extension ChatRoomViewController: MessageTableViewCellDelegate, TransitionFromDa
     }
         
     func mediaViewTapped(_ cell: MessageBaseCell, path: String, isAvatar: Bool) {
-        if isAvatar {
-            self.transitionSourceView = cell.avatarImageView
-            self.transitionFromCornerRadiusView = cell.avatarContainer
-        } else {
-            self.transitionSourceView = (cell as? MessageImageKindCell)?.container.subviews.first
-            self.transitionFromCornerRadiusView = (cell as? MessageImageKindCell)?.container
-        }
+        if path.isEmpty { return }
         messageInputBar.textViewResign()
         let paths: [String]
         var targetIndex = 0
+        var firstURLString: String?
         if !isAvatar {
-            let messages = (self.messages.filter { $0.messageType.isImage || $0.messageType == .livePhoto || $0.messageType == .video })
-            paths = messages.map { $0.text }
-            if let index = self.tableView.indexPath(for: cell)?.row {
+            let messages = (self.messages.filter { !$0.text.isEmpty && ($0.messageType.isImage || $0.messageType == .livePhoto || $0.messageType == .video) })
+            paths = messages.compactMap { $0.text.isEmpty ? nil : $0.text }
+            if let index = self.tableView.indexPath(for: cell)?.section {
                 targetIndex = messages.firstIndex(of: self.messages[index]) ?? 0
             } else if let index = paths.firstIndex(of: path) {
                 targetIndex = index
             }
+            if cell.message.messageType == .photo || cell.message.messageType == .sticker {
+                firstURLString = path
+            }
         } else {
             paths = [path]
-//            self.makeBrowser(paths: paths, purpose: .avatar)
-//            return
+            firstURLString = path
         }
-        if !isMac() {
+        let makeBrowser = {
             let browser = MediaBrowserViewController()
-            browser.customData = tableView.indexPath(for:cell)?.row
+            browser.customData = self.tableView.indexPath(for:cell)?.section
             browser.imagePaths = paths
             browser.targetIndex = targetIndex
             browser.purpose = isAvatar ? .avatar : .normal
             browser.modalPresentationStyle = .fullScreen
-            browser.transitioningDelegate = DogeChatTransitionManager.shared
-            DogeChatTransitionManager.shared.fromDataSource = self
-            DogeChatTransitionManager.shared.toDataSource = self
-            self.present(browser, animated: true, completion: nil)
+            return browser
+        }
+        if !isMac(),
+           let targetView = isAvatar ? cell.avatarImageView : (cell as? MessageImageKindCell)?.container.subviews.first,
+           let targetContainerView = isAvatar ? cell.avatarContainer : (cell as? MessageImageKindCell)?.container {
+            if let firstURLString = firstURLString {
+                MediaLoader.shared.requestImage(urlStr: firstURLString, type: .photo, syncIfCan: true, imageWidth: .original) { [self] image, _, _ in
+                    DogeChatTransitionManager.shared.fromDataSource = self
+                    DogeChatTransitionManager.shared.toDataSource = self
+                    let imageView = UIImageView(image: image)
+                    imageView.frame = targetView.convert(targetView.bounds, to: nil)
+                    self.transitionSourceView = imageView
+                    self.transitionToView = targetView
+                    self.transitionToRadiusView = targetContainerView
+                    self.transitionFromCornerRadiusView = targetContainerView
+                    let browser = makeBrowser()
+                    browser.transitioningDelegate = DogeChatTransitionManager.shared
+                    self.present(browser, animated: true, completion: nil)
+                }
+            } else {
+                let browser = makeBrowser()
+                self.present(browser, animated: true, completion: nil)
+            }
+
         } else {
             if #available(iOS 13.0, *) {
                 let option = UIScene.ActivationRequestOptions()
@@ -140,17 +157,17 @@ extension ChatRoomViewController: MessageTableViewCellDelegate, TransitionFromDa
                 index = self.messages.firstIndex(where: { $0.text == path })
             }
             if let index = index  {
-                let indexPath = IndexPath(row: index, section: 0)
+                let indexPath = IndexPath(item: 0, section: index)
                 if let cell = self.tableView.cellForRow(at: indexPath) as? MessageImageKindCell {
                     let container = cell.container
                     let converted = container.convert(container.bounds, to: self.view)
                     if converted.intersects(self.navigationController?.navigationBar.frame ?? CGRect.zero) || converted.intersects(messageInputBar.frame) {
-                        self.tableView.scrollToRow(at: indexPath, at: .middle, animated: false)
+//                        self.tableView.scrollToRow(at: indexPath, at: .middle, animated: false)
                     }
                     self.transitionToView = container.subviews.first
                     self.transitionToRadiusView = container
                 } else {
-                    tableView.scrollToRow(at: indexPath, at: .middle, animated: false)
+//                    tableView.scrollToRow(at: indexPath, at: .middle, animated: false)
                     DispatchQueue.main.async { [self] in
                         if let cell = tableView.cellForRow(at: indexPath) as? MessageImageKindCell {
                             self.transitionToView = cell.container.subviews.first
@@ -162,7 +179,7 @@ extension ChatRoomViewController: MessageTableViewCellDelegate, TransitionFromDa
         } else {
             var target: MessageBaseCell?
             if let index = vc.customData as? Int {
-                if let cell = tableView.cellForRow(at: IndexPath(row: index, section: 0)) as? MessageBaseCell {
+                if let cell = tableView.cellForRow(at: IndexPath(item: 0, section: index)) as? MessageBaseCell {
                     target = cell
                 } else {
                     let cells = tableView.visibleCells as! [MessageBaseCell]
@@ -258,7 +275,7 @@ extension ChatRoomViewController: MessageTableViewCellDelegate, TransitionFromDa
     
     @objc func playToEnd(_ noti: Notification) {
         guard let _index = MessageAudioCell.index else { return }
-        tableView.reloadRows(at: [IndexPath(row: _index, section: 0)], with: .none)
+        tableView.reloadRows(at: [IndexPath(item: 0, section: _index)], with: .none)
         var nextIndex: Int?
         for (index, message) in self.messages.enumerated() {
             if index > _index && message.messageType == .voice {
@@ -304,7 +321,7 @@ extension ChatRoomViewController: MessageTableViewCellDelegate, TransitionFromDa
         let controller = UIMenuController.shared
         guard let targetView = cell.indicationNeighborView else { return }
         activeMenuCell = cell
-        let index = tableView.indexPath(for: cell)!.row
+        let index = tableView.indexPath(for: cell)!.section
         let message = messages[index]
         let copy = UIMenuItem(title: localizedString("copy"), action: #selector(dogechat_copyMenuItemAction(sender:)))
         let refer = UIMenuItem(title: localizedString("refer"), action: #selector(dogechat_referAction(sender:)))
@@ -356,14 +373,14 @@ extension ChatRoomViewController: MessageTableViewCellDelegate, TransitionFromDa
     @objc func dogechat_copyMenuItemAction(sender: UIMenuController) {
         menuItemDone()
         guard let cell = activeMenuCell,
-              let index = tableView.indexPath(for: cell)?.row else { return }
+              let index = tableView.indexPath(for: cell)?.section else { return }
         let message = messages[index]
         makePasteFor(message: message)
     }
     
     func makePasteFor(message: Message) {
         if let index = self.messages.firstIndex(of: message) {
-            let items = wrapItmesWithIndexPath(IndexPath(row: index, section: 0))
+            let items = wrapItemsWithIndexPath(IndexPath(item: 0, section: index))
             UIPasteboard.general.itemProviders = items.map({ $0.itemProvider })
         }
     }
@@ -371,7 +388,7 @@ extension ChatRoomViewController: MessageTableViewCellDelegate, TransitionFromDa
     @objc func dogechat_revokeMenuItemAction(sender: UIMenuController) {
         menuItemDone()
         guard let cell = activeMenuCell,
-              let index = tableView.indexPath(for: cell)?.row else { return }
+              let index = tableView.indexPath(for: cell)?.section else { return }
         revoke(message: messages[index])
     }
     

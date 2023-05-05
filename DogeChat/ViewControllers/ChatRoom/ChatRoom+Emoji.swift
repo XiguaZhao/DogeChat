@@ -14,6 +14,7 @@ import DogeChatCommonDefines
 extension ChatRoomViewController: EmojiViewDelegate {
     
     @objc func emojiButtonTapped() {
+        playHaptic()
         if messageInputBar.emojiButton.image(for: .normal)?.accessibilityIdentifier == "pin" {
             messageInputBar.emojiButtonStatus = .pin
         }
@@ -53,7 +54,7 @@ extension ChatRoomViewController: EmojiViewDelegate {
             items.append(.useAsGroupAvatar)
         }
         if #available(iOS 14, *) {
-            if indexPath.row == 0 {
+            if indexPath.section == 0 {
                 if debugUsers.contains(username) {
                     items.append(.addEmojis)
                 }

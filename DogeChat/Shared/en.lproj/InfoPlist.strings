@@ -5,7 +5,7 @@
   Created by 赵锡光 on 2022/2/18.
   Copyright © 2022 Luke Parham. All rights reserved.
 */
-CFBundleDisplayName = "KeyChat";
+CFBundleDisplayName = "DogeChat";
 NSPhotoLibraryAddUsageDescription = "Add Photos";
 NSCameraUsageDescription = "Take photos to share";
 NSLocationAlwaysAndWhenInUseUsageDescription = "Share locations";

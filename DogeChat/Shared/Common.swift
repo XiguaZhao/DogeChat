@@ -24,10 +24,10 @@ let photoDir = "photos"
 let contactsDir = "contacts"
 let audioDir = "audios"
 
-let maxTextHeight: CGFloat = 2000
+let maxTextHeight: CGFloat = CGFloat.greatestFiniteMagnitude
 let tableViewCellTopBottomPadding: CGFloat = 5
-var fontSizeScale: CGFloat = 1
 let maxFontSize: CGFloat = 60
+
 
 let debugUsers = ["赵锡光", "username2", "username",
                   "Pino", "靓仔2号", "靓仔三号", "西瓜",
@@ -223,6 +223,7 @@ func sizeForImageOrVideo(_ message: Message) -> CGSize? {
 }
 
 func sizeFromStr(_ str: String, preferWidth: Bool? = true, length: CGFloat? = nil) -> CGSize? {
+    let originalStr = str
     var str = str as NSString
     str = str.replacingOccurrences(of: ".jpeg", with: "") as NSString
     str = str.replacingOccurrences(of: ".gif", with: "") as NSString
@@ -243,6 +244,22 @@ func sizeFromStr(_ str: String, preferWidth: Bool? = true, length: CGFloat? = ni
             }
         }
     }
+    if let components = URLComponents(string: originalStr)?.queryItems {
+        var width: CGFloat?
+        var height: CGFloat?
+        for component in components {
+            if component.name == "width", let value = component.value {
+                width = (value as NSString).doubleValue
+            }
+            if component.name == "height", let value = component.value {
+                height = (value as NSString).doubleValue
+            }
+        }
+        if let width = width, let height = height, width > 0, height > 0 {
+            return CGSize(width: width, height: height)
+        }
+    }
+    
     return nil
 }
 

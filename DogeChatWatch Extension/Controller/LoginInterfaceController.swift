@@ -8,6 +8,16 @@
 
 import WatchKit
 import AuthenticationServices
+import SwiftyJSON
+
+let kSecClassValue = NSString(format: kSecClass)
+let kSecAttrAccountValue = NSString(format: kSecAttrAccount)
+let kSecValueDataValue = NSString(format: kSecValueData)
+let kSecClassGenericPasswordValue = NSString(format: kSecClassGenericPassword)
+let kSecAttrServiceValue = NSString(format: kSecAttrService)
+let kSecMatchLimitValue = NSString(format: kSecMatchLimit)
+let kSecReturnDataValue = NSString(format: kSecReturnData)
+let kSecMatchLimitOneValue = NSString(format: kSecMatchLimitOne)
 
 class LoginInterfaceController: WKInterfaceController, ASAuthorizationControllerDelegate {
 
@@ -18,6 +28,27 @@ class LoginInterfaceController: WKInterfaceController, ASAuthorizationController
     
     override func awake(withContext context: Any?) {
         NotificationCenter.default.addObserver(self, selector: #selector(getWCSessionMessage(_:)), name: .wcSessionMessage, object: nil)
+        let keychainQuery = [kSecClassValue : kSecClassGenericPasswordValue,
+                       kSecAttrServiceValue : "dogechat",
+                        kSecReturnDataValue : kCFBooleanTrue!,
+                        kSecMatchLimitValue : kSecMatchLimitOneValue] as NSMutableDictionary
+
+        var dataTypeRef :AnyObject?
+
+        // Search for the keychain items
+        let status: OSStatus = SecItemCopyMatching(keychainQuery, &dataTypeRef)
+
+        if status == errSecSuccess {
+            if let retrievedData = dataTypeRef as? Data,
+               let contentsOfKeychain = String(data: retrievedData, encoding: .utf8) {
+                print(contentsOfKeychain)
+                let json = JSON(parseJSON: contentsOfKeychain)
+                username = json["username"].stringValue
+                password = json["password"].stringValue
+                usernameTF.setText(username)
+                passwordTF.setText(password)
+            }
+        }
     }
     
     @IBAction func usernameAction(_ value: NSString?) {
@@ -43,6 +74,27 @@ class LoginInterfaceController: WKInterfaceController, ASAuthorizationController
                 NotificationCenter.default.post(name: NSNotification.Name("canGetContacts"), object: nil)
                 UserDefaults.standard.setValue(self.username, forKey: "username")
                 UserDefaults.standard.setValue(self.password, forKey: "password")
+                
+                let usernameAndPassword = [
+                    "username" : self.username,
+                    "password" : self.password
+                ]
+                let dataFromString = try! JSONSerialization.data(withJSONObject: usernameAndPassword)
+                
+                // Instantiate a new default keychain query
+                let keychainQuery = [
+                    kSecClassValue : kSecClassGenericPasswordValue,
+                    kSecAttrServiceValue : "dogechat",
+                    kSecValueDataValue : dataFromString
+                ] as NSMutableDictionary
+                
+                // Delete any existing items
+                SecItemDelete(keychainQuery as CFDictionary)
+                
+                // Add the new keychain item
+                let result = SecItemAdd(keychainQuery as CFDictionary, nil)
+                print(result)
+
                 self.pop()
             } else {
                 let confirm = WKAlertAction(title: "好", style: .default) {

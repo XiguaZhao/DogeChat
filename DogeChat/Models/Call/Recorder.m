@@ -21,23 +21,21 @@ static AudioUnit _recordAudioUnit;
 
 @interface Recorder ()
 
-@property (assign, nonatomic) BOOL isUnitWorking;
-@property (assign, nonatomic) BOOL isRecording;  //录音开关状态
-@property (assign, nonatomic) BOOL isPlaying;    //放音开关状态
 @property (assign, nonatomic) OSStatus recorderOpenStatus;
-
+@property (assign, nonatomic) AVAudioSessionCategory category;
+ 
 @end
 
 @implementation Recorder
 
-static Recorder *sharedInstace = nil;
+static Recorder *sharedInstance = nil;
 + (instancetype)sharedInstance {
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        sharedInstace = [[Recorder alloc] init];
-        [sharedInstace initRemoteIO];
+        sharedInstance = [[Recorder alloc] init];
+        [sharedInstance initRemoteIO];
     });
-    return sharedInstace;
+    return sharedInstance;
 }
 
 - (void)initRemoteIO {
@@ -45,7 +43,6 @@ static Recorder *sharedInstace = nil;
     [self initBuffer];
     [self initAudioComponent];
     [self initFormat];
-    [self initAudioProperty];
     [self initRecordeCallback];
     [self initPlayCallback];
 }
@@ -98,7 +95,7 @@ static Recorder *sharedInstace = nil;
                          sizeof(audioFormat));
 }
 
-- (void)initAudioProperty {
+- (void)enableAudioInput {
     UInt32 flag = 1;
     AudioUnitSetProperty(_recordAudioUnit,
                          kAudioOutputUnitProperty_EnableIO,
@@ -106,6 +103,20 @@ static Recorder *sharedInstace = nil;
                          INPUT_BUS,
                          &flag,
                          sizeof(flag));
+}
+
+- (void)disableAudioInput {
+    UInt32 flag = 0;
+    AudioUnitSetProperty(_recordAudioUnit,
+                         kAudioOutputUnitProperty_EnableIO,
+                         kAudioUnitScope_Input,
+                         INPUT_BUS,
+                         &flag,
+                         sizeof(flag));
+}
+
+- (void)enableAudioOutput {
+    UInt32 flag = 1;
     AudioUnitSetProperty(_recordAudioUnit,
                          kAudioOutputUnitProperty_EnableIO,
                          kAudioUnitScope_Output,
@@ -155,20 +166,29 @@ static OSStatus RecordCallback(void *inRefCon,
     recordBufferList.mBuffers[0].mNumberChannels = 1;
     recordBufferList.mBuffers[0].mDataByteSize = numSamples*sizeof(UInt16);
     AudioUnitRender(_recordAudioUnit, ioActionFlags, inTimeStamp, inBusNumber, inNumberFrames, &recordBufferList);
-    if (sharedInstace.isRecording) {
+    if (sharedInstance.isRecording) {
         NSData *pcmData = [NSData dataWithBytes:recordBufferList.mBuffers[0].mData length:recordBufferList.mBuffers[0].mDataByteSize];
         NSMutableData *wholeData = [NSMutableData new];
         NSData *headData = [Recorder bytewithInt:60000];//协议头 4位 (0-4)
-        NSData *countData = [Recorder bytewithInt:sharedInstace.needSendVideo ? 1 : 0];//是否想要视频[4-8]
-        NSData *legnthData = [Recorder bytewithInt:(int)pcmData.length];//当前包的长度 4位 (8-12)
-        NSData *dataType = [Recorder bytewithInt:2];//type 2为音频
+        NSData *wantVideo = [Recorder bytewithInt:(int)sharedInstance.audioPurpose];//是否想要视频[4-8]
+        NSData *lengthData = [Recorder bytewithInt:(int)pcmData.length];//当前包的长度 4位 (8-12)
+        NSData *dataType = [Recorder bytewithInt:(int)sharedInstance.audioType];
+        NSData *uuidData = [sharedInstance.uuid ?: [[NSUUID UUID] UUIDString] dataUsingEncoding:NSUTF8StringEncoding];
+        if (uuidData.length > 36) {
+            uuidData = [uuidData subdataWithRange:NSMakeRange(0, 36)];
+        } else if (uuidData.length < 36) {
+        }
         [wholeData appendData:headData];
-        [wholeData appendData:countData];
-        [wholeData appendData:legnthData];
+        [wholeData appendData:wantVideo];
+        [wholeData appendData:lengthData];
         [wholeData appendData:dataType];
+        [wholeData appendData:uuidData];
         [wholeData appendData:pcmData];
         if (pcmData && pcmData.length > 0) {
-            [sharedInstace.delegate timeToSendData:wholeData];
+            [sharedInstance.delegate timeToSendData:wholeData];
+        }
+        if (sharedInstance.audioType == AudioTypePTT) {
+            [sharedInstance.pttAudioData appendData:pcmData];
         }
     }
     return noErr;
@@ -183,18 +203,18 @@ static OSStatus PlayCallback(void *inRefCon,
                              UInt32 inNumberFrames,
                              AudioBufferList *ioData) {
     UInt32 buffLen = ioData->mBuffers[0].mDataByteSize;
-    NSUInteger receivedLen = sharedInstace.receivedData.length;
-    if (sharedInstace.receivedData.length >= buffLen) {
+    NSUInteger receivedLen = sharedInstance.receivedData.length;
+    if (sharedInstance.receivedData.length >= buffLen) {
         NSUInteger throttleLen = 10000;
         if (receivedLen > throttleLen) {
-            [sharedInstace.receivedData replaceBytesInRange:NSMakeRange(0, receivedLen - buffLen) withBytes:NULL length:0];
+            [sharedInstance.receivedData replaceBytesInRange:NSMakeRange(0, receivedLen - buffLen) withBytes:NULL length:0];
         }
         
-        NSData *data = [sharedInstace.receivedData subdataWithRange:NSMakeRange(0, buffLen)];
+        NSData *data = [sharedInstance.receivedData subdataWithRange:NSMakeRange(0, buffLen)];
         AudioBuffer inBuffer = ioData->mBuffers[0];
         memcpy(inBuffer.mData, data.bytes, data.length);
         inBuffer.mDataByteSize = (UInt32)data.length;
-        [sharedInstace.receivedData replaceBytesInRange:NSMakeRange(0, buffLen) withBytes:NULL length:0];
+        [sharedInstance.receivedData replaceBytesInRange:NSMakeRange(0, buffLen) withBytes:NULL length:0];
     }else {
         for (UInt32 i=0; i < ioData->mNumberBuffers; i++)
         {
@@ -205,9 +225,13 @@ static OSStatus PlayCallback(void *inRefCon,
 }
 
 - (void)initAudioSession {
-    [AVAudioSession.sharedInstance setActive:NO error:nil];
-    NSError *error;
-    [[AVAudioSession sharedInstance] setCategory:AVAudioSessionCategoryPlayAndRecord withOptions:AVAudioSessionCategoryOptionAllowBluetooth | AVAudioSessionCategoryOptionAllowBluetoothA2DP error:&error];
+    if (self.audioType != AudioTypePTT) {
+        [AVAudioSession.sharedInstance setActive:NO error:nil];
+    }
+    if (self.category != [[AVAudioSession sharedInstance] category]) {
+        NSError *error;
+        [[AVAudioSession sharedInstance] setCategory:self.category withOptions:AVAudioSessionCategoryOptionAllowBluetooth | AVAudioSessionCategoryOptionAllowBluetoothA2DP error:&error];
+    }
     //VoiceProcessingIO有一个属性可用来打开(0)/关闭(1)回声消除功能
     UInt32 echoCancellation=0;
     AudioUnitSetProperty(_recordAudioUnit,
@@ -217,8 +241,15 @@ static OSStatus PlayCallback(void *inRefCon,
                          &echoCancellation,
                          sizeof(echoCancellation));
     self.recorderOpenStatus = AudioOutputUnitStart(_recordAudioUnit);
-    self.isUnitWorking = YES;
-    self.nowRoute = AudioRouteHeadphone;
+    if (self.audioType == AudioTypePTT) {
+        self.nowRoute = AudioRouteSpeaker;
+    } else {
+        self.nowRoute = AudioRouteHeadphone;
+    }
+}
+
+- (AVAudioSessionCategory)category {
+    return AVAudioSessionCategoryPlayAndRecord;
 }
 
 - (void)setRouteToOption:(AudioRoute)route {
@@ -246,51 +277,70 @@ static OSStatus PlayCallback(void *inRefCon,
     }
 }
 
+- (void)setNeedSendVideo:(BOOL)needSendVideo {
+    _needSendVideo = needSendVideo;
+    if (needSendVideo) {
+        self.audioPurpose = AudioPurposeWantVideo;
+    }
+}
+
 #pragma mark - public methods
 
 - (void)startRecord {
     NSLog(@"开始录音");
+    _audioPurpose = AudioPurposeDefault;
+    _recordedData = [NSMutableData data];
     self.isRecording = YES;
+    [self enableAudioInput];
+    [self initAudioSession];
+    if (self.audioType == AudioTypePTT) {
+        self.pttAudioData = [NSMutableData new];
+    }
 }
 
 - (void)stopRecord {
     NSLog(@"暂停录音");
     self.isRecording = NO;
+    AudioOutputUnitStop(_recordAudioUnit);
+    [self disableAudioInput];
 }
 
 - (void)startPlay {
     NSLog(@"开始放音");
     self.isPlaying = YES;
+    _audioPurpose = AudioPurposeDefault;
     _receivedData = [NSMutableData data];
+    [self enableAudioOutput];
+    [self initAudioSession];
 }
 
 - (void)stopPlay {
     NSLog(@"暂停放音");
     self.isPlaying = NO;
+    AudioOutputUnitStop(_recordAudioUnit);
 }
 
 - (void)startRecordAndPlay {
-    if (self.isUnitWorking) {
+    if (self.isPlaying && self.isRecording) {
         NSLog(@"通话中...");
         return;
     }
     NSLog(@"开始通话");
-    if (_recordedData) {
-        _recordedData = nil;
+    if (!self.isRecording) {
+        [self startRecord];
     }
-    _recordedData = [NSMutableData data];
-    sharedInstace.receivedData = [NSMutableData data];
-    [self startRecord];
-    [self startPlay];
-    [self initAudioSession];
+    if (!self.isPlaying) {
+        [self startPlay];
+    }
 }
 
 - (void)stopRecordAndPlay {
     NSLog(@"结束通话");
-    AudioOutputUnitStop(_recordAudioUnit);
-    self.isUnitWorking = NO;
-    [self stopRecord];
-    [self stopPlay];
+    self.audioPurpose = AudioPurposeNeedEnd;
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.2 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+        [self stopRecord];
+        [self stopPlay];
+    });
 }
 
 - (void)audio_release {

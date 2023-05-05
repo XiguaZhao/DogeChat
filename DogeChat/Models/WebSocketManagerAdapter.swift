@@ -71,6 +71,9 @@ class WebSocketManagerAdapter: NSObject {
     
     override init() {
         super.init()
+        #if !targetEnvironment(macCatalyst)
+        Recorder.sharedInstance().delegate = self
+        #endif
     }
     
     func registerNotification() {
@@ -199,7 +202,7 @@ class WebSocketManagerAdapter: NSObject {
             if let index = chatRoomVC.messages.firstIndex(of: message) {
                 chatRoomVC.messages[index] = message
                 DispatchQueue.main.async {
-                    chatRoomVC.tableView.reloadRows(at: [IndexPath(item: index, section: 0)], with: .none)
+                    chatRoomVC.tableView.reloadRows(at: [IndexPath(item: 0, section: index)], with: .none)
                 }
             }
         }
@@ -249,30 +252,51 @@ class WebSocketManagerAdapter: NSObject {
 
 extension WebSocketManagerAdapter: VoiceDelegate, WebSocketDataDelegate {
     func didReceiveData(_ data: Data!) {
-        guard let data = data.decompress(withAlgorithm: .zlib) else { return }
+        print("收到二进制数据")
+//        guard let data = data.decompress(withAlgorithm: .zlib) else { return }
         let range = NSRange(location: 12, length: 4)
         let typeData: NSData = (data as NSData).subdata(with: range) as NSData
-        let type = Recorder.int(with: typeData as Data)
+        let type: AudioType = AudioType(rawValue: UInt(Recorder.int(with: typeData as Data))) ?? .video
         let lengthData = (data as NSData).subdata(with: NSRange(location: 8, length: 4))
         let length = Recorder.int(with: lengthData)
-        if type == 1 { // 视频
+        if type == .video { // 视频
             if #available(iOS 13.0, *) {
                 if let vc = navigationController?.visibleViewController as? VideoChatViewController {
                     vc.didReceiveVideoData(data)
                 }
             }
-        } else if type == 2 { // 音频
-            let voiceData = (data as NSData).subdata(with: NSRange(location: 16, length: Int(length)))
+        } else if type == .PTT || type == .VOIP { // 音频
+            let uuidData = (data as NSData).subdata(with: NSRange(location: 16, length: 36))
+            let _ = String(data: uuidData, encoding: .utf8)
+            let voiceData = (data as NSData).subdata(with: NSRange(location: 16+36, length: Int(length)))
             if Recorder.sharedInstance().receivedData == nil {
                 Recorder.sharedInstance().receivedData = NSMutableData()
             }
-            Recorder.sharedInstance().receivedData?.append(voiceData)
+            if Recorder.sharedInstance().isPlaying {
+                Recorder.sharedInstance().receivedData?.append(voiceData)
+            }
             let videoInfoData = (data as NSData).subdata(with: NSRange(location: 4, length: 4))
-            let videoInfo = Recorder.int(with: videoInfoData)
-            if videoInfo == 1 { // 说明想要视频
+            let videoInfo: AudioPurpose = AudioPurpose(rawValue: UInt(Recorder.int(with: videoInfoData))) ?? .default
+            if videoInfo != .needEnd && type == .PTT && !Recorder.sharedInstance().isPlaying {
+                if #available(iOS 16, *) {
+                    Recorder.sharedInstance().delegate = self
+                    Recorder.sharedInstance().startPlay()
+                }
+            }
+            if videoInfo == .wantVideo { // 说明想要视频
                 if UIApplication.shared.applicationState == .active && !navigationController!.visibleViewController!.isKind(of: VideoChatViewController.self) {
                     readyToSendVideoData = true
                     Recorder.sharedInstance().needSendVideo = true
+                }
+            } else if videoInfo == .needEnd {
+                Recorder.sharedInstance().stopPlay()
+                if #available(iOS 16, *) {
+#if !targetEnvironment(macCatalyst)
+                    PTChannel.shared.setActiveSpeaker(nil, avatar: nil)
+#endif
+                }
+                if UIApplication.shared.applicationState != .active {
+                    manager.disconnect()
                 }
             }
         }
@@ -281,7 +305,7 @@ extension WebSocketManagerAdapter: VoiceDelegate, WebSocketDataDelegate {
     func time(toSend data: Data) {
         print("压缩前\(data)")
         if let compressed = data.compress(withAlgorithm: .zlib) {
-            manager.sendVoiceData(compressed)
+            manager.sendVoiceData(data)
         }
     }
     

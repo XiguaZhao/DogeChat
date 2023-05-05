@@ -459,6 +459,10 @@ extension FriendDetailViewController: SelectContactsDelegate, UIImagePickerContr
         }
     }
     
+    func textFieldDidBeginEditing(cell: CommonTableCell) {
+        
+    }
+    
     func updateMyNameInGroup(text: String) {
         manager?.myInfo.nameInGroupsDict?[friend.userID] = text
         self.myNameInGroup = text
