@@ -28,7 +28,7 @@ extension ChatRoomViewController: ReferViewDelegate {
             inset.bottom += ReferView.height
             UIView.animate(withDuration: 0.4, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 2) { [self] in
                 messageInputBar.referView.alpha = 1
-                messageInputBar.referViewBottomContraint.constant = 0
+                messageInputBar.referViewBottomConstraint.constant = 0
                 messageInputBar.topConstraint.constant = -ReferView.height
                 messageInputBar.layoutIfNeeded()
                 tableView.contentOffset = offset
@@ -100,7 +100,7 @@ extension ChatRoomViewController: ReferViewDelegate {
             offset.y -= ReferView.height
             UIView.animate(withDuration: 0.4, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 2) { [self] in
                 messageInputBar.referView.alpha = 0
-                messageInputBar.referViewBottomContraint.constant = ReferView.height
+                messageInputBar.referViewBottomConstraint.constant = ReferView.height
                 messageInputBar.topConstraint.constant = 0
                 messageInputBar.layoutIfNeeded()
                 tableView.contentInset = inset

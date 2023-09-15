@@ -96,7 +96,6 @@ extension ChatRoomViewController: ReferMessageDataSource {
                 message.senderUserID = manager.messageManager.myId
                 message.receiver = contact.username
                 message.receiverUserID = contact.userID
-                message.id = manager.messageManager.maxId + 1
                 message.friend = contact
                 message.option = contact.isGroup ? .toGroup : .toOne
                 manager.commonWebSocket.sendWrappedMessage(message)

@@ -70,7 +70,7 @@ class DogeChatVCTransitioning: NSObject, UIViewControllerAnimatedTransitioning {
     func present(transitionContext: UIViewControllerContextTransitioning) {
         guard let fromView = transitionContext.view(forKey: .from),
               let toView = transitionContext.view(forKey: .to),
-              var sourceView = fromDataSource?.transitionSourceView else {
+              let sourceView = fromDataSource?.transitionSourceView else {
                   if let toView = transitionContext.view(forKey: .to) {
                       transitionContext.containerView.addSubview(toView)
                   }
@@ -78,7 +78,7 @@ class DogeChatVCTransitioning: NSObject, UIViewControllerAnimatedTransitioning {
                   return
               }
         let container = transitionContext.containerView
-        var sourceViewWindowFrame = sourceView.frame
+        let sourceViewWindowFrame = sourceView.frame
         sourceView.frame = sourceViewWindowFrame
         sourceView.layer.masksToBounds = true
         sourceView.layer.cornerRadius = fromDataSource?.transitionFromCornerRadiusView?.layer.cornerRadius ?? 0

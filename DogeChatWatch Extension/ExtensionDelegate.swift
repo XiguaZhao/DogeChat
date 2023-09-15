@@ -58,8 +58,6 @@ class ExtensionDelegate: NSObject, WKExtensionDelegate, UNUserNotificationCenter
         SocketManager.shared.disconnect()
         checkIfShouldRemoveCache()
         saveContact()
-        let maxID = SocketManager.shared.messageManager.maxId
-        UserDefaults.standard.set(maxID, forKey: "maxID")
     }
     
     func applicationDidEnterBackground() {

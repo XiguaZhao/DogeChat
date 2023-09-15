@@ -36,7 +36,7 @@ extension ChatRoomViewController: UITextViewDelegate {
         lastTextViewHeight = newTextViewSize.height
         if abs(heightChanged) > 15 || scrollByTextViewChange() {
             DispatchQueue.main.async {
-                UIView.animate(withDuration: 0.3, animations: { [weak self] in
+                UIView.animate(withDuration: 0.25, animations: { [weak self] in
                     guard let self = self else { return }
                     self.messageInputBar.frame = finalFrame
                     self.view.layoutIfNeeded()

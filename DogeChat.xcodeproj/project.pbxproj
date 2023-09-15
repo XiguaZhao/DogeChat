@@ -70,7 +70,6 @@
 		0749E66225E601690058EC30 /* EmojiCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0749E66125E601690058EC30 /* EmojiCollectionViewCell.swift */; };
 		075293A92715629400D10D65 /* MediaLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 075293A82715629400D10D65 /* MediaLoader.swift */; };
 		075293AE2715A0AC00D10D65 /* UIViewController+Hook.m in Sources */ = {isa = PBXBuildFile; fileRef = 075293AD2715A0AC00D10D65 /* UIViewController+Hook.m */; };
-		075557322665D4B000F63F55 /* Recorder.m in Sources */ = {isa = PBXBuildFile; fileRef = 075557312665D4B000F63F55 /* Recorder.m */; };
 		075557342666317000F63F55 /* SettingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 075557332666317000F63F55 /* SettingViewController.swift */; };
 		075557362666529B00F63F55 /* DatePickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 075557352666529B00F63F55 /* DatePickerViewController.swift */; };
 		0755575D266B3D9F00F63F55 /* ContactsTableViewController+Avatar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0755575C266B3D9E00F63F55 /* ContactsTableViewController+Avatar.swift */; };
@@ -427,8 +426,6 @@
 		075293A82715629400D10D65 /* MediaLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaLoader.swift; sourceTree = "<group>"; };
 		075293AC2715A0AC00D10D65 /* UIViewController+Hook.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UIViewController+Hook.h"; sourceTree = "<group>"; };
 		075293AD2715A0AC00D10D65 /* UIViewController+Hook.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+Hook.m"; sourceTree = "<group>"; };
-		075557302665D4B000F63F55 /* Recorder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Recorder.h; sourceTree = "<group>"; };
-		075557312665D4B000F63F55 /* Recorder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Recorder.m; sourceTree = "<group>"; };
 		075557332666317000F63F55 /* SettingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingViewController.swift; sourceTree = "<group>"; };
 		075557352666529B00F63F55 /* DatePickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatePickerViewController.swift; sourceTree = "<group>"; };
 		0755575C266B3D9E00F63F55 /* ContactsTableViewController+Avatar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ContactsTableViewController+Avatar.swift"; sourceTree = "<group>"; };
@@ -811,8 +808,6 @@
 		0739FA4C25BAA90800B6A7AB /* Call */ = {
 			isa = PBXGroup;
 			children = (
-				075557302665D4B000F63F55 /* Recorder.h */,
-				075557312665D4B000F63F55 /* Recorder.m */,
 				0739FA4E25BAA9A300B6A7AB /* Call.swift */,
 				0739FA5125BAAAD300B6A7AB /* CallManager.swift */,
 				0739FA5425BAACD400B6A7AB /* ProviderDelegate.swift */,
@@ -1755,7 +1750,9 @@
 				"${BUILT_PRODUCTS_DIR}/DogeChatCommonDefines-iOS/DogeChatCommonDefines.framework",
 				"${BUILT_PRODUCTS_DIR}/DogeChatNetwork/DogeChatNetwork.framework",
 				"${BUILT_PRODUCTS_DIR}/DogeChatUniversal-iOS/DogeChatUniversal.framework",
+				"${BUILT_PRODUCTS_DIR}/DogeChatVideoCall/DogeChatVideoCall.framework",
 				"${BUILT_PRODUCTS_DIR}/DogeChatVideoUtil/DogeChatVideoUtil.framework",
+				"${BUILT_PRODUCTS_DIR}/DogeChatVoiceCall/DogeChatVoiceCall.framework",
 				"${BUILT_PRODUCTS_DIR}/LookinServer/LookinServer.framework",
 				"${BUILT_PRODUCTS_DIR}/MJRefresh/MJRefresh.framework",
 				"${BUILT_PRODUCTS_DIR}/RSAiOSWatchOS-iOS/RSAiOSWatchOS.framework",
@@ -1773,7 +1770,9 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/DogeChatCommonDefines.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/DogeChatNetwork.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/DogeChatUniversal.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/DogeChatVideoCall.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/DogeChatVideoUtil.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/DogeChatVoiceCall.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/LookinServer.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MJRefresh.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RSAiOSWatchOS.framework",
@@ -2002,7 +2001,6 @@
 				07A2074F276DC16200EAAE63 /* MessageImageKindCell.swift in Sources */,
 				0761F5852683671900E27B07 /* TrackDownloadManager.swift in Sources */,
 				0726D96C267E2E5B005B89DC /* MediaBrowserCell.swift in Sources */,
-				075557322665D4B000F63F55 /* Recorder.m in Sources */,
 				0796FBFD275A2FAF00AAF146 /* DepthStencilStates.swift in Sources */,
 				07C9632F25E3B53900C2BF4C /* ImageConfirmViewController.swift in Sources */,
 				07D0FB6727453EF500B34FE4 /* ReferView.swift in Sources */,
@@ -2683,7 +2681,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = X32AM9M8C5;
+				DEVELOPMENT_TEAM = ABSGGSAFHU;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2022 Luke Parham. All rights reserved.";
@@ -2720,7 +2718,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = X32AM9M8C5;
+				DEVELOPMENT_TEAM = ABSGGSAFHU;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2022 Luke Parham. All rights reserved.";

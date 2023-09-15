@@ -252,7 +252,7 @@ extension ChatRoomViewController: MessageTableViewCellDelegate, TransitionFromDa
         if let (_emojiInfo, _messageIndex, _) = cell.getIndex(for: gesture),
            let emojiInfo = _emojiInfo,
            let messageIndex = _messageIndex {
-            messages[oldIndexPath.item].emojisInfo.remove(at: messageIndex)
+            messages[oldIndexPath.section].emojisInfo.remove(at: messageIndex)
             let newPoint = gesture.location(in: tableView.cellForRow(at: newIndexPath)?.contentView)
             emojiInfo.x = newPoint.x / UIScreen.main.bounds.width
             emojiInfo.y = newPoint.y / MessageBaseCell.height(for: messages[newIndexPath.item], tableViewSize: tableView.frame.size, userID: manager.myInfo.userID)

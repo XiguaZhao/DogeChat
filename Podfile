@@ -28,6 +28,8 @@ pod 'LookinServer', :configurations => ['Debug']
 pod 'RSAiOSWatchOS', :path => '../RSAiOSWatchOS'
 pod 'DataCompression'
 pod 'DogeChatVideoUtil', :path => '../DogeChatVideoUtil'
+pod 'DogeChatVoiceCall', :path => '../DogeChatVoiceCall'
+pod 'DogeChatVideoCall', :path => '../DogeChatVideoCall'
 pod 'YYText'
 end
 

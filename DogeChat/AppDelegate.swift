@@ -147,15 +147,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                     saveFriendsToDisk(friends, userID: userID)
                 }
             }
-            if let maxID = SceneDelegate.usernameToDelegate.first?.value.socketManager?.messageManager.maxId {
-                UserDefaults.standard.set(maxID, forKey: "maxID")
-            }
         } else {
             let friends = AppDelegateUI.shared.contactVC.friends
             if !friends.isEmpty {
                 saveFriendsToDisk(friends, userID: WebSocketManager.shared.myID)
             }
-            UserDefaults.standard.set(WebSocketManager.shared.messageManager.maxId, forKey: "maxID")
         }
     }
     

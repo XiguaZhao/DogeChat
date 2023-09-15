@@ -9,7 +9,7 @@
 #import <SDWebImage/SDWebImageManager.h>
 #import <SDWebImage/SDImageCache.h>
 #import <SDWebImage/SDWebImage.h>
-#import "Recorder.h"
+#import <DogeChatVoiceCall/Recorder.h>
 #import <Masonry/Masonry.h>
 #import "LivePhotoGenerator.h"
 #import "LFAssetExportSession.h"

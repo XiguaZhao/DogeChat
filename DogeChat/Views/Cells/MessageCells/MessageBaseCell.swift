@@ -86,7 +86,7 @@ class MessageBaseCell: DogeChatTableViewCell {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
         self.backgroundColor = .clear
         nameLabel.textColor = .lightGray
-        nameLabel.font = UIFont(name: "Helvetica", size: 10) 
+        nameLabel.font = .systemFont(ofSize: 10)
         clipsToBounds = true
         self.selectionStyle = .blue
         avatarContainer.layer.masksToBounds = true
@@ -459,7 +459,7 @@ class MessageBaseCell: DogeChatTableViewCell {
             text = (text as NSString).substring(to: length) + "..."
         }
         let fontSize = fontSize
-        let font = UIFont(name: "Helvetica", size: fontSize)!
+        let font = UIFont.systemFont(ofSize: fontSize)
         let attributes: [NSAttributedString.Key : Any] = [.font: font,
                                                           .paragraphStyle: MessageTextCell.paraStyle
             ]

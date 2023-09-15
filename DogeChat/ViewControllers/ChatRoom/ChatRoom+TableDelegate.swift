@@ -11,11 +11,15 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
     }
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return self.messages.count
+        return self.messages.count + 1; // 1是用来滚动到底部
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let message = messages[indexPath.section]
+        guard let message = messages.safe_objectAt(indexPath.section) else {
+            let cell = tableView.dequeueReusableCell(withIdentifier: NSStringFromClass(UITableViewCell.self), for: indexPath)
+            cell.backgroundColor = .clear
+            return cell
+        }
         var cellID: String?
         switch message.messageType {
         case .text:
@@ -61,6 +65,9 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        if indexPath.section == messages.count {
+            return 16
+        }
         guard let message = messages.safe_objectAt(indexPath.section) else { return 0 }
         let height = MessageBaseCell.height(for: message, tableViewSize: tableView.frame.size, userID: manager?.myInfo.userID)
         updateCachedHeight(uuid: message.uuid, header: nil, row: height)
@@ -72,7 +79,7 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
     }
 
     func scrollViewWillEndDragging(_ scrollView: UIScrollView, withVelocity velocity: CGPoint, targetContentOffset: UnsafeMutablePointer<CGPoint>) {
-        if velocity.y > 0.5 && scrollView.contentSize.height - scrollView.contentOffset.y < scrollView.height {
+        if velocity.y > 1.5 && scrollView.contentSize.height - scrollView.contentOffset.y < scrollView.height {
             self.messageInputBar.textView.becomeFirstResponder()
         }
     }
@@ -93,11 +100,11 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
             return
         }
         didStopScroll()
-        print(scrollView.contentSize)
     }
     
     func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        let share = UIContextualAction(style: .normal, title: localizedString("sendToOthers")) { [weak self] action, view, handler in
+        guard let message = messages.safe_objectAt(indexPath.section) else { return nil }
+        _ = UIContextualAction(style: .normal, title: localizedString("sendToOthers")) { [weak self] action, view, handler in
             guard let self = self else { return }
             handler(true)
             self.activeSwipeIndexPath = indexPath
@@ -106,7 +113,7 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
             contactVC.delegate = self
             self.present(contactVC, animated: true)
         }
-        let revoke = UIContextualAction(style: .destructive, title: localizedString("revoke")) { [weak self] action, view, handler in
+        _ = UIContextualAction(style: .destructive, title: localizedString("revoke")) { [weak self] action, view, handler in
             guard let self = self else { return }
             self.revoke(message: self.messages[indexPath.section])
             handler(true)
@@ -122,7 +129,7 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
         }
         at.backgroundColor = #colorLiteral(red: 0.2392156869, green: 0.6745098233, blue: 0.9686274529, alpha: 1)
         var actions: [UIContextualAction] = []
-        if messages[indexPath.section].option == .toGroup {
+        if message.option == .toGroup {
             actions.append(at)
         }
         let configuration = UISwipeActionsConfiguration(actions: actions)
@@ -131,7 +138,7 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
     }
     
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        guard self.purpose == .chat else { return nil }
+        guard self.purpose == .chat, let message = messages.safe_objectAt(indexPath.section) else { return nil }
         let saveEmoji = UIContextualAction(style: .normal, title: localizedString("saveMySelf")) { [weak tableView, weak self] action, view, handler in
             guard let self = self else { return }
             handler(true)
@@ -158,7 +165,7 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
         }
         referAction.backgroundColor = #colorLiteral(red: 0.2392156869, green: 0.6745098233, blue: 0.9686274529, alpha: 1)
         var actions = [multiSelection]
-        if messages[indexPath.section].messageType.isImage {
+        if message.messageType.isImage {
             actions.append(saveEmoji)
         }
         actions = [referAction]
@@ -170,7 +177,9 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
     //MARK: ContextMune
     @available(iOS 13.0, *)
     func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
-        let cell = tableView.cellForRow(at: indexPath) as! MessageBaseCell
+        guard let message = messages.safe_objectAt(indexPath.section), let cell = tableView.cellForRow(at: indexPath) as? MessageBaseCell else {
+            return nil
+        }
         let identifier = "\(indexPath.section)" as NSString
         let actionProvider: ([UIMenuElement]) -> UIMenu? = { [weak self, weak cell] (menuElement) -> UIMenu? in
             guard let self = self, let cell = cell else { return nil }
@@ -190,7 +199,7 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
                     self.revoke(message: self.messages[indexPath.section])
                 }
             }
-            if let imageUrl = cell.message.imageURL, cell.message.sendStatus == .success {
+            if let imageUrl = message.imageURL, message.sendStatus == .success {
                 starMySelfAction = UIAction(title: localizedString("saveMySelf")) { [weak self] (_) in
                     self?.manager?.commonWebSocket.starAndUploadEmoji(emoji: Emoji(path: imageUrl, type: Emoji.AddEmojiType.favorite.rawValue))
                 }
@@ -198,12 +207,12 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
                     self?.manager?.commonWebSocket.starAndUploadEmoji(emoji: Emoji(path: imageUrl, type: Emoji.AddEmojiType.common.rawValue))
                 }
             }
-            if cell.message.messageType == .draw, let pkView = (cell as? MessageDrawCell)?.getPKView() {
+            if message.messageType == .draw, let pkView = (cell as? MessageDrawCell)?.getPKView() {
                 addBackgroundColorAction = UIAction(title: localizedString("addBgcolor")) { _ in
                     pkView.backgroundColor = .lightGray
                 }
             }
-            if cell.message.messageType != .join {
+            if message.messageType != .join {
                 referAction = UIAction(title: localizedString("refer")) { [weak self] _ in
                     self?.dogechat_referAction(sender: nil)
                 }
@@ -356,7 +365,7 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
 
     
     func decelerate() {
-        if let uuids = self.tableView.indexPathsForVisibleRows?.map({ self.messages[$0.section].uuid }) {
+        if let uuids = self.tableView.indexPathsForVisibleRows?.compactMap({ self.messages.safe_objectAt($0.section)?.uuid }) {
             if uuids.contains(self.explictJumpMessageUUID ?? "") {
                 self.explictJumpMessageUUID = nil
             }
@@ -406,12 +415,11 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
     }
     
     func tableView(_ tableView: UITableView, shouldHighlightRowAt indexPath: IndexPath) -> Bool {
-//        let should = tableView.isEditing || messageInputBar.isActive
-//        return should
+        guard indexPath.section < messages.count else { return false }
         return true
     }
     
-
+    
     
     func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
         guard scrollView == tableView else {

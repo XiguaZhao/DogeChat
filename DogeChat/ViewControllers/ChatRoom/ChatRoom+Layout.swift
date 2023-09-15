@@ -78,16 +78,17 @@ extension ChatRoomViewController {
             self.tableView.contentInset = inset
             self.view.layoutIfNeeded()
             let contentHeight = contentHeight()
-            if !shouldDown && contentHeight > messageInputBar.frame.minY && !self.messages.isEmpty {
-                let lastIndexPath = IndexPath(row: 0, section: messages.count - 1)
-                if lastRowVisible() {
-//                    self.tableView.setContentOffset(CGPoint(x: 0, y: contentHeight - messageInputBar.frame.minY - messageInputBar.topConstraint.constant), animated: false)
+            if (!tableView.isDragging) {
+                if !shouldDown && contentHeight > messageInputBar.frame.minY && !self.messages.isEmpty {
+                    if lastRowVisible() {
+    //                    self.tableView.setContentOffset(CGPoint(x: 0, y: contentHeight - messageInputBar.frame.minY - messageInputBar.topConstraint.constant), animated: false)
+                        scrollBottom()
+                    } else {
+                        self.scrollBottom(animated: needAnimation)
+                    }
+                } else if messageInputBar.emojiButtonStatus == .normal {
                     scrollBottom()
-                } else {
-                    self.tableView.scrollToRow(at: lastIndexPath, at: .bottom, animated: needAnimation)
                 }
-            } else if messageInputBar.emojiButtonStatus == .normal {
-                scrollBottom()
             }
         }
         if needAnimation {
@@ -130,7 +131,6 @@ extension ChatRoomViewController {
     }
 
     func loadViews() {
-        navigationItem.backBarButtonItem?.title = "Run!"
         tableView.backgroundColor = .clear
         tableView.showsVerticalScrollIndicator = false
         tableView.estimatedRowHeight = 0
@@ -140,7 +140,7 @@ extension ChatRoomViewController {
         tableView.delegate = self
         tableView.dropDelegate = self
         tableView.dragDelegate = self
-//        tableView.tableFooterView = UIView(frame: .init(x: 0, y: 0, width: 0, height: 0.1))
+        tableView.tableFooterView = UIView(frame: .init(x: 0, y: 0, width: 0, height: 0.1))
         view.addSubview(tableView)
         
         view.addSubview(messageInputBar)
@@ -163,6 +163,7 @@ extension ChatRoomViewController {
         tableView.register(MessageVideoCell.self, forCellReuseIdentifier: MessageVideoCell.cellID)
         tableView.register(MessageAudioCell.self, forCellReuseIdentifier: MessageAudioCell.audioCellID())
         tableView.register(MessageLocationCell.self, forCellReuseIdentifier: MessageLocationCell.cellID)
+        tableView.register(UITableViewCell.self, forCellReuseIdentifier: NSStringFromClass(UITableViewCell.self))
         tableView.layer.masksToBounds = true
         
         emojiSelectView.delegate = self

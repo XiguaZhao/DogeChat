@@ -284,9 +284,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
     
     func sceneWillResignActive(_ scene: UIScene) {
-        if let maxID = socketManager?.messageManager.maxId {
-            UserDefaults.standard.set(maxID, forKey: "maxID")
-        }
     }
     //3
     func scene(_ scene: UIScene, restoreInteractionStateWith stateRestorationActivity: NSUserActivity) {

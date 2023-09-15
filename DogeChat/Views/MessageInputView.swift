@@ -72,7 +72,7 @@ class MessageInputView: DogeChatStaticBlurView {
     let referView = ReferView(type: .inputView)
     var lastInset: UIEdgeInsets = .zero
     var lastFontSize: CGFloat = 0
-    weak var referViewBottomContraint: NSLayoutConstraint!
+    weak var referViewBottomConstraint: NSLayoutConstraint!
     var isActive: Bool {
         return textView.isFirstResponder || self.frame.maxY < (self.superview?.bounds.height)!
     }
@@ -183,13 +183,14 @@ class MessageInputView: DogeChatStaticBlurView {
             make?.width.height().mas_equalTo()(Self.width)
         }
         
-        NSLayoutConstraint.activate([
-            referView.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: Self.offset),
-            referView.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -Self.offset),
-            referView.heightAnchor.constraint(equalToConstant: ReferView.height)
-        ])
-        self.referViewBottomContraint = referView.bottomAnchor.constraint(equalTo: self.topAnchor, constant: ReferView.height)
-        self.referViewBottomContraint.isActive = true
+        referView.mas_makeConstraints { make in
+            make?.leading.equalTo()(self.mas_safeAreaLayoutGuideLeading)?.offset()(Self.offset)
+            make?.trailing.equalTo()(self.mas_safeAreaLayoutGuideTrailing)?.offset()(-Self.offset)
+            make?.height.mas_equalTo()(ReferView.height)
+        }
+        
+        self.referViewBottomConstraint = referView.bottomAnchor.constraint(equalTo: self.topAnchor, constant: ReferView.height)
+        self.referViewBottomConstraint.isActive = true
         
     }
     
@@ -242,7 +243,9 @@ class MessageInputView: DogeChatStaticBlurView {
     func frameDown() {
         let height = self.window?.bounds.height ?? UIScreen.main.bounds.height
         let frame = CGRect(x: 0, y: height, width: 0, height: 100)
-        delegate?.messageInputBarFrameChange(frame, shouldDown: true, ignore: false)
+        if isActive {
+            delegate?.messageInputBarFrameChange(frame, shouldDown: true, ignore: false)
+        }
     }
     
     @objc func textViewResign() {

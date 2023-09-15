@@ -14,10 +14,12 @@ import DogeChatCommonDefines
 extension ChatRoomViewController: UITableViewDragDelegate {
     
     func tableView(_ tableView: UITableView, itemsForAddingTo session: UIDragSession, at indexPath: IndexPath, point: CGPoint) -> [UIDragItem] {
+        guard indexPath.section < messages.count else { return [] }
         return wrapItemsWithIndexPath(indexPath)
     }
     
     func tableView(_ tableView: UITableView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
+        guard indexPath.section < messages.count else { return [] }
         self.messageInputBar.textViewResign()
         return wrapItemsWithIndexPath(indexPath)
     }

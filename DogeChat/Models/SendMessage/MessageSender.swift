@@ -61,7 +61,6 @@ class MessageSender {
                               sender: manager.myName,
                               senderUserID: manager.myId,
                               messageType: type,
-                              id: (manager.messageManager?.maxId ?? 0) + 1,
                               sendStatus: .fail,
                               fontSize: fontSize)
         message.referMessage = self.referMessageDataSource?.referMessage()

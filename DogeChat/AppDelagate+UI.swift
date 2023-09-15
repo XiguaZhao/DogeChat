@@ -73,7 +73,6 @@ class AppDelegateUI {
     }
     
     func resignActive() {
-        UserDefaults.standard.set(WebSocketManager.shared.messageManager.maxId, forKey: "maxID")
     }
     
     func enterForeground() {

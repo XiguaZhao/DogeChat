@@ -167,6 +167,11 @@ class ChatRoomViewController: DogeChatViewController, DogeChatVCTableDataSource 
             
         }
         NotificationCenter.default.addObserver(self, selector: #selector(groupInfoChange(noti:)), name: .groupInfoChange, object: username)
+        NotificationCenter.default.addObserver(forName: .uploadFailed, object: nil, queue: .main) { [weak self] note in
+            if (note.object as? String) == self?.username, let retrying = note.userInfo?["retrying"] as? Bool {
+                self?.customTitle = retrying ? "发送失败,自动重试中" : "发送失败，请手动重试"
+            }
+        }
     }
         
     override func viewWillAppear(_ animated: Bool) {
@@ -317,7 +322,7 @@ class ChatRoomViewController: DogeChatViewController, DogeChatVCTableDataSource 
     
     func scrollBottom(animated: Bool = false) {
         if messages.count > 1 {
-            tableView.scrollToRow(at: IndexPath(row: 0, section: messages.count - 1), at: .bottom, animated: animated)
+            tableView.scrollToRow(at: IndexPath(row: 0, section: tableView.numberOfSections - 1), at: .bottom, animated: animated)
         }
     }
     
@@ -461,8 +466,6 @@ extension ChatRoomViewController {
         }
         guard noti.object as? String == self.username else { return }
         if purpose == .chat && self.navigationController?.visibleViewController != self { return }
-        var empty = true
-        let tempHeight = contentHeight()
         
         customTitle = friend.nickName ?? friendName
         guard let messages = noti.userInfo?["messages"] as? [Message], !messages.isEmpty, let pages = noti.userInfo?["pages"] as? Int else { return }
@@ -484,10 +487,18 @@ extension ChatRoomViewController {
         if !oldStateEmpty {
             tableView.reloadRows(at: [IndexPath(row: 0, section: 0)], with: .none)
         }
+        let oldCount = self.messages.count
         self.messages.insert(contentsOf: filtered, at: 0)
         if filtered.contains(where: { $0.id > alreadyMin }) {
             self.messages.sort(by: { $0.id < $1.id })
             self.tableView.reloadData()
+            return
+        }
+        if tableView.contentSize.height > tableView.height && (tableView.indexPathsForVisibleRows ?? []).contains(where: { indexPath in
+            indexPath.section == oldCount - 1
+        }) {
+            tableView.reloadData()
+            scrollBottom(animated: false)
             return
         }
         let indexPaths = [Int](0..<filtered.count).map{ IndexPath(item: 0, section: $0) }
@@ -508,8 +519,8 @@ extension ChatRoomViewController {
                 self.tableView.insertSections(othersIndexSet, with: .left)
             } completion: { _ in
                 self.isFetchingHistory = true
-                if empty && !indexPaths.isEmpty{
-                    self.tableView.scrollToRow(at: IndexPath(row: 0, section: self.tableView.numberOfSections - 1), at: .bottom, animated: true)
+                if !indexPaths.isEmpty{
+                    self.scrollBottom(animated: true)
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) { [weak self] in
                         guard let self = self else { return }
                         self.scrollViewDidEndDecelerating(self.tableView)

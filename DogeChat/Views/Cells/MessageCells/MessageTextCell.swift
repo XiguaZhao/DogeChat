@@ -87,7 +87,8 @@ class MessageTextCell: MessageBaseCell {
         let textURLAndRange = message.text.webUrlifyWithountChange()
         textLabelSingleTap.isEnabled = textURLAndRange != nil
         
-        messageLabel.font = UIFont(name: "Helvetica", size: min(maxFontSize, message.fontSize * fontSizeScale + (isMac() ? Self.macCatalystFontSizeOffset : 0)))
+        let fontSize = min(maxFontSize, message.fontSize * fontSizeScale + (isMac() ? Self.macCatalystFontSizeOffset : 0))
+        messageLabel.font = UIFont.systemFont(ofSize: fontSize)
         
         if message.messageSender == .ourself {
             messageLabel.backgroundColor = Self.sendBubbleColor

@@ -23,7 +23,7 @@ class TimeHeader: UITableViewHeaderFooterView {
         
         label.numberOfLines = 1
         label.textColor = .lightGray
-        label.font = UIFont(name: "Helvetica", size: 10)
+        label.font = .systemFont(ofSize: 10)
         contentView.addSubview(label)
         
         label.mas_makeConstraints { make in
