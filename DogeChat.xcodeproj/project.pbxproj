@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 52;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -233,6 +233,7 @@
 		2B3D2EB628853A6900AD2011 /* MASLocalization.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B3D2EB528853A6900AD2011 /* MASLocalization.m */; };
 		2B3F186628D59C7D00B4070C /* MessageIndicateCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B3F186528D59C7D00B4070C /* MessageIndicateCell.swift */; };
 		2B55E1872897D2D500CDB24C /* CallKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2B55E1862897D2D400CDB24C /* CallKit.framework */; };
+		2B5EA9D32BC7DD9C00D694A7 /* Recorder.m in Sources */ = {isa = PBXBuildFile; fileRef = 2B5EA9D22BC7DD9C00D694A7 /* Recorder.m */; };
 		2B62FC362895089A003D7989 /* PrivacyViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B62FC342895089A003D7989 /* PrivacyViewController.swift */; };
 		2B62FC372895089A003D7989 /* PrivacyViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2B62FC352895089A003D7989 /* PrivacyViewController.xib */; };
 		2B71E7BC28A3E1A200048ECB /* PTTViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B71E7BB28A3E1A200048ECB /* PTTViewController.swift */; };
@@ -476,7 +477,6 @@
 		0796FBDF275A2B9000AAF146 /* VideoProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoProcessor.swift; sourceTree = "<group>"; };
 		0796FBE1275A2B9000AAF146 /* VideoChatViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = VideoChatViewController.h; path = "../../../../DogeChat视频通用/DogeChat/Models/Video/VideoChatViewController.h"; sourceTree = "<group>"; };
 		0796FBE2275A2B9000AAF146 /* FriendVideoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendVideoView.swift; sourceTree = "<group>"; };
-		0796FBE5275A2B9000AAF146 /* OverlayVideoView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = OverlayVideoView.m; path = "../../../../DogeChat视频通用/DogeChat/Models/Video/OverlayVideoView.m"; sourceTree = "<group>"; };
 		0796FBE8275A2B9100AAF146 /* VideoFrameData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VideoFrameData.swift; sourceTree = "<group>"; };
 		0796FBEA275A2B9100AAF146 /* Shaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
 		0796FBEB275A2B9100AAF146 /* PipelineStates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PipelineStates.swift; sourceTree = "<group>"; };
@@ -631,7 +631,10 @@
 		2B3D2EB428853A6900AD2011 /* MASLocalization.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MASLocalization.h; path = ../../MASShortcut/Framework/UI/MASLocalization.h; sourceTree = "<group>"; };
 		2B3D2EB528853A6900AD2011 /* MASLocalization.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MASLocalization.m; path = ../../MASShortcut/Framework/UI/MASLocalization.m; sourceTree = "<group>"; };
 		2B3F186528D59C7D00B4070C /* MessageIndicateCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageIndicateCell.swift; sourceTree = "<group>"; };
+		2B4B62402BCD24D4000F0ABF /* OverlayVideoView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = OverlayVideoView.h; sourceTree = "<group>"; };
 		2B55E1862897D2D400CDB24C /* CallKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CallKit.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.0.sdk/System/Library/Frameworks/CallKit.framework; sourceTree = DEVELOPER_DIR; };
+		2B5EA9D12BC7DD9C00D694A7 /* Recorder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Recorder.h; sourceTree = "<group>"; };
+		2B5EA9D22BC7DD9C00D694A7 /* Recorder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Recorder.m; sourceTree = "<group>"; };
 		2B62FC342895089A003D7989 /* PrivacyViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacyViewController.swift; sourceTree = "<group>"; };
 		2B62FC352895089A003D7989 /* PrivacyViewController.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PrivacyViewController.xib; sourceTree = "<group>"; };
 		2B71E7BB28A3E1A200048ECB /* PTTViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PTTViewController.swift; sourceTree = "<group>"; };
@@ -808,6 +811,8 @@
 		0739FA4C25BAA90800B6A7AB /* Call */ = {
 			isa = PBXGroup;
 			children = (
+				2B5EA9D12BC7DD9C00D694A7 /* Recorder.h */,
+				2B5EA9D22BC7DD9C00D694A7 /* Recorder.m */,
 				0739FA4E25BAA9A300B6A7AB /* Call.swift */,
 				0739FA5125BAAAD300B6A7AB /* CallManager.swift */,
 				0739FA5425BAACD400B6A7AB /* ProviderDelegate.swift */,
@@ -1072,7 +1077,7 @@
 			children = (
 				07B98FBD2793CC5E00274464 /* DogeChatPlayerItem.swift */,
 				0796FBE2275A2B9000AAF146 /* FriendVideoView.swift */,
-				0796FBE5275A2B9000AAF146 /* OverlayVideoView.m */,
+				2B4B62402BCD24D4000F0ABF /* OverlayVideoView.h */,
 				0796FBDB275A2B8F00AAF146 /* OverlayVideoView.m */,
 				0796FBE9275A2B9100AAF146 /* Renderer */,
 				0796FBF0275A2B9200AAF146 /* Utilities */,
@@ -1750,9 +1755,7 @@
 				"${BUILT_PRODUCTS_DIR}/DogeChatCommonDefines-iOS/DogeChatCommonDefines.framework",
 				"${BUILT_PRODUCTS_DIR}/DogeChatNetwork/DogeChatNetwork.framework",
 				"${BUILT_PRODUCTS_DIR}/DogeChatUniversal-iOS/DogeChatUniversal.framework",
-				"${BUILT_PRODUCTS_DIR}/DogeChatVideoCall/DogeChatVideoCall.framework",
 				"${BUILT_PRODUCTS_DIR}/DogeChatVideoUtil/DogeChatVideoUtil.framework",
-				"${BUILT_PRODUCTS_DIR}/DogeChatVoiceCall/DogeChatVoiceCall.framework",
 				"${BUILT_PRODUCTS_DIR}/LookinServer/LookinServer.framework",
 				"${BUILT_PRODUCTS_DIR}/MJRefresh/MJRefresh.framework",
 				"${BUILT_PRODUCTS_DIR}/RSAiOSWatchOS-iOS/RSAiOSWatchOS.framework",
@@ -1770,9 +1773,7 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/DogeChatCommonDefines.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/DogeChatNetwork.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/DogeChatUniversal.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/DogeChatVideoCall.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/DogeChatVideoUtil.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/DogeChatVoiceCall.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/LookinServer.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MJRefresh.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RSAiOSWatchOS.framework",
@@ -2038,6 +2039,7 @@
 				0761FAAE266CE87400AE0171 /* EmojiEmitterLayer.swift in Sources */,
 				0718AC20268769A900E27B28 /* DogeChatTextView.swift in Sources */,
 				0718AC122686F61100E27B28 /* PlayListsSelectVC.swift in Sources */,
+				2B5EA9D32BC7DD9C00D694A7 /* Recorder.m in Sources */,
 				07A624C8277486F80061BAEF /* LocationVC.swift in Sources */,
 				2B3B2D99289C27E800884CF4 /* AppDelegate+PushToTalk.swift in Sources */,
 				07E001DA248CA56800D4A287 /* SelectShortcutTVC.swift in Sources */,
@@ -2303,7 +2305,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = ABSGGSAFHU;
+				DEVELOPMENT_TEAM = U4X7QLGBPJ;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = "DogeChatWatch Extension/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -2314,7 +2316,7 @@
 				MARKETING_VERSION = 2.2;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.dogechat.watchkitapp.watchkitextension;
+				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.dogechat2.watchkitapp.watchkitextension;
 				PRODUCT_NAME = "${TARGET_NAME}";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = watchos;
@@ -2340,7 +2342,7 @@
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = ABSGGSAFHU;
+				DEVELOPMENT_TEAM = U4X7QLGBPJ;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = "DogeChatWatch Extension/Info.plist";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -2350,7 +2352,7 @@
 				);
 				MARKETING_VERSION = 2.2;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.dogechat.watchkitapp.watchkitextension;
+				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.dogechat2.watchkitapp.watchkitextension;
 				PRODUCT_NAME = "${TARGET_NAME}";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = watchos;
@@ -2376,14 +2378,14 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = ABSGGSAFHU;
+				DEVELOPMENT_TEAM = U4X7QLGBPJ;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				IBSC_MODULE = DogeChatWatch_Extension;
 				INFOPLIST_FILE = DogeChatWatch/Info.plist;
 				MARKETING_VERSION = 2.2;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.dogechat.watchkitapp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.dogechat2.watchkitapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = watchos;
@@ -2409,13 +2411,13 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = ABSGGSAFHU;
+				DEVELOPMENT_TEAM = U4X7QLGBPJ;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				IBSC_MODULE = DogeChatWatch_Extension;
 				INFOPLIST_FILE = DogeChatWatch/Info.plist;
 				MARKETING_VERSION = 2.2;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.dogechat.watchkitapp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.dogechat2.watchkitapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = watchos;
@@ -2439,13 +2441,13 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = ABSGGSAFHU;
+				DEVELOPMENT_TEAM = U4X7QLGBPJ;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = DogeChatShare/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = DogeChatShare;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2021 Luke Parham. All rights reserved.";
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				"IPHONEOS_DEPLOYMENT_TARGET[sdk=macosx*]" = 14.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2455,7 +2457,7 @@
 				MARKETING_VERSION = 2.2;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.dogechat.DogeChatShare;
+				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.dogechat2.DogeChatShare;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SUPPORTS_MACCATALYST = YES;
@@ -2480,13 +2482,13 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = ABSGGSAFHU;
+				DEVELOPMENT_TEAM = U4X7QLGBPJ;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = DogeChatShare/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = DogeChatShare;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2021 Luke Parham. All rights reserved.";
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				"IPHONEOS_DEPLOYMENT_TARGET[sdk=macosx*]" = 14.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2495,7 +2497,7 @@
 				);
 				MARKETING_VERSION = 2.2;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.dogechat.DogeChatShare;
+				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.dogechat2.DogeChatShare;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SUPPORTS_MACCATALYST = YES;
@@ -2519,13 +2521,13 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = ABSGGSAFHU;
+				DEVELOPMENT_TEAM = U4X7QLGBPJ;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = DogeChatSiri/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = DogeChatSiri;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2021 Luke Parham. All rights reserved.";
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				"IPHONEOS_DEPLOYMENT_TARGET[sdk=macosx*]" = 14.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2535,7 +2537,7 @@
 				MARKETING_VERSION = 2.2;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.dogechat.DogeChatSiri;
+				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.dogechat2.DogeChatSiri;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]" = "";
@@ -2562,13 +2564,13 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = ABSGGSAFHU;
+				DEVELOPMENT_TEAM = U4X7QLGBPJ;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = DogeChatSiri/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = DogeChatSiri;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2021 Luke Parham. All rights reserved.";
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				"IPHONEOS_DEPLOYMENT_TARGET[sdk=macosx*]" = 14.2;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2577,7 +2579,7 @@
 				);
 				MARKETING_VERSION = 2.2;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.dogechat.DogeChatSiri;
+				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.dogechat.free.DogeChatSiri;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]" = "";
@@ -2604,13 +2606,13 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = ABSGGSAFHU;
+				DEVELOPMENT_TEAM = U4X7QLGBPJ;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = mynotification/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = mynotification;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2021 赵锡光. All rights reserved.";
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				"IPHONEOS_DEPLOYMENT_TARGET[sdk=macosx*]" = 13.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2620,7 +2622,7 @@
 				MARKETING_VERSION = 2.2;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.dogechat.mynotification;
+				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.dogechat2.mynotification;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SUPPORTS_MACCATALYST = YES;
@@ -2645,13 +2647,13 @@
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = ABSGGSAFHU;
+				DEVELOPMENT_TEAM = U4X7QLGBPJ;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = mynotification/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = mynotification;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2021 赵锡光. All rights reserved.";
-				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				"IPHONEOS_DEPLOYMENT_TARGET[sdk=macosx*]" = 13.1;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2660,7 +2662,7 @@
 				);
 				MARKETING_VERSION = 2.2;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.dogechat.mynotification;
+				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.dogechat2.mynotification;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SUPPORTS_MACCATALYST = YES;
@@ -2681,7 +2683,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = ABSGGSAFHU;
+				DEVELOPMENT_TEAM = U4X7QLGBPJ;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2022 Luke Parham. All rights reserved.";
@@ -2692,7 +2694,7 @@
 					"@executable_path/../Frameworks",
 					"@loader_path/../Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 12.3;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				MARKETING_VERSION = 1.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
@@ -2718,7 +2720,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = ABSGGSAFHU;
+				DEVELOPMENT_TEAM = U4X7QLGBPJ;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2022 Luke Parham. All rights reserved.";
@@ -2729,7 +2731,7 @@
 					"@executable_path/../Frameworks",
 					"@loader_path/../Frameworks",
 				);
-				MACOSX_DEPLOYMENT_TARGET = 12.3;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				MARKETING_VERSION = 1.0;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.MacOSBridge;
@@ -2875,7 +2877,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEFINES_MODULE = NO;
-				DEVELOPMENT_TEAM = ABSGGSAFHU;
+				DEVELOPMENT_TEAM = U4X7QLGBPJ;
 				INFOPLIST_FILE = DogeChat/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -2883,7 +2885,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 2.2;
-				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.dogechat;
+				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.dogechat2;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]" = "";
@@ -2914,7 +2916,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = NO;
-				DEVELOPMENT_TEAM = ABSGGSAFHU;
+				DEVELOPMENT_TEAM = U4X7QLGBPJ;
 				INFOPLIST_FILE = DogeChat/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -2922,7 +2924,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 2.2;
-				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.dogechat;
+				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.dogechat2;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]" = "";

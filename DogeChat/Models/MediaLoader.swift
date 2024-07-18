@@ -229,7 +229,7 @@ class MediaLoader: NSObject, URLSessionDownloadDelegate {
                                         self.cache[cacheKey] = (image ?? UIImage(), data)
                                         self.cacheSize[cacheKey] = data.count
                                     }
-                                    request.completionHandler?(image, data, localURL!)
+                                    request.completionHandler?(image, data, localURL ?? NSURL() as URL)
                                 }
                             }
                         }

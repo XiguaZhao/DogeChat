@@ -9,10 +9,10 @@
 #import <SDWebImage/SDWebImageManager.h>
 #import <SDWebImage/SDImageCache.h>
 #import <SDWebImage/SDWebImage.h>
-#import <DogeChatVoiceCall/Recorder.h>
 #import <Masonry/Masonry.h>
 #import "LivePhotoGenerator.h"
 #import "LFAssetExportSession.h"
 #import "ShaderTypes.h"
 #import "VideoChatViewController.h"
 #import "UIViewController+InteractiveTransition.h"
+#import "Recorder.h"

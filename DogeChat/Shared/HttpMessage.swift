@@ -21,7 +21,7 @@ class HttpMessage {
     init() {
         httpManager.messageManager = messageManager
         messageManager.httpRequestsManager = httpManager
-        messageManager.encrypt = EncryptMessage()
+        messageManager.encrypt = httpManager.encrypt
     }
     
     func getKey(completion: @escaping((Bool) -> Void)) {

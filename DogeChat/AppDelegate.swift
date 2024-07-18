@@ -97,10 +97,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
             if UserDefaults(suiteName: groupName)?.value(forKey: "sharedUsername") != nil {
-                INPreferences.requestSiriAuthorization { status in
-                    print("授权状态")
-                    print(status)
-                }
+//                INPreferences.requestSiriAuthorization { status in
+//                    print("授权状态")
+//                    print(status)
+//                }
             }
         }
         

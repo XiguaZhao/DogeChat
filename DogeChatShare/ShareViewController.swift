@@ -136,4 +136,4 @@ class ShareViewController: SLComposeServiceViewController, KeyProvider {
 
 }
 
-extension EncryptMessage: RSAEncryptProtocol {}
+//extension EncryptMessage: RSAEncryptProtocol {}

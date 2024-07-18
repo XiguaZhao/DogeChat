@@ -269,7 +269,7 @@ extension JoinChatViewController: UITextFieldDelegate {
     }
         
     func processLoginSuccess(username: String, password: String?, manager: WebSocketManager) {
-        manager.commonWebSocket.httpRequestsManager.encrypt = EncryptMessage()
+//        manager.commonWebSocket.httpRequestsManager.encrypt = EncryptMessage()
         manager.myInfo.username = username
         let adapter = WebSocketManagerAdapter(manager: manager, username: username)
         let contactsTVC = ContactsTableViewController()

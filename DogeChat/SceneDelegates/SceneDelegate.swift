@@ -239,7 +239,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             self.socketManager = socket
             self.accountInfo = accountInfo
             self.socketAdapter = adapter
-            socket.messageManager.encrypt = EncryptMessage()
+            socket.messageManager.encrypt = socket.httpsManager.encrypt
             let contactVC = self.makeContactVC(for: username)
             contactVC.setUsername(username, andPassword: password)
             updateUsernames(username)

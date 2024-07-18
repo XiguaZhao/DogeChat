@@ -23,13 +23,14 @@ pod 'SwiftyRSA'
 pod 'FLAnimatedImage', :path => '../FLAnimatedImage'
 pod 'SDWebImage'
 pod 'Masonry', :path => '../Masonry'
+#pod 'SnapKit'
 pod 'DogeChatNetwork', :path => '../DogeChatNetwork'
 pod 'LookinServer', :configurations => ['Debug']
 pod 'RSAiOSWatchOS', :path => '../RSAiOSWatchOS'
 pod 'DataCompression'
 pod 'DogeChatVideoUtil', :path => '../DogeChatVideoUtil'
-pod 'DogeChatVoiceCall', :path => '../DogeChatVoiceCall'
-pod 'DogeChatVideoCall', :path => '../DogeChatVideoCall'
+#pod 'DogeChatVoiceCall', :path => '../DogeChatVoiceCall'
+#pod 'DogeChatVideoCall', :path => '../DogeChatVideoCall'
 pod 'YYText'
 end
 
@@ -56,4 +57,14 @@ target 'DogeChatShare' do
   shared_pods
   pod 'RSAiOSWatchOS', :path => '../RSAiOSWatchOS'
   pod 'DogeChatVideoUtil', :path => '../DogeChatVideoUtil'
+end
+
+post_install do |installer|
+  installer.generated_projects.each do |project|
+    project.targets.each do |target|
+        target.build_configurations.each do |config|
+            config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '13.0'
+         end
+    end
+  end
 end

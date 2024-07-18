@@ -46,16 +46,6 @@
             symbolName = "-[UICollectionView scrollToItemAtIndexPath:atScrollPosition:animated:]"
             moduleName = "">
             <Locations>
-               <Location
-                  uuid = "6FD87BF9-36D5-42D2-A7C0-02A3FE3043FF - 3a548f4d139b132d"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "-[UICollectionView scrollToItemAtIndexPath:atScrollPosition:animated:]"
-                  moduleName = "UIKitCore"
-                  usesParentBreakpointCondition = "Yes"
-                  offsetFromSymbolStart = "0">
-               </Location>
             </Locations>
          </BreakpointContent>
       </BreakpointProxy>
@@ -85,16 +75,6 @@
             symbolName = "-[UITextView resignFirstResponder]"
             moduleName = "">
             <Locations>
-               <Location
-                  uuid = "C9151DA3-0BBA-4409-965F-2BE8B613B067 - 9fc9f7fa670a843b"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "-[UITextView resignFirstResponder]"
-                  moduleName = "UIKitCore"
-                  usesParentBreakpointCondition = "Yes"
-                  offsetFromSymbolStart = "0">
-               </Location>
             </Locations>
          </BreakpointContent>
       </BreakpointProxy>
@@ -196,16 +176,6 @@
             symbolName = "-[UICollectionView reloadItemsAtIndexPaths:]"
             moduleName = "">
             <Locations>
-               <Location
-                  uuid = "A1AB537B-F8B2-4F6E-B28C-C03149B779E6 - 7731828e0cc11b8e"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "-[UICollectionView reloadItemsAtIndexPaths:]"
-                  moduleName = "UIKitCore"
-                  usesParentBreakpointCondition = "Yes"
-                  offsetFromSymbolStart = "0">
-               </Location>
             </Locations>
          </BreakpointContent>
       </BreakpointProxy>
@@ -235,16 +205,6 @@
             symbolName = "UITableViewAlertForLayoutOutsideViewHierarchy"
             moduleName = "">
             <Locations>
-               <Location
-                  uuid = "77B91BA3-965B-4353-A83D-7BAB7E3FA8EB - 620169ab4c7c265a"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "UITableViewAlertForLayoutOutsideViewHierarchy"
-                  moduleName = "UIKitCore"
-                  usesParentBreakpointCondition = "Yes"
-                  offsetFromSymbolStart = "0">
-               </Location>
             </Locations>
          </BreakpointContent>
       </BreakpointProxy>
@@ -258,16 +218,6 @@
             symbolName = "UICollectionViewFlowLayoutBreakForInvalidSizes"
             moduleName = "">
             <Locations>
-               <Location
-                  uuid = "F8FBB524-B919-42C0-8160-E5D226C4330E - 6a6cfc8d24631f32"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "UICollectionViewFlowLayoutBreakForInvalidSizes"
-                  moduleName = "UIKitCore"
-                  usesParentBreakpointCondition = "Yes"
-                  offsetFromSymbolStart = "0">
-               </Location>
             </Locations>
          </BreakpointContent>
       </BreakpointProxy>
@@ -297,16 +247,6 @@
             symbolName = "-[PKDrawing drawingByApplyingTransform:]"
             moduleName = "">
             <Locations>
-               <Location
-                  uuid = "3B931B68-136D-45FE-A038-A1E1D2A69501 - 6ec788734a370ff9"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "-[PKDrawing drawingByApplyingTransform:]"
-                  moduleName = "PencilKit"
-                  usesParentBreakpointCondition = "Yes"
-                  offsetFromSymbolStart = "0">
-               </Location>
             </Locations>
          </BreakpointContent>
       </BreakpointProxy>
@@ -320,16 +260,6 @@
             symbolName = "-[UITableView reloadData]"
             moduleName = "">
             <Locations>
-               <Location
-                  uuid = "8E5B8902-47E0-4BC1-A7D8-98089897EC0B - b5d9b21220672968"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "-[UITableView reloadData]"
-                  moduleName = "UIKitCore"
-                  usesParentBreakpointCondition = "Yes"
-                  offsetFromSymbolStart = "0">
-               </Location>
             </Locations>
          </BreakpointContent>
       </BreakpointProxy>
@@ -343,16 +273,6 @@
             symbolName = "-[UITableView setContentInset:]"
             moduleName = "">
             <Locations>
-               <Location
-                  uuid = "7D1208BD-205F-411D-B2E4-B2C8C4A333A6 - ecd5ab52dce6c7f1"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "-[UITableView setContentInset:]"
-                  moduleName = "UIKitCore"
-                  usesParentBreakpointCondition = "Yes"
-                  offsetFromSymbolStart = "0">
-               </Location>
             </Locations>
          </BreakpointContent>
       </BreakpointProxy>
@@ -446,16 +366,6 @@
             symbolName = "-[UITextView resignFirstResponder]"
             moduleName = "">
             <Locations>
-               <Location
-                  uuid = "DDE7E38F-13DA-429F-A483-4EB5D8684005 - 9fc9f7fa670a843b"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "-[UITextView resignFirstResponder]"
-                  moduleName = "UIKitCore"
-                  usesParentBreakpointCondition = "Yes"
-                  offsetFromSymbolStart = "0">
-               </Location>
             </Locations>
          </BreakpointContent>
       </BreakpointProxy>
@@ -469,16 +379,6 @@
             symbolName = "-[UITextView becomeFirstResponder]"
             moduleName = "">
             <Locations>
-               <Location
-                  uuid = "D1F2D28C-83D0-4BB3-9A70-3EA7C46DF870 - afe75da30d9228a"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "-[UITextView becomeFirstResponder]"
-                  moduleName = "UIKitCore"
-                  usesParentBreakpointCondition = "Yes"
-                  offsetFromSymbolStart = "0">
-               </Location>
             </Locations>
          </BreakpointContent>
       </BreakpointProxy>
@@ -492,16 +392,6 @@
             symbolName = "-[UITableView setContentOffset:]"
             moduleName = "">
             <Locations>
-               <Location
-                  uuid = "FE934919-4CB5-493D-A695-260620F65531 - b4ff4b81f0686544"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "-[UITableView setContentOffset:]"
-                  moduleName = "UIKitCore"
-                  usesParentBreakpointCondition = "Yes"
-                  offsetFromSymbolStart = "0">
-               </Location>
             </Locations>
          </BreakpointContent>
       </BreakpointProxy>
@@ -563,16 +453,6 @@
             symbolName = "UIViewAlertForUnsatisfiableConstraints"
             moduleName = "">
             <Locations>
-               <Location
-                  uuid = "57DADA07-8BAF-4A84-844E-D3C04E212AB1 - ba3ad5676a792f38"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "UIViewAlertForUnsatisfiableConstraints"
-                  moduleName = "UIKitCore"
-                  usesParentBreakpointCondition = "Yes"
-                  offsetFromSymbolStart = "0">
-               </Location>
             </Locations>
          </BreakpointContent>
       </BreakpointProxy>
@@ -618,16 +498,6 @@
             symbolName = "-[UITableView setContentOffset:]"
             moduleName = "">
             <Locations>
-               <Location
-                  uuid = "E6813073-2141-40DF-AC40-DDA4640564CE - b4ff4b81f0686544"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "-[UITableView setContentOffset:]"
-                  moduleName = "UIKitCore"
-                  usesParentBreakpointCondition = "Yes"
-                  offsetFromSymbolStart = "0">
-               </Location>
             </Locations>
          </BreakpointContent>
       </BreakpointProxy>
@@ -643,7 +513,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "34"
             endingLineNumber = "34"
-            landmarkName = "didReceive(_:withContentHandler:)"
+            landmarkName = "complete()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -693,38 +563,6 @@
             endingLineNumber = "48"
             landmarkName = "animateTransition(using:)"
             landmarkType = "7">
-            <Locations>
-               <Location
-                  uuid = "55DED893-BEE3-4B82-A8A1-CEB4111244CD - e05194413b908b69"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "DogeChat.DogeChatVCTransitioning.animateTransition(using: __C.UIViewControllerContextTransitioning) -&gt; ()"
-                  moduleName = "DogeChat"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/zhaoxiguang/Library/Mobile%20Documents/com~apple~CloudDocs/Documents/Developer/DogeChat/DogeChat/Models/Transition/DogeChatVCTransitioning.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "46"
-                  endingLineNumber = "46"
-                  offsetFromSymbolStart = "92">
-               </Location>
-               <Location
-                  uuid = "55DED893-BEE3-4B82-A8A1-CEB4111244CD - e05194413b908b69"
-                  shouldBeEnabled = "Yes"
-                  ignoreCount = "0"
-                  continueAfterRunningActions = "No"
-                  symbolName = "DogeChat.DogeChatVCTransitioning.animateTransition(using: __C.UIViewControllerContextTransitioning) -&gt; ()"
-                  moduleName = "DogeChat"
-                  usesParentBreakpointCondition = "Yes"
-                  urlString = "file:///Users/zhaoxiguang/Library/Mobile%20Documents/com~apple~CloudDocs/Documents/Developer/DogeChat/DogeChat/Models/Transition/DogeChatVCTransitioning.swift"
-                  startingColumnNumber = "9223372036854775807"
-                  endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "46"
-                  endingLineNumber = "46"
-                  offsetFromSymbolStart = "180">
-               </Location>
-            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -755,7 +593,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "168"
             endingLineNumber = "168"
-            landmarkName = "applicationDidEnterBackground(_:)"
+            landmarkName = "application(_:configurationForConnecting:options:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

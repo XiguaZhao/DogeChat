@@ -62,6 +62,11 @@ extension ChatRoomViewController: UITableViewDataSource, UITableViewDelegate, Se
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         messages.safe_objectAt(indexPath.section)?.isRead = true
         (cell as? DogeChatTableViewCell)?.willDisplayBlock?(cell as! DogeChatTableViewCell, tableView)
+        if let baseCell = cell as? MessageBaseCell {
+            if messages.safe_objectAt(indexPath.row)?.isSameSenderAsLastMessage() ?? false {
+                baseCell.avatarContainer.isHidden = true
+            }
+        }
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {

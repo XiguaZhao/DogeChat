@@ -24,7 +24,7 @@ class ExtensionDelegate: NSObject, WKExtensionDelegate, UNUserNotificationCenter
         // Perform any final initialization of your application.
         WCSession.default.delegate = SessionDelegate.shared
         WCSession.default.activate()
-        SocketManager.shared.httpManager.encrypt = EncryptMessage()
+//        SocketManager.shared.httpManager.encrypt = EncryptMessage()
         let center = UNUserNotificationCenter.current()
         center.delegate = self
         center.requestAuthorization(options: [.badge, .alert, .sound]) { granted, error in

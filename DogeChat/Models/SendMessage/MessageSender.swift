@@ -64,7 +64,7 @@ class MessageSender {
                               sendStatus: .fail,
                               fontSize: fontSize)
         message.referMessage = self.referMessageDataSource?.referMessage()
-        message.lastMessage = friend.messages.last
+//        message.lastMessage = friend.messages.last
         processAtForMessage(message)
         self.at.removeAll()
         return message

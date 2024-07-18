@@ -49,17 +49,7 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
-		<key>DogeChatVideoCall.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
 		<key>DogeChatVideoUtil.xcscheme</key>
-		<dict>
-			<key>isShown</key>
-			<false/>
-		</dict>
-		<key>DogeChatVoiceCall.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>

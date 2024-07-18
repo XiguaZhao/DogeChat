@@ -10,6 +10,6 @@ import Foundation
 import RSAiOSWatchOS
 import DogeChatUniversal
 
-extension EncryptMessage: RSAEncryptProtocol {
-    
-}
+//extension EncryptMessage: RSAEncryptProtocol {
+//    
+//}

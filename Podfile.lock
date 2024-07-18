@@ -27,10 +27,9 @@ PODS:
   - DogeChatUniversal (0.1.0):
     - AFNetworking
     - DogeChatCommonDefines
+    - RSAiOSWatchOS
     - SwiftyJSON
-  - DogeChatVideoCall (0.1.0)
   - DogeChatVideoUtil (0.1.0)
-  - DogeChatVoiceCall (0.1.0)
   - FLAnimatedImage (1.0.16)
   - LookinServer (1.0.4)
   - Masonry (1.1.0)
@@ -54,9 +53,7 @@ DEPENDENCIES:
   - DogeChatCommonDefines (from `../DogeChatCommonDefines`)
   - DogeChatNetwork (from `../DogeChatNetwork`)
   - DogeChatUniversal (from `../DogeChatUniversal`)
-  - DogeChatVideoCall (from `../DogeChatVideoCall`)
   - DogeChatVideoUtil (from `../DogeChatVideoUtil`)
-  - DogeChatVoiceCall (from `../DogeChatVoiceCall`)
   - FLAnimatedImage (from `../FLAnimatedImage`)
   - LookinServer
   - Masonry (from `../Masonry`)
@@ -86,12 +83,8 @@ EXTERNAL SOURCES:
     :path: "../DogeChatNetwork"
   DogeChatUniversal:
     :path: "../DogeChatUniversal"
-  DogeChatVideoCall:
-    :path: "../DogeChatVideoCall"
   DogeChatVideoUtil:
     :path: "../DogeChatVideoUtil"
-  DogeChatVoiceCall:
-    :path: "../DogeChatVoiceCall"
   FLAnimatedImage:
     :path: "../FLAnimatedImage"
   Masonry:
@@ -108,15 +101,13 @@ CHECKOUT OPTIONS:
     :git: https://github.com/SwiftyJSON/SwiftyJSON.git
 
 SPEC CHECKSUMS:
-  AFNetworking: 7864c38297c79aaca1500c33288e429c3451fdce
+  AFNetworking: 3bd23d814e976cd148d7d44c3ab78017b744cd58
   DACircularProgress: 4dd437c0fc3da5161cb289e07ac449493d41db71
   DataCompression: 06628f9c807b6f152e0da37635633f62fc51dc77
   DogeChatCommonDefines: c248ce4818df571745b822c563d0e4ee71499dc5
   DogeChatNetwork: dc9612adf2921d46a61b49c23fe7b4c89668849c
-  DogeChatUniversal: 75b00cf6d15a88e719310b9ba75257382977866a
-  DogeChatVideoCall: 97e61cba82cdbcb36bef12149645e12aae36d91e
+  DogeChatUniversal: cdd1a455eb124c208a5da694789d7b97a4382510
   DogeChatVideoUtil: 2b3f69b2ccee052fcac9478a16bb55454508abc3
-  DogeChatVoiceCall: 23c6ecc8035c463b9ab95464cd0366388a15ded1
   FLAnimatedImage: dcb3eb22941cf5c2de1d9b60ecf1e601d253f3a8
   LookinServer: 743c1681771d0a8dcc38825325a080c3186404a5
   Masonry: cd3f6890903edc19847dbf236bd422c2005b765f
@@ -128,6 +119,6 @@ SPEC CHECKSUMS:
   SwiftyRSA: 8c6dd1ea7db1b8dc4fb517a202f88bb1354bc2c6
   YYText: 5c461d709e24d55a182d1441c41dc639a18a4849
 
-PODFILE CHECKSUM: 2c772e249656b5139a222fd2063063df85d17603
+PODFILE CHECKSUM: 4d2e3979e857b77caeeae7399be7dc8b9d6612d6
 
-COCOAPODS: 1.11.3
+COCOAPODS: 1.15.2

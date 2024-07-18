@@ -2,8 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <key>NSAppleMusicUsageDescription</key>
-    <string>使用您的音乐数据</string>
 	<key>BGTaskSchedulerPermittedIdentifiers</key>
 	<array>
 		<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
@@ -30,16 +28,6 @@
 					<string>bear180*180</string>
 				</array>
 			</dict>
-			<key>girl</key>
-			<dict>
-				<key>CFBundleIconFiles</key>
-				<array>
-					<string>girl120*120</string>
-					<string>girl152*152</string>
-					<string>girl167*167</string>
-					<string>girl180*180</string>
-				</array>
-			</dict>
 			<key>cat</key>
 			<dict>
 				<key>CFBundleIconFiles</key>
@@ -58,6 +46,16 @@
 					<string>dog152*152</string>
 					<string>dog167*167</string>
 					<string>dog180*180</string>
+				</array>
+			</dict>
+			<key>girl</key>
+			<dict>
+				<key>CFBundleIconFiles</key>
+				<array>
+					<string>girl120*120</string>
+					<string>girl152*152</string>
+					<string>girl167*167</string>
+					<string>girl180*180</string>
 				</array>
 			</dict>
 		</dict>
@@ -83,6 +81,8 @@
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
+	<key>NSAppleMusicUsageDescription</key>
+	<string>使用您的音乐数据</string>
 	<key>NSCameraUsageDescription</key>
 	<string>拍照片</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
@@ -150,9 +150,6 @@
 	<array>
 		<string>audio</string>
 		<string>processing</string>
-		<string>push-to-talk</string>
-		<string>remote-notification</string>
-		<string>voip</string>
 	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
