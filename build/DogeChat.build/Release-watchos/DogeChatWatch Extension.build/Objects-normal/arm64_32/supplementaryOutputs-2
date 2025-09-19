@@ -1,0 +1,9 @@
+"/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/DogeChatWatch Extension/Views/ContactsRowController.swift":
+  abi-baseline-json: "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-watchos/DogeChatWatch Extension.build/Objects-normal/arm64_32/DogeChatWatch_Extension.abi.json"
+  dependencies: "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-watchos/DogeChatWatch Extension.build/Objects-normal/arm64_32/DogeChatWatch Extension-master.d"
+  objc-header: "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-watchos/DogeChatWatch Extension.build/Objects-normal/arm64_32/DogeChatWatch_Extension-Swift.h"
+  const-values: "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-watchos/DogeChatWatch Extension.build/Objects-normal/arm64_32/DogeChatWatch Extension-master.swiftconstvalues"
+  swiftsourceinfo: "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-watchos/DogeChatWatch Extension.build/Objects-normal/arm64_32/DogeChatWatch_Extension.swiftsourceinfo"
+  swiftdoc: "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-watchos/DogeChatWatch Extension.build/Objects-normal/arm64_32/DogeChatWatch_Extension.swiftdoc"
+  diagnostics: "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-watchos/DogeChatWatch Extension.build/Objects-normal/arm64_32/DogeChatWatch Extension-master.dia"
+  swiftmodule: "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-watchos/DogeChatWatch Extension.build/Objects-normal/arm64_32/DogeChatWatch_Extension.swiftmodule"

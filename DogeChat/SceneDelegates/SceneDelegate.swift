@@ -89,7 +89,50 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     deinit {
         print("SceneDelegate Deinit")
     }
+    func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
+            guard let urlContext = URLContexts.first else { return }
+            let url = urlContext.url
+            print(url)
+            // 解析 URL
+            guard let components = URLComponents(url: url, resolvingAgainstBaseURL: true),
+                  let urlOperation = components.host else {
+                return
+            }
 
+            // 根据 URL 的 host 或其他部分执行相应的操作
+            if urlOperation == "chatroom" {
+                // 处理特定的操作
+                print("URL Scheme opened with host: \(urlOperation)")
+                var sender = ""
+                var senderID = ""
+                var content = ""
+                var receiverID = ""
+                var receiver = ""
+
+                if let queryItems = components.queryItems {
+                    for item in queryItems {
+                        switch item.name {
+                        case "sender":
+                            sender = item.value ?? ""  // 使用 ?? 提供默认值
+                        case "senderID":
+                            senderID = item.value ?? ""
+                        case "content":
+                            content = item.value ?? ""
+                        case "receiverID":
+                            receiverID = item.value ?? ""
+                        case "receiver":
+                            receiver = item.value ?? ""
+                        default:
+                            break
+                        }
+                        print("Query item: \(item.name) = \(item.value ?? "")")
+                    }
+                }
+
+                AppDelegate.shared.latestRemoteNotiInfo = RemoteNotificationInfo(sender: sender, senderID: senderID, content: content, receiverID: receiverID, receiver: receiver)
+                
+            }
+    }
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         print("willConnect")
         self.session = session

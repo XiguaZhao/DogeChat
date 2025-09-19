@@ -407,7 +407,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "35"
             endingLineNumber = "35"
-            landmarkName = "removeSocketForUsername(_:removeScene:)"
+            landmarkName = "playHaptic(_:)"
             landmarkType = "9">
          </BreakpointContent>
       </BreakpointProxy>
@@ -423,7 +423,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "34"
             endingLineNumber = "34"
-            landmarkName = "removeSocketForUsername(_:removeScene:)"
+            landmarkName = "playHaptic(_:)"
             landmarkType = "9">
          </BreakpointContent>
       </BreakpointProxy>
@@ -527,9 +527,9 @@
             filePath = "DogeChat/ViewControllers/ContactsVC/ContactsTableViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "400"
-            endingLineNumber = "400"
-            landmarkName = "removeAllMessage()"
+            startingLineNumber = "402"
+            endingLineNumber = "402"
+            landmarkName = "downRefreshAction(_:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -543,9 +543,9 @@
             filePath = "DogeChat/ViewControllers/ContactsVC/ContactsTableViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "365"
-            endingLineNumber = "365"
-            landmarkName = "jumpToFriend(_:)"
+            startingLineNumber = "367"
+            endingLineNumber = "367"
+            landmarkName = "presentSearchVC()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -575,8 +575,8 @@
             filePath = "DogeChat/ViewControllers/MediaBrowserViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "82"
-            endingLineNumber = "82"
+            startingLineNumber = "90"
+            endingLineNumber = "90"
             landmarkName = "onOrientationChange()"
             landmarkType = "7">
          </BreakpointContent>

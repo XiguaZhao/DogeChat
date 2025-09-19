@@ -1,0 +1,45 @@
+{
+  "" : {
+    "const-values" : "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-iphoneos/DogeChatShare.build/Objects-normal/arm64/DogeChatShare-master.swiftconstvalues",
+    "dependencies" : "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-iphoneos/DogeChatShare.build/Objects-normal/arm64/DogeChatShare-master.d",
+    "diagnostics" : "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-iphoneos/DogeChatShare.build/Objects-normal/arm64/DogeChatShare-master.dia",
+    "emit-module-dependencies" : "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-iphoneos/DogeChatShare.build/Objects-normal/arm64/DogeChatShare-master-emit-module.d",
+    "emit-module-diagnostics" : "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-iphoneos/DogeChatShare.build/Objects-normal/arm64/DogeChatShare-master-emit-module.dia",
+    "swift-dependencies" : "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-iphoneos/DogeChatShare.build/Objects-normal/arm64/DogeChatShare-master.swiftdeps"
+  },
+  "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/DogeChat/Models/SendMessage/MessageSender.swift" : {
+    "index-unit-output-path" : "/DogeChat.build/Release-iphoneos/DogeChatShare.build/Objects-normal/arm64/MessageSender.o",
+    "llvm-bc" : "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-iphoneos/DogeChatShare.build/Objects-normal/arm64/MessageSender.bc",
+    "object" : "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-iphoneos/DogeChatShare.build/Objects-normal/arm64/MessageSender.o"
+  },
+  "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/DogeChat/Shared/Common.swift" : {
+    "index-unit-output-path" : "/DogeChat.build/Release-iphoneos/DogeChatShare.build/Objects-normal/arm64/Common.o",
+    "llvm-bc" : "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-iphoneos/DogeChatShare.build/Objects-normal/arm64/Common.bc",
+    "object" : "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-iphoneos/DogeChatShare.build/Objects-normal/arm64/Common.o"
+  },
+  "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/DogeChat/Shared/HttpMessage.swift" : {
+    "index-unit-output-path" : "/DogeChat.build/Release-iphoneos/DogeChatShare.build/Objects-normal/arm64/HttpMessage.o",
+    "llvm-bc" : "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-iphoneos/DogeChatShare.build/Objects-normal/arm64/HttpMessage.bc",
+    "object" : "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-iphoneos/DogeChatShare.build/Objects-normal/arm64/HttpMessage.o"
+  },
+  "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/DogeChat/UIImage+Compress.swift" : {
+    "index-unit-output-path" : "/DogeChat.build/Release-iphoneos/DogeChatShare.build/Objects-normal/arm64/UIImage+Compress.o",
+    "llvm-bc" : "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-iphoneos/DogeChatShare.build/Objects-normal/arm64/UIImage+Compress.bc",
+    "object" : "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-iphoneos/DogeChatShare.build/Objects-normal/arm64/UIImage+Compress.o"
+  },
+  "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/DogeChatShare/ContactCell.swift" : {
+    "index-unit-output-path" : "/DogeChat.build/Release-iphoneos/DogeChatShare.build/Objects-normal/arm64/ContactCell.o",
+    "llvm-bc" : "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-iphoneos/DogeChatShare.build/Objects-normal/arm64/ContactCell.bc",
+    "object" : "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-iphoneos/DogeChatShare.build/Objects-normal/arm64/ContactCell.o"
+  },
+  "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/DogeChatShare/SelectContactsTVC.swift" : {
+    "index-unit-output-path" : "/DogeChat.build/Release-iphoneos/DogeChatShare.build/Objects-normal/arm64/SelectContactsTVC.o",
+    "llvm-bc" : "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-iphoneos/DogeChatShare.build/Objects-normal/arm64/SelectContactsTVC.bc",
+    "object" : "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-iphoneos/DogeChatShare.build/Objects-normal/arm64/SelectContactsTVC.o"
+  },
+  "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/DogeChatShare/ShareViewController.swift" : {
+    "index-unit-output-path" : "/DogeChat.build/Release-iphoneos/DogeChatShare.build/Objects-normal/arm64/ShareViewController.o",
+    "llvm-bc" : "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-iphoneos/DogeChatShare.build/Objects-normal/arm64/ShareViewController.bc",
+    "object" : "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-iphoneos/DogeChatShare.build/Objects-normal/arm64/ShareViewController.o"
+  }
+}

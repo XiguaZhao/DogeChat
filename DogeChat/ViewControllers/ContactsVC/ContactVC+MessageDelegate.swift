@@ -112,7 +112,7 @@ extension ContactsTableViewController: MessageDelegate, ReadMessageDataSource {
         for (friendID, newMessages) in friendDict {
             guard let index = self.friends.firstIndex(where: { $0.userID == friendID }) else { continue }
             reloadIndexPaths.append(IndexPath(row: index, section: 0))
-            if !chatVCs.isEmpty && chatVCs.contains(where: { $0.friend.userID == friendID }) {
+            if !isMac() && !chatVCs.isEmpty && chatVCs.contains(where: { $0.friend.userID == friendID }) {
                 unreadMessage[friendID] = (0, false)
             } else {
                 let hasNewAt = newMessages.contains(where: { $0.someoneAtMe && !$0.isRead })
@@ -123,7 +123,7 @@ extension ContactsTableViewController: MessageDelegate, ReadMessageDataSource {
                 } else {
                     unreadMessage[friendID] = (newCount, hasNewAt)
                 }
-                if !isMac(), let lastMessage = notReads.last(where: { !$0.isRead && $0.messageSender == .someoneElse }) {
+                if let lastMessage = notReads.last(where: { !$0.isRead && $0.messageSender == .someoneElse }) {
                     makeLocalNotification(message: lastMessage)
                 }
             }

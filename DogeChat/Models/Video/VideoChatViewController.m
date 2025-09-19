@@ -77,7 +77,7 @@ API_AVAILABLE(ios(13.0))
     if (output != self.overlayVideoView.videoOutput) return;
     if (WebSocketManagerAdapter.usernameToAdapter[self.username].readyToSendVideoData) {
         __weak VideoChatViewController *wself = self;
-        [self.processor compressAndSend:sampleBuffer arFrame:nil sendHandler:^(NSData *data) {
+        [self.processor compressAndSend:sampleBuffer sendHandler:^(NSData *data) {
             __strong VideoChatViewController *strongSelf = wself;
             strongSelf->_count++;
             NSMutableData *mData = [[NSMutableData alloc] init];

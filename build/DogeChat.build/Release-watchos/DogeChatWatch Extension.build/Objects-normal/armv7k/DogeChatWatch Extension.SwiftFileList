@@ -1,11 +1,16 @@
-/Users/zhaoxiguang/Library/Mobile\ Documents/com~apple~CloudDocs/Documents/Developer/DogeChat/DogeChatWatch\ Extension/Views/ContactsRowController.swift
-/Users/zhaoxiguang/Library/Mobile\ Documents/com~apple~CloudDocs/Documents/Developer/DogeChat/DogeChatWatch\ Extension/ExtensionDelegate.swift
-/Users/zhaoxiguang/Library/Mobile\ Documents/com~apple~CloudDocs/Documents/Developer/DogeChat/DogeChatWatch\ Extension/Controller/ChatRoomInterfaceController.swift
-/Users/zhaoxiguang/Library/Mobile\ Documents/com~apple~CloudDocs/Documents/Developer/DogeChat/DogeChat/Shared/Common.swift
-/Users/zhaoxiguang/Library/Mobile\ Documents/com~apple~CloudDocs/Documents/Developer/DogeChat/DogeChatWatch\ Extension/Controller/ContactInterfaceController.swift
-/Users/zhaoxiguang/Library/Mobile\ Documents/com~apple~CloudDocs/Documents/Developer/DogeChat/DogeChatWatch\ Extension/NotificationController.swift
-/Users/zhaoxiguang/Library/Mobile\ Documents/com~apple~CloudDocs/Documents/Developer/DogeChat/DogeChatWatch\ Extension/Views/MessageRow.swift
-/Users/zhaoxiguang/Library/Mobile\ Documents/com~apple~CloudDocs/Documents/Developer/DogeChat/DogeChatWatch\ Extension/Controller/LoginInterfaceController.swift
-/Users/zhaoxiguang/Library/Mobile\ Documents/com~apple~CloudDocs/Documents/Developer/DogeChat/DogeChatWatch\ Extension/ComplicationController.swift
-/Users/zhaoxiguang/Library/Mobile\ Documents/com~apple~CloudDocs/Documents/Developer/DogeChat/DogeChatWatch\ Extension/SocketManager.swift
-/Users/zhaoxiguang/Library/Mobile\ Documents/com~apple~CloudDocs/Documents/Developer/DogeChat/DogeChat/Shared/Encrypt.swift
+/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/DogeChatWatch\ Extension/Views/ContactsRowController.swift
+/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/DogeChatWatch\ Extension/Views/EmojiRowController.swift
+/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/DogeChatWatch\ Extension/ExtensionDelegate.swift
+/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/DogeChatWatch\ Extension/Controller/ChatRoomInterfaceController.swift
+/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/DogeChat/Shared/SessionDelegate.swift
+/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/DogeChat/Shared/Common.swift
+/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/DogeChatWatch\ Extension/Controller/ContactInterfaceController.swift
+/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/DogeChatWatch\ Extension/NotificationController.swift
+/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/DogeChatWatch\ Extension/Views/MessageRow.swift
+/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/DogeChatWatch\ Extension/Controller/EmojiInterfaceController.swift
+/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/DogeChatWatch\ Extension/Controller/LoginInterfaceController.swift
+/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/DogeChatWatch\ Extension/ComplicationController.swift
+/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/DogeChatWatch\ Extension/SocketManager.swift
+/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/DogeChat/Shared/Encrypt.swift
+/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/DogeChat/Models/MediaLoader.swift
+/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-watchos/DogeChatWatch\ Extension.build/DerivedSources/GeneratedAssetSymbols.swift

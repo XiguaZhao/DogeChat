@@ -1,0 +1,90 @@
+{
+  "" : {
+    "const-values" : "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-watchos/DogeChatWatch Extension.build/Objects-normal/arm64/DogeChatWatch Extension-master.swiftconstvalues",
+    "dependencies" : "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-watchos/DogeChatWatch Extension.build/Objects-normal/arm64/DogeChatWatch Extension-master.d",
+    "diagnostics" : "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-watchos/DogeChatWatch Extension.build/Objects-normal/arm64/DogeChatWatch Extension-master.dia",
+    "emit-module-dependencies" : "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-watchos/DogeChatWatch Extension.build/Objects-normal/arm64/DogeChatWatch Extension-master-emit-module.d",
+    "emit-module-diagnostics" : "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-watchos/DogeChatWatch Extension.build/Objects-normal/arm64/DogeChatWatch Extension-master-emit-module.dia",
+    "swift-dependencies" : "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-watchos/DogeChatWatch Extension.build/Objects-normal/arm64/DogeChatWatch Extension-master.swiftdeps"
+  },
+  "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/DogeChat/Models/MediaLoader.swift" : {
+    "index-unit-output-path" : "/DogeChat.build/Release-watchos/DogeChatWatch Extension.build/Objects-normal/arm64/MediaLoader.o",
+    "llvm-bc" : "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-watchos/DogeChatWatch Extension.build/Objects-normal/arm64/MediaLoader.bc",
+    "object" : "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-watchos/DogeChatWatch Extension.build/Objects-normal/arm64/MediaLoader.o"
+  },
+  "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/DogeChat/Shared/Common.swift" : {
+    "index-unit-output-path" : "/DogeChat.build/Release-watchos/DogeChatWatch Extension.build/Objects-normal/arm64/Common.o",
+    "llvm-bc" : "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-watchos/DogeChatWatch Extension.build/Objects-normal/arm64/Common.bc",
+    "object" : "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-watchos/DogeChatWatch Extension.build/Objects-normal/arm64/Common.o"
+  },
+  "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/DogeChat/Shared/Encrypt.swift" : {
+    "index-unit-output-path" : "/DogeChat.build/Release-watchos/DogeChatWatch Extension.build/Objects-normal/arm64/Encrypt.o",
+    "llvm-bc" : "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-watchos/DogeChatWatch Extension.build/Objects-normal/arm64/Encrypt.bc",
+    "object" : "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-watchos/DogeChatWatch Extension.build/Objects-normal/arm64/Encrypt.o"
+  },
+  "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/DogeChat/Shared/SessionDelegate.swift" : {
+    "index-unit-output-path" : "/DogeChat.build/Release-watchos/DogeChatWatch Extension.build/Objects-normal/arm64/SessionDelegate.o",
+    "llvm-bc" : "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-watchos/DogeChatWatch Extension.build/Objects-normal/arm64/SessionDelegate.bc",
+    "object" : "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-watchos/DogeChatWatch Extension.build/Objects-normal/arm64/SessionDelegate.o"
+  },
+  "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/DogeChatWatch Extension/ComplicationController.swift" : {
+    "index-unit-output-path" : "/DogeChat.build/Release-watchos/DogeChatWatch Extension.build/Objects-normal/arm64/ComplicationController.o",
+    "llvm-bc" : "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-watchos/DogeChatWatch Extension.build/Objects-normal/arm64/ComplicationController.bc",
+    "object" : "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-watchos/DogeChatWatch Extension.build/Objects-normal/arm64/ComplicationController.o"
+  },
+  "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/DogeChatWatch Extension/Controller/ChatRoomInterfaceController.swift" : {
+    "index-unit-output-path" : "/DogeChat.build/Release-watchos/DogeChatWatch Extension.build/Objects-normal/arm64/ChatRoomInterfaceController.o",
+    "llvm-bc" : "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-watchos/DogeChatWatch Extension.build/Objects-normal/arm64/ChatRoomInterfaceController.bc",
+    "object" : "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-watchos/DogeChatWatch Extension.build/Objects-normal/arm64/ChatRoomInterfaceController.o"
+  },
+  "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/DogeChatWatch Extension/Controller/ContactInterfaceController.swift" : {
+    "index-unit-output-path" : "/DogeChat.build/Release-watchos/DogeChatWatch Extension.build/Objects-normal/arm64/ContactInterfaceController.o",
+    "llvm-bc" : "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-watchos/DogeChatWatch Extension.build/Objects-normal/arm64/ContactInterfaceController.bc",
+    "object" : "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-watchos/DogeChatWatch Extension.build/Objects-normal/arm64/ContactInterfaceController.o"
+  },
+  "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/DogeChatWatch Extension/Controller/EmojiInterfaceController.swift" : {
+    "index-unit-output-path" : "/DogeChat.build/Release-watchos/DogeChatWatch Extension.build/Objects-normal/arm64/EmojiInterfaceController.o",
+    "llvm-bc" : "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-watchos/DogeChatWatch Extension.build/Objects-normal/arm64/EmojiInterfaceController.bc",
+    "object" : "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-watchos/DogeChatWatch Extension.build/Objects-normal/arm64/EmojiInterfaceController.o"
+  },
+  "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/DogeChatWatch Extension/Controller/LoginInterfaceController.swift" : {
+    "index-unit-output-path" : "/DogeChat.build/Release-watchos/DogeChatWatch Extension.build/Objects-normal/arm64/LoginInterfaceController.o",
+    "llvm-bc" : "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-watchos/DogeChatWatch Extension.build/Objects-normal/arm64/LoginInterfaceController.bc",
+    "object" : "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-watchos/DogeChatWatch Extension.build/Objects-normal/arm64/LoginInterfaceController.o"
+  },
+  "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/DogeChatWatch Extension/ExtensionDelegate.swift" : {
+    "index-unit-output-path" : "/DogeChat.build/Release-watchos/DogeChatWatch Extension.build/Objects-normal/arm64/ExtensionDelegate.o",
+    "llvm-bc" : "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-watchos/DogeChatWatch Extension.build/Objects-normal/arm64/ExtensionDelegate.bc",
+    "object" : "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-watchos/DogeChatWatch Extension.build/Objects-normal/arm64/ExtensionDelegate.o"
+  },
+  "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/DogeChatWatch Extension/NotificationController.swift" : {
+    "index-unit-output-path" : "/DogeChat.build/Release-watchos/DogeChatWatch Extension.build/Objects-normal/arm64/NotificationController.o",
+    "llvm-bc" : "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-watchos/DogeChatWatch Extension.build/Objects-normal/arm64/NotificationController.bc",
+    "object" : "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-watchos/DogeChatWatch Extension.build/Objects-normal/arm64/NotificationController.o"
+  },
+  "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/DogeChatWatch Extension/SocketManager.swift" : {
+    "index-unit-output-path" : "/DogeChat.build/Release-watchos/DogeChatWatch Extension.build/Objects-normal/arm64/SocketManager.o",
+    "llvm-bc" : "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-watchos/DogeChatWatch Extension.build/Objects-normal/arm64/SocketManager.bc",
+    "object" : "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-watchos/DogeChatWatch Extension.build/Objects-normal/arm64/SocketManager.o"
+  },
+  "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/DogeChatWatch Extension/Views/ContactsRowController.swift" : {
+    "index-unit-output-path" : "/DogeChat.build/Release-watchos/DogeChatWatch Extension.build/Objects-normal/arm64/ContactsRowController.o",
+    "llvm-bc" : "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-watchos/DogeChatWatch Extension.build/Objects-normal/arm64/ContactsRowController.bc",
+    "object" : "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-watchos/DogeChatWatch Extension.build/Objects-normal/arm64/ContactsRowController.o"
+  },
+  "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/DogeChatWatch Extension/Views/EmojiRowController.swift" : {
+    "index-unit-output-path" : "/DogeChat.build/Release-watchos/DogeChatWatch Extension.build/Objects-normal/arm64/EmojiRowController.o",
+    "llvm-bc" : "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-watchos/DogeChatWatch Extension.build/Objects-normal/arm64/EmojiRowController.bc",
+    "object" : "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-watchos/DogeChatWatch Extension.build/Objects-normal/arm64/EmojiRowController.o"
+  },
+  "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/DogeChatWatch Extension/Views/MessageRow.swift" : {
+    "index-unit-output-path" : "/DogeChat.build/Release-watchos/DogeChatWatch Extension.build/Objects-normal/arm64/MessageRow.o",
+    "llvm-bc" : "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-watchos/DogeChatWatch Extension.build/Objects-normal/arm64/MessageRow.bc",
+    "object" : "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-watchos/DogeChatWatch Extension.build/Objects-normal/arm64/MessageRow.o"
+  },
+  "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-watchos/DogeChatWatch Extension.build/DerivedSources/GeneratedAssetSymbols.swift" : {
+    "index-unit-output-path" : "/DogeChat.build/Release-watchos/DogeChatWatch Extension.build/Objects-normal/arm64/GeneratedAssetSymbols.o",
+    "llvm-bc" : "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-watchos/DogeChatWatch Extension.build/Objects-normal/arm64/GeneratedAssetSymbols.bc",
+    "object" : "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-watchos/DogeChatWatch Extension.build/Objects-normal/arm64/GeneratedAssetSymbols.o"
+  }
+}

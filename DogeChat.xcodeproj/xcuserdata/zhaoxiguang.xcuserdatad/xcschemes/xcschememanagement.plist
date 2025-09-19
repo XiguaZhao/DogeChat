@@ -32,8 +32,10 @@
 		</dict>
 		<key>DogeChatShare.xcscheme_^#shared#^_</key>
 		<dict>
+			<key>isShown</key>
+			<true/>
 			<key>orderHint</key>
-			<integer>40</integer>
+			<integer>42</integer>
 		</dict>
 		<key>DogeChatSiri.xcscheme_^#shared#^_</key>
 		<dict>
@@ -63,6 +65,8 @@
 		</dict>
 		<key>DogeChatWatch.xcscheme_^#shared#^_</key>
 		<dict>
+			<key>isShown</key>
+			<true/>
 			<key>orderHint</key>
 			<integer>5</integer>
 		</dict>
@@ -81,6 +85,11 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
+		<key>07BA6040277E123300496047</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>2BEEA7582881799E00108733</key>
 		<dict>
 			<key>primary</key>

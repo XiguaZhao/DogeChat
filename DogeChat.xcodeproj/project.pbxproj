@@ -1758,8 +1758,10 @@
 				"${BUILT_PRODUCTS_DIR}/DogeChatVideoUtil/DogeChatVideoUtil.framework",
 				"${BUILT_PRODUCTS_DIR}/LookinServer/LookinServer.framework",
 				"${BUILT_PRODUCTS_DIR}/MJRefresh/MJRefresh.framework",
+				"${BUILT_PRODUCTS_DIR}/Masonry/Masonry.framework",
 				"${BUILT_PRODUCTS_DIR}/RSAiOSWatchOS-iOS/RSAiOSWatchOS.framework",
 				"${BUILT_PRODUCTS_DIR}/SDWebImage/SDWebImage.framework",
+				"${BUILT_PRODUCTS_DIR}/SnapKit/SnapKit.framework",
 				"${BUILT_PRODUCTS_DIR}/Starscream/Starscream.framework",
 				"${BUILT_PRODUCTS_DIR}/SwiftyJSON-iOS/SwiftyJSON.framework",
 				"${BUILT_PRODUCTS_DIR}/SwiftyRSA-iOS/SwiftyRSA.framework",
@@ -1776,8 +1778,10 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/DogeChatVideoUtil.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/LookinServer.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/MJRefresh.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Masonry.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RSAiOSWatchOS.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SDWebImage.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SnapKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Starscream.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftyJSON.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftyRSA.framework",
@@ -2316,7 +2320,7 @@
 				MARKETING_VERSION = 2.2;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.dogechat2.watchkitapp.watchkitextension;
+				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.dogechat6.watchkitapp.watchkitextension;
 				PRODUCT_NAME = "${TARGET_NAME}";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = watchos;
@@ -2352,7 +2356,7 @@
 				);
 				MARKETING_VERSION = 2.2;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.dogechat2.watchkitapp.watchkitextension;
+				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.dogechat6.watchkitapp.watchkitextension;
 				PRODUCT_NAME = "${TARGET_NAME}";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = watchos;
@@ -2385,7 +2389,7 @@
 				MARKETING_VERSION = 2.2;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.dogechat2.watchkitapp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.dogechat6.watchkitapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = watchos;
@@ -2417,7 +2421,7 @@
 				INFOPLIST_FILE = DogeChatWatch/Info.plist;
 				MARKETING_VERSION = 2.2;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.dogechat2.watchkitapp;
+				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.dogechat6.watchkitapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = watchos;
@@ -2457,7 +2461,7 @@
 				MARKETING_VERSION = 2.2;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.dogechat2.DogeChatShare;
+				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.dogechat6.DogeChatShare;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SUPPORTS_MACCATALYST = YES;
@@ -2497,7 +2501,7 @@
 				);
 				MARKETING_VERSION = 2.2;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.dogechat2.DogeChatShare;
+				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.dogechat6.DogeChatShare;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SUPPORTS_MACCATALYST = YES;
@@ -2537,7 +2541,7 @@
 				MARKETING_VERSION = 2.2;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.dogechat2.DogeChatSiri;
+				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.dogechat6.DogeChatSiri;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]" = "";
@@ -2579,7 +2583,7 @@
 				);
 				MARKETING_VERSION = 2.2;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.dogechat.free.DogeChatSiri;
+				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.dogechat6.DogeChatSiri;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]" = "";
@@ -2622,7 +2626,7 @@
 				MARKETING_VERSION = 2.2;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.dogechat2.mynotification;
+				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.dogechat6.mynotification;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SUPPORTS_MACCATALYST = YES;
@@ -2662,7 +2666,7 @@
 				);
 				MARKETING_VERSION = 2.2;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.dogechat2.mynotification;
+				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.dogechat6.mynotification;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SUPPORTS_MACCATALYST = YES;
@@ -2885,7 +2889,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 2.2;
-				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.dogechat2;
+				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.dogechat6;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]" = "";
@@ -2924,7 +2928,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 2.2;
-				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.dogechat2;
+				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.dogechat6;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]" = "";

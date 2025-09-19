@@ -184,8 +184,8 @@ class MessageInputView: DogeChatStaticBlurView {
         }
         
         referView.mas_makeConstraints { make in
-            make?.leading.equalTo()(self.mas_safeAreaLayoutGuideLeading)?.offset()(Self.offset)
-            make?.trailing.equalTo()(self.mas_safeAreaLayoutGuideTrailing)?.offset()(-Self.offset)
+            make?.left.equalTo()(self.mas_safeAreaLayoutGuideLeft)?.offset()(Self.offset)
+            make?.right.equalTo()(self.mas_safeAreaLayoutGuideRight)?.offset()(-Self.offset)
             make?.height.mas_equalTo()(ReferView.height)
         }
         

@@ -22,8 +22,8 @@ pod 'SwiftyJSON', :git => 'https://github.com/SwiftyJSON/SwiftyJSON.git', :commi
 pod 'SwiftyRSA'
 pod 'FLAnimatedImage', :path => '../FLAnimatedImage'
 pod 'SDWebImage'
-pod 'Masonry', :path => '../Masonry'
-#pod 'SnapKit'
+pod 'Masonry'
+pod 'SnapKit'
 pod 'DogeChatNetwork', :path => '../DogeChatNetwork'
 pod 'LookinServer', :configurations => ['Debug']
 pod 'RSAiOSWatchOS', :path => '../RSAiOSWatchOS'
@@ -31,6 +31,7 @@ pod 'DataCompression'
 pod 'DogeChatVideoUtil', :path => '../DogeChatVideoUtil'
 #pod 'DogeChatVoiceCall', :path => '../DogeChatVoiceCall'
 #pod 'DogeChatVideoCall', :path => '../DogeChatVideoCall'
+#pod 'DogeChatVoiceVideoCall', :path => '../DogeChatVoiceVideoCall'
 pod 'YYText'
 end
 

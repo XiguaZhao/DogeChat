@@ -1,0 +1,22 @@
+version: "Apple Swift version 6.0.3 (swiftlang-6.0.3.1.10 clang-1600.0.30.1)"
+options: "9a9d2e53949c6cb87283766ecc3df7273ee826311e3d11fa2551a9e33229264f"
+build_start_time: [1737257190, 615437000]
+build_end_time: [1737257192, 707861000]
+inputs:
+  "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/DogeChat/Models/MediaLoader.swift": !dirty [1721310836, 408650180]
+  "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/DogeChat/Shared/Common.swift": !dirty [1720892572, 819191535]
+  "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/DogeChat/Shared/Encrypt.swift": !dirty [1720892620, 386523061]
+  "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/DogeChat/Shared/SessionDelegate.swift": !dirty [1635301334, 0]
+  "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/DogeChatWatch Extension/ComplicationController.swift": !dirty [1635301411, 0]
+  "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/DogeChatWatch Extension/Controller/ChatRoomInterfaceController.swift": !dirty [1720892572, 866819377]
+  "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/DogeChatWatch Extension/Controller/ContactInterfaceController.swift": !dirty [1720892572, 867385143]
+  "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/DogeChatWatch Extension/Controller/EmojiInterfaceController.swift": !dirty [1720892572, 867670859]
+  "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/DogeChatWatch Extension/Controller/LoginInterfaceController.swift": !dirty [1720892572, 867958076]
+  "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/DogeChatWatch Extension/ExtensionDelegate.swift": !dirty [1720892620, 388851169]
+  "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/DogeChatWatch Extension/NotificationController.swift": !dirty [1635301411, 0]
+  "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/DogeChatWatch Extension/SocketManager.swift": !dirty [1720892572, 868477924]
+  "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/DogeChatWatch Extension/Views/ContactsRowController.swift": !dirty [1635301412, 0]
+  "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/DogeChatWatch Extension/Views/EmojiRowController.swift": !dirty [1635301411, 0]
+  "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/DogeChatWatch Extension/Views/MessageRow.swift": !dirty [1635301411, 0]
+  ? "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-watchos/DogeChatWatch Extension.build/DerivedSources/GeneratedAssetSymbols.swift"
+  : !dirty [1737256665, 148480451]

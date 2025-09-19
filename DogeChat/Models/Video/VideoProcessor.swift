@@ -6,7 +6,6 @@ A class that compresses and decompresses image buffers.
 */
 
 import VideoToolbox
-import ARKit
 
 ///- Tag: VideoProcessor
 @available(iOS 13.0, *)
@@ -27,7 +26,7 @@ import ARKit
     private let videoDownscaleFactor: Float = 2.5
     
     /// Compresses an image buffer and sends it using the caller's handler.
-    private func compressAndSend(imageBuffer: CVImageBuffer, presentationTimeStamp: CMTime, arFrame: ARFrame?, sendHandler: @escaping (Data) -> Void) {
+    private func compressAndSend(imageBuffer: CVImageBuffer, presentationTimeStamp: CMTime, sendHandler: @escaping (Data) -> Void) {
         
         // Create the compression session, if necessary.
         
@@ -90,7 +89,7 @@ import ARKit
             }
             
             // Serialize the compressed sample buffer for sending.
-            let videoFrameData = VideoFrameData(sampleBuffer: sampleBuffer, arFrame: arFrame)
+            let videoFrameData = VideoFrameData(sampleBuffer: sampleBuffer)
             // Encode into JSON.
             do {
                 let data = try JSONEncoder().encode(videoFrameData)
@@ -105,11 +104,10 @@ import ARKit
     
     /// An overload of compressAndSend to accept CMSampleBuffers.
     ///- Tag: CompressAndSend
-    @objc func compressAndSend(_ sampleBuffer: CMSampleBuffer, arFrame: ARFrame?, sendHandler: @escaping (Data) -> Void) {
+    @objc func compressAndSend(_ sampleBuffer: CMSampleBuffer, sendHandler: @escaping (Data) -> Void) {
         if let imageBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) {
             compressAndSend(imageBuffer: imageBuffer,
                             presentationTimeStamp: CMSampleBufferGetPresentationTimeStamp(sampleBuffer),
-                            arFrame: arFrame,
                             sendHandler: sendHandler)
         }
     }

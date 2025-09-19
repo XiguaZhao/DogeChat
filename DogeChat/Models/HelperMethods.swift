@@ -77,6 +77,7 @@ func isPhone() -> Bool {
     return UIDevice.current.userInterfaceIdiom == .phone
 }
 
+var macWindowIsMain = true
 func isMac() -> Bool {
     if #available(iOS 14, *), ProcessInfo.processInfo.isiOSAppOnMac {
         return true

@@ -64,7 +64,7 @@ extension ChatRoomViewController: ReferMessageDataSource {
             if scrollToBottom {
                 scrollBottom(animated: filtered.count < 10)
             }
-            if filtered.filter({ !$0.isRead }).map({ MessageBaseCell.height(for: $0, tableViewSize: self.tableView.bounds.size, userID: manager?.myInfo.userID)}).reduce(0, +) > self.tableView.bounds.height {
+            if filtered.filter({ !$0.isRead }).map({ MessageBaseCell.height(for: $0, tableViewSize: self.tableView.bounds.size, userID: self.manager?.myInfo.userID)}).reduce(0, +) > self.tableView.bounds.height {
                 self.explictJumpMessageUUID = messages[0].uuid
                 self.didStopScroll()
             }
@@ -135,8 +135,8 @@ extension ChatRoomViewController: ReferMessageDataSource {
     func sendWasTapped(content: String) {
         guard !content.isEmpty else { return }
         if let wrappedMessage = processMessageString(for: content, type: .text, imageURL: nil, videoURL: nil) {
-            insertNewMessageCell([wrappedMessage])
             manager?.commonWebSocket.sendWrappedMessage(wrappedMessage)
+            insertNewMessageCell([wrappedMessage])
         }
     }
     

@@ -189,7 +189,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         application.applicationIconBadgeNumber = 0
     }
     
-    #if !targetEnvironment(macCatalyst)
+//    #if !targetEnvironment(macCatalyst)
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
         guard let infos = notification.request.content.userInfo["aps"] as? [String : Any] else {
             completionHandler([])
@@ -197,7 +197,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         registerChannelManager()
         if #available(iOS 16, *), infos["type"] as? String == "intercom" {
-            PTChannel.shared.processPTTInviteNotification()
+//            PTChannel.shared.processPTTInviteNotification()
         }
         processRevoke(infos)
         if let delegate = self.remoteNotiDelegate, delegate.shouldPresentRemoteNotification(infos) {
@@ -206,7 +206,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             completionHandler([])
         }
     }
-    #endif
+//    #endif
                 
     // app 在前台运行中收到通知会调用
     func application(

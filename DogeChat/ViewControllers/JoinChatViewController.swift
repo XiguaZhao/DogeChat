@@ -250,7 +250,6 @@ extension JoinChatViewController: UITextFieldDelegate {
         }
         return true
     }
-    
     func login(username: String, password: String) {
         guard username.count != 0 && password.count != 0 else {
             makeAutoAlert(message: "信息不完整", detail: nil, showTime: 1, completion: nil)

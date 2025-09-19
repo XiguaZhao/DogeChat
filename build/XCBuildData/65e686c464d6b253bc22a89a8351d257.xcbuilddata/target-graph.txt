@@ -1,0 +1,12 @@
+Target dependency graph (6 targets)
+Target 'DogeChat' in project 'DogeChat'
+➜ Explicit dependency on target 'DogeChatWatch' in project 'DogeChat'
+➜ Explicit dependency on target 'mynotification' in project 'DogeChat'
+➜ Explicit dependency on target 'DogeChatSiri' in project 'DogeChat'
+➜ Explicit dependency on target 'DogeChatShare' in project 'DogeChat'
+Target 'DogeChatShare' in project 'DogeChat' (no dependencies)
+Target 'DogeChatSiri' in project 'DogeChat' (no dependencies)
+Target 'mynotification' in project 'DogeChat' (no dependencies)
+Target 'DogeChatWatch' in project 'DogeChat'
+➜ Explicit dependency on target 'DogeChatWatch Extension' in project 'DogeChat'
+Target 'DogeChatWatch Extension' in project 'DogeChat' (no dependencies)

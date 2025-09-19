@@ -6,12 +6,11 @@ VideoFrameData contains the essential data from a CMSampleBuffer in a form that 
 */
 
 import CoreMedia
-import ARKit
 
 @available(iOS 13.0, *)
 @objc class VideoFrameData: NSObject, Codable {
         
-    @objc init(sampleBuffer: CMSampleBuffer, arFrame: ARFrame?) {
+    @objc init(sampleBuffer: CMSampleBuffer) {
         if let formatDescription = sampleBuffer.formatDescription {
             parameterSets = formatDescription.parameterSets.map { Data($0) }
         }
@@ -33,12 +32,6 @@ import ARKit
             sampleTimings = try sampleBuffer.sampleTimingInfos().map { VideoFrameData.TimingInfo($0) }
         } catch {
             fatalError("Failed to get timing info from sample buffer with error: \(error.localizedDescription)")
-        }
-        if let arFrame = arFrame {
-            let camera = arFrame.camera
-            let width = CVPixelBufferGetWidth(arFrame.capturedImage)
-            let height = CVPixelBufferGetHeight(arFrame.capturedImage)
-            let viewportSize = CGSize(width: width, height: height)
         }
     }
     

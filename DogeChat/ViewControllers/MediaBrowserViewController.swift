@@ -8,6 +8,7 @@
 
 import UIKit
 import DogeChatNetwork
+import SnapKit
 
 public enum MediaVCPurpose: Int {
     case avatar
@@ -53,13 +54,20 @@ class MediaBrowserViewController: UIViewController, TransitionFromDataSource {
         super.viewDidLoad()
         
         flowLayout.scrollDirection = .horizontal
-        collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: flowLayout)
+        collectionView = UICollectionView(frame: .zero, collectionViewLayout: flowLayout)
         collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.showsVerticalScrollIndicator = false
         collectionView.showsHorizontalScrollIndicator = false
         collectionView.register(MediaBrowserCell.self, forCellWithReuseIdentifier: MediaBrowserCell.cellID)
         view.addSubview(collectionView)
+        collectionView.snp.makeConstraints { make in
+            if isMac() {
+                make.edges.equalTo(view.safeAreaLayoutGuide)
+            } else {
+                make.edges.equalToSuperview()
+            }
+        }
                 
         self.transitionDelegate = self.transitioningDelegate
         
@@ -99,12 +107,11 @@ class MediaBrowserViewController: UIViewController, TransitionFromDataSource {
     
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
-        collectionView.frame = view.frame
     }
         
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
-        flowLayout.itemSize = view.frame.size
+        flowLayout.itemSize = collectionView.bounds.size
         scrollToIndex(targetIndex)
     }
     

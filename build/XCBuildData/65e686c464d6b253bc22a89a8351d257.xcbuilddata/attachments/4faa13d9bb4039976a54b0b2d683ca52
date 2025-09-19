@@ -1,0 +1,25 @@
+{
+  "" : {
+    "const-values" : "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-iphoneos/mynotification.build/Objects-normal/arm64/mynotification-master.swiftconstvalues",
+    "dependencies" : "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-iphoneos/mynotification.build/Objects-normal/arm64/mynotification-master.d",
+    "diagnostics" : "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-iphoneos/mynotification.build/Objects-normal/arm64/mynotification-master.dia",
+    "emit-module-dependencies" : "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-iphoneos/mynotification.build/Objects-normal/arm64/mynotification-master-emit-module.d",
+    "emit-module-diagnostics" : "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-iphoneos/mynotification.build/Objects-normal/arm64/mynotification-master-emit-module.dia",
+    "swift-dependencies" : "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-iphoneos/mynotification.build/Objects-normal/arm64/mynotification-master.swiftdeps"
+  },
+  "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/DogeChat/Models/MediaLoader.swift" : {
+    "index-unit-output-path" : "/DogeChat.build/Release-iphoneos/mynotification.build/Objects-normal/arm64/MediaLoader.o",
+    "llvm-bc" : "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-iphoneos/mynotification.build/Objects-normal/arm64/MediaLoader.bc",
+    "object" : "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-iphoneos/mynotification.build/Objects-normal/arm64/MediaLoader.o"
+  },
+  "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/DogeChat/Shared/Common.swift" : {
+    "index-unit-output-path" : "/DogeChat.build/Release-iphoneos/mynotification.build/Objects-normal/arm64/Common.o",
+    "llvm-bc" : "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-iphoneos/mynotification.build/Objects-normal/arm64/Common.bc",
+    "object" : "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-iphoneos/mynotification.build/Objects-normal/arm64/Common.o"
+  },
+  "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/mynotification/NotificationService.swift" : {
+    "index-unit-output-path" : "/DogeChat.build/Release-iphoneos/mynotification.build/Objects-normal/arm64/NotificationService.o",
+    "llvm-bc" : "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-iphoneos/mynotification.build/Objects-normal/arm64/NotificationService.bc",
+    "object" : "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-iphoneos/mynotification.build/Objects-normal/arm64/NotificationService.o"
+  }
+}

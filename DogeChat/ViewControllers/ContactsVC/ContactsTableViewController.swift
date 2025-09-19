@@ -265,12 +265,14 @@ class ContactsTableViewController:  DogeChatViewController,
             if isMac() {
                 DispatchQueue.once {
                     NotificationCenter.default.addObserver(forName: .init("NSWindowDidBecomeMainNotification"), object: nil, queue: nil) { [weak self] noti in
+                        macWindowIsMain = true
                         NotificationManager.checkRevokeMessages()
                         UserDefaults(suiteName: groupName)?.set(true, forKey: "hostActive")
                         self?.sceneDidBecomeMainNoti()
                     }
                     NotificationCenter.default.addObserver(forName: .init("NSWindowDidResignMainNotification"), object: nil, queue: .main) { _ in
                         UserDefaults(suiteName: groupName)?.set(false, forKey: "hostActive")
+                        macWindowIsMain = false
                     }
                 }
             }
@@ -450,7 +452,9 @@ class ContactsTableViewController:  DogeChatViewController,
     
     
     func makeLocalNotification(message: Message) {
-        guard let friend = message.friend, UIApplication.shared.applicationState != .background else { return }
+        guard let friend = message.friend else {
+            return
+        }
         let content = UNMutableNotificationContent()
         content.title = friend.username
         content.body = (friend.isGroup ? "\(message.senderUsername)：" : "") + message.summary()
@@ -470,10 +474,12 @@ class ContactsTableViewController:  DogeChatViewController,
         let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
         UNUserNotificationCenter.current().add(request) { error in
             print(error as Any)
+            print("已推送")
         }
     }
     
     func shouldPresentRemoteNotification(_ infos: [String : Any]) -> Bool {
+        return true
         if UIApplication.shared.applicationState != .active { return true }
         if let friendID = infos["senderId"] as? String {
             if isPhone() && (self.tabBarController?.selectedIndex != 0 || self.navigationController?.visibleViewController != self) {

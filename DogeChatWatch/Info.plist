@@ -30,7 +30,7 @@
 		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 	</array>
 	<key>WKCompanionAppBundleIdentifier</key>
-	<string>com.zhaoxiguang.dogechat2</string>
+	<string>com.zhaoxiguang.dogechat6</string>
 	<key>WKWatchKitApp</key>
 	<true/>
 </dict>

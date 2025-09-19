@@ -1,0 +1,30 @@
+{
+  "" : {
+    "const-values" : "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-iphoneos/DogeChatSiri.build/Objects-normal/arm64/DogeChatSiri-master.swiftconstvalues",
+    "dependencies" : "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-iphoneos/DogeChatSiri.build/Objects-normal/arm64/DogeChatSiri-master.d",
+    "diagnostics" : "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-iphoneos/DogeChatSiri.build/Objects-normal/arm64/DogeChatSiri-master.dia",
+    "emit-module-dependencies" : "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-iphoneos/DogeChatSiri.build/Objects-normal/arm64/DogeChatSiri-master-emit-module.d",
+    "emit-module-diagnostics" : "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-iphoneos/DogeChatSiri.build/Objects-normal/arm64/DogeChatSiri-master-emit-module.dia",
+    "swift-dependencies" : "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-iphoneos/DogeChatSiri.build/Objects-normal/arm64/DogeChatSiri-master.swiftdeps"
+  },
+  "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/DogeChat/Shared/Common.swift" : {
+    "index-unit-output-path" : "/DogeChat.build/Release-iphoneos/DogeChatSiri.build/Objects-normal/arm64/Common.o",
+    "llvm-bc" : "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-iphoneos/DogeChatSiri.build/Objects-normal/arm64/Common.bc",
+    "object" : "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-iphoneos/DogeChatSiri.build/Objects-normal/arm64/Common.o"
+  },
+  "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/DogeChat/Shared/Encrypt.swift" : {
+    "index-unit-output-path" : "/DogeChat.build/Release-iphoneos/DogeChatSiri.build/Objects-normal/arm64/Encrypt.o",
+    "llvm-bc" : "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-iphoneos/DogeChatSiri.build/Objects-normal/arm64/Encrypt.bc",
+    "object" : "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-iphoneos/DogeChatSiri.build/Objects-normal/arm64/Encrypt.o"
+  },
+  "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/DogeChat/Shared/HttpMessage.swift" : {
+    "index-unit-output-path" : "/DogeChat.build/Release-iphoneos/DogeChatSiri.build/Objects-normal/arm64/HttpMessage.o",
+    "llvm-bc" : "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-iphoneos/DogeChatSiri.build/Objects-normal/arm64/HttpMessage.bc",
+    "object" : "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-iphoneos/DogeChatSiri.build/Objects-normal/arm64/HttpMessage.o"
+  },
+  "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/DogeChatSiri/IntentHandler.swift" : {
+    "index-unit-output-path" : "/DogeChat.build/Release-iphoneos/DogeChatSiri.build/Objects-normal/arm64/IntentHandler.o",
+    "llvm-bc" : "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-iphoneos/DogeChatSiri.build/Objects-normal/arm64/IntentHandler.bc",
+    "object" : "/Users/zhaoxiguang/Documents/Developer/DogeChat/DogeChat/build/DogeChat.build/Release-iphoneos/DogeChatSiri.build/Objects-normal/arm64/IntentHandler.o"
+  }
+}

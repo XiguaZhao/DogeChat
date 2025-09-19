@@ -15,12 +15,28 @@ class DogeChatTabBarController: UITabBarController, UITabBarControllerDelegate {
     var miniPlayerView: MiniPlayerView!
     
     var doubleTapGes: UITapGestureRecognizer!
+    
+    @available(iOS 18.0, *)
+    override var mode: UITabBarController.Mode {
+        get {
+            return .tabSidebar
+        }
+        set {
+            super.mode = newValue
+        }
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
         
         self.tabBar.layer.masksToBounds = true
         self.delegate = self
+        
+        if #available(macCatalyst 18.0, *) {
+//            self.sidebar.isHidden = true
+        } else {
+            // Fallback on earlier versions
+        }
         setupMiniPlayer()
         NotificationCenter.default.addObserver(self, selector: #selector(nowPlayingTrackChangedNoti(_:)), name: .nowPlayingTrackChanged, object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(nowPlayingListChangedNoti(_:)), name: .nowPlayingListChanged, object: nil)
