@@ -57,7 +57,7 @@ extension String {
     }
     
     var fileName: String {
-        return self.components(separatedBy: "/").last?.replacingOccurrences(of: "%2B", with: "+") ?? ""
+        return URL(string: self)?.lastPathComponent.replacingOccurrences(of: "%2B", with: "+") ?? ""
     }
     
     func fileNameWithWidth(_ width: ImageWidth) -> String {

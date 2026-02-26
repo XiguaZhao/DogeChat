@@ -11,7 +11,6 @@
 		070575D5276EFDC00041C3B8 /* ProfileVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 070575D4276EFDC00041C3B8 /* ProfileVC.swift */; };
 		070575DA276F308E0041C3B8 /* ProfileAvatarCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 070575D9276F308E0041C3B8 /* ProfileAvatarCell.swift */; };
 		0709ECBA2719626C007F229F /* SessionDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0709ECB92719626C007F229F /* SessionDelegate.swift */; };
-		0709ECBB2719626C007F229F /* SessionDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0709ECB92719626C007F229F /* SessionDelegate.swift */; };
 		070C41742489204F0035314A /* SearchViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 070C41732489204F0035314A /* SearchViewController.swift */; };
 		07110DEE27295A7800D9323E /* MediaLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 075293A82715629400D10D65 /* MediaLoader.swift */; };
 		071299BF2736302000C52D45 /* FileBrowerVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 071299BE2736302000C52D45 /* FileBrowerVC.swift */; };
@@ -19,12 +18,10 @@
 		071379A62689B636007EF6D6 /* SelectContactsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 071379A52689B636007EF6D6 /* SelectContactsViewController.swift */; };
 		071379A82689DCBD007EF6D6 /* ChatRoom+CellDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 071379A72689DCBD007EF6D6 /* ChatRoom+CellDelegate.swift */; };
 		0715EA7C2673ACCB0042F4F0 /* Encrypt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0715EA7B2673ACCB0042F4F0 /* Encrypt.swift */; };
-		0715EA7D2673ACCB0042F4F0 /* Encrypt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0715EA7B2673ACCB0042F4F0 /* Encrypt.swift */; };
 		07178B1A27659CBD007D32AB /* HttpMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07178B1927659CBD007D32AB /* HttpMessage.swift */; };
 		07178B1B27659CBD007D32AB /* HttpMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07178B1927659CBD007D32AB /* HttpMessage.swift */; };
 		07178B1C2765A2A6007D32AB /* Encrypt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0715EA7B2673ACCB0042F4F0 /* Encrypt.swift */; };
 		0718AC0D2685CEAE00E27B28 /* Common.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0718AC0C2685CEAE00E27B28 /* Common.swift */; };
-		0718AC0E2685CF1200E27B28 /* Common.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0718AC0C2685CEAE00E27B28 /* Common.swift */; };
 		0718AC102685DE9F00E27B28 /* PlayerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0718AC0F2685DE9F00E27B28 /* PlayerManager.swift */; };
 		0718AC122686F61100E27B28 /* PlayListsSelectVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0718AC112686F61100E27B28 /* PlayListsSelectVC.swift */; };
 		0718AC142686FFE700E27B28 /* SelectPlayListCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0718AC132686FFE700E27B28 /* SelectPlayListCell.swift */; };
@@ -80,19 +77,6 @@
 		0761FAAC266CC98600AE0171 /* MessageBaseCell+Emitter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0761FAAB266CC98600AE0171 /* MessageBaseCell+Emitter.swift */; };
 		0761FAAE266CE87400AE0171 /* EmojiEmitterLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0761FAAD266CE87400AE0171 /* EmojiEmitterLayer.swift */; };
 		0761FAF4266E342E00AE0171 /* HelperMethods.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0761FAF3266E342E00AE0171 /* HelperMethods.swift */; };
-		0761FAFE266E484C00AE0171 /* Interface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0761FAFC266E484C00AE0171 /* Interface.storyboard */; };
-		0761FB00266E484E00AE0171 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0761FAFF266E484E00AE0171 /* Assets.xcassets */; };
-		0761FB07266E484E00AE0171 /* DogeChatWatch Extension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 0761FB06266E484E00AE0171 /* DogeChatWatch Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		0761FB14266E484F00AE0171 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0761FB13266E484F00AE0171 /* Assets.xcassets */; };
-		0761FB19266E484F00AE0171 /* DogeChatWatch.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 0761FAFA266E484C00AE0171 /* DogeChatWatch.app */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		0761FB26266E489700AE0171 /* ComplicationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0761FB22266E489700AE0171 /* ComplicationController.swift */; };
-		0761FB27266E489700AE0171 /* ExtensionDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0761FB23266E489700AE0171 /* ExtensionDelegate.swift */; };
-		0761FB29266E489700AE0171 /* NotificationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0761FB25266E489700AE0171 /* NotificationController.swift */; };
-		0761FB2D266E48A600AE0171 /* SocketManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0761FB2A266E48A500AE0171 /* SocketManager.swift */; };
-		0761FB2E266E48A600AE0171 /* ContactsRowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0761FB2B266E48A600AE0171 /* ContactsRowController.swift */; };
-		0761FB31266E48CC00AE0171 /* ContactInterfaceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0761FB30266E48CC00AE0171 /* ContactInterfaceController.swift */; };
-		0761FB38266E577900AE0171 /* MessageRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0761FB37266E577900AE0171 /* MessageRow.swift */; };
-		0761FB3A266E57B000AE0171 /* ChatRoomInterfaceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0761FB39266E57B000AE0171 /* ChatRoomInterfaceController.swift */; };
 		076B209626E466A800BCD003 /* ChatRoom+Emitter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 076B209326E466A800BCD003 /* ChatRoom+Emitter.swift */; };
 		076CE9A927BFD4120066CB6C /* AppIntentVocabulary.plist in Resources */ = {isa = PBXBuildFile; fileRef = 076CE9AB27BFD4120066CB6C /* AppIntentVocabulary.plist */; };
 		0772865627D1BB6700F681FE /* AppDelegate+Common.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0772865527D1BB6700F681FE /* AppDelegate+Common.swift */; };
@@ -174,12 +158,15 @@
 		07BBBABF27BEA5A400C83F48 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 07BBBAC327BEA5A400C83F48 /* Localizable.strings */; };
 		07BBBAC527BEA69E00C83F48 /* SignUpViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 07BBBAC727BEA69E00C83F48 /* SignUpViewController.xib */; };
 		07BBBAD027BF367800C83F48 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 07BBBAD427BF367800C83F48 /* InfoPlist.strings */; };
-		07BBBAD127BF367800C83F48 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 07BBBAD427BF367800C83F48 /* InfoPlist.strings */; };
 		07BBBAD227BF367800C83F48 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 07BBBAD427BF367800C83F48 /* InfoPlist.strings */; };
 		07BBBADD27BFC68E00C83F48 /* ImageConfirmViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 07BBBADF27BFC68E00C83F48 /* ImageConfirmViewController.xib */; };
 		07BBBAE427BFC7E200C83F48 /* SelectColorVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = 07BBBAE627BFC7E200C83F48 /* SelectColorVC.xib */; };
 		07BBBAEB27BFC84600C83F48 /* SelectColorLowVersion.xib in Resources */ = {isa = PBXBuildFile; fileRef = 07BBBAED27BFC84600C83F48 /* SelectColorLowVersion.xib */; };
 		07BD40DF26E7667700F2761D /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07BD40DE26E7667700F2761D /* SceneDelegate.swift */; };
+		07C2CC402F506C750012F6EC /* DogeChatWatch Watch App.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 07C2CC362F506C740012F6EC /* DogeChatWatch Watch App.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		07C2CC482F506C8C0012F6EC /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07C2CC452F506C8C0012F6EC /* ContentView.swift */; };
+		07C2CC492F506C8C0012F6EC /* DogeChatWatchApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07C2CC462F506C8C0012F6EC /* DogeChatWatchApp.swift */; };
+		07C2CC4A2F506C8C0012F6EC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 07C2CC442F506C8C0012F6EC /* Assets.xcassets */; };
 		07C9632F25E3B53900C2BF4C /* ImageConfirmViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07C9632D25E3B53900C2BF4C /* ImageConfirmViewController.swift */; };
 		07D0FB6727453EF500B34FE4 /* ReferView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07D0FB6627453EF500B34FE4 /* ReferView.swift */; };
 		07D0FB6D2746B18300B34FE4 /* MessageLivePhotoCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07D0FB6C2746B18300B34FE4 /* MessageLivePhotoCell.swift */; };
@@ -195,10 +182,6 @@
 		07E001DA248CA56800D4A287 /* SelectShortcutTVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07E001D9248CA56800D4A287 /* SelectShortcutTVC.swift */; };
 		07E1BAFC267F86B000559A3B /* ChatRoom+InputViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07E1BAFB267F86B000559A3B /* ChatRoom+InputViewDelegate.swift */; };
 		07E1BAFE267F8CBA00559A3B /* VoiceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07E1BAFD267F8CBA00559A3B /* VoiceViewController.swift */; };
-		07E4DD3F271C03500027BA0C /* MediaLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 075293A82715629400D10D65 /* MediaLoader.swift */; };
-		07E4DD43271C1F250027BA0C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0761FB13266E484F00AE0171 /* Assets.xcassets */; };
-		07E4DD5B271C288C0027BA0C /* EmojiRowController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07E4DD5A271C288C0027BA0C /* EmojiRowController.swift */; };
-		07E4DD5D271C28F80027BA0C /* EmojiInterfaceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07E4DD5C271C28F80027BA0C /* EmojiInterfaceController.swift */; };
 		07E745B8275BC64C00897751 /* ChatRoom.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 07E745B7275BC64C00897751 /* ChatRoom.storyboard */; };
 		07E745BC275BC6FE00897751 /* ChatRoomSceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07E745BB275BC6FE00897751 /* ChatRoomSceneDelegate.swift */; };
 		07ED6B6A268C2BE400F86DC0 /* MiniPlayerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07ED6B69268C2BE400F86DC0 /* MiniPlayerView.swift */; };
@@ -211,7 +194,6 @@
 		07FE06C627019DE90048B6A7 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07FE06C527019DE90048B6A7 /* NotificationService.swift */; };
 		07FE06CA27019DE90048B6A7 /* mynotification.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 07FE06C327019DE90048B6A7 /* mynotification.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		07FE06D42701E6D90048B6A7 /* Common.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0718AC0C2685CEAE00E27B28 /* Common.swift */; };
-		07FEB845266F898800255F8F /* LoginInterfaceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07FEB844266F898800255F8F /* LoginInterfaceController.swift */; };
 		181434D1B9FD73AC1BF42995 /* Pods_mynotification.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 778D22C57A8ADFAA5FD78F37 /* Pods_mynotification.framework */; };
 		2B0E146628D5ABB7008484F8 /* girl167*167.png in Resources */ = {isa = PBXBuildFile; fileRef = 2B0E146228D5ABB7008484F8 /* girl167*167.png */; };
 		2B0E146728D5ABB7008484F8 /* girl120*120.png in Resources */ = {isa = PBXBuildFile; fileRef = 2B0E146328D5ABB7008484F8 /* girl120*120.png */; };
@@ -245,7 +227,6 @@
 		2BEEA76228817A2800108733 /* Bridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BEEA76128817A2800108733 /* Bridge.swift */; };
 		2BEEA76328817A2800108733 /* Bridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BEEA76128817A2800108733 /* Bridge.swift */; };
 		2BEEA76628817ADB00108733 /* DogeChat+MacOSBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BEEA76428817AAC00108733 /* DogeChat+MacOSBridge.swift */; };
-		30A20E70D281EB3CC2DAFF60 /* Pods_DogeChatWatch_Extension.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5574C698DB80994BB373FB87 /* Pods_DogeChatWatch_Extension.framework */; };
 		AE909BEB1EB54099009D9D95 /* MessageBaseCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE909BEA1EB54099009D9D95 /* MessageBaseCell.swift */; };
 		AE909BEF1EB54C4B009D9D95 /* Label.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE909BEE1EB54C4B009D9D95 /* Label.swift */; };
 		AE909BF11EB63FDB009D9D95 /* MessageInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AE909BF01EB63FDB009D9D95 /* MessageInputView.swift */; };
@@ -260,20 +241,6 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		0761FB08266E484E00AE0171 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = AEC6BF331EAF320E007CA6E5 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 0761FB05266E484E00AE0171;
-			remoteInfo = "DogeChatWatch Extension";
-		};
-		0761FB17266E484F00AE0171 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = AEC6BF331EAF320E007CA6E5 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 0761FAF9266E484C00AE0171;
-			remoteInfo = DogeChatWatch;
-		};
 		07A740BE2514E6090014880E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 07A740A82514E5E90014880E /* Starscream.xcodeproj */;
@@ -294,6 +261,13 @@
 			proxyType = 1;
 			remoteGlobalIDString = 07BA6040277E123300496047;
 			remoteInfo = DogeChatShare;
+		};
+		07C2CC3E2F506C750012F6EC /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = AEC6BF331EAF320E007CA6E5 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 07C2CC352F506C740012F6EC;
+			remoteInfo = "DogeChatWatch Watch App";
 		};
 		07D0FB932749404000B34FE4 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -333,24 +307,13 @@
 			name = "Embed App Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		0761FB1D266E484F00AE0171 /* Embed App Extensions */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 13;
-			files = (
-				0761FB07266E484E00AE0171 /* DogeChatWatch Extension.appex in Embed App Extensions */,
-			);
-			name = "Embed App Extensions";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		07C6AF9B247D1AF80007222F /* Embed Watch Content */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
 			dstSubfolderSpec = 16;
 			files = (
-				0761FB19266E484F00AE0171 /* DogeChatWatch.app in Embed Watch Content */,
+				07C2CC402F506C750012F6EC /* DogeChatWatch Watch App.app in Embed Watch Content */,
 			);
 			name = "Embed Watch Content";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -437,11 +400,9 @@
 		0761FAAB266CC98600AE0171 /* MessageBaseCell+Emitter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MessageBaseCell+Emitter.swift"; sourceTree = "<group>"; };
 		0761FAAD266CE87400AE0171 /* EmojiEmitterLayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiEmitterLayer.swift; sourceTree = "<group>"; };
 		0761FAF3266E342E00AE0171 /* HelperMethods.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelperMethods.swift; sourceTree = "<group>"; };
-		0761FAFA266E484C00AE0171 /* DogeChatWatch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DogeChatWatch.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0761FAFD266E484C00AE0171 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Interface.storyboard; sourceTree = "<group>"; };
 		0761FAFF266E484E00AE0171 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		0761FB01266E484E00AE0171 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		0761FB06266E484E00AE0171 /* DogeChatWatch Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "DogeChatWatch Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		0761FB13266E484F00AE0171 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		0761FB15266E484F00AE0171 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		0761FB16266E484F00AE0171 /* PushNotificationPayload.apns */ = {isa = PBXFileReference; lastKnownFileType = text; path = PushNotificationPayload.apns; sourceTree = "<group>"; };
@@ -562,6 +523,10 @@
 		07BBBAEF27BFC84800C83F48 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/SelectColorLowVersion.strings; sourceTree = "<group>"; };
 		07BBBAF127BFC84A00C83F48 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/SelectColorLowVersion.strings"; sourceTree = "<group>"; };
 		07BD40DE26E7667700F2761D /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
+		07C2CC362F506C740012F6EC /* DogeChatWatch Watch App.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "DogeChatWatch Watch App.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		07C2CC442F506C8C0012F6EC /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		07C2CC452F506C8C0012F6EC /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		07C2CC462F506C8C0012F6EC /* DogeChatWatchApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DogeChatWatchApp.swift; sourceTree = "<group>"; };
 		07C9632D25E3B53900C2BF4C /* ImageConfirmViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageConfirmViewController.swift; sourceTree = "<group>"; };
 		07D0FB6627453EF500B34FE4 /* ReferView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReferView.swift; sourceTree = "<group>"; };
 		07D0FB6C2746B18300B34FE4 /* MessageLivePhotoCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageLivePhotoCell.swift; sourceTree = "<group>"; };
@@ -675,19 +640,18 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		0761FB03266E484E00AE0171 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				30A20E70D281EB3CC2DAFF60 /* Pods_DogeChatWatch_Extension.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		07BA603E277E123300496047 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				ED62CEB2CB674C07FF8E9AFE /* Pods_DogeChatShare.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		07C2CC332F506C740012F6EC /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -722,13 +686,6 @@
 				2B15E2702855D512005C93CC /* Pods_DogeChat.framework in Frameworks */,
 				07792B492785DFA90041F65B /* PushKit.framework in Frameworks */,
 				2B55E1872897D2D500CDB24C /* CallKit.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		B13C599F1727860F72660581 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1246,6 +1203,16 @@
 			path = DogeChatShare;
 			sourceTree = "<group>";
 		};
+		07C2CC472F506C8C0012F6EC /* DogeChatWatch Watch App */ = {
+			isa = PBXGroup;
+			children = (
+				07C2CC442F506C8C0012F6EC /* Assets.xcassets */,
+				07C2CC452F506C8C0012F6EC /* ContentView.swift */,
+				07C2CC462F506C8C0012F6EC /* DogeChatWatchApp.swift */,
+			);
+			path = "DogeChatWatch Watch App";
+			sourceTree = "<group>";
+		};
 		07D0FB7E2749403F00B34FE4 /* DogeChatSiri */ = {
 			isa = PBXGroup;
 			children = (
@@ -1338,6 +1305,7 @@
 				07D0FB7E2749403F00B34FE4 /* DogeChatSiri */,
 				07D0FB882749403F00B34FE4 /* DogeChatSiriUI */,
 				07BA6042277E123300496047 /* DogeChatShare */,
+				07C2CC472F506C8C0012F6EC /* DogeChatWatch Watch App */,
 				AEC6BF3C1EAF320E007CA6E5 /* Products */,
 				073144A3245FF83D00D915E8 /* Frameworks */,
 				B12E227B93FFC54FE5E82718 /* Pods */,
@@ -1348,12 +1316,11 @@
 			isa = PBXGroup;
 			children = (
 				AEC6BF3B1EAF320E007CA6E5 /* DogeChat.app */,
-				0761FAFA266E484C00AE0171 /* DogeChatWatch.app */,
-				0761FB06266E484E00AE0171 /* DogeChatWatch Extension.appex */,
 				07FE06C327019DE90048B6A7 /* mynotification.appex */,
 				07D0FB7C2749403F00B34FE4 /* DogeChatSiri.appex */,
 				07BA6041277E123300496047 /* DogeChatShare.appex */,
 				2BEEA7592881799E00108733 /* MacOSBridge.bundle */,
+				07C2CC362F506C740012F6EC /* DogeChatWatch Watch App.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1412,43 +1379,6 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		0761FAF9266E484C00AE0171 /* DogeChatWatch */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 0761FB1E266E484F00AE0171 /* Build configuration list for PBXNativeTarget "DogeChatWatch" */;
-			buildPhases = (
-				0761FAF8266E484C00AE0171 /* Resources */,
-				0761FB1D266E484F00AE0171 /* Embed App Extensions */,
-				B13C599F1727860F72660581 /* Frameworks */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				0761FB09266E484E00AE0171 /* PBXTargetDependency */,
-			);
-			name = DogeChatWatch;
-			productName = DogeChatWatch;
-			productReference = 0761FAFA266E484C00AE0171 /* DogeChatWatch.app */;
-			productType = "com.apple.product-type.application.watchapp2";
-		};
-		0761FB05266E484E00AE0171 /* DogeChatWatch Extension */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 0761FB1A266E484F00AE0171 /* Build configuration list for PBXNativeTarget "DogeChatWatch Extension" */;
-			buildPhases = (
-				35FCD15A283D4DAE5E214271 /* [CP] Check Pods Manifest.lock */,
-				0761FB02266E484E00AE0171 /* Sources */,
-				0761FB03266E484E00AE0171 /* Frameworks */,
-				0761FB04266E484E00AE0171 /* Resources */,
-				762B33671D06412133EE2550 /* [CP] Embed Pods Frameworks */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = "DogeChatWatch Extension";
-			productName = "DogeChatWatch Extension";
-			productReference = 0761FB06266E484E00AE0171 /* DogeChatWatch Extension.appex */;
-			productType = "com.apple.product-type.watchkit2-extension";
-		};
 		07BA6040277E123300496047 /* DogeChatShare */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 07BA6051277E123300496047 /* Build configuration list for PBXNativeTarget "DogeChatShare" */;
@@ -1466,6 +1396,25 @@
 			productName = DogeChatShare;
 			productReference = 07BA6041277E123300496047 /* DogeChatShare.appex */;
 			productType = "com.apple.product-type.app-extension";
+		};
+		07C2CC352F506C740012F6EC /* DogeChatWatch Watch App */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 07C2CC432F506C750012F6EC /* Build configuration list for PBXNativeTarget "DogeChatWatch Watch App" */;
+			buildPhases = (
+				07C2CC322F506C740012F6EC /* Sources */,
+				07C2CC332F506C740012F6EC /* Frameworks */,
+				07C2CC342F506C740012F6EC /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "DogeChatWatch Watch App";
+			packageProductDependencies = (
+			);
+			productName = "DogeChatWatch Watch App";
+			productReference = 07C2CC362F506C740012F6EC /* DogeChatWatch Watch App.app */;
+			productType = "com.apple.product-type.application";
 		};
 		07D0FB7B2749403F00B34FE4 /* DogeChatSiri */ = {
 			isa = PBXNativeTarget;
@@ -1535,11 +1484,11 @@
 			buildRules = (
 			);
 			dependencies = (
-				0761FB18266E484F00AE0171 /* PBXTargetDependency */,
 				07FE06C927019DE90048B6A7 /* PBXTargetDependency */,
 				07D0FB942749404000B34FE4 /* PBXTargetDependency */,
 				07BA604A277E123300496047 /* PBXTargetDependency */,
 				2BEEA75F288179C700108733 /* PBXTargetDependency */,
+				07C2CC3F2F506C750012F6EC /* PBXTargetDependency */,
 			);
 			name = DogeChat;
 			productName = DogeChat;
@@ -1552,19 +1501,15 @@
 		AEC6BF331EAF320E007CA6E5 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 1320;
+				LastSwiftUpdateCheck = 2620;
 				LastUpgradeCheck = 1200;
 				ORGANIZATIONNAME = "Luke Parham";
 				TargetAttributes = {
-					0761FAF9266E484C00AE0171 = {
-						CreatedOnToolsVersion = 12.5;
-					};
-					0761FB05266E484E00AE0171 = {
-						CreatedOnToolsVersion = 12.5;
-						LastSwiftMigration = 1250;
-					};
 					07BA6040277E123300496047 = {
 						CreatedOnToolsVersion = 13.2.1;
+					};
+					07C2CC352F506C740012F6EC = {
+						CreatedOnToolsVersion = 26.2;
 					};
 					07D0FB7B2749403F00B34FE4 = {
 						CreatedOnToolsVersion = 13.1;
@@ -1603,12 +1548,11 @@
 			projectRoot = "";
 			targets = (
 				AEC6BF3A1EAF320E007CA6E5 /* DogeChat */,
-				0761FAF9266E484C00AE0171 /* DogeChatWatch */,
-				0761FB05266E484E00AE0171 /* DogeChatWatch Extension */,
 				07FE06C227019DE90048B6A7 /* mynotification */,
 				07D0FB7B2749403F00B34FE4 /* DogeChatSiri */,
 				07BA6040277E123300496047 /* DogeChatShare */,
 				2BEEA7582881799E00108733 /* MacOSBridge */,
+				07C2CC352F506C740012F6EC /* DogeChatWatch Watch App */,
 			);
 		};
 /* End PBXProject section */
@@ -1631,31 +1575,20 @@
 /* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
-		0761FAF8266E484C00AE0171 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				0761FB00266E484E00AE0171 /* Assets.xcassets in Resources */,
-				07E4DD43271C1F250027BA0C /* Assets.xcassets in Resources */,
-				0761FAFE266E484C00AE0171 /* Interface.storyboard in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		0761FB04266E484E00AE0171 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				0761FB14266E484F00AE0171 /* Assets.xcassets in Resources */,
-				07BBBAD127BF367800C83F48 /* InfoPlist.strings in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		07BA603F277E123300496047 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				079C54C527CA4E8B001999F7 /* MainInterface.storyboard in Resources */,
 				07BBBAD227BF367800C83F48 /* InfoPlist.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		07C2CC342F506C740012F6EC /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				07C2CC4A2F506C8C0012F6EC /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1720,28 +1653,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		35FCD15A283D4DAE5E214271 /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-DogeChatWatch Extension-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
-		};
 		4504D4465D5573ECD7B4B753 /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -1814,34 +1725,6 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
-		762B33671D06412133EE2550 /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-DogeChatWatch Extension/Pods-DogeChatWatch Extension-frameworks.sh",
-				"${BUILT_PRODUCTS_DIR}/AFNetworking.root-NSURLSession-Security-Serialization/AFNetworking.framework",
-				"${BUILT_PRODUCTS_DIR}/DogeChatCommonDefines-watchOS/DogeChatCommonDefines.framework",
-				"${BUILT_PRODUCTS_DIR}/DogeChatUniversal-watchOS/DogeChatUniversal.framework",
-				"${BUILT_PRODUCTS_DIR}/RSAiOSWatchOS-watchOS/RSAiOSWatchOS.framework",
-				"${BUILT_PRODUCTS_DIR}/SwiftyJSON-watchOS/SwiftyJSON.framework",
-				"${BUILT_PRODUCTS_DIR}/SwiftyRSA-watchOS/SwiftyRSA.framework",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputPaths = (
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AFNetworking.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/DogeChatCommonDefines.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/DogeChatUniversal.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RSAiOSWatchOS.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftyJSON.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftyRSA.framework",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-DogeChatWatch Extension/Pods-DogeChatWatch Extension-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		AACD8244370B0FA21D091F83 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -1911,28 +1794,6 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		0761FB02266E484E00AE0171 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				0761FB2E266E48A600AE0171 /* ContactsRowController.swift in Sources */,
-				07E4DD5B271C288C0027BA0C /* EmojiRowController.swift in Sources */,
-				0761FB27266E489700AE0171 /* ExtensionDelegate.swift in Sources */,
-				0761FB3A266E57B000AE0171 /* ChatRoomInterfaceController.swift in Sources */,
-				0709ECBB2719626C007F229F /* SessionDelegate.swift in Sources */,
-				0718AC0E2685CF1200E27B28 /* Common.swift in Sources */,
-				0761FB31266E48CC00AE0171 /* ContactInterfaceController.swift in Sources */,
-				0761FB29266E489700AE0171 /* NotificationController.swift in Sources */,
-				0761FB38266E577900AE0171 /* MessageRow.swift in Sources */,
-				07E4DD5D271C28F80027BA0C /* EmojiInterfaceController.swift in Sources */,
-				07FEB845266F898800255F8F /* LoginInterfaceController.swift in Sources */,
-				0761FB26266E489700AE0171 /* ComplicationController.swift in Sources */,
-				0761FB2D266E48A600AE0171 /* SocketManager.swift in Sources */,
-				0715EA7D2673ACCB0042F4F0 /* Encrypt.swift in Sources */,
-				07E4DD3F271C03500027BA0C /* MediaLoader.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		07BA603D277E123300496047 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1944,6 +1805,15 @@
 				07BA6092277ED66900496047 /* Common.swift in Sources */,
 				07BA6044277E123300496047 /* ShareViewController.swift in Sources */,
 				07BA6097277ED81F00496047 /* UIImage+Compress.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		07C2CC322F506C740012F6EC /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				07C2CC482F506C8C0012F6EC /* ContentView.swift in Sources */,
+				07C2CC492F506C8C0012F6EC /* DogeChatWatchApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2155,21 +2025,15 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		0761FB09266E484E00AE0171 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 0761FB05266E484E00AE0171 /* DogeChatWatch Extension */;
-			targetProxy = 0761FB08266E484E00AE0171 /* PBXContainerItemProxy */;
-		};
-		0761FB18266E484F00AE0171 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			platformFilter = ios;
-			target = 0761FAF9266E484C00AE0171 /* DogeChatWatch */;
-			targetProxy = 0761FB17266E484F00AE0171 /* PBXContainerItemProxy */;
-		};
 		07BA604A277E123300496047 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 07BA6040277E123300496047 /* DogeChatShare */;
 			targetProxy = 07BA6049277E123300496047 /* PBXContainerItemProxy */;
+		};
+		07C2CC3F2F506C750012F6EC /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 07C2CC352F506C740012F6EC /* DogeChatWatch Watch App */;
+			targetProxy = 07C2CC3E2F506C750012F6EC /* PBXContainerItemProxy */;
 		};
 		07D0FB942749404000B34FE4 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -2296,142 +2160,6 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
-		0761FB1B266E484F00AE0171 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 3A00166581D5028C88378B40 /* Pods-DogeChatWatch Extension.debug.xcconfig */;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_COMPLICATION_NAME = Complication;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_ENTITLEMENTS = "DogeChatWatch Extension/DogeChatWatch Extension.entitlements";
-				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = U4X7QLGBPJ;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				INFOPLIST_FILE = "DogeChatWatch Extension/Info.plist";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@executable_path/../../Frameworks",
-				);
-				MARKETING_VERSION = 2.2;
-				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
-				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.dogechat6.watchkitapp.watchkitextension;
-				PRODUCT_NAME = "${TARGET_NAME}";
-				PROVISIONING_PROFILE_SPECIFIER = "";
-				SDKROOT = watchos;
-				SKIP_INSTALL = YES;
-				SWIFT_OBJC_BRIDGING_HEADER = "DogeChatWatch Extension/DogeChatWatch Extension-Bridging-Header.h";
-				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 4;
-				WATCHOS_DEPLOYMENT_TARGET = 7.4;
-			};
-			name = Debug;
-		};
-		0761FB1C266E484F00AE0171 /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 0A4AEF28A524D18B5C8ECDC5 /* Pods-DogeChatWatch Extension.release.xcconfig */;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_COMPLICATION_NAME = Complication;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_ENABLE_MODULES = YES;
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_ENTITLEMENTS = "DogeChatWatch Extension/DogeChatWatch ExtensionRelease.entitlements";
-				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = U4X7QLGBPJ;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				INFOPLIST_FILE = "DogeChatWatch Extension/Info.plist";
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@executable_path/../../Frameworks",
-				);
-				MARKETING_VERSION = 2.2;
-				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.dogechat6.watchkitapp.watchkitextension;
-				PRODUCT_NAME = "${TARGET_NAME}";
-				PROVISIONING_PROFILE_SPECIFIER = "";
-				SDKROOT = watchos;
-				SKIP_INSTALL = YES;
-				SWIFT_OBJC_BRIDGING_HEADER = "DogeChatWatch Extension/DogeChatWatch Extension-Bridging-Header.h";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 4;
-				WATCHOS_DEPLOYMENT_TARGET = 7.4;
-			};
-			name = Release;
-		};
-		0761FB1F266E484F00AE0171 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_ENTITLEMENTS = DogeChatWatch/DogeChatWatch.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = U4X7QLGBPJ;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				IBSC_MODULE = DogeChatWatch_Extension;
-				INFOPLIST_FILE = DogeChatWatch/Info.plist;
-				MARKETING_VERSION = 2.2;
-				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
-				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.dogechat6.watchkitapp;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
-				SDKROOT = watchos;
-				SKIP_INSTALL = YES;
-				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 4;
-				WATCHOS_DEPLOYMENT_TARGET = 7.4;
-			};
-			name = Debug;
-		};
-		0761FB20266E484F00AE0171 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_ENTITLEMENTS = DogeChatWatch/DogeChatWatch.entitlements;
-				CODE_SIGN_IDENTITY = "Apple Development";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = U4X7QLGBPJ;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				IBSC_MODULE = DogeChatWatch_Extension;
-				INFOPLIST_FILE = DogeChatWatch/Info.plist;
-				MARKETING_VERSION = 2.2;
-				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.dogechat6.watchkitapp;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE_SPECIFIER = "";
-				SDKROOT = watchos;
-				SKIP_INSTALL = YES;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = 4;
-				WATCHOS_DEPLOYMENT_TARGET = 7.4;
-			};
-			name = Release;
-		};
 		07BA604D277E123300496047 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = D3813E78BE0572D42567A9FB /* Pods-DogeChatShare.debug.xcconfig */;
@@ -2509,6 +2237,97 @@
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALIDATE_WORKSPACE = YES;
+			};
+			name = Release;
+		};
+		07C2CC412F506C750012F6EC /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = U4X7QLGBPJ;
+				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = DogeChatWatch;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.zhaoxiguang.dogechat6;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.dogechat6.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 26.2;
+			};
+			name = Debug;
+		};
+		07C2CC422F506C750012F6EC /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = U4X7QLGBPJ;
+				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = DogeChatWatch;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.zhaoxiguang.dogechat6;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MARKETING_VERSION = 1.0;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.dogechat6.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 26.2;
 			};
 			name = Release;
 		};
@@ -2684,6 +2503,8 @@
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
@@ -2702,8 +2523,9 @@
 				MARKETING_VERSION = 1.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.MacOSBridge;
+				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.dogechat6.MacOSBridge;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -2721,6 +2543,8 @@
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_WEAK = YES;
 				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
@@ -2738,8 +2562,9 @@
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				MARKETING_VERSION = 1.0;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.MacOSBridge;
+				PRODUCT_BUNDLE_IDENTIFIER = com.zhaoxiguang.dogechat6.MacOSBridge;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -2869,7 +2694,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 11446107E0EC4769216E7331 /* Pods-DogeChat.debug.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CLANG_ENABLE_MODULES = YES;
@@ -2909,7 +2733,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 0B69595E028EAB1E5EC8EA2E /* Pods-DogeChat.release.xcconfig */;
 			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
 				CLANG_ENABLE_MODULES = YES;
@@ -2946,29 +2769,20 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		0761FB1A266E484F00AE0171 /* Build configuration list for PBXNativeTarget "DogeChatWatch Extension" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				0761FB1B266E484F00AE0171 /* Debug */,
-				0761FB1C266E484F00AE0171 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		0761FB1E266E484F00AE0171 /* Build configuration list for PBXNativeTarget "DogeChatWatch" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				0761FB1F266E484F00AE0171 /* Debug */,
-				0761FB20266E484F00AE0171 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 		07BA6051277E123300496047 /* Build configuration list for PBXNativeTarget "DogeChatShare" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				07BA604D277E123300496047 /* Debug */,
 				07BA604E277E123300496047 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		07C2CC432F506C750012F6EC /* Build configuration list for PBXNativeTarget "DogeChatWatch Watch App" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				07C2CC412F506C750012F6EC /* Debug */,
+				07C2CC422F506C750012F6EC /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

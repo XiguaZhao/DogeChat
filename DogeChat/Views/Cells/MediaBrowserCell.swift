@@ -143,7 +143,7 @@ class MediaBrowserCell: UICollectionViewCell, PHLivePhotoViewDelegate, VideoView
         self.imagePath = imagePath
         if imagePath.contains(" ") {
             messageType = .livePhoto
-        } else if imagePath.hasSuffix(".mov") {
+        } else if imagePath.contains(".mov") || imagePath.lowercased().contains(".mp4") {
             messageType = .video
             videoView.showSliderAnimated(true, show: true, delay: 0)
         } else {

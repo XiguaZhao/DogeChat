@@ -84,7 +84,7 @@ class DogeChatTabBarController: UITabBarController, UITabBarControllerDelegate {
     }
     
     func tabBarController(_ tabBarController: UITabBarController, didSelect viewController: UIViewController) {
-        self.doubleTapGes.isEnabled = tabBarController.selectedIndex == 0
+        self.doubleTapGes?.isEnabled = tabBarController.selectedIndex == 0
         if PlayerManager.shared.nowPlayingTrack != nil {
             miniPlayerView.isHidden = false
         }

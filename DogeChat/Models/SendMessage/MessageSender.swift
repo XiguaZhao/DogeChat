@@ -275,20 +275,14 @@ class MessageSender {
         for item in items {
             if item.hasItemConformingToTypeIdentifier(videoIdentifier) { // drop
                 progressDelegate?.processingMedia(finished: false)
-                item.loadItem(forTypeIdentifier: videoIdentifier, options: nil) { obj, error in
-                    self.progressDelegate?.processingMedia(finished: true)
-                    if error == nil, let url = obj as? URL, let reachable = try? url.checkResourceIsReachable(), reachable, let _ = try? Data(contentsOf: url) {
-                        self.compressAndSendVideo(url, friends: friends, completion: completion)
-                    } else {
-                        item.loadDataRepresentation(forTypeIdentifier: videoIdentifier) { data, error in
-                            if let data = data, let cacheURL = URL(string: "file://" + NSTemporaryDirectory() + UUID().uuidString + ".mov") {
-                                do {
-                                    try data.write(to: cacheURL)
-                                    self.compressAndSendVideo(cacheURL, friends: friends, completion: completion)
-                                } catch {
-                                    
-                                }
-                            }
+                self.progressDelegate?.processingMedia(finished: true)
+                item.loadDataRepresentation(forTypeIdentifier: videoIdentifier) { data, error in
+                    if let data = data, let cacheURL = URL(string: "file://" + NSTemporaryDirectory() + UUID().uuidString + ".mov") {
+                        do {
+                            try data.write(to: cacheURL)
+                            self.compressAndSendVideo(cacheURL, friends: friends, completion: completion)
+                        } catch {
+                            
                         }
                     }
                 }
@@ -376,7 +370,7 @@ class MessageSender {
         let dir = createDir(name: videoDir)
         let uuid = UUID().uuidString
         let newURL = dir.appendingPathComponent(uuid).appendingPathExtension("mov")
-        LivePhotoGenerator().compressVideo(withInputURL: fileURL, outputURL: newURL, quality: .quality540, compressType: .thirdParty) {
+        LivePhotoGenerator().compressVideo(withInputURL: fileURL, outputURL: newURL, quality: .quality1080, compressType: .system) {
             self.pickedVideos = (newURL, self.resolutionForLocalVideo(url: newURL) ?? .zero)
             let messages = self.sendVideo(friends: friends)
             completion?(messages)

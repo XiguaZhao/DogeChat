@@ -58,8 +58,14 @@ extension ChatRoomViewController: MessageInputDelegate, VoiceRecordDelegate {
                 self.present(imagePicker, animated: true, completion: nil)
             }
         case .video:
-            imagePicker.mediaTypes = ["public.movie"]
-            self.present(imagePicker, animated: true, completion: nil)
+            if #available(iOS 14, *) {
+                var config = PHPickerConfiguration()
+                config.filter = PHPickerFilter.any(of: [.videos])
+                config.selectionLimit = 0
+                let picker = PHPickerViewController(configuration: config)
+                picker.delegate = self
+                self.present(picker, animated: true, completion: nil)
+            }
         case .draw:
             if #available(iOS 13.0, *) {
                 let drawVC = DrawViewController()
