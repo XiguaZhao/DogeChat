@@ -36,7 +36,7 @@ pod 'YYText'
 end
 
 
-target 'DogeChatWatch Extension' do
+target 'DogeChatWatch Watch App' do
   platform :watchos, '7.0'
   shared_pods
   pod 'AFNetworking'

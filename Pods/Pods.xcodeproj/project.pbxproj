@@ -43,7 +43,7 @@
 		0B879ABA4F0BF67C2A4E0D055B56A8B4 /* LookinStaticAsyncUpdateTask.m in Sources */ = {isa = PBXBuildFile; fileRef = 88046CC2B88D895C04A440DC1333CFFF /* LookinStaticAsyncUpdateTask.m */; };
 		0B928D23D0D0BAFA57F22E74F9889FA1 /* NSData+SHA.m in Sources */ = {isa = PBXBuildFile; fileRef = CFD593791CA7DC43E2007BD4C4E92A4E /* NSData+SHA.m */; };
 		0C1AFE23669A9BA4871BD5162694DA16 /* MJRefreshAutoGifFooter.m in Sources */ = {isa = PBXBuildFile; fileRef = 37B3042E52BFD676A817676ED5BD8DD2 /* MJRefreshAutoGifFooter.m */; };
-		0C9EF097FFBD4FEB4294449F3AF919CB /* Pods-DogeChatSiri-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 3EDFB949A2BF0845F0B69CF963B55BF3 /* Pods-DogeChatSiri-dummy.m */; };
+		0C9EF097FFBD4FEB4294449F3AF919CB /* Pods-DogeChatSiri-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 4E52D625581C46636DE7AFD165749351 /* Pods-DogeChatSiri-dummy.m */; };
 		0CDAB089881F61CADA60025AACAF31B2 /* MJRefreshComponent.h in Headers */ = {isa = PBXBuildFile; fileRef = 8C1F0323F4436BD478C8E4C154EB0EAD /* MJRefreshComponent.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		0D665B6767B345D8C70D7E029A2A48D8 /* ConstraintViewDSL.swift in Sources */ = {isa = PBXBuildFile; fileRef = C7822785DAAB1515CC16EACA1E6A7956 /* ConstraintViewDSL.swift */; };
 		0D9637DA7816E2FC05536E6E870CF866 /* MJRefreshStateHeader.m in Sources */ = {isa = PBXBuildFile; fileRef = 1985F7D4FB919E4A80BC5F534E3067D3 /* MJRefreshStateHeader.m */; };
@@ -65,7 +65,7 @@
 		1247504D0B34EF0A842233647AC07201 /* PrivateKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = B610A9CEEDBD8904DE7114CD24AE732A /* PrivateKey.swift */; };
 		12DC1580CE0599D3A079767556919670 /* SDAnimatedImage.m in Sources */ = {isa = PBXBuildFile; fileRef = EDB402BF3A6BCBD6D748610A89D8C6C5 /* SDAnimatedImage.m */; };
 		1370510493DE2652B77F04017E90F970 /* PTChannel.m in Sources */ = {isa = PBXBuildFile; fileRef = 5D952F233B577A59FF3E13DD1070B543 /* PTChannel.m */; };
-		138FA5423F8D1063FBFEC84B38038EB3 /* Pods-mynotification-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = D1828053F5F4399A9F49D81AC7563A3F /* Pods-mynotification-dummy.m */; };
+		138FA5423F8D1063FBFEC84B38038EB3 /* Pods-mynotification-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 06797EFD55226C407D786F3EEF11C1EB /* Pods-mynotification-dummy.m */; };
 		13CC0CFB1C56F23BBC872801F983C1A3 /* ConstraintLayoutSupport.swift in Sources */ = {isa = PBXBuildFile; fileRef = B69A2636CF2CF4AAFF8FB34837951337 /* ConstraintLayoutSupport.swift */; };
 		13CF08F828698B544968AE18403984E3 /* LKS_HierarchyDisplayItemsMaker.h in Headers */ = {isa = PBXBuildFile; fileRef = C7AAFBC418FC2719A81B919113F7C339 /* LKS_HierarchyDisplayItemsMaker.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		1410695EAB79DC4C37DA40FB660A9EA3 /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2897A4831C9544FE2ED7E3C37ABEEC10 /* Message.swift */; };
@@ -115,7 +115,7 @@
 		26FBF3348E71F67F1CE262EB46A26FD9 /* SDWebImageDownloaderOperation.h in Headers */ = {isa = PBXBuildFile; fileRef = 975965141D63843851588DF808A8CEF7 /* SDWebImageDownloaderOperation.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		271E6B7BEBEFFC21BE317C42589614FF /* LFAssetExportSession.m in Sources */ = {isa = PBXBuildFile; fileRef = DF35EBD14F6D2CA46F7F09CA84949D9D /* LFAssetExportSession.m */; };
 		27363CBBE9D0DF6A0B706852924EC38D /* SDWeakProxy.h in Headers */ = {isa = PBXBuildFile; fileRef = D8E5036DCE7C62DF43111794FB522D2A /* SDWeakProxy.h */; settings = {ATTRIBUTES = (Private, ); }; };
-		273AC4CD478C807FC184EF90065A4A15 /* Pods-DogeChatShare-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 7B32A8C18605BD2F638E7D3287D4CC23 /* Pods-DogeChatShare-dummy.m */; };
+		273AC4CD478C807FC184EF90065A4A15 /* Pods-DogeChatShare-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 49774C505D58B222744DFF82CD2D201E /* Pods-DogeChatShare-dummy.m */; };
 		27599AFB04C3651FBFE119F878DA9B5C /* SDImageGIFCoder.h in Headers */ = {isa = PBXBuildFile; fileRef = 29B8B210BAF53EF75C5F579210EC3FC4 /* SDImageGIFCoder.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		275B204CC1FB40C24FB086658852C786 /* LKS_AttrModificationPatchHandler.h in Headers */ = {isa = PBXBuildFile; fileRef = F710CFF7EF14A17A3AB96B7BF32DBCF9 /* LKS_AttrModificationPatchHandler.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		276A751692B927AA118E6513DEAB54B0 /* SDWebImagePrefetcher.h in Headers */ = {isa = PBXBuildFile; fileRef = 47C8178CCE39584988267D385C6A90F5 /* SDWebImagePrefetcher.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -151,7 +151,7 @@
 		347731E8D4C4F27FC53DDFAC590481D6 /* AFAutoPurgingImageCache.h in Headers */ = {isa = PBXBuildFile; fileRef = A2295C447398933A6DDEF9B0E9381BA1 /* AFAutoPurgingImageCache.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3675DD743DB4C4462C79645EB10C81CA /* UILabel+LookinServer.m in Sources */ = {isa = PBXBuildFile; fileRef = AD36DFD55C2A0F359D31642F6939D5A5 /* UILabel+LookinServer.m */; };
 		36AEA8B7A37B22FC9C3C520BAE3DA613 /* LookinMethodTraceRecord.m in Sources */ = {isa = PBXBuildFile; fileRef = E5C2BDA1CBD0179D01A6CD692B45BD55 /* LookinMethodTraceRecord.m */; };
-		36B5933E9A36254D4B52CAF5536120EF /* Pods-DogeChat-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 1AEFF40DE6A9BE0A5DCB742F384A5FEC /* Pods-DogeChat-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		36B5933E9A36254D4B52CAF5536120EF /* Pods-DogeChat-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 2BD35CEAB32EF2E951E47EC3E78B109F /* Pods-DogeChat-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3714D031829159A0EC0A447D1AC9D4DA /* CALayer+Lookin.m in Sources */ = {isa = PBXBuildFile; fileRef = 5B39C3327027EE5DF6F7CFF590044D82 /* CALayer+Lookin.m */; };
 		37D2A8B62679B9CD4BB5803CA4FBD2D2 /* DataCompression-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 9BA2A9D527ACE04A1047C23952344D2F /* DataCompression-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3859DBEDF12402A0371AD7E81A64656B /* MJRefreshBackStateFooter.h in Headers */ = {isa = PBXBuildFile; fileRef = EE194B6509FD147AF164049F3B829B94 /* MJRefreshBackStateFooter.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -211,7 +211,7 @@
 		4CC9B43AD90714A316815FAA71DC89A2 /* MASConstraintMaker.m in Sources */ = {isa = PBXBuildFile; fileRef = A598C55B9ED8A50F97399D85095F3D25 /* MASConstraintMaker.m */; };
 		4D2B321D39AAB3315A51650B025EF3B0 /* MJRefresh-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = EA080CCA78CA84B658466D0BD917CC19 /* MJRefresh-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4DCB59DE84A69063E9485E4D8BF8C637 /* AFNetworking-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = F9E0BCAA82B4188534D4CE2AFD6C0D37 /* AFNetworking-dummy.m */; };
-		4EE92C014D05F6FD29354CB8B40AC164 /* Pods-DogeChatShare-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 85788AD59ED86E0FD78489241CCC8A31 /* Pods-DogeChatShare-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		4EE92C014D05F6FD29354CB8B40AC164 /* Pods-DogeChatShare-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 375ADF36B867436841690609088C9F9C /* Pods-DogeChatShare-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4F0D8D7BA19C24C42A5BE88A0FC1BD6E /* LookinTuple.h in Headers */ = {isa = PBXBuildFile; fileRef = 8958C142421612FF2676ABD4488755B8 /* LookinTuple.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		4F473C02BAE0BD3CEFA60BCD6429EA59 /* CommonMethods.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3BE6232ABAFBC05F14ED3D84E92D7DE /* CommonMethods.swift */; };
 		4FF71DEE1327CB393B6EB67F784C4A6C /* QuickTimeMov.swift in Sources */ = {isa = PBXBuildFile; fileRef = F87BC876EE7E8A94818566603EC5CD19 /* QuickTimeMov.swift */; };
@@ -238,10 +238,8 @@
 		56CD198002D3D45274F6719725B983CF /* ConstraintOffsetTarget.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9AB2E592462C48648C3BBCA7D498675A /* ConstraintOffsetTarget.swift */; };
 		5768E94B430B92BF8D16F28F8E8FFFCC /* UIButton+WebCache.h in Headers */ = {isa = PBXBuildFile; fileRef = D36B399C5305EF3AEBAA217F98FA2CC9 /* UIButton+WebCache.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		57744CA757400E7183DFC0D37EFB5214 /* WKWebView+AFNetworking.h in Headers */ = {isa = PBXBuildFile; fileRef = AFD63E393CAD0EFA97583A5E745EB93F /* WKWebView+AFNetworking.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		578CC9CC76052B070F257475C31784C2 /* Pods-DogeChatWatch Extension-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = C28144521BB016F4F3DF61F45BA18218 /* Pods-DogeChatWatch Extension-dummy.m */; };
 		580A12A371A2A4ED396BB7A4A01F4425 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DD858A41A04FDE91B635B6F9FEF8CF28 /* Foundation.framework */; };
 		584233A4CEC7C9AA382A1A43C26B87EE /* AFHTTPSessionManager.h in Headers */ = {isa = PBXBuildFile; fileRef = 2DB0135188BA8959BFC8BFB4143AF6EB /* AFHTTPSessionManager.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		58FB09FC3E0FD7E9626D101F5E7F1A19 /* Pods-DogeChatWatch Extension-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 034E37D8E0B852089BFBB112C504BF0E /* Pods-DogeChatWatch Extension-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		595F209A01867E5418A4E392F8C5CE39 /* CommonMethods.swift in Sources */ = {isa = PBXBuildFile; fileRef = B3BE6232ABAFBC05F14ED3D84E92D7DE /* CommonMethods.swift */; };
 		597E696AFAE6903A89F89EF6F7056A35 /* SDImageAPNGCoder.m in Sources */ = {isa = PBXBuildFile; fileRef = 3785C0F4B321E8FF43E2241393CDA6E4 /* SDImageAPNGCoder.m */; };
 		59F925CD8754CC81ED81792AE2871ABA /* PTUSBHub.h in Headers */ = {isa = PBXBuildFile; fileRef = 9BAA5656F556D3DD118794736E482D97 /* PTUSBHub.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -290,6 +288,7 @@
 		6C239323DE74D9551EB571A31A24EC1E /* UIProgressView+AFNetworking.m in Sources */ = {isa = PBXBuildFile; fileRef = F2ABEE7B67FF5C50C7E584B4252F14C8 /* UIProgressView+AFNetworking.m */; };
 		6C3B57DB1FCC5B527ACDECA05AE60D6A /* SDImageCacheConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = 2A34FE1CD89E9562E12F1073A2993885 /* SDImageCacheConfig.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		6C4DEFBD5C4F02CD588A78FEEFBF3D4C /* SDImageLoadersManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 622CE71ECF6756E4AA6C37330159F068 /* SDImageLoadersManager.m */; };
+		6CBD9CFBD3B599FEFC3F4F63B56EDC22 /* Pods-DogeChatWatch Watch App-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = E05B54ECF357E0645F834E8313900867 /* Pods-DogeChatWatch Watch App-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		6D1223357BE83707A196D41D10BACF3E /* FLAnimatedImage-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = F947A0C8FEAF0F52B783A284F4402A3C /* FLAnimatedImage-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		6D389E4D5F97798BE1AEEB8C317852D7 /* SnapKit-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = EC5203981294F5E27E949CB913F5639D /* SnapKit-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		6D934D09B6C57454F3ACA2F0E012E7AA /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6A9AA7FD7FDE19FFFEF4857C103B31E8 /* Foundation.framework */; };
@@ -382,6 +381,7 @@
 		88D41BAB1CD8D1D50DBBAC7A52CE2E03 /* LookinCodingValueType.h in Headers */ = {isa = PBXBuildFile; fileRef = 40CDCC41EE20F7728E1EC5F0CB3B9D83 /* LookinCodingValueType.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		891D1BF14C8881C74262EE9DBE5D67A9 /* UILayoutSupport+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 571CA714FCE6121ECD4E8CF6F8783861 /* UILayoutSupport+Extensions.swift */; };
 		89D1E7BF521F0C957AD9BE6483BCD4BD /* YYTextArchiver.h in Headers */ = {isa = PBXBuildFile; fileRef = 30625BF7DE1A26DC7421610A0DE5F910 /* YYTextArchiver.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		8A30F66894547AB6421D636E66150820 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6A9AA7FD7FDE19FFFEF4857C103B31E8 /* Foundation.framework */; };
 		8A4BFCBAD1898408B296C4103F717613 /* FoundationSecurity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 655716EE07A38C7510E94132107BD51D /* FoundationSecurity.swift */; };
 		8A537CC4B6B2AB0BABCA844BE10DBFB2 /* AccountInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F5D39FA52B63E65EE41FDF95BDBA5CC /* AccountInfo.swift */; };
 		8AE868BC3E2E6FC92F4717835180C47D /* NSArray+MASAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = B1B1191725B70DD137E7EBED244407F7 /* NSArray+MASAdditions.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -467,7 +467,7 @@
 		A69D8904B9AB67C5CFEF841F4A9DD0BF /* YYTextUtilities.h in Headers */ = {isa = PBXBuildFile; fileRef = FF4F02C57CE5C0490898136A987C6E11 /* YYTextUtilities.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A6B9AD07A08EF3725D5E7534551660A3 /* SDWebImageCompat.m in Sources */ = {isa = PBXBuildFile; fileRef = 96F5ABD3756F525DD25F30427AD64FD9 /* SDWebImageCompat.m */; };
 		A74146722AFFD6E5EEC05252781071BC /* UIImage+MultiFormat.m in Sources */ = {isa = PBXBuildFile; fileRef = 38687F18D6EF39DC17DA8091045899CE /* UIImage+MultiFormat.m */; };
-		A7E0DC9A171A2A6BFC4A7A010991E991 /* Pods-DogeChatSiri-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 548F6FE1A835A0BB079B3A2D39C3A571 /* Pods-DogeChatSiri-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		A7E0DC9A171A2A6BFC4A7A010991E991 /* Pods-DogeChatSiri-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 0BB3D8B5B62EA24488CCD50486ECFFD1 /* Pods-DogeChatSiri-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A83A6757F6C0003332D57B41FE24BEEA /* MASConstraint+Private.h in Headers */ = {isa = PBXBuildFile; fileRef = 6F360093DBF9BAB8919D5EFFF590D587 /* MASConstraint+Private.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A8607A12B0AC32C484162D0A11B0356E /* MJRefreshBackNormalFooter.h in Headers */ = {isa = PBXBuildFile; fileRef = 2EED1F6F45E67BC22623FF9E36BF1ACB /* MJRefreshBackNormalFooter.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		A887C987DF2BEE38CB709CA96980D3B9 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DD858A41A04FDE91B635B6F9FEF8CF28 /* Foundation.framework */; };
@@ -489,7 +489,7 @@
 		AE5AA34D2979E5B6DC39BDB0F6105871 /* SDFileAttributeHelper.h in Headers */ = {isa = PBXBuildFile; fileRef = 43B2531F1E90A7AA4562652DE38344CB /* SDFileAttributeHelper.h */; settings = {ATTRIBUTES = (Private, ); }; };
 		AE62AB39CEA939165C18CB29E3B56F2F /* UIColor+LookinServer.m in Sources */ = {isa = PBXBuildFile; fileRef = 14B091CFF33B5E5EB5B9B9647AF73669 /* UIColor+LookinServer.m */; };
 		AF120355D5F464D2FA06D396CE5D7AE1 /* SDAnimatedImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = DF10FD05F8C3E3DFB1CB431E3A789549 /* SDAnimatedImageView.m */; };
-		AF196FE2C61FCC2FD9D8E2BD7D2D0A85 /* Pods-mynotification-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 1B48DC5B27E81659237128B9EFBEA5D0 /* Pods-mynotification-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		AF196FE2C61FCC2FD9D8E2BD7D2D0A85 /* Pods-mynotification-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = C77A8BF9B8B382C935C7A529A614FDC1 /* Pods-mynotification-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		AF93D3E947F1840FF67FEE25FC4957C1 /* YYTextSelectionView.h in Headers */ = {isa = PBXBuildFile; fileRef = CE3A9034F9A6E66A2F7C36F96A33B0E4 /* YYTextSelectionView.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		AFDECE6B900F8A94104459CEF47E1860 /* PTUSBHub.m in Sources */ = {isa = PBXBuildFile; fileRef = 5255BF9AB5F1715333400AEA511A4F20 /* PTUSBHub.m */; };
 		AFEBCCC7DBFBA7AF048F3E00A5B8FF99 /* StringExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 722B850B72FD938C0C9F8F02F621C081 /* StringExtension.swift */; };
@@ -582,7 +582,7 @@
 		CE0CF95B0ECC74DA3CC6BF26F2CDB4DE /* Key.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBD88CCE2F21049FAC6FC3DD15CA9C26 /* Key.swift */; };
 		CECDB459AFB5AD0040AF86378F2DBF97 /* Masonry-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 5D6140CCA32835857F499C3A745BA9FD /* Masonry-dummy.m */; };
 		CEE7BDCC3F3073CBBF7A76BC6CF3E519 /* MASViewConstraint.h in Headers */ = {isa = PBXBuildFile; fileRef = FFE517968DD118F0EEE20FC4145F0E08 /* MASViewConstraint.h */; settings = {ATTRIBUTES = (Public, ); }; };
-		CFC501B8DB588555EF72898D5D7BA256 /* Pods-DogeChat-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = DEF953C3976CC8B1CFD81CB7ABE1E67E /* Pods-DogeChat-dummy.m */; };
+		CFC501B8DB588555EF72898D5D7BA256 /* Pods-DogeChat-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 135AC602EFBDD92947B2C598FA5F10EF /* Pods-DogeChat-dummy.m */; };
 		D091D9EA20CEB92609BF1E622E8CA348 /* SnapKit-SnapKit_Privacy in Resources */ = {isa = PBXBuildFile; fileRef = B9DCB5EC0B1CDADD221717CADDF62359 /* SnapKit-SnapKit_Privacy */; };
 		D1D720D339874E364E7A3F3FF38D1AF9 /* YYTextUtilities.m in Sources */ = {isa = PBXBuildFile; fileRef = 690CE933A4ED473470D28C0CBB744236 /* YYTextUtilities.m */; };
 		D2207208453E5A0151AD7D8F8B16D24C /* AFHTTPSessionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 982AE538FD55043C80851422321843C3 /* AFHTTPSessionManager.m */; };
@@ -596,7 +596,6 @@
 		D723298C854615E606777878C45D01DB /* SDImageIOAnimatedCoder.h in Headers */ = {isa = PBXBuildFile; fileRef = 2A2EB77A1D9DD34FD1C73995A303CB78 /* SDImageIOAnimatedCoder.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D73C3D11945E7827F4F1E4EC339E0B80 /* Starscream-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 94DFEEB91A7405DC3131E40428ED6FC0 /* Starscream-dummy.m */; };
 		D74E8A5725C72B0E794C9ED926B51AEA /* RSAiOSWatchOS-iOS-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 94347EEF4B1C89D4294A138C37C9CA8E /* RSAiOSWatchOS-iOS-dummy.m */; };
-		D7B3B8DC5AD6149F6B96024928E87D00 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6A9AA7FD7FDE19FFFEF4857C103B31E8 /* Foundation.framework */; };
 		D7BE0F176D70D8BB0B4D045E22340218 /* LKS_Helper.h in Headers */ = {isa = PBXBuildFile; fileRef = 185B8492784D06EE8420BCD00907F9D7 /* LKS_Helper.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D80AC6D397CF1CF7A4CA75E9D257D052 /* WebSocketManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 439BF1207BBC024189573A10611B6304 /* WebSocketManager.swift */; };
 		D81F38C73DC02294F714B89825EFA0B3 /* WebSocketServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = E76BBCF7DFDBE8BDB5AC90102D87FEA5 /* WebSocketServer.swift */; };
@@ -637,6 +636,7 @@
 		E31F426F30C720FAEB28B5EB52609569 /* LKS_ExportManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 850A039153442D20668D730E9ADBECA5 /* LKS_ExportManager.m */; };
 		E53FCD0CD1526B53074ED4EEF00131E9 /* NSArray+MASShorthandAdditions.h in Headers */ = {isa = PBXBuildFile; fileRef = 9251AD6F810EED4C2047746DEDF38069 /* NSArray+MASShorthandAdditions.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		E5A9537705374847DE64B53AA2E696EB /* SwiftyRSA.swift in Sources */ = {isa = PBXBuildFile; fileRef = 94B647D0ACCFF70809A1A58540537C50 /* SwiftyRSA.swift */; };
+		E5F59629A1A17818CAE1A27FD44F60B6 /* Pods-DogeChatWatch Watch App-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 7444DAF8377AD349BCA7EC4BCCF5F440 /* Pods-DogeChatWatch Watch App-dummy.m */; };
 		E675A86D9A0C641D6371F4729873C9B0 /* FrameCollector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D3FDB18AD44FCF977B71D848DC111FA /* FrameCollector.swift */; };
 		E6FB269534400D40C1CE67D18EDD8A9A /* MASViewConstraint.m in Sources */ = {isa = PBXBuildFile; fileRef = D24BD428601E7915626A35E550AA8F6A /* MASViewConstraint.m */; };
 		E7305CAE29A437FEB3C23E7B9FC23A36 /* DateTranslate.h in Headers */ = {isa = PBXBuildFile; fileRef = 21EB88F61F037B0CA028B6D5126B074E /* DateTranslate.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -759,6 +759,13 @@
 			remoteGlobalIDString = 3847153A6E5EEFB86565BA840768F429;
 			remoteInfo = SDWebImage;
 		};
+		17921CAC8F57FD622ADDA7A424547C96 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BFDFE7DC352907FC980B868725387E98 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 0D1BB0EBE60B9D12378BC2AF7C0D062F;
+			remoteInfo = "RSAiOSWatchOS-watchOS";
+		};
 		17EE10A7B2163DFC10E318F84769CEBE /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = BFDFE7DC352907FC980B868725387E98 /* Project object */;
@@ -822,6 +829,13 @@
 			remoteGlobalIDString = 4BD7B0444CFDCB013ADE7EFD35538E65;
 			remoteInfo = DogeChatVideoUtil;
 		};
+		299FAB5844FFDC13D74E63DFB7779960 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BFDFE7DC352907FC980B868725387E98 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D94F085D927C687C8950F0BFBCB97A6F;
+			remoteInfo = "DogeChatUniversal-watchOS";
+		};
 		2E8FEB0722456D99D158C46E8B572A6A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = BFDFE7DC352907FC980B868725387E98 /* Project object */;
@@ -850,6 +864,20 @@
 			remoteGlobalIDString = 918DF6979E4DB460ED5FA774E6E2DB17;
 			remoteInfo = "SwiftyRSA-iOS";
 		};
+		3A851E50D09A6C0174EBAB67B8FD8C2C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BFDFE7DC352907FC980B868725387E98 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = BFF49A01BD1202F9F4765B2E6A93BE6D;
+			remoteInfo = "DogeChatCommonDefines-watchOS";
+		};
+		3B78293770E296E769709E8942C33837 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BFDFE7DC352907FC980B868725387E98 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 7737959F044655E11A16E572A933F46D;
+			remoteInfo = "SwiftyJSON-watchOS";
+		};
 		3E722CDD150075E120AF3E020BD74ED0 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = BFDFE7DC352907FC980B868725387E98 /* Project object */;
@@ -870,13 +898,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = 385637CAF996D6B2B8BE1652E44F050D;
 			remoteInfo = DogeChatNetwork;
-		};
-		51CE1561C869A5A90C9CB53C87CC1931 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = BFDFE7DC352907FC980B868725387E98 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 0D1BB0EBE60B9D12378BC2AF7C0D062F;
-			remoteInfo = "RSAiOSWatchOS-watchOS";
 		};
 		53A7E777C789BC08F4E221424CFA4461 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -941,13 +962,6 @@
 			remoteGlobalIDString = 6D322FEB11A16B73D4ED581AFD5F5385;
 			remoteInfo = "RSAiOSWatchOS-iOS";
 		};
-		98682FDD6450154BF4FD34A4583447FC /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = BFDFE7DC352907FC980B868725387E98 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = D94F085D927C687C8950F0BFBCB97A6F;
-			remoteInfo = "DogeChatUniversal-watchOS";
-		};
 		98DA8E8EEBF8A7FD0BABCFF391B32AD7 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = BFDFE7DC352907FC980B868725387E98 /* Project object */;
@@ -983,12 +997,12 @@
 			remoteGlobalIDString = CA618B8C7A745F327CC6DAA2B60F6F83;
 			remoteInfo = "SwiftyRSA-watchOS";
 		};
-		B2280FDB57A96213CA972543A2B65F59 /* PBXContainerItemProxy */ = {
+		B03ED160DB6A4BE5B517AA273492AD18 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = BFDFE7DC352907FC980B868725387E98 /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = BFF49A01BD1202F9F4765B2E6A93BE6D;
-			remoteInfo = "DogeChatCommonDefines-watchOS";
+			remoteGlobalIDString = 47BBD34D08F2A2B3935EC26469C1649F;
+			remoteInfo = "AFNetworking.root-NSURLSession-Security-Serialization";
 		};
 		B28D7DC035F28344020A16FA14843443 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -1024,20 +1038,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = 6868056D761E163D10FDAF8CF1C4D9B8;
 			remoteInfo = MJRefresh;
-		};
-		CD27F51AD700BD28ED581BE856F1354C /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = BFDFE7DC352907FC980B868725387E98 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 47BBD34D08F2A2B3935EC26469C1649F;
-			remoteInfo = "AFNetworking.root-NSURLSession-Security-Serialization";
-		};
-		E1EED13F7BB19ADF487DB9583C9FEC67 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = BFDFE7DC352907FC980B868725387E98 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 7737959F044655E11A16E572A933F46D;
-			remoteInfo = "SwiftyJSON-watchOS";
 		};
 		E492BC3A7C1DC52945819921BE0EA104 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -1102,7 +1102,7 @@
 			remoteGlobalIDString = BF0C6CD2E713DE257EF65C62E5F27D8A;
 			remoteInfo = "SwiftyJSON-iOS";
 		};
-		FE6AC193617F909D6DE6A07A286C3E56 /* PBXContainerItemProxy */ = {
+		FBFC064E4D337603AD57BE1256F9F2E7 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = BFDFE7DC352907FC980B868725387E98 /* Project object */;
 			proxyType = 1;
@@ -1121,7 +1121,6 @@
 		017A8D9F4302819BC2926D4991F79254 /* WKWebView+AFNetworking.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "WKWebView+AFNetworking.m"; path = "UIKit+AFNetworking/WKWebView+AFNetworking.m"; sourceTree = "<group>"; };
 		0289E5D130C4596B88EBF93ABE5DA0FB /* FoundationTransport.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FoundationTransport.swift; path = Sources/Transport/FoundationTransport.swift; sourceTree = "<group>"; };
 		02E0ACF823144DE9E12AEEE12E6B7252 /* DACircularProgress.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = DACircularProgress.release.xcconfig; sourceTree = "<group>"; };
-		034E37D8E0B852089BFBB112C504BF0E /* Pods-DogeChatWatch Extension-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-DogeChatWatch Extension-umbrella.h"; sourceTree = "<group>"; };
 		034F69C518D9ACEDA986B6231F851E1C /* DogeChatNetwork-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "DogeChatNetwork-dummy.m"; sourceTree = "<group>"; };
 		035D7237E984E8ECD1D9AD794F3711E3 /* SDAnimatedImagePlayer.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDAnimatedImagePlayer.m; path = SDWebImage/Core/SDAnimatedImagePlayer.m; sourceTree = "<group>"; };
 		03AED6B2298236EB9851E504E64BA99C /* DogeChatVideoUtil.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = DogeChatVideoUtil.release.xcconfig; sourceTree = "<group>"; };
@@ -1130,6 +1129,7 @@
 		05BF93405D4E9C9AD2A7D2772697A57B /* SwiftyRSA-watchOS-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "SwiftyRSA-watchOS-dummy.m"; path = "../SwiftyRSA-watchOS/SwiftyRSA-watchOS-dummy.m"; sourceTree = "<group>"; };
 		061816C078C59CC25614E97DC11C0054 /* LookinConnectionAttachment.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = LookinConnectionAttachment.h; path = Src/Shared/LookinConnectionAttachment.h; sourceTree = "<group>"; };
 		066FADBA6D02D2333A9CB2DFBA45EC2D /* UIImage+MemoryCacheCost.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UIImage+MemoryCacheCost.m"; path = "SDWebImage/Core/UIImage+MemoryCacheCost.m"; sourceTree = "<group>"; };
+		06797EFD55226C407D786F3EEF11C1EB /* Pods-mynotification-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-mynotification-dummy.m"; sourceTree = "<group>"; };
 		06B44C518587ED13868E3723BB00391B /* NSObject+Lookin.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "NSObject+Lookin.m"; path = "Src/Shared/Category/NSObject+Lookin.m"; sourceTree = "<group>"; };
 		072EDD2C059102684E140D2C050FA830 /* LKS_LocalInspectViewController.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = LKS_LocalInspectViewController.m; path = Src/Server/Inspect/LKS_LocalInspectViewController.m; sourceTree = "<group>"; };
 		0750B9ADB74A2C780FBC7B9E82890ECB /* RSAKeyEncoding.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = RSAKeyEncoding.swift; path = RSAiOSWatchOS/Classes/RSAKeyEncoding.swift; sourceTree = "<group>"; };
@@ -1141,21 +1141,26 @@
 		096B14CA8144BFE967593E9880D801C7 /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; includeInIndex = 1; name = PrivacyInfo.xcprivacy; path = Sources/PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		09A8A055AB470A42915B1B4ADAAF437D /* SwiftyJSON.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = SwiftyJSON.swift; path = Source/SwiftyJSON/SwiftyJSON.swift; sourceTree = "<group>"; };
 		09B9B52364D78D52D922F5235E76473E /* SDWebImageOperation.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDWebImageOperation.m; path = SDWebImage/Core/SDWebImageOperation.m; sourceTree = "<group>"; };
+		0A3DD84030F641CD5DF920DBDD0F9447 /* Pods-DogeChat-frameworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-DogeChat-frameworks.sh"; sourceTree = "<group>"; };
 		0A44EF06723F08BD2C6F0FD4CEC7E928 /* YYTextSelectionView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = YYTextSelectionView.m; path = YYText/Component/YYTextSelectionView.m; sourceTree = "<group>"; };
 		0A899B29552173C2623E128A837664FE /* LookinMsgAttribute.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = LookinMsgAttribute.h; path = Src/Shared/Message/LookinMsgAttribute.h; sourceTree = "<group>"; };
 		0AA98F1BA59A77626C27676E20342AFE /* SDImageCache.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDImageCache.h; path = SDWebImage/Core/SDImageCache.h; sourceTree = "<group>"; };
 		0AAF00A8D1D20F19978AA99832713256 /* SDWebImageDefine.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDWebImageDefine.h; path = SDWebImage/Core/SDWebImageDefine.h; sourceTree = "<group>"; };
 		0ACF81DDC2A935F9B2F7460BEBD22AFA /* UIScrollView+MJRefresh.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UIScrollView+MJRefresh.m"; path = "MJRefresh/UIScrollView+MJRefresh.m"; sourceTree = "<group>"; };
+		0BB3D8B5B62EA24488CCD50486ECFFD1 /* Pods-DogeChatSiri-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-DogeChatSiri-umbrella.h"; sourceTree = "<group>"; };
 		0E14A9F0D98DE57A76576DDC0E3685C4 /* YYTextLayout.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = YYTextLayout.m; path = YYText/Component/YYTextLayout.m; sourceTree = "<group>"; };
 		0E339DCCA87EB9536E0B055DF14BACF3 /* Data+Extensions.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "Data+Extensions.swift"; path = "Sources/DataBytes/Data+Extensions.swift"; sourceTree = "<group>"; };
 		0EB09726785D5A9F78DA7CEBEC936993 /* SDAssociatedObject.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDAssociatedObject.h; path = SDWebImage/Private/SDAssociatedObject.h; sourceTree = "<group>"; };
+		0F3B59D2E231152D69B83D90DA964700 /* Pods-DogeChat-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-DogeChat-acknowledgements.plist"; sourceTree = "<group>"; };
 		101F2C875C355626D0350319755D6420 /* ConstraintPriorityTarget.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ConstraintPriorityTarget.swift; path = Sources/ConstraintPriorityTarget.swift; sourceTree = "<group>"; };
 		114AF4DD60BED9684156CC8E68FD59B5 /* DogeChatUniversal.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = DogeChatUniversal.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		116B440D234ACCCDF30C3CF080068208 /* DACircularProgress-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "DACircularProgress-umbrella.h"; sourceTree = "<group>"; };
 		11BA0360738753DFEECD717DB5A20B18 /* SDDeviceHelper.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDDeviceHelper.h; path = SDWebImage/Private/SDDeviceHelper.h; sourceTree = "<group>"; };
 		1286B986441429E6C75D4991FFBD41B0 /* YYText-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "YYText-dummy.m"; sourceTree = "<group>"; };
 		1346DE3C19EC369B198BBC27C6A0CB69 /* SwiftyRSA-watchOS-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "SwiftyRSA-watchOS-umbrella.h"; path = "../SwiftyRSA-watchOS/SwiftyRSA-watchOS-umbrella.h"; sourceTree = "<group>"; };
+		135AC602EFBDD92947B2C598FA5F10EF /* Pods-DogeChat-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-DogeChat-dummy.m"; sourceTree = "<group>"; };
 		13CB82671C9EDC5966CF4321D9EAF625 /* DogeChatCommonDefines-iOS-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "DogeChatCommonDefines-iOS-umbrella.h"; sourceTree = "<group>"; };
+		1405BEF2B360E9901159E08FFFD7791E /* Pods-DogeChatShare.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = "Pods-DogeChatShare.modulemap"; sourceTree = "<group>"; };
 		142F3E195EC2A33D03C7B805AD3CE9C4 /* ConstraintPriority.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ConstraintPriority.swift; path = Sources/ConstraintPriority.swift; sourceTree = "<group>"; };
 		145BF57168B9AC0D796B187E1B4573FE /* UIViewController+LookinServer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "UIViewController+LookinServer.h"; path = "Src/Server/Category/UIViewController+LookinServer.h"; sourceTree = "<group>"; };
 		14B091CFF33B5E5EB5B9B9647AF73669 /* UIColor+LookinServer.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UIColor+LookinServer.m"; path = "Src/Server/Category/UIColor+LookinServer.m"; sourceTree = "<group>"; };
@@ -1184,15 +1189,12 @@
 		19FF2186587C85175CAE5B30F81534BC /* DogeChatNetwork-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "DogeChatNetwork-umbrella.h"; sourceTree = "<group>"; };
 		1AAF391983C38CD1FD1961BDBD2A2F4C /* YYText-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "YYText-umbrella.h"; sourceTree = "<group>"; };
 		1ABC37AFC0438397968690EF797F2970 /* LKS_AttrGroupsMaker.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = LKS_AttrGroupsMaker.h; path = Src/Server/Others/LKS_AttrGroupsMaker.h; sourceTree = "<group>"; };
-		1AEFF40DE6A9BE0A5DCB742F384A5FEC /* Pods-DogeChat-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-DogeChat-umbrella.h"; sourceTree = "<group>"; };
 		1B4458DB67C98FB434989D6307D0E27F /* AFSecurityPolicy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = AFSecurityPolicy.m; path = AFNetworking/AFSecurityPolicy.m; sourceTree = "<group>"; };
-		1B48DC5B27E81659237128B9EFBEA5D0 /* Pods-mynotification-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-mynotification-umbrella.h"; sourceTree = "<group>"; };
 		1BDCC729DDD7A13D748AABEFAFA8D6B8 /* ConstraintItem.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ConstraintItem.swift; path = Sources/ConstraintItem.swift; sourceTree = "<group>"; };
 		1C41FA260EF8BF177FF9F51B370274EC /* SwiftyJSON-watchOS-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "SwiftyJSON-watchOS-prefix.pch"; path = "../SwiftyJSON-watchOS/SwiftyJSON-watchOS-prefix.pch"; sourceTree = "<group>"; };
 		1CE0DE2B96065B3329FE293D66FBE56D /* LKS_PerspectiveManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = LKS_PerspectiveManager.h; path = Src/Server/Perspective/LKS_PerspectiveManager.h; sourceTree = "<group>"; };
 		1CFC45CA8B6C90072E2AFAB8D219FD74 /* DataCompression.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = DataCompression.swift; path = Sources/DataCompression/DataCompression.swift; sourceTree = "<group>"; };
 		1D1CF9456A017D5F6F3A8ACC2FF44EBC /* MJRefreshAutoFooter.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = MJRefreshAutoFooter.h; path = MJRefresh/Base/MJRefreshAutoFooter.h; sourceTree = "<group>"; };
-		1D30BE890C1A598B00652D1FEB383AD8 /* Pods-DogeChatWatch Extension-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-DogeChatWatch Extension-acknowledgements.plist"; sourceTree = "<group>"; };
 		1D44FDCD3309C810F3E2126032E56B1A /* DogeChatNetwork.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = DogeChatNetwork.release.xcconfig; sourceTree = "<group>"; };
 		1D4E9FBF3D918034D88B20790D3CEE3B /* SDWebImage-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "SDWebImage-dummy.m"; sourceTree = "<group>"; };
 		1D6F882F23C7BED7CA577A0930897E6E /* AFURLResponseSerialization.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = AFURLResponseSerialization.h; path = AFNetworking/AFURLResponseSerialization.h; sourceTree = "<group>"; };
@@ -1227,7 +1229,6 @@
 		235630602BD63157BA2DF461F63BC25D /* RSAiOSWatchOS.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = RSAiOSWatchOS.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		23665D0ECAF52AB1C7FA3AD1A202A187 /* LookinAttributesGroup.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = LookinAttributesGroup.m; path = Src/Shared/LookinAttributesGroup.m; sourceTree = "<group>"; };
 		23AF1B39EAD9E563D9043D8538C26ADC /* FLAnimatedImage.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = FLAnimatedImage.h; sourceTree = "<group>"; };
-		247F8D0F8BC4634B8309A2869E347D62 /* Pods-DogeChatShare-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-DogeChatShare-acknowledgements.markdown"; sourceTree = "<group>"; };
 		2544E34040F4694796A262DDD250E53D /* LKS_LocalInspectPanelLabelView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = LKS_LocalInspectPanelLabelView.m; path = Src/Server/Inspect/LKS_LocalInspectPanelLabelView.m; sourceTree = "<group>"; };
 		2548B8CB5F731804066701191C8222AE /* SDWebImageManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDWebImageManager.h; path = SDWebImage/Core/SDWebImageManager.h; sourceTree = "<group>"; };
 		2549C3E25DF790DBD076EFCAF9A8488D /* MJRefreshAutoStateFooter.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = MJRefreshAutoStateFooter.h; path = MJRefresh/Custom/Footer/Auto/MJRefreshAutoStateFooter.h; sourceTree = "<group>"; };
@@ -1238,6 +1239,7 @@
 		25CCA6072A9C58353A74252CB1656742 /* DataCompression.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = DataCompression.modulemap; sourceTree = "<group>"; };
 		2720F1E2825CC80ED0600413E4D11AA4 /* DogeChatUniversal-watchOS-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "DogeChatUniversal-watchOS-prefix.pch"; path = "../DogeChatUniversal-watchOS/DogeChatUniversal-watchOS-prefix.pch"; sourceTree = "<group>"; };
 		2748A3A3EB6AA40E6361402B44CFA631 /* SDDiskCache.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDDiskCache.m; path = SDWebImage/Core/SDDiskCache.m; sourceTree = "<group>"; };
+		278590504B01E7953D70BB1829805DA4 /* Pods-DogeChatSiri-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-DogeChatSiri-Info.plist"; sourceTree = "<group>"; };
 		27ADC57F8CECCBB19578CE9102ADD8BD /* LookinDisplayItem.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = LookinDisplayItem.h; path = Src/Shared/LookinDisplayItem.h; sourceTree = "<group>"; };
 		280A528AE67B09346EFD5829C9C10813 /* UIActivityIndicatorView+AFNetworking.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "UIActivityIndicatorView+AFNetworking.h"; path = "UIKit+AFNetworking/UIActivityIndicatorView+AFNetworking.h"; sourceTree = "<group>"; };
 		286560297E880B6EAF27E30802446D02 /* UIScrollView+MJExtension.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "UIScrollView+MJExtension.h"; path = "MJRefresh/UIScrollView+MJExtension.h"; sourceTree = "<group>"; };
@@ -1253,8 +1255,8 @@
 		2BAB374455D8A65C41F13585C2385EC4 /* LKS_LocalInspectManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = LKS_LocalInspectManager.m; path = Src/Server/Inspect/LKS_LocalInspectManager.m; sourceTree = "<group>"; };
 		2BB839C7F0BA65A562ED3A5B9CE573B1 /* NSAttributedString+YYText.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "NSAttributedString+YYText.m"; path = "YYText/Utility/NSAttributedString+YYText.m"; sourceTree = "<group>"; };
 		2BCA0D98D5EB3ED557F4FCB1F4C36875 /* AFNetworkReachabilityManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = AFNetworkReachabilityManager.m; path = AFNetworking/AFNetworkReachabilityManager.m; sourceTree = "<group>"; };
+		2BD35CEAB32EF2E951E47EC3E78B109F /* Pods-DogeChat-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-DogeChat-umbrella.h"; sourceTree = "<group>"; };
 		2C33CE563960A1A0568E82703C938473 /* Engine.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Engine.swift; path = Sources/Engine/Engine.swift; sourceTree = "<group>"; };
-		2CB4642A6F4133FA981607818BF00803 /* Pods-mynotification.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = "Pods-mynotification.modulemap"; sourceTree = "<group>"; };
 		2CE606E3D521996A6B74220D87681CE6 /* MASViewAttribute.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = MASViewAttribute.h; path = Masonry/MASViewAttribute.h; sourceTree = "<group>"; };
 		2CF634ED00232C0E1BAB6EDFD90B1F0E /* LivePhotoGenerator.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = LivePhotoGenerator.h; path = DogeChatVideoUtil/Classes/LivePhotoGenerator.h; sourceTree = "<group>"; };
 		2CF88BFDD3D9027D17A800F221FBEEFA /* SDInternalMacros.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDInternalMacros.h; path = SDWebImage/Private/SDInternalMacros.h; sourceTree = "<group>"; };
@@ -1264,19 +1266,20 @@
 		2DDC0248CC7F9FE4AE70D3A00520AB9C /* DogeChatNetwork.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = DogeChatNetwork.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		2E71A18D8D9F10826277F3590ACAE5FA /* YYTextArchiver.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = YYTextArchiver.m; path = YYText/String/YYTextArchiver.m; sourceTree = "<group>"; };
 		2E7ACB694F161119FA976EA67D4BD65E /* SwiftyRSA-watchOS-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "SwiftyRSA-watchOS-prefix.pch"; path = "../SwiftyRSA-watchOS/SwiftyRSA-watchOS-prefix.pch"; sourceTree = "<group>"; };
+		2EB28BC2EBC1E80C3E426548D1F37AEA /* Pods-DogeChatShare-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-DogeChatShare-acknowledgements.markdown"; sourceTree = "<group>"; };
 		2EED1F6F45E67BC22623FF9E36BF1ACB /* MJRefreshBackNormalFooter.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = MJRefreshBackNormalFooter.h; path = MJRefresh/Custom/Footer/Back/MJRefreshBackNormalFooter.h; sourceTree = "<group>"; };
 		2F25C5C07B8AE5D10C1DADEEF8E056F1 /* LookinServer-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "LookinServer-Info.plist"; sourceTree = "<group>"; };
 		2F2FE858697ABA9C62892D26F6F1433B /* FLAnimatedImage-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "FLAnimatedImage-prefix.pch"; sourceTree = "<group>"; };
-		2F3A303BB9DE70F02530C9ABFD1A87C7 /* Pods-DogeChat-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-DogeChat-Info.plist"; sourceTree = "<group>"; };
 		2F55BF73BCBA3E102E41E8E8F3A9F7C3 /* UIImage+Metadata.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UIImage+Metadata.m"; path = "SDWebImage/Core/UIImage+Metadata.m"; sourceTree = "<group>"; };
-		2F9916B79BA8848CE755482B2FCC042C /* Pods-DogeChat-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-DogeChat-acknowledgements.markdown"; sourceTree = "<group>"; };
 		2FD64FCA4CB38A9B5D3CE8E4EEBA954C /* SwiftyRSA-iOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "SwiftyRSA-iOS.debug.xcconfig"; sourceTree = "<group>"; };
 		3018A9EA5EED6B6E87097FC92F447170 /* NSBundle+MJRefresh.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "NSBundle+MJRefresh.h"; path = "MJRefresh/NSBundle+MJRefresh.h"; sourceTree = "<group>"; };
 		30625BF7DE1A26DC7421610A0DE5F910 /* YYTextArchiver.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = YYTextArchiver.h; path = YYText/String/YYTextArchiver.h; sourceTree = "<group>"; };
 		30B2A7B953F281A17E1C0406FBC801AB /* Debugging.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Debugging.swift; path = Sources/Debugging.swift; sourceTree = "<group>"; };
 		30C058475E771BA683586A19BC84DD43 /* YYTextTransaction.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = YYTextTransaction.m; path = YYText/Utility/YYTextTransaction.m; sourceTree = "<group>"; };
+		3114035F8A761919562D68557F5FD437 /* Pods-DogeChatSiri-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-DogeChatSiri-acknowledgements.markdown"; sourceTree = "<group>"; };
 		314CBF1B00819DFFF6EBA50AB39D806D /* SwiftyJSON-iOS-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "SwiftyJSON-iOS-prefix.pch"; sourceTree = "<group>"; };
 		31B6F7D9EB56F738FB0113A2D05445C0 /* SDImageLoader.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDImageLoader.m; path = SDWebImage/Core/SDImageLoader.m; sourceTree = "<group>"; };
+		31C24996507E18A0D33FD16FA81315BD /* Pods-DogeChatWatch Watch App-frameworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-DogeChatWatch Watch App-frameworks.sh"; sourceTree = "<group>"; };
 		31D3B4705AB8F0A698130D73BB8AF80B /* LKS_PerspectiveToolbarButtons.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = LKS_PerspectiveToolbarButtons.m; path = Src/Server/Perspective/LKS_PerspectiveToolbarButtons.m; sourceTree = "<group>"; };
 		3252E7154EC3151294B4DB3045981C9D /* LKS_ObjectRegistry.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = LKS_ObjectRegistry.h; path = Src/Server/Others/LKS_ObjectRegistry.h; sourceTree = "<group>"; };
 		32B15FA0E45153324F98F26177A5697C /* DogeChatUniversal-watchOS.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; name = "DogeChatUniversal-watchOS.modulemap"; path = "../DogeChatUniversal-watchOS/DogeChatUniversal-watchOS.modulemap"; sourceTree = "<group>"; };
@@ -1288,13 +1291,13 @@
 		341CDC515336E73D222F167AB73C7C7E /* SwiftyJSON-watchOS-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; name = "SwiftyJSON-watchOS-Info.plist"; path = "../SwiftyJSON-watchOS/SwiftyJSON-watchOS-Info.plist"; sourceTree = "<group>"; };
 		345E26709BEC98D7EBE4E777B694D532 /* ConstraintView+Extensions.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "ConstraintView+Extensions.swift"; path = "Sources/ConstraintView+Extensions.swift"; sourceTree = "<group>"; };
 		351A699C2E1885ED34ECBC77CB7915E0 /* ViewController+MASAdditions.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "ViewController+MASAdditions.m"; path = "Masonry/ViewController+MASAdditions.m"; sourceTree = "<group>"; };
-		3575E88F5A7277D9999CB5FB886D7365 /* Pods-DogeChatWatch Extension-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-DogeChatWatch Extension-Info.plist"; sourceTree = "<group>"; };
 		35A78B7C2BF0C550066602B90EC8E8E0 /* SDImageHEICCoder.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDImageHEICCoder.m; path = SDWebImage/Core/SDImageHEICCoder.m; sourceTree = "<group>"; };
 		35AD9CEB39CE8B108B5D70CEA73E2A9C /* MJRefreshBackNormalFooter.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = MJRefreshBackNormalFooter.m; path = MJRefresh/Custom/Footer/Back/MJRefreshBackNormalFooter.m; sourceTree = "<group>"; };
 		35AFE9050147B80C6677380D5D323D6F /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; path = README.md; sourceTree = "<group>"; };
 		35BDAF7EA8C74FDE1EAF3C9807E1ABB8 /* SDImageIOAnimatedCoder.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDImageIOAnimatedCoder.m; path = SDWebImage/Core/SDImageIOAnimatedCoder.m; sourceTree = "<group>"; };
 		360C37D497D6881E98BA550B4D5C38B5 /* AFNetworking.root-NSURLSession-Security-Serialization-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "AFNetworking.root-NSURLSession-Security-Serialization-umbrella.h"; path = "../AFNetworking.root-NSURLSession-Security-Serialization/AFNetworking.root-NSURLSession-Security-Serialization-umbrella.h"; sourceTree = "<group>"; };
 		36CC8C6450268B89574703430376F13A /* UIView+YYText.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UIView+YYText.m"; path = "YYText/Utility/UIView+YYText.m"; sourceTree = "<group>"; };
+		375ADF36B867436841690609088C9F9C /* Pods-DogeChatShare-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-DogeChatShare-umbrella.h"; sourceTree = "<group>"; };
 		3762BBA3A8687443136C4A6EC0D0F78A /* YYText.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = YYText.release.xcconfig; sourceTree = "<group>"; };
 		3785C0F4B321E8FF43E2241393CDA6E4 /* SDImageAPNGCoder.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDImageAPNGCoder.m; path = SDWebImage/Core/SDImageAPNGCoder.m; sourceTree = "<group>"; };
 		37B3042E52BFD676A817676ED5BD8DD2 /* MJRefreshAutoGifFooter.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = MJRefreshAutoGifFooter.m; path = MJRefresh/Custom/Footer/Auto/MJRefreshAutoGifFooter.m; sourceTree = "<group>"; };
@@ -1304,6 +1307,7 @@
 		387DBEC8D1820B9A2D91273DF6628C14 /* SDWebImageError.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDWebImageError.m; path = SDWebImage/Core/SDWebImageError.m; sourceTree = "<group>"; };
 		38CCCAE60D71C0AF5A4BA486B9FEB535 /* YYTextKeyboardManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = YYTextKeyboardManager.h; path = YYText/Component/YYTextKeyboardManager.h; sourceTree = "<group>"; };
 		38DF3C93A42C50C76D52A2E240B1B21E /* HttpRequests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = HttpRequests.swift; path = DogeChatUniversal/Classes/HttpRequests.swift; sourceTree = "<group>"; };
+		38F1725F3C2404D6D3A7E779B69EA1F1 /* Pods-DogeChatShare.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-DogeChatShare.release.xcconfig"; sourceTree = "<group>"; };
 		394E075F3BA19C23CF98382D82CB8626 /* MJRefresh-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "MJRefresh-dummy.m"; sourceTree = "<group>"; };
 		3AEC0C987E2036AEC80B8FE7CB7C6B7B /* LKS_PerspectiveItemLayer.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = LKS_PerspectiveItemLayer.m; path = Src/Server/Perspective/LKS_PerspectiveItemLayer.m; sourceTree = "<group>"; };
 		3B04768411B0CF611391CC1232E1CEDF /* AFNetworking-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "AFNetworking-prefix.pch"; sourceTree = "<group>"; };
@@ -1313,9 +1317,10 @@
 		3B84FE6F349C345540E41EF38A4044A2 /* Masonry-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Masonry-prefix.pch"; sourceTree = "<group>"; };
 		3C2E9D68BE5787FB68D560FA81E35D31 /* SDImageLoadersManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDImageLoadersManager.h; path = SDWebImage/Core/SDImageLoadersManager.h; sourceTree = "<group>"; };
 		3D15F9F8071ECC707774C47F4BA9EE36 /* NSObject+LookinServer.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "NSObject+LookinServer.m"; path = "Src/Server/Category/NSObject+LookinServer.m"; sourceTree = "<group>"; };
-		3E7EEF1DF6242AFCFBF607B3F3C4D28B /* Pods-DogeChatShare-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-DogeChatShare-Info.plist"; sourceTree = "<group>"; };
+		3D3427E3A8099DC32003F0D704859462 /* Pods-DogeChatSiri-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-DogeChatSiri-acknowledgements.plist"; sourceTree = "<group>"; };
+		3D8F5E01B566B1F965C4B7ABE0A4BBCA /* Pods-DogeChatWatch Watch App.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = "Pods-DogeChatWatch Watch App.modulemap"; sourceTree = "<group>"; };
+		3E644A73603AFEBD8209E878067E205E /* Pods-DogeChatWatch Watch App-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-DogeChatWatch Watch App-acknowledgements.plist"; sourceTree = "<group>"; };
 		3EDAFB86E68967BDF13ADA833060167B /* SwiftyJSON-iOS-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "SwiftyJSON-iOS-umbrella.h"; sourceTree = "<group>"; };
-		3EDFB949A2BF0845F0B69CF963B55BF3 /* Pods-DogeChatSiri-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-DogeChatSiri-dummy.m"; sourceTree = "<group>"; };
 		3F18B55632A164B421AB944DD7F10F45 /* LookinConnectionAttachment.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = LookinConnectionAttachment.m; path = Src/Shared/LookinConnectionAttachment.m; sourceTree = "<group>"; };
 		3F2B0208DA30DED999D0FBE1047B795E /* RSAiOSWatchOS-iOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "RSAiOSWatchOS-iOS.debug.xcconfig"; sourceTree = "<group>"; };
 		3F54946D95321A3D9BF495F27C500802 /* FLAnimatedImageView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = FLAnimatedImageView.h; sourceTree = "<group>"; };
@@ -1328,9 +1333,9 @@
 		40F1F02BC316887AEF2893E3697C147E /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS14.0.sdk/System/Library/Frameworks/Accelerate.framework; sourceTree = DEVELOPER_DIR; };
 		41166A0EFB3197A22404F5B0C080C28E /* DogeChatVideoUtil.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = DogeChatVideoUtil.h; path = DogeChatVideoUtil/Classes/DogeChatVideoUtil.h; sourceTree = "<group>"; };
 		41255DB21EBC339F23DD36057D767EDF /* YYTextView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = YYTextView.m; path = YYText/YYTextView.m; sourceTree = "<group>"; };
+		415C0BBE8F90CCF9572A9064A679FF87 /* Pods-DogeChat-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-DogeChat-acknowledgements.markdown"; sourceTree = "<group>"; };
 		4203106631C4B6ECF8230C7202CA3014 /* SnapKit.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = SnapKit.modulemap; sourceTree = "<group>"; };
 		421E92875C3AC7DDDAF347407323F4EC /* DogeChatCommonDefines-iOS-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "DogeChatCommonDefines-iOS-dummy.m"; sourceTree = "<group>"; };
-		4236A5BC44AE18F66EA7AC1CCB432670 /* Pods-DogeChatShare.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-DogeChatShare.debug.xcconfig"; sourceTree = "<group>"; };
 		4283C94812EFC229781AD4116098D40A /* UIImageView+AFNetworking.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UIImageView+AFNetworking.m"; path = "UIKit+AFNetworking/UIImageView+AFNetworking.m"; sourceTree = "<group>"; };
 		42B5781147EE6485D4BC25CD128ED8B7 /* LKS_PerspectiveLayer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = LKS_PerspectiveLayer.h; path = Src/Server/Perspective/LKS_PerspectiveLayer.h; sourceTree = "<group>"; };
 		439BF1207BBC024189573A10611B6304 /* WebSocketManager.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = WebSocketManager.swift; path = DogeChatNetwork/Classes/WebSocketManager.swift; sourceTree = "<group>"; };
@@ -1340,7 +1345,6 @@
 		446C3F4326CB8E00E65A80C1114B585F /* FoundationHTTPServerHandler.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = FoundationHTTPServerHandler.swift; path = Sources/Framer/FoundationHTTPServerHandler.swift; sourceTree = "<group>"; };
 		44DC1F2BF8AF386323866D944482F3B4 /* SDWebImageDownloaderResponseModifier.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDWebImageDownloaderResponseModifier.h; path = SDWebImage/Core/SDWebImageDownloaderResponseModifier.h; sourceTree = "<group>"; };
 		4521241B946DF07073346B71D51BFBAB /* UIBlurEffect+LookinServer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "UIBlurEffect+LookinServer.h"; path = "Src/Server/Category/UIBlurEffect+LookinServer.h"; sourceTree = "<group>"; };
-		4555A34000684884AE59777748ECB31A /* Pods-DogeChat.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = "Pods-DogeChat.modulemap"; sourceTree = "<group>"; };
 		45E22A28472E1B241016F6B21F43F4EB /* MJRefreshAutoStateFooter.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = MJRefreshAutoStateFooter.m; path = MJRefresh/Custom/Footer/Auto/MJRefreshAutoStateFooter.m; sourceTree = "<group>"; };
 		461068B0992E1B90B31B17EB7859E755 /* SDDisplayLink.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDDisplayLink.m; path = SDWebImage/Private/SDDisplayLink.m; sourceTree = "<group>"; };
 		465F5712DA2F90F1C5EF2CC26004E70B /* SwiftyRSA-iOS.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = "SwiftyRSA-iOS.modulemap"; sourceTree = "<group>"; };
@@ -1351,17 +1355,19 @@
 		47D8E0EB05E41054D6DD04C5C20F0548 /* LookinAttrIdentifiers.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = LookinAttrIdentifiers.m; path = Src/Shared/LookinAttrIdentifiers.m; sourceTree = "<group>"; };
 		47F048A8B2B3C96E7FA115738FC36C44 /* AFNetworking.root-NSURLSession-Security-Serialization-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; name = "AFNetworking.root-NSURLSession-Security-Serialization-Info.plist"; path = "../AFNetworking.root-NSURLSession-Security-Serialization/AFNetworking.root-NSURLSession-Security-Serialization-Info.plist"; sourceTree = "<group>"; };
 		488855E1215161B6CB5D02327486D35A /* DogeChatCommonDefines-iOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "DogeChatCommonDefines-iOS.release.xcconfig"; sourceTree = "<group>"; };
-		48F493A325C663AE715C04778F1F887B /* Pods-DogeChatSiri.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-DogeChatSiri.release.xcconfig"; sourceTree = "<group>"; };
 		491FAE590D75D557D74C5B3E61A9A0CD /* SDWebImageDownloaderConfig.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDWebImageDownloaderConfig.h; path = SDWebImage/Core/SDWebImageDownloaderConfig.h; sourceTree = "<group>"; };
+		49774C505D58B222744DFF82CD2D201E /* Pods-DogeChatShare-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-DogeChatShare-dummy.m"; sourceTree = "<group>"; };
 		49A29A70FC4559614AA00570B4CD40BC /* LookinAttributeModification.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = LookinAttributeModification.h; path = Src/Shared/LookinAttributeModification.h; sourceTree = "<group>"; };
 		4A3F865CB0829F7BED135C6E9AFDC26F /* DogeChatNetwork-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "DogeChatNetwork-Info.plist"; sourceTree = "<group>"; };
 		4A4288B1424E0AD7CBED0E07D9407484 /* DogeChatCommonDefines-iOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "DogeChatCommonDefines-iOS.debug.xcconfig"; sourceTree = "<group>"; };
 		4B8BC0F2FE301760E3DF7700DC1C5CB6 /* SDImageCachesManagerOperation.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDImageCachesManagerOperation.h; path = SDWebImage/Private/SDImageCachesManagerOperation.h; sourceTree = "<group>"; };
 		4C13CEACD2A30BE21BD81E1F5CCA33D1 /* DACircularProgress.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = DACircularProgress.debug.xcconfig; sourceTree = "<group>"; };
+		4D3C6C1F967425BE0778C3DA323A2B02 /* Pods-mynotification.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = "Pods-mynotification.modulemap"; sourceTree = "<group>"; };
 		4D6258E4E7D378CADAB3D940A15BC2DB /* View+MASAdditions.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "View+MASAdditions.h"; path = "Masonry/View+MASAdditions.h"; sourceTree = "<group>"; };
 		4D6779B8AA452F0622C0DCC6AB642F2A /* YYTextWeakProxy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = YYTextWeakProxy.m; path = YYText/Utility/YYTextWeakProxy.m; sourceTree = "<group>"; };
 		4E26D224B233C94B4D7ED32A2FCAE603 /* DogeChatUniversal-iOS-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "DogeChatUniversal-iOS-Info.plist"; sourceTree = "<group>"; };
 		4E37F99E9F25460422F136F53FA044DC /* AFNetworking.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = AFNetworking.debug.xcconfig; sourceTree = "<group>"; };
+		4E52D625581C46636DE7AFD165749351 /* Pods-DogeChatSiri-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-DogeChatSiri-dummy.m"; sourceTree = "<group>"; };
 		4ECBFCA5E6D122F110554CDFDBF50F36 /* PTProtocol.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PTProtocol.m; path = Src/Shared/Peertalk/PTProtocol.m; sourceTree = "<group>"; };
 		4ECEFCF30894364A64166A9677828583 /* DogeChatCommonDefines-watchOS-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "DogeChatCommonDefines-watchOS-umbrella.h"; path = "../DogeChatCommonDefines-watchOS/DogeChatCommonDefines-watchOS-umbrella.h"; sourceTree = "<group>"; };
 		4ED6F4A1B269BB2473B80DB3F4C5ABE7 /* DogeChatCommonDefines.podspec */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; path = DogeChatCommonDefines.podspec; sourceTree = "<group>"; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
@@ -1378,13 +1384,13 @@
 		525CF96EA3837D2FE2A797AC0D65D8FB /* YYTextInput.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = YYTextInput.m; path = YYText/Component/YYTextInput.m; sourceTree = "<group>"; };
 		52EF5C2B38133E06635C4C2824A1A2BB /* Message.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Message.swift; path = DogeChatCommonDefines/Classes/Message.swift; sourceTree = "<group>"; };
 		5339A6BC7ADE6D73D43B40B11DA4AA54 /* LKS_PerspectiveDataSource.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = LKS_PerspectiveDataSource.m; path = Src/Server/Perspective/LKS_PerspectiveDataSource.m; sourceTree = "<group>"; };
-		548F6FE1A835A0BB079B3A2D39C3A571 /* Pods-DogeChatSiri-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-DogeChatSiri-umbrella.h"; sourceTree = "<group>"; };
 		550F6FE3E98138C03A90843C90EDA34E /* DogeChatCommonDefines-iOS */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = "DogeChatCommonDefines-iOS"; path = DogeChatCommonDefines.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		55393C2E9494AE168CE8BE3EF7CC79B8 /* SwiftyRSA.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SwiftyRSA.h; path = Source/SwiftyRSA.h; sourceTree = "<group>"; };
 		55F565F9C1482A71E6C69D3389A7BD25 /* SDImageLoader.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDImageLoader.h; path = SDWebImage/Core/SDImageLoader.h; sourceTree = "<group>"; };
 		56240F3AA4958CB79590B2995B61A50C /* PTChannel.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = PTChannel.h; path = Src/Shared/Peertalk/PTChannel.h; sourceTree = "<group>"; };
 		56667DD88CC2ED8B3B88146F17C28B58 /* RSAiOSWatchOS-iOS-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "RSAiOSWatchOS-iOS-umbrella.h"; sourceTree = "<group>"; };
 		5667E0773944CAAA9A377F555984EF07 /* LookinHierarchyFile.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = LookinHierarchyFile.h; path = Src/Shared/LookinHierarchyFile.h; sourceTree = "<group>"; };
+		5672D0D3A266884E45A085C35D9AF889 /* Pods-DogeChatWatch Watch App-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-DogeChatWatch Watch App-Info.plist"; sourceTree = "<group>"; };
 		56B8AF56048A8A659773382C6767578D /* Notification+Names.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "Notification+Names.swift"; path = "DogeChatCommonDefines/Classes/Notification+Names.swift"; sourceTree = "<group>"; };
 		56FC01CBB3504D5B830651D11D69C283 /* SDAnimatedImageView+WebCache.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "SDAnimatedImageView+WebCache.h"; path = "SDWebImage/Core/SDAnimatedImageView+WebCache.h"; sourceTree = "<group>"; };
 		571CA714FCE6121ECD4E8CF6F8783861 /* UILayoutSupport+Extensions.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "UILayoutSupport+Extensions.swift"; path = "Sources/UILayoutSupport+Extensions.swift"; sourceTree = "<group>"; };
@@ -1404,7 +1410,6 @@
 		5B52AE7ECD4F2448221745A6D32F6FBE /* LookinDashboardBlueprint.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = LookinDashboardBlueprint.h; path = Src/Shared/LookinDashboardBlueprint.h; sourceTree = "<group>"; };
 		5B535013787BA72FA6AB583695CD893D /* SDImageCachesManagerOperation.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDImageCachesManagerOperation.m; path = SDWebImage/Private/SDImageCachesManagerOperation.m; sourceTree = "<group>"; };
 		5B5982DC34B21958CDB78DE441433A17 /* LookinMsgAttribute.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = LookinMsgAttribute.m; path = Src/Shared/Message/LookinMsgAttribute.m; sourceTree = "<group>"; };
-		5B64AD63C3024BAC9C95C0D12D86C5A7 /* Pods-DogeChat-frameworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-DogeChat-frameworks.sh"; sourceTree = "<group>"; };
 		5B6AD694A09456F9343D4E38D75F362A /* UIRefreshControl+AFNetworking.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "UIRefreshControl+AFNetworking.h"; path = "UIKit+AFNetworking/UIRefreshControl+AFNetworking.h"; sourceTree = "<group>"; };
 		5BE971D59EBE394B4BF2C5CCC4961EFA /* UIImageView+HighlightedWebCache.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "UIImageView+HighlightedWebCache.h"; path = "SDWebImage/Core/UIImageView+HighlightedWebCache.h"; sourceTree = "<group>"; };
 		5C3E61BD5B63526F01597FB9F3BF2962 /* RSAiOSWatchOS-watchOS.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; name = "RSAiOSWatchOS-watchOS.modulemap"; path = "../RSAiOSWatchOS-watchOS/RSAiOSWatchOS-watchOS.modulemap"; sourceTree = "<group>"; };
@@ -1415,7 +1420,6 @@
 		5D6140CCA32835857F499C3A745BA9FD /* Masonry-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Masonry-dummy.m"; sourceTree = "<group>"; };
 		5D952F233B577A59FF3E13DD1070B543 /* PTChannel.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = PTChannel.m; path = Src/Shared/Peertalk/PTChannel.m; sourceTree = "<group>"; };
 		5D9CB04F59813BFD5F7933E7EEA7BA39 /* NSBezierPath+SDRoundedCorners.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "NSBezierPath+SDRoundedCorners.m"; path = "SDWebImage/Private/NSBezierPath+SDRoundedCorners.m"; sourceTree = "<group>"; };
-		5DA531A5D1DC8F8D2DA3C1E1BBE406CD /* Pods-mynotification-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-mynotification-acknowledgements.plist"; sourceTree = "<group>"; };
 		5E749FCC47CB8B4DFA47B930F248A156 /* LKS_AttrModificationPatchHandler.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = LKS_AttrModificationPatchHandler.m; path = Src/Server/Connection/RequestHandler/LKS_AttrModificationPatchHandler.m; sourceTree = "<group>"; };
 		5EF82C9A964A26E1E637D17C8D1111BC /* YYText.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = YYText.h; path = YYText/YYText.h; sourceTree = "<group>"; };
 		5EFD35987127A550B2147686FD3BDBF3 /* LookinHierarchyInfo.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = LookinHierarchyInfo.m; path = Src/Shared/LookinHierarchyInfo.m; sourceTree = "<group>"; };
@@ -1454,12 +1458,11 @@
 		690CE933A4ED473470D28C0CBB744236 /* YYTextUtilities.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = YYTextUtilities.m; path = YYText/Utility/YYTextUtilities.m; sourceTree = "<group>"; };
 		6A014E97F95850768BED7064DE862A9F /* Masonry.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = Masonry.release.xcconfig; sourceTree = "<group>"; };
 		6A165369022C105D5BFA9D1E86FC1B33 /* NSArray+Lookin.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "NSArray+Lookin.m"; path = "Src/Shared/Category/NSArray+Lookin.m"; sourceTree = "<group>"; };
+		6A218543C57E9FA96CCDC997EC3BF86B /* Pods-mynotification-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-mynotification-acknowledgements.plist"; sourceTree = "<group>"; };
 		6A6DF7E23C9B3DB8F06C1A2CE536BEF8 /* MessageManager.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MessageManager.swift; path = DogeChatUniversal/Classes/MessageManager.swift; sourceTree = "<group>"; };
 		6A74466201E30DE46D46B2164A114C40 /* ConstraintLayoutGuideDSL.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ConstraintLayoutGuideDSL.swift; path = Sources/ConstraintLayoutGuideDSL.swift; sourceTree = "<group>"; };
 		6A9AA7FD7FDE19FFFEF4857C103B31E8 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/WatchOS.platform/Developer/SDKs/WatchOS7.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		6B676CA5639A841F7DF417BBD25BE4E9 /* LookinWeakContainer.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = LookinWeakContainer.m; path = Src/Shared/LookinWeakContainer.m; sourceTree = "<group>"; };
-		6BAEE6B1FA68DA58BA2C4B739A22843B /* Pods-DogeChat.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-DogeChat.debug.xcconfig"; sourceTree = "<group>"; };
-		6C26CC9F6EFEF489D7F225CEEE2773CE /* Pods-DogeChatWatch Extension.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-DogeChatWatch Extension.release.xcconfig"; sourceTree = "<group>"; };
 		6C2EB9B3C6031DB0E256C068C6DFA1C8 /* UIColor+LookinServer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "UIColor+LookinServer.h"; path = "Src/Server/Category/UIColor+LookinServer.h"; sourceTree = "<group>"; };
 		6C67783610D550F7350C0E33633AE2D9 /* SDmetamacros.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDmetamacros.h; path = SDWebImage/Private/SDmetamacros.h; sourceTree = "<group>"; };
 		6C764E48139203833F14A72C44F6F462 /* ConstraintLayoutGuide.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ConstraintLayoutGuide.swift; path = Sources/ConstraintLayoutGuide.swift; sourceTree = "<group>"; };
@@ -1473,6 +1476,7 @@
 		6F357352CDF7920D53ABD0F72901A2D3 /* LookinDisplayItemDetail.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = LookinDisplayItemDetail.m; path = Src/Shared/LookinDisplayItemDetail.m; sourceTree = "<group>"; };
 		6F360093DBF9BAB8919D5EFFF590D587 /* MASConstraint+Private.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "MASConstraint+Private.h"; path = "Masonry/MASConstraint+Private.h"; sourceTree = "<group>"; };
 		6F90EFF8F14B2F6F3AA9D859FBAE7A26 /* MJRefresh.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = MJRefresh.release.xcconfig; sourceTree = "<group>"; };
+		6FA1C3CE04A8FF30F226BA83C92E3E93 /* Pods-DogeChatShare-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-DogeChatShare-Info.plist"; sourceTree = "<group>"; };
 		6FEBD219A56C3CCCFEE81843A7471620 /* UIImage+ForceDecode.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UIImage+ForceDecode.m"; path = "SDWebImage/Core/UIImage+ForceDecode.m"; sourceTree = "<group>"; };
 		70492FF94664EA0C16EEC15B15BDC0A5 /* UITextField+LookinServer.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UITextField+LookinServer.m"; path = "Src/Server/Category/UITextField+LookinServer.m"; sourceTree = "<group>"; };
 		706D9F8CFDD533CB68D633158113EB12 /* MJRefreshNormalTrailer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = MJRefreshNormalTrailer.h; path = MJRefresh/Custom/Trailer/MJRefreshNormalTrailer.h; sourceTree = "<group>"; };
@@ -1488,23 +1492,21 @@
 		7285201A654DD1CE21BD454188A02105 /* SDImageCoder.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDImageCoder.m; path = SDWebImage/Core/SDImageCoder.m; sourceTree = "<group>"; };
 		7292B1F82F1D260504679CCA1A8CFDFE /* UIImageView+LookinServer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "UIImageView+LookinServer.h"; path = "Src/Server/Category/UIImageView+LookinServer.h"; sourceTree = "<group>"; };
 		731A3045D2C7EF8F90B61A02663291CB /* YYText-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "YYText-Info.plist"; sourceTree = "<group>"; };
-		73644E96FFB981E96E2C30B2079DD3E8 /* Pods-mynotification-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-mynotification-Info.plist"; sourceTree = "<group>"; };
 		736C200507D9707ADB80BAF1AA89B953 /* SwiftyRSA-watchOS */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = "SwiftyRSA-watchOS"; path = SwiftyRSA.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		73706772F6FAA9F251268B05D1BE1F3D /* Pods-DogeChatSiri.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = "Pods-DogeChatSiri.modulemap"; sourceTree = "<group>"; };
 		73D5F420A12BF6C0C6552A9AE9798B88 /* SwiftyRSA-iOS-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "SwiftyRSA-iOS-Info.plist"; sourceTree = "<group>"; };
+		7444DAF8377AD349BCA7EC4BCCF5F440 /* Pods-DogeChatWatch Watch App-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-DogeChatWatch Watch App-dummy.m"; sourceTree = "<group>"; };
 		74664B1DC999A2A1650CDED391C74E7E /* SDAnimatedImageView+WebCache.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "SDAnimatedImageView+WebCache.m"; path = "SDWebImage/Core/SDAnimatedImageView+WebCache.m"; sourceTree = "<group>"; };
 		749D4F911D9251D5E6D1603C57F820D9 /* SwiftyJSON-watchOS */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = "SwiftyJSON-watchOS"; path = SwiftyJSON.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		74AC54AE016E9434C42EDFEAFA632380 /* LookinServer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = LookinServer.h; path = Src/Server/LookinServer.h; sourceTree = "<group>"; };
+		7502018CAA7736A9896A076A4E081E0E /* Pods-DogeChat.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-DogeChat.debug.xcconfig"; sourceTree = "<group>"; };
 		75A0D3937A5356B99D2501B744AD16B1 /* YYTextEffectWindow.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = YYTextEffectWindow.m; path = YYText/Component/YYTextEffectWindow.m; sourceTree = "<group>"; };
 		75AC5A7F3FCF794BAB20D27437454010 /* ConstraintLayoutGuide+Extensions.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = "ConstraintLayoutGuide+Extensions.swift"; path = "Sources/ConstraintLayoutGuide+Extensions.swift"; sourceTree = "<group>"; };
 		76CEEE73B7A689BD882A37071AE5CE61 /* MASCompositeConstraint.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = MASCompositeConstraint.m; path = Masonry/MASCompositeConstraint.m; sourceTree = "<group>"; };
 		782C8E03C06541665185EF4BB06D550D /* AFCompatibilityMacros.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = AFCompatibilityMacros.h; path = AFNetworking/AFCompatibilityMacros.h; sourceTree = "<group>"; };
 		78864CF549DD6C6BD6D4A7CC0B5B3FB1 /* SwiftyJSON-iOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "SwiftyJSON-iOS.debug.xcconfig"; sourceTree = "<group>"; };
-		7A3AAD2BE6F369D8F9907A910E12BE89 /* Pods-DogeChat.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-DogeChat.release.xcconfig"; sourceTree = "<group>"; };
 		7ACC8E3EC50464A371091893128FE709 /* AFNetworkReachabilityManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = AFNetworkReachabilityManager.h; path = AFNetworking/AFNetworkReachabilityManager.h; sourceTree = "<group>"; };
 		7ADEE982F6F7ADB9905670FC01A684D8 /* DogeChatVideoUtil-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "DogeChatVideoUtil-prefix.pch"; sourceTree = "<group>"; };
 		7B080CBE9DA0FE5CE14BC4E7B295B16D /* RSAiOSWatchOS-watchOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "RSAiOSWatchOS-watchOS.debug.xcconfig"; path = "../RSAiOSWatchOS-watchOS/RSAiOSWatchOS-watchOS.debug.xcconfig"; sourceTree = "<group>"; };
-		7B32A8C18605BD2F638E7D3287D4CC23 /* Pods-DogeChatShare-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-DogeChatShare-dummy.m"; sourceTree = "<group>"; };
 		7B96C2C549FA9565D64F6A629E43B78C /* LKS_RequestHandler.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = LKS_RequestHandler.h; path = Src/Server/Connection/LKS_RequestHandler.h; sourceTree = "<group>"; };
 		7C20FCF548FA33CCC85D1704DBFBD9B1 /* UIRefreshControl+AFNetworking.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UIRefreshControl+AFNetworking.m"; path = "UIKit+AFNetworking/UIRefreshControl+AFNetworking.m"; sourceTree = "<group>"; };
 		7DBB1BB0EEECC2C12357E65767EE63FE /* UIVisualEffectView+LookinServer.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UIVisualEffectView+LookinServer.m"; path = "Src/Server/Category/UIVisualEffectView+LookinServer.m"; sourceTree = "<group>"; };
@@ -1513,7 +1515,6 @@
 		7EA129513D50E41A8398A84DCD66720B /* NSBundle+MJRefresh.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "NSBundle+MJRefresh.m"; path = "MJRefresh/NSBundle+MJRefresh.m"; sourceTree = "<group>"; };
 		7EEE7BD71DC2F3E308EFE464E7F7D0F4 /* MJRefreshBackGifFooter.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = MJRefreshBackGifFooter.m; path = MJRefresh/Custom/Footer/Back/MJRefreshBackGifFooter.m; sourceTree = "<group>"; };
 		7F002C04742C7546F1842A1FE5A41B41 /* CookieManager.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = CookieManager.swift; path = DogeChatCommonDefines/Classes/CookieManager.swift; sourceTree = "<group>"; };
-		7F3A8860AED40D314111837A93B9DF75 /* Pods-DogeChat-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-DogeChat-acknowledgements.plist"; sourceTree = "<group>"; };
 		7F573649DA75DA91B3F7249ADBD29240 /* DogeChatNetwork.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = DogeChatNetwork.debug.xcconfig; sourceTree = "<group>"; };
 		7F9985854514A9056AD7D4A8AF6ABDD9 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; path = README.md; sourceTree = "<group>"; };
 		7FFA1B2048BBEAEEEFA4DC7900FEB8E0 /* MJRefreshBackStateFooter.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = MJRefreshBackStateFooter.m; path = MJRefresh/Custom/Footer/Back/MJRefreshBackStateFooter.m; sourceTree = "<group>"; };
@@ -1523,6 +1524,7 @@
 		812C78B5F1614E2E662A1D6E3E16C53B /* RSAiOSWatchOS-watchOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "RSAiOSWatchOS-watchOS.release.xcconfig"; path = "../RSAiOSWatchOS-watchOS/RSAiOSWatchOS-watchOS.release.xcconfig"; sourceTree = "<group>"; };
 		81764EAD7E618729D8D52055150275B4 /* YYLabel.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = YYLabel.h; path = YYText/YYLabel.h; sourceTree = "<group>"; };
 		818F85EA420C7E8B2637555C66D948FF /* LookinDisplayItem.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = LookinDisplayItem.m; path = Src/Shared/LookinDisplayItem.m; sourceTree = "<group>"; };
+		81DF5FF1D31EBAB826B0E29967E139C9 /* Pods-mynotification-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-mynotification-acknowledgements.markdown"; sourceTree = "<group>"; };
 		8232E6D2B6D2C5A139CFB9120397427D /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = Platforms/WatchOS.platform/Developer/SDKs/WatchOS7.0.sdk/System/Library/Frameworks/Security.framework; sourceTree = DEVELOPER_DIR; };
 		82B0D9DBDE8EEA41D8DBCD59A749228A /* FLAnimatedImage.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = FLAnimatedImage.release.xcconfig; sourceTree = "<group>"; };
 		83813A43936389D07A2848CF1D0848FB /* AFNetworking.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = AFNetworking.h; path = AFNetworking/AFNetworking.h; sourceTree = "<group>"; };
@@ -1530,17 +1532,19 @@
 		83B4FAD85EDFAFBFD88F1E11A98E06E2 /* DogeChatNetwork-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "DogeChatNetwork-prefix.pch"; sourceTree = "<group>"; };
 		83EC5C85AA4F8138D88D6D5907378C98 /* DogeChatUniversal-iOS.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = "DogeChatUniversal-iOS.modulemap"; sourceTree = "<group>"; };
 		840FF78CDFE5EA1A1D19ED36754062F9 /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS14.0.sdk/System/Library/Frameworks/ImageIO.framework; sourceTree = DEVELOPER_DIR; };
+		841BB888DB7362FA2BB95CEC817D1B5A /* Pods-DogeChatWatch Watch App.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-DogeChatWatch Watch App.release.xcconfig"; sourceTree = "<group>"; };
 		84A0086B20DF2ACF8CFBC7002E05A1E6 /* LKS_AttrGroupsMaker.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = LKS_AttrGroupsMaker.m; path = Src/Server/Others/LKS_AttrGroupsMaker.m; sourceTree = "<group>"; };
+		84C94CF27FD2325F9BBAE1C95458B011 /* Pods-DogeChat.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-DogeChat.release.xcconfig"; sourceTree = "<group>"; };
 		850A039153442D20668D730E9ADBECA5 /* LKS_ExportManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = LKS_ExportManager.m; path = Src/Server/Others/LKS_ExportManager.m; sourceTree = "<group>"; };
-		85788AD59ED86E0FD78489241CCC8A31 /* Pods-DogeChatShare-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-DogeChatShare-umbrella.h"; sourceTree = "<group>"; };
+		8545A5172FEBE4B5B30183EF90EFB76B /* Pods-mynotification-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-mynotification-Info.plist"; sourceTree = "<group>"; };
 		85B6B1EFB21BC22A5199633F0EE37FA6 /* AFAutoPurgingImageCache.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = AFAutoPurgingImageCache.m; path = "UIKit+AFNetworking/AFAutoPurgingImageCache.m"; sourceTree = "<group>"; };
 		85B9D5219604354044A68BA02E757528 /* MJRefreshFooter.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = MJRefreshFooter.m; path = MJRefresh/Base/MJRefreshFooter.m; sourceTree = "<group>"; };
 		85F61BE1E44B40F763CF715E963EAE61 /* SDImageCoderHelper.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDImageCoderHelper.h; path = SDWebImage/Core/SDImageCoderHelper.h; sourceTree = "<group>"; };
 		8600CC661887F550E51C1FB5F227826F /* MASLayoutConstraint.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = MASLayoutConstraint.m; path = Masonry/MASLayoutConstraint.m; sourceTree = "<group>"; };
 		86B0F62A99E4C1A8B929ECB736E75CFA /* NSString+Lookin.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "NSString+Lookin.m"; path = "Src/Shared/Category/NSString+Lookin.m"; sourceTree = "<group>"; };
-		86DDDC399286604156B048E0E6571569 /* Pods-DogeChatShare.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-DogeChatShare.release.xcconfig"; sourceTree = "<group>"; };
 		86DFE567411B8BB05E76C2018CD0D84E /* NSArray+MASAdditions.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "NSArray+MASAdditions.m"; path = "Masonry/NSArray+MASAdditions.m"; sourceTree = "<group>"; };
 		86F39D7FB2A73D5B2FB1D47569328182 /* UIView+MJExtension.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "UIView+MJExtension.h"; path = "MJRefresh/UIView+MJExtension.h"; sourceTree = "<group>"; };
+		870CD1F558CC17EF8637AF6C64628527 /* Pods-DogeChatShare.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-DogeChatShare.debug.xcconfig"; sourceTree = "<group>"; };
 		871A09BCE3043B2BC2850B73C8EEB29C /* YYTextKeyboardManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = YYTextKeyboardManager.m; path = YYText/Component/YYTextKeyboardManager.m; sourceTree = "<group>"; };
 		87AACAFC430B44E6A0B38224291B1E41 /* LookinServer.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = LookinServer.release.xcconfig; sourceTree = "<group>"; };
 		87D97A6D87CFEDA116D51487F7395D95 /* ConstraintMakerRelatable.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ConstraintMakerRelatable.swift; path = Sources/ConstraintMakerRelatable.swift; sourceTree = "<group>"; };
@@ -1563,6 +1567,7 @@
 		8D6AE33FB0DD991BB5DE5C9670641647 /* Emoji.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Emoji.swift; path = DogeChatCommonDefines/Classes/Emoji.swift; sourceTree = "<group>"; };
 		8DB82CAC273E7679252F297777889A8B /* LKS_Helper.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = LKS_Helper.m; path = Src/Server/Others/LKS_Helper.m; sourceTree = "<group>"; };
 		8EB2C939E0844163B995C95FCFA9B88C /* SDWebImageCacheSerializer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDWebImageCacheSerializer.h; path = SDWebImage/Core/SDWebImageCacheSerializer.h; sourceTree = "<group>"; };
+		8EFE8D954BDD01D6C1CAC543AA0DC72C /* Pods-DogeChatSiri.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-DogeChatSiri.debug.xcconfig"; sourceTree = "<group>"; };
 		8F03B5E76B9C1A7D74AE152A180307BF /* ConstraintMakerExtendable.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ConstraintMakerExtendable.swift; path = Sources/ConstraintMakerExtendable.swift; sourceTree = "<group>"; };
 		8F0EDD831998D4D503F1FC30E65D877F /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; path = README.md; sourceTree = "<group>"; };
 		8F9D80EB039D383A0A62DFB931E456D9 /* DogeChatCommonDefines-iOS.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = "DogeChatCommonDefines-iOS.modulemap"; sourceTree = "<group>"; };
@@ -1580,7 +1585,6 @@
 		92CA61D947E504EC95F094732C89297D /* YYTextAsyncLayer.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = YYTextAsyncLayer.m; path = YYText/Utility/YYTextAsyncLayer.m; sourceTree = "<group>"; };
 		92E9991D932878DCE38CF0763F5DC551 /* SDAnimatedImagePlayer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDAnimatedImagePlayer.h; path = SDWebImage/Core/SDAnimatedImagePlayer.h; sourceTree = "<group>"; };
 		932A92C1B68BF2D867724962F8C7FC2F /* MJRefresh-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "MJRefresh-Info.plist"; sourceTree = "<group>"; };
-		934531E82C2539B6E8261FF7AD15C4B6 /* Pods-DogeChatWatch Extension.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = "Pods-DogeChatWatch Extension.modulemap"; sourceTree = "<group>"; };
 		93999F5B79CA9EF94C4587650E819A18 /* SDWebImageOptionsProcessor.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDWebImageOptionsProcessor.m; path = SDWebImage/Core/SDWebImageOptionsProcessor.m; sourceTree = "<group>"; };
 		93B0AE598791664D961666D331464D4C /* LookinAttributeModification.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = LookinAttributeModification.m; path = Src/Shared/LookinAttributeModification.m; sourceTree = "<group>"; };
 		94347EEF4B1C89D4294A138C37C9CA8E /* RSAiOSWatchOS-iOS-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "RSAiOSWatchOS-iOS-dummy.m"; sourceTree = "<group>"; };
@@ -1591,6 +1595,7 @@
 		94DFEEB91A7405DC3131E40428ED6FC0 /* Starscream-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Starscream-dummy.m"; sourceTree = "<group>"; };
 		955FD647D05AB133FCBE152503F9B44D /* ConstraintInsetTarget.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ConstraintInsetTarget.swift; path = Sources/ConstraintInsetTarget.swift; sourceTree = "<group>"; };
 		95E26093AACBDD4CD18B4134C757A924 /* SDAsyncBlockOperation.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDAsyncBlockOperation.h; path = SDWebImage/Private/SDAsyncBlockOperation.h; sourceTree = "<group>"; };
+		95F3A54693C5F9416C5596E20C12BFA7 /* Pods-DogeChat-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-DogeChat-Info.plist"; sourceTree = "<group>"; };
 		95FE9572953C2898C68043982D48B34E /* SDImageCodersManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDImageCodersManager.h; path = SDWebImage/Core/SDImageCodersManager.h; sourceTree = "<group>"; };
 		961E42F01392092A52A78E591C744A10 /* X509Certificate.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = X509Certificate.swift; path = Source/X509Certificate.swift; sourceTree = "<group>"; };
 		962D8E1E0AEB322B5B6F51F1401FBA48 /* SDWebImageError.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDWebImageError.h; path = SDWebImage/Core/SDWebImageError.h; sourceTree = "<group>"; };
@@ -1600,6 +1605,7 @@
 		979486118B3E90C08386079D57962701 /* SnapKit */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = SnapKit; path = SnapKit.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		97BA80A4F746BF225AAF40AE751F22F5 /* MJRefreshAutoNormalFooter.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = MJRefreshAutoNormalFooter.m; path = MJRefresh/Custom/Footer/Auto/MJRefreshAutoNormalFooter.m; sourceTree = "<group>"; };
 		982AE538FD55043C80851422321843C3 /* AFHTTPSessionManager.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = AFHTTPSessionManager.m; path = AFNetworking/AFHTTPSessionManager.m; sourceTree = "<group>"; };
+		982BDD319E39BD39039539F8723DDA66 /* Pods-mynotification.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-mynotification.release.xcconfig"; sourceTree = "<group>"; };
 		987C001E454FE59B91C5267907A46F26 /* Compression.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Compression.swift; path = Sources/Compression/Compression.swift; sourceTree = "<group>"; };
 		989A97299421DC1D3C01D5612EE123D5 /* DogeChatVideoUtil-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "DogeChatVideoUtil-Info.plist"; sourceTree = "<group>"; };
 		98B5A94D4B710364B1E0BA8F2F1BC059 /* SDWebImageTransition.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDWebImageTransition.h; path = SDWebImage/Core/SDWebImageTransition.h; sourceTree = "<group>"; };
@@ -1622,7 +1628,6 @@
 		9BED5E397A41808C60559CA7F29787A1 /* AFNetworkActivityIndicatorManager.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = AFNetworkActivityIndicatorManager.h; path = "UIKit+AFNetworking/AFNetworkActivityIndicatorManager.h"; sourceTree = "<group>"; };
 		9BFE60B4D615C7DCCDE043ED451878D2 /* Typealiases.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Typealiases.swift; path = Sources/Typealiases.swift; sourceTree = "<group>"; };
 		9C5A5921ED985B5C3EDCFAC99C00828C /* SDWebImage.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = SDWebImage.modulemap; sourceTree = "<group>"; };
-		9C61839D9D32B7A25E4AFE0AD17B18F4 /* Pods-DogeChatWatch Extension-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-DogeChatWatch Extension-acknowledgements.markdown"; sourceTree = "<group>"; };
 		9D940727FF8FB9C785EB98E56350EF41 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
 		9DD87BF0884C71F7AC0E70A984F9A0DF /* RSAiOSWatchOS-watchOS-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "RSAiOSWatchOS-watchOS-umbrella.h"; path = "../RSAiOSWatchOS-watchOS/RSAiOSWatchOS-watchOS-umbrella.h"; sourceTree = "<group>"; };
 		9F32977042D0D9122933129FDC33997C /* LKS_PerspectiveDataSource.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = LKS_PerspectiveDataSource.h; path = Src/Server/Perspective/LKS_PerspectiveDataSource.h; sourceTree = "<group>"; };
@@ -1684,20 +1689,20 @@
 		AF49F1457E71683D8A90A8893597FB34 /* MJRefreshStateHeader.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = MJRefreshStateHeader.h; path = MJRefresh/Custom/Header/MJRefreshStateHeader.h; sourceTree = "<group>"; };
 		AF5BD240E8246C3CEA4E051337F59F81 /* SDWebImageDownloaderRequestModifier.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDWebImageDownloaderRequestModifier.h; path = SDWebImage/Core/SDWebImageDownloaderRequestModifier.h; sourceTree = "<group>"; };
 		AFD63E393CAD0EFA97583A5E745EB93F /* WKWebView+AFNetworking.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "WKWebView+AFNetworking.h"; path = "UIKit+AFNetworking/WKWebView+AFNetworking.h"; sourceTree = "<group>"; };
-		AFF3083FBC473A9DEFEC4DCB23A1980D /* Pods-DogeChatSiri-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-DogeChatSiri-acknowledgements.plist"; sourceTree = "<group>"; };
 		B03B95889DF4747A6F9387D7AA646838 /* RSAiOSWatchOS-iOS-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "RSAiOSWatchOS-iOS-prefix.pch"; sourceTree = "<group>"; };
 		B05E9907CF3268E6721AD035ACB9CAD2 /* PublicKey.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = PublicKey.swift; path = Source/PublicKey.swift; sourceTree = "<group>"; };
 		B0B214D775196BA7CA8E17E53048A493 /* SDWebImage */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = SDWebImage; path = SDWebImage.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B155F8BC5A5771C19BCF770B72123527 /* YYTextParser.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = YYTextParser.m; path = YYText/String/YYTextParser.m; sourceTree = "<group>"; };
 		B1B1191725B70DD137E7EBED244407F7 /* NSArray+MASAdditions.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "NSArray+MASAdditions.h"; path = "Masonry/NSArray+MASAdditions.h"; sourceTree = "<group>"; };
 		B1DB9ABA6BBAE1E4399FC6D6AFE7D093 /* AFNetworking.root-NSURLSession-Security-Serialization.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "AFNetworking.root-NSURLSession-Security-Serialization.release.xcconfig"; path = "../AFNetworking.root-NSURLSession-Security-Serialization/AFNetworking.root-NSURLSession-Security-Serialization.release.xcconfig"; sourceTree = "<group>"; };
+		B1FDA05531A33AED7363DAED89B7BFF3 /* Pods-DogeChatWatch Watch App-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-DogeChatWatch Watch App-acknowledgements.markdown"; sourceTree = "<group>"; };
 		B23366A4B8CEA47C6DC7B835A161B39D /* DogeChatUniversal-iOS-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "DogeChatUniversal-iOS-dummy.m"; sourceTree = "<group>"; };
-		B38327ACE3AC609279EDDB5F703D8950 /* Pods-DogeChatWatch Extension */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = "Pods-DogeChatWatch Extension"; path = Pods_DogeChatWatch_Extension.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B3BE6232ABAFBC05F14ED3D84E92D7DE /* CommonMethods.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = CommonMethods.swift; path = DogeChatCommonDefines/Classes/CommonMethods.swift; sourceTree = "<group>"; };
 		B3D6C8ECDF675C7B37B0B729FEEF6625 /* UIBlurEffect+LookinServer.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UIBlurEffect+LookinServer.m"; path = "Src/Server/Category/UIBlurEffect+LookinServer.m"; sourceTree = "<group>"; };
 		B3F69FA18F27FFE4B64814916F07BC37 /* LookinStaticAsyncUpdateTask.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = LookinStaticAsyncUpdateTask.h; path = Src/Shared/LookinStaticAsyncUpdateTask.h; sourceTree = "<group>"; };
 		B470F1A210D5221A15D2A01082E85441 /* UIView+WebCacheOperation.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "UIView+WebCacheOperation.h"; path = "SDWebImage/Core/UIView+WebCacheOperation.h"; sourceTree = "<group>"; };
 		B53DE6D6E414FF82E2260B596F8D7AE9 /* SDWebImageIndicator.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDWebImageIndicator.h; path = SDWebImage/Core/SDWebImageIndicator.h; sourceTree = "<group>"; };
+		B53FCA6EC9DDE0FA6ED90BAF294B4DB3 /* Pods-DogeChatWatch Watch App */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = "Pods-DogeChatWatch Watch App"; path = Pods_DogeChatWatch_Watch_App.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		B53FFD0081B86D39324C943434BAB9A0 /* UIImageView+WebCache.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "UIImageView+WebCache.h"; path = "SDWebImage/Core/UIImageView+WebCache.h"; sourceTree = "<group>"; };
 		B57C372FF55F04B3BF276CC62628BAAC /* UIImageView+LookinServer.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UIImageView+LookinServer.m"; path = "Src/Server/Category/UIImageView+LookinServer.m"; sourceTree = "<group>"; };
 		B59080BE1EBEE6F565537561C42C1A42 /* SDWebImage.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = SDWebImage.debug.xcconfig; sourceTree = "<group>"; };
@@ -1709,7 +1714,7 @@
 		B730E10B3A8C99A784BC7749D2717FCA /* MJRefreshConfig.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = MJRefreshConfig.h; path = MJRefresh/MJRefreshConfig.h; sourceTree = "<group>"; };
 		B74BB90321C46E7D28D0EB347891BCD6 /* NSButton+WebCache.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "NSButton+WebCache.m"; path = "SDWebImage/Core/NSButton+WebCache.m"; sourceTree = "<group>"; };
 		B8CB892EE525D18AC9FA5FD266EA56DE /* DogeChatUniversal-iOS-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "DogeChatUniversal-iOS-umbrella.h"; sourceTree = "<group>"; };
-		B9B260CEEF00BB2E3C167F4E5EA309F0 /* Pods-DogeChatSiri.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-DogeChatSiri.debug.xcconfig"; sourceTree = "<group>"; };
+		B8EBC33ABBF085DD866AE9E73305046A /* Pods-DogeChat.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = "Pods-DogeChat.modulemap"; sourceTree = "<group>"; };
 		B9BE0CC2DDAD7364C0E798CCD6C2C1CC /* SnapKit-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "SnapKit-prefix.pch"; sourceTree = "<group>"; };
 		B9DCB5EC0B1CDADD221717CADDF62359 /* SnapKit-SnapKit_Privacy */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = "SnapKit-SnapKit_Privacy"; path = SnapKit_Privacy.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
 		BA200350AB35B9C710BE29D2EEA6B1FF /* SDWebImageCacheKeyFilter.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDWebImageCacheKeyFilter.h; path = SDWebImage/Core/SDWebImageCacheKeyFilter.h; sourceTree = "<group>"; };
@@ -1731,7 +1736,6 @@
 		C17495BED3FC6D9DE81E1FC4233D6CE2 /* DogeChatCommonDefines-watchOS */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = "DogeChatCommonDefines-watchOS"; path = DogeChatCommonDefines.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		C1EEDAC142FFCF1880852C68B322A85E /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; path = LICENSE; sourceTree = "<group>"; };
 		C237FA73FFA33EDC7E3481ADA42C2414 /* SDImageAWebPCoder.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDImageAWebPCoder.m; path = SDWebImage/Core/SDImageAWebPCoder.m; sourceTree = "<group>"; };
-		C28144521BB016F4F3DF61F45BA18218 /* Pods-DogeChatWatch Extension-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-DogeChatWatch Extension-dummy.m"; sourceTree = "<group>"; };
 		C2D04E7C0BED84C9353AF405466A2A45 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS14.0.sdk/System/Library/Frameworks/QuartzCore.framework; sourceTree = DEVELOPER_DIR; };
 		C2D96BAD3E5C1A390C30748103F66CE3 /* ConstraintMakerFinalizable.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ConstraintMakerFinalizable.swift; path = Sources/ConstraintMakerFinalizable.swift; sourceTree = "<group>"; };
 		C2E63220540D8DD8CCBB3F441B398C22 /* SwiftyRSA-iOS-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "SwiftyRSA-iOS-dummy.m"; sourceTree = "<group>"; };
@@ -1745,7 +1749,6 @@
 		C5FBDC90A4D68081A7FD5A24C2C98687 /* UIImage+GIF.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UIImage+GIF.m"; path = "SDWebImage/Core/UIImage+GIF.m"; sourceTree = "<group>"; };
 		C633158C9B129ADA619F24EEFD5729B1 /* SwiftyJSON-iOS.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = "SwiftyJSON-iOS.modulemap"; sourceTree = "<group>"; };
 		C6740A39B46D6F2EA458CCBD8ECF5193 /* SDImageCache.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDImageCache.m; path = SDWebImage/Core/SDImageCache.m; sourceTree = "<group>"; };
-		C6801BEC8A05CF5EAEA928D70547849E /* Pods-DogeChatWatch Extension.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-DogeChatWatch Extension.debug.xcconfig"; sourceTree = "<group>"; };
 		C6C9396D0721D4C9456744A3EEE4ECF4 /* DogeChatUniversal-watchOS-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "DogeChatUniversal-watchOS-umbrella.h"; path = "../DogeChatUniversal-watchOS/DogeChatUniversal-watchOS-umbrella.h"; sourceTree = "<group>"; };
 		C6CB480057F0BC13E7034FA269FE7FA4 /* DogeChatUniversal-iOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "DogeChatUniversal-iOS.debug.xcconfig"; sourceTree = "<group>"; };
 		C6DDFEA19EB8C8E606C79853153BEDAC /* UIImage+ExtendedCacheData.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UIImage+ExtendedCacheData.m"; path = "SDWebImage/Core/UIImage+ExtendedCacheData.m"; sourceTree = "<group>"; };
@@ -1753,6 +1756,7 @@
 		C72766FF37153079F19D1F019FAA8718 /* LookinConnectionResponseAttachment.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = LookinConnectionResponseAttachment.h; path = Src/Shared/LookinConnectionResponseAttachment.h; sourceTree = "<group>"; };
 		C7377B00B3853D9910899D9FEB9E16AF /* CommonDefines.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = CommonDefines.swift; path = DogeChatCommonDefines/Classes/CommonDefines.swift; sourceTree = "<group>"; };
 		C73D9F9FC64699AB401B6398E2D6A03D /* LKS_PerspectiveItemLayer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = LKS_PerspectiveItemLayer.h; path = Src/Server/Perspective/LKS_PerspectiveItemLayer.h; sourceTree = "<group>"; };
+		C77A8BF9B8B382C935C7A529A614FDC1 /* Pods-mynotification-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-mynotification-umbrella.h"; sourceTree = "<group>"; };
 		C7822785DAAB1515CC16EACA1E6A7956 /* ConstraintViewDSL.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ConstraintViewDSL.swift; path = Sources/ConstraintViewDSL.swift; sourceTree = "<group>"; };
 		C7AAFBC418FC2719A81B919113F7C339 /* LKS_HierarchyDisplayItemsMaker.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = LKS_HierarchyDisplayItemsMaker.h; path = Src/Server/Others/LKS_HierarchyDisplayItemsMaker.h; sourceTree = "<group>"; };
 		C7E5D8D5023A8B365BC248043DDC2F7A /* SwiftyRSA-iOS */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = "SwiftyRSA-iOS"; path = SwiftyRSA.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1772,7 +1776,6 @@
 		CB0FED5B0ADDEF7CF349B89286A591A0 /* UIVisualEffectView+LookinServer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "UIVisualEffectView+LookinServer.h"; path = "Src/Server/Category/UIVisualEffectView+LookinServer.h"; sourceTree = "<group>"; };
 		CB98C0E143C47CCDD3CA2BBB3C6F7C20 /* MASViewAttribute.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = MASViewAttribute.m; path = Masonry/MASViewAttribute.m; sourceTree = "<group>"; };
 		CBDD4927E49137CAF9A62FB451647806 /* DateTranslate.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = DateTranslate.m; path = DogeChatCommonDefines/Classes/DateTranslate.m; sourceTree = "<group>"; };
-		CC4A3AB55D9C98026BCE8AF3278815D2 /* Pods-mynotification-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-mynotification-acknowledgements.markdown"; sourceTree = "<group>"; };
 		CC93DA52D9779285DB8BC6A80A9C1182 /* AFNetworking-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "AFNetworking-umbrella.h"; sourceTree = "<group>"; };
 		CDAB1470019B470B09957B48610D141F /* FLAnimatedImageView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = FLAnimatedImageView.m; path = FLAnimatedImage/FLAnimatedImageView.m; sourceTree = "<group>"; };
 		CE2397853DD6FD05D8C50A347572C6A2 /* Security.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Security.swift; path = Sources/Security/Security.swift; sourceTree = "<group>"; };
@@ -1783,8 +1786,8 @@
 		CFD593791CA7DC43E2007BD4C4E92A4E /* NSData+SHA.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "NSData+SHA.m"; path = "Source/NSData+SHA.m"; sourceTree = "<group>"; };
 		D105A15CCB0A91102D336199686F5178 /* NSData+ImageContentType.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "NSData+ImageContentType.m"; path = "SDWebImage/Core/NSData+ImageContentType.m"; sourceTree = "<group>"; };
 		D13C6CDE89E62A5A1D0AF45EDB97488D /* SDWebImageCompat.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDWebImageCompat.h; path = SDWebImage/Core/SDWebImageCompat.h; sourceTree = "<group>"; };
-		D1828053F5F4399A9F49D81AC7563A3F /* Pods-mynotification-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-mynotification-dummy.m"; sourceTree = "<group>"; };
 		D24BD428601E7915626A35E550AA8F6A /* MASViewConstraint.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = MASViewConstraint.m; path = Masonry/MASViewConstraint.m; sourceTree = "<group>"; };
+		D3361271812299EB7CD74D7B5A004B94 /* Pods-mynotification.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-mynotification.debug.xcconfig"; sourceTree = "<group>"; };
 		D34090E5EADDAAF7CD276AAB790B524F /* LayoutConstraintItem.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = LayoutConstraintItem.swift; path = Sources/LayoutConstraintItem.swift; sourceTree = "<group>"; };
 		D36B399C5305EF3AEBAA217F98FA2CC9 /* UIButton+WebCache.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "UIButton+WebCache.h"; path = "SDWebImage/Core/UIButton+WebCache.h"; sourceTree = "<group>"; };
 		D39EFAB065F3B88ED0FC55424281F9D0 /* SDGraphicsImageRenderer.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDGraphicsImageRenderer.h; path = SDWebImage/Core/SDGraphicsImageRenderer.h; sourceTree = "<group>"; };
@@ -1797,11 +1800,11 @@
 		D5B6CE52971E1E35D2994EE148D90B81 /* ConstraintMakerPrioritizable.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ConstraintMakerPrioritizable.swift; path = Sources/ConstraintMakerPrioritizable.swift; sourceTree = "<group>"; };
 		D6B8064DCB8AA56E8D1483F076230092 /* UIImage+MultiFormat.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "UIImage+MultiFormat.h"; path = "SDWebImage/Core/UIImage+MultiFormat.h"; sourceTree = "<group>"; };
 		D74728E17D64DD6B5A8BA8E679AFC92A /* MusicHttpManager.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = MusicHttpManager.swift; path = DogeChatNetwork/Classes/MusicHttpManager.swift; sourceTree = "<group>"; };
+		D74E9E2A3DFB796DA02A9E3D17CFA6FF /* Pods-DogeChatShare-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-DogeChatShare-acknowledgements.plist"; sourceTree = "<group>"; };
 		D7DFAA4AC7D0714ACF6C46C61CBBEDE6 /* ConstraintView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ConstraintView.swift; path = Sources/ConstraintView.swift; sourceTree = "<group>"; };
 		D8304C975EA84B5963C680EC2F329AE9 /* DogeChatVideoUtil-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "DogeChatVideoUtil-dummy.m"; sourceTree = "<group>"; };
 		D8A918693EEBFE7E043E2C8293CD1994 /* YYText.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = YYText.debug.xcconfig; sourceTree = "<group>"; };
 		D8E5036DCE7C62DF43111794FB522D2A /* SDWeakProxy.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDWeakProxy.h; path = SDWebImage/Private/SDWeakProxy.h; sourceTree = "<group>"; };
-		D97EB509A15C0E4B95F215EECA343994 /* Pods-DogeChatSiri-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-DogeChatSiri-acknowledgements.markdown"; sourceTree = "<group>"; };
 		D99B97758F7F5862BEC528E8D73B7DE5 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS14.0.sdk/System/Library/Frameworks/UIKit.framework; sourceTree = DEVELOPER_DIR; };
 		D9A2C7736584E9C293F886387CE21FEF /* LKS_PerspectiveHierarchyView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = LKS_PerspectiveHierarchyView.m; path = Src/Server/Perspective/LKS_PerspectiveHierarchyView.m; sourceTree = "<group>"; };
 		DA06862AB0D81303DEE94D6641A8F694 /* LKS_PerspectiveHierarchyCell.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = LKS_PerspectiveHierarchyCell.h; path = Src/Server/Perspective/LKS_PerspectiveHierarchyCell.h; sourceTree = "<group>"; };
@@ -1823,7 +1826,6 @@
 		DE4B7D6A80781CAFEDCDB7615B324E8E /* SDImageGIFCoder.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDImageGIFCoder.m; path = SDWebImage/Core/SDImageGIFCoder.m; sourceTree = "<group>"; };
 		DE7A1E80E538882BC290836B8268B4F7 /* DogeChatUniversal-watchOS */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = "DogeChatUniversal-watchOS"; path = DogeChatUniversal.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		DE7D81F9C477F4D905571717E20B39C1 /* LookinObject.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = LookinObject.m; path = Src/Shared/LookinObject.m; sourceTree = "<group>"; };
-		DEF953C3976CC8B1CFD81CB7ABE1E67E /* Pods-DogeChat-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-DogeChat-dummy.m"; sourceTree = "<group>"; };
 		DF0A6FFD5D7AA97E162C36EE81AF22B9 /* WSEngine.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = WSEngine.swift; path = Sources/Engine/WSEngine.swift; sourceTree = "<group>"; };
 		DF10FD05F8C3E3DFB1CB431E3A789549 /* SDAnimatedImageView.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDAnimatedImageView.m; path = SDWebImage/Core/SDAnimatedImageView.m; sourceTree = "<group>"; };
 		DF35EBD14F6D2CA46F7F09CA84949D9D /* LFAssetExportSession.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = LFAssetExportSession.m; path = DogeChatVideoUtil/Classes/LFAssetExportSession.m; sourceTree = "<group>"; };
@@ -1831,7 +1833,9 @@
 		DFBB5D649836E9C83777026CB08A46D1 /* DataCompression-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "DataCompression-dummy.m"; sourceTree = "<group>"; };
 		DFFB76AF618B01AF31C79A54A1EB473F /* DogeChatCommonDefines-iOS-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "DogeChatCommonDefines-iOS-Info.plist"; sourceTree = "<group>"; };
 		E003B50414B8020788B59BC6F6ED369D /* LookinServer.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = LookinServer.debug.xcconfig; sourceTree = "<group>"; };
+		E05B54ECF357E0645F834E8313900867 /* Pods-DogeChatWatch Watch App-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-DogeChatWatch Watch App-umbrella.h"; sourceTree = "<group>"; };
 		E060492F705D88ADC437B9E9FA366224 /* DataCompression.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = DataCompression.release.xcconfig; sourceTree = "<group>"; };
+		E087737DC8BD446134ECADD46360A3E5 /* Pods-DogeChatWatch Watch App.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-DogeChatWatch Watch App.debug.xcconfig"; sourceTree = "<group>"; };
 		E0A0731804D1878A6F9882DE5714293E /* UIImageView+AFNetworking.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = "UIImageView+AFNetworking.h"; path = "UIKit+AFNetworking/UIImageView+AFNetworking.h"; sourceTree = "<group>"; };
 		E0B8EB99A7607884B5A0ABCACC7085B3 /* SDWebImagePrefetcher.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDWebImagePrefetcher.m; path = SDWebImage/Core/SDWebImagePrefetcher.m; sourceTree = "<group>"; };
 		E0CDDF76354DED7B9B088C5922BDAC1E /* SDImageIOCoder.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDImageIOCoder.h; path = SDWebImage/Core/SDImageIOCoder.h; sourceTree = "<group>"; };
@@ -1840,7 +1844,6 @@
 		E242ECCEC8AA6100090F499ED7E1EA87 /* SDWebImageOptionsProcessor.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = SDWebImageOptionsProcessor.h; path = SDWebImage/Core/SDWebImageOptionsProcessor.h; sourceTree = "<group>"; };
 		E266C2BBFBD123690D61D06902C7B41A /* YYTextWeakProxy.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = YYTextWeakProxy.h; path = YYText/Utility/YYTextWeakProxy.h; sourceTree = "<group>"; };
 		E27A41A9318740D22523295AB7315CD1 /* MASUtilities.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = MASUtilities.h; path = Masonry/MASUtilities.h; sourceTree = "<group>"; };
-		E2920BB5AF687DD28792CE202701A2E0 /* Pods-DogeChatSiri-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-DogeChatSiri-Info.plist"; sourceTree = "<group>"; };
 		E47CF5912947830DD50D68269BC48C43 /* LookinServer-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "LookinServer-prefix.pch"; sourceTree = "<group>"; };
 		E49D6D248DD1CEE584E6776B9164A1B2 /* MJRefresh */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = MJRefresh; path = MJRefresh.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		E4C58784724C33FB236351C0072401BD /* SDWebImage-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "SDWebImage-umbrella.h"; sourceTree = "<group>"; };
@@ -1852,14 +1855,12 @@
 		E735F8F444A66079E23840A49B6C6163 /* EncryptedMessage.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = EncryptedMessage.swift; path = Source/EncryptedMessage.swift; sourceTree = "<group>"; };
 		E76BBCF7DFDBE8BDB5AC90102D87FEA5 /* WebSocketServer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = WebSocketServer.swift; path = Sources/Server/WebSocketServer.swift; sourceTree = "<group>"; };
 		E76D022105843FD9C9EA75498B700FE0 /* LookinMsgTargetAction.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = LookinMsgTargetAction.m; path = Src/Shared/Message/LookinMsgTargetAction.m; sourceTree = "<group>"; };
-		E7A4B04DABD10AEA0011C0314D2A20DD /* Pods-mynotification.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-mynotification.release.xcconfig"; sourceTree = "<group>"; };
 		E7BE8B473944CB52727C9C7378E70888 /* LKS_LocalInspectViewController.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = LKS_LocalInspectViewController.h; path = Src/Server/Inspect/LKS_LocalInspectViewController.h; sourceTree = "<group>"; };
 		E8EE88E7E612AE472DBE21C88AF27E89 /* SDWebImageDownloaderDecryptor.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDWebImageDownloaderDecryptor.m; path = SDWebImage/Core/SDWebImageDownloaderDecryptor.m; sourceTree = "<group>"; };
 		E9E5EBD791446D99813EBFE352C34C56 /* LivePhotoGenerator.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = LivePhotoGenerator.m; path = DogeChatVideoUtil/Classes/LivePhotoGenerator.m; sourceTree = "<group>"; };
 		EA080CCA78CA84B658466D0BD917CC19 /* MJRefresh-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "MJRefresh-umbrella.h"; sourceTree = "<group>"; };
-		EA2016A648BA7113F4E72D328DECD989 /* Pods-DogeChatShare.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = "Pods-DogeChatShare.modulemap"; sourceTree = "<group>"; };
-		EA62162690C018DB9B033A3311DAB562 /* Pods-mynotification.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-mynotification.debug.xcconfig"; sourceTree = "<group>"; };
 		EA6CA39F1767669966FDFCD0DBF0AE29 /* AFSecurityPolicy.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = AFSecurityPolicy.h; path = AFNetworking/AFSecurityPolicy.h; sourceTree = "<group>"; };
+		EB5ECCB32C15D45C5EABEDADBDF2242F /* Pods-DogeChatSiri.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-DogeChatSiri.release.xcconfig"; sourceTree = "<group>"; };
 		EB986585E7F403900D649124D5065157 /* LKS_PerspectiveHierarchyView.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = LKS_PerspectiveHierarchyView.h; path = Src/Server/Perspective/LKS_PerspectiveHierarchyView.h; sourceTree = "<group>"; };
 		EBD88CCE2F21049FAC6FC3DD15CA9C26 /* Key.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = Key.swift; path = Source/Key.swift; sourceTree = "<group>"; };
 		EBF10D273BB93B45F0D23132ABE69BA1 /* LookinTuple.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = LookinTuple.m; path = Src/Shared/LookinTuple.m; sourceTree = "<group>"; };
@@ -1867,6 +1868,7 @@
 		EC4F1F9FA126D591892C3CEFEDE8F947 /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; path = LICENSE; sourceTree = "<group>"; };
 		EC5203981294F5E27E949CB913F5639D /* SnapKit-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "SnapKit-umbrella.h"; sourceTree = "<group>"; };
 		EC77C6BC4E76046174F131F6CF0327F7 /* AFNetworking.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = AFNetworking.modulemap; sourceTree = "<group>"; };
+		ECA44F419503C3F4BE262383825EBFB2 /* Pods-DogeChatSiri.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = "Pods-DogeChatSiri.modulemap"; sourceTree = "<group>"; };
 		ECE7B1C2ABBDCD1BB366D1AEFA5016EC /* DogeChatCommonDefines-watchOS.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; name = "DogeChatCommonDefines-watchOS.modulemap"; path = "../DogeChatCommonDefines-watchOS/DogeChatCommonDefines-watchOS.modulemap"; sourceTree = "<group>"; };
 		ED2846D1E21F45E9DF51DB23EC82D2F8 /* SDWebImage-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "SDWebImage-prefix.pch"; sourceTree = "<group>"; };
 		ED525397A556F7839121C2B694E4392B /* SDAssociatedObject.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDAssociatedObject.m; path = SDWebImage/Private/SDAssociatedObject.m; sourceTree = "<group>"; };
@@ -1886,7 +1888,6 @@
 		EFED536F77B698735F3EEDBC31A2231D /* DACircularProgress-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "DACircularProgress-prefix.pch"; sourceTree = "<group>"; };
 		F00222FD35E0F3EEF1312CFB40FD0F67 /* AFNetworking.root-NSURLSession-Security-Serialization.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "AFNetworking.root-NSURLSession-Security-Serialization.debug.xcconfig"; path = "../AFNetworking.root-NSURLSession-Security-Serialization/AFNetworking.root-NSURLSession-Security-Serialization.debug.xcconfig"; sourceTree = "<group>"; };
 		F0DB83E878D2C6C7B026339537F6DB4A /* SDWebImageCacheKeyFilter.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = SDWebImageCacheKeyFilter.m; path = SDWebImage/Core/SDWebImageCacheKeyFilter.m; sourceTree = "<group>"; };
-		F18A63AE671D3CD544EE0B835652E655 /* Pods-DogeChatShare-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-DogeChatShare-acknowledgements.plist"; sourceTree = "<group>"; };
 		F1AB4D1AA4AB1F1ACAD16BE975A280F0 /* LKS_PerspectiveToolbarButtons.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = LKS_PerspectiveToolbarButtons.h; path = Src/Server/Perspective/LKS_PerspectiveToolbarButtons.h; sourceTree = "<group>"; };
 		F2ABEE7B67FF5C50C7E584B4252F14C8 /* UIProgressView+AFNetworking.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UIProgressView+AFNetworking.m"; path = "UIKit+AFNetworking/UIProgressView+AFNetworking.m"; sourceTree = "<group>"; };
 		F3611A573957A5F48C422B4A4D3AB068 /* SwiftyJSON-watchOS-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "SwiftyJSON-watchOS-dummy.m"; path = "../SwiftyJSON-watchOS/SwiftyJSON-watchOS-dummy.m"; sourceTree = "<group>"; };
@@ -1925,7 +1926,6 @@
 		FC537D513D4628A6CB6135A299C0B510 /* MJRefresh-prefix.pch */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "MJRefresh-prefix.pch"; sourceTree = "<group>"; };
 		FCA28DDD8C568CF811B304986B5CCE63 /* DogeChatUniversal-iOS */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = "DogeChatUniversal-iOS"; path = DogeChatUniversal.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		FCD5171588E0B15BF5A7B327954F659F /* UIImage+Transform.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; name = "UIImage+Transform.m"; path = "SDWebImage/Core/UIImage+Transform.m"; sourceTree = "<group>"; };
-		FD2DD5622B9D0419EEE127CEC758A62C /* Pods-DogeChatWatch Extension-frameworks.sh */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.script.sh; path = "Pods-DogeChatWatch Extension-frameworks.sh"; sourceTree = "<group>"; };
 		FD4249100672E9324D71F193FCA0999B /* LookinHierarchyInfo.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; name = LookinHierarchyInfo.h; path = Src/Shared/LookinHierarchyInfo.h; sourceTree = "<group>"; };
 		FD55D35BEA7E3A2BD2CD13DA40C7B307 /* SwiftyJSON-watchOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "SwiftyJSON-watchOS.debug.xcconfig"; path = "../SwiftyJSON-watchOS/SwiftyJSON-watchOS.debug.xcconfig"; sourceTree = "<group>"; };
 		FD6834A932328963736C78158C54AFBE /* ClearMessage.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ClearMessage.swift; path = Source/ClearMessage.swift; sourceTree = "<group>"; };
@@ -2045,6 +2045,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		871DCDE18DEF3698B188DB5A69D070C8 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8A30F66894547AB6421D636E66150820 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		879F30B3D16F333191DE83D032C83670 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -2098,14 +2106,6 @@
 				F147CA50AABD9BFF90293236C1E7E0ED /* MobileCoreServices.framework in Frameworks */,
 				525DE6A29BF75E3F018F7CD7DB740013 /* QuartzCore.framework in Frameworks */,
 				6FA8C49423B88B5C3BA56D8F8C469841 /* UIKit.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		AC6F2DE71899B9F8220BE6B4FDE04275 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				D7B3B8DC5AD6149F6B96024928E87D00 /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2282,22 +2282,6 @@
 				DC74DD4E10720817097F0FC2E7AD40C6 /* MJRefresh.bundle */,
 			);
 			name = Resources;
-			sourceTree = "<group>";
-		};
-		22D69436EBF0C0BA9D34E559D573FEF6 /* Pods-DogeChatShare */ = {
-			isa = PBXGroup;
-			children = (
-				EA2016A648BA7113F4E72D328DECD989 /* Pods-DogeChatShare.modulemap */,
-				247F8D0F8BC4634B8309A2869E347D62 /* Pods-DogeChatShare-acknowledgements.markdown */,
-				F18A63AE671D3CD544EE0B835652E655 /* Pods-DogeChatShare-acknowledgements.plist */,
-				7B32A8C18605BD2F638E7D3287D4CC23 /* Pods-DogeChatShare-dummy.m */,
-				3E7EEF1DF6242AFCFBF607B3F3C4D28B /* Pods-DogeChatShare-Info.plist */,
-				85788AD59ED86E0FD78489241CCC8A31 /* Pods-DogeChatShare-umbrella.h */,
-				4236A5BC44AE18F66EA7AC1CCB432670 /* Pods-DogeChatShare.debug.xcconfig */,
-				86DDDC399286604156B048E0E6571569 /* Pods-DogeChatShare.release.xcconfig */,
-			);
-			name = "Pods-DogeChatShare";
-			path = "Target Support Files/Pods-DogeChatShare";
 			sourceTree = "<group>";
 		};
 		24D46BB1A5DEAD7E8F2856490B2EDEB3 /* SnapKit */ = {
@@ -2810,6 +2794,23 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		47CF842D37508554726E597F9CFE5119 /* Pods-DogeChatWatch Watch App */ = {
+			isa = PBXGroup;
+			children = (
+				3D8F5E01B566B1F965C4B7ABE0A4BBCA /* Pods-DogeChatWatch Watch App.modulemap */,
+				B1FDA05531A33AED7363DAED89B7BFF3 /* Pods-DogeChatWatch Watch App-acknowledgements.markdown */,
+				3E644A73603AFEBD8209E878067E205E /* Pods-DogeChatWatch Watch App-acknowledgements.plist */,
+				7444DAF8377AD349BCA7EC4BCCF5F440 /* Pods-DogeChatWatch Watch App-dummy.m */,
+				31C24996507E18A0D33FD16FA81315BD /* Pods-DogeChatWatch Watch App-frameworks.sh */,
+				5672D0D3A266884E45A085C35D9AF889 /* Pods-DogeChatWatch Watch App-Info.plist */,
+				E05B54ECF357E0645F834E8313900867 /* Pods-DogeChatWatch Watch App-umbrella.h */,
+				E087737DC8BD446134ECADD46360A3E5 /* Pods-DogeChatWatch Watch App.debug.xcconfig */,
+				841BB888DB7362FA2BB95CEC817D1B5A /* Pods-DogeChatWatch Watch App.release.xcconfig */,
+			);
+			name = "Pods-DogeChatWatch Watch App";
+			path = "Target Support Files/Pods-DogeChatWatch Watch App";
+			sourceTree = "<group>";
+		};
 		4D0D01E8C282FE6A017F1796C14CAE52 /* iOS */ = {
 			isa = PBXGroup;
 			children = (
@@ -2852,6 +2853,23 @@
 				08D3EC8B7D32B8091A1EB9198C7FF767 /* RSAiOSWatchOS */,
 			);
 			name = "Development Pods";
+			sourceTree = "<group>";
+		};
+		584267BAF238C6FF262881F8F4E14900 /* Pods-DogeChat */ = {
+			isa = PBXGroup;
+			children = (
+				B8EBC33ABBF085DD866AE9E73305046A /* Pods-DogeChat.modulemap */,
+				415C0BBE8F90CCF9572A9064A679FF87 /* Pods-DogeChat-acknowledgements.markdown */,
+				0F3B59D2E231152D69B83D90DA964700 /* Pods-DogeChat-acknowledgements.plist */,
+				135AC602EFBDD92947B2C598FA5F10EF /* Pods-DogeChat-dummy.m */,
+				0A3DD84030F641CD5DF920DBDD0F9447 /* Pods-DogeChat-frameworks.sh */,
+				95F3A54693C5F9416C5596E20C12BFA7 /* Pods-DogeChat-Info.plist */,
+				2BD35CEAB32EF2E951E47EC3E78B109F /* Pods-DogeChat-umbrella.h */,
+				7502018CAA7736A9896A076A4E081E0E /* Pods-DogeChat.debug.xcconfig */,
+				84C94CF27FD2325F9BBAE1C95458B011 /* Pods-DogeChat.release.xcconfig */,
+			);
+			name = "Pods-DogeChat";
+			path = "Target Support Files/Pods-DogeChat";
 			sourceTree = "<group>";
 		};
 		588FD571E5EC31D1D16C080CE5591B1F /* SwiftyJSON */ = {
@@ -2912,6 +2930,43 @@
 			);
 			name = FLAnimatedImage;
 			path = ../../FLAnimatedImage;
+			sourceTree = "<group>";
+		};
+		740C7408902477715841875C0D29F6C0 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A4FA15D44DF6BAC7550EDEED10862AA3 /* AFNetworking */,
+				F8F3ED8EEDABC520A9D7C4646CE8C9C4 /* AFNetworking.root-NSURLSession-Security-Serialization */,
+				51347F8FB1BAB7E70C275E45A9516906 /* DACircularProgress */,
+				2908D41E51318E6DAD3ED9134E851513 /* DataCompression */,
+				550F6FE3E98138C03A90843C90EDA34E /* DogeChatCommonDefines-iOS */,
+				C17495BED3FC6D9DE81E1FC4233D6CE2 /* DogeChatCommonDefines-watchOS */,
+				18AD942223A5571BC435B5DF4457ADB6 /* DogeChatNetwork */,
+				FCA28DDD8C568CF811B304986B5CCE63 /* DogeChatUniversal-iOS */,
+				DE7A1E80E538882BC290836B8268B4F7 /* DogeChatUniversal-watchOS */,
+				609B33FB7AEB775195AF26403D7D7B38 /* DogeChatVideoUtil */,
+				FAA5F2D71B90788C908800A94534AA92 /* FLAnimatedImage */,
+				25664483ABF4DC8EC03E7472AA04333B /* LookinServer */,
+				1FFED36A657123030ABB700256D73F15 /* Masonry */,
+				E49D6D248DD1CEE584E6776B9164A1B2 /* MJRefresh */,
+				001B15E8F2F06E574D9DFBCB74DA299F /* Pods-DogeChat */,
+				5235E5A02170267DCC9C80B43EFC05F9 /* Pods-DogeChatShare */,
+				AB479B2F2709DCB0E98D1C4CE7DF2D67 /* Pods-DogeChatSiri */,
+				B53FCA6EC9DDE0FA6ED90BAF294B4DB3 /* Pods-DogeChatWatch Watch App */,
+				971654EFF77088DC30D016D37B0CDC08 /* Pods-mynotification */,
+				87E9377911347A35EDB6D63B6DD4B271 /* RSAiOSWatchOS-iOS */,
+				1E24C58E2A1EEE8DFC3F4DF9898FC3F8 /* RSAiOSWatchOS-watchOS */,
+				B0B214D775196BA7CA8E17E53048A493 /* SDWebImage */,
+				979486118B3E90C08386079D57962701 /* SnapKit */,
+				B9DCB5EC0B1CDADD221717CADDF62359 /* SnapKit-SnapKit_Privacy */,
+				891B2270823847ED23F2ECFC28F935EC /* Starscream */,
+				6F348CF3DF73CCBE882148B54AFDFDD5 /* SwiftyJSON-iOS */,
+				749D4F911D9251D5E6D1603C57F820D9 /* SwiftyJSON-watchOS */,
+				C7E5D8D5023A8B365BC248043DDC2F7A /* SwiftyRSA-iOS */,
+				736C200507D9707ADB80BAF1AA89B953 /* SwiftyRSA-watchOS */,
+				71762A728913EB440C97D3616D291AF3 /* YYText */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 		743AE44297F7DEF2C2B8AAFB7A579FBF /* SwiftyRSA */ = {
@@ -3019,23 +3074,6 @@
 			path = "../DogeChat/Pods/Target Support Files/DogeChatCommonDefines-iOS";
 			sourceTree = "<group>";
 		};
-		824649024D7CD5D33168FA6473DE2187 /* Pods-DogeChatWatch Extension */ = {
-			isa = PBXGroup;
-			children = (
-				934531E82C2539B6E8261FF7AD15C4B6 /* Pods-DogeChatWatch Extension.modulemap */,
-				9C61839D9D32B7A25E4AFE0AD17B18F4 /* Pods-DogeChatWatch Extension-acknowledgements.markdown */,
-				1D30BE890C1A598B00652D1FEB383AD8 /* Pods-DogeChatWatch Extension-acknowledgements.plist */,
-				C28144521BB016F4F3DF61F45BA18218 /* Pods-DogeChatWatch Extension-dummy.m */,
-				FD2DD5622B9D0419EEE127CEC758A62C /* Pods-DogeChatWatch Extension-frameworks.sh */,
-				3575E88F5A7277D9999CB5FB886D7365 /* Pods-DogeChatWatch Extension-Info.plist */,
-				034E37D8E0B852089BFBB112C504BF0E /* Pods-DogeChatWatch Extension-umbrella.h */,
-				C6801BEC8A05CF5EAEA928D70547849E /* Pods-DogeChatWatch Extension.debug.xcconfig */,
-				6C26CC9F6EFEF489D7F225CEEE2773CE /* Pods-DogeChatWatch Extension.release.xcconfig */,
-			);
-			name = "Pods-DogeChatWatch Extension";
-			path = "Target Support Files/Pods-DogeChatWatch Extension";
-			sourceTree = "<group>";
-		};
 		8751721445E6F68BBE50FD3EFEDC28F4 /* Starscream */ = {
 			isa = PBXGroup;
 			children = (
@@ -3063,60 +3101,6 @@
 			);
 			name = Starscream;
 			path = Starscream;
-			sourceTree = "<group>";
-		};
-		8A89477FE7C135B9AB133C540A334D4D /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				A4FA15D44DF6BAC7550EDEED10862AA3 /* AFNetworking */,
-				F8F3ED8EEDABC520A9D7C4646CE8C9C4 /* AFNetworking.root-NSURLSession-Security-Serialization */,
-				51347F8FB1BAB7E70C275E45A9516906 /* DACircularProgress */,
-				2908D41E51318E6DAD3ED9134E851513 /* DataCompression */,
-				550F6FE3E98138C03A90843C90EDA34E /* DogeChatCommonDefines-iOS */,
-				C17495BED3FC6D9DE81E1FC4233D6CE2 /* DogeChatCommonDefines-watchOS */,
-				18AD942223A5571BC435B5DF4457ADB6 /* DogeChatNetwork */,
-				FCA28DDD8C568CF811B304986B5CCE63 /* DogeChatUniversal-iOS */,
-				DE7A1E80E538882BC290836B8268B4F7 /* DogeChatUniversal-watchOS */,
-				609B33FB7AEB775195AF26403D7D7B38 /* DogeChatVideoUtil */,
-				FAA5F2D71B90788C908800A94534AA92 /* FLAnimatedImage */,
-				25664483ABF4DC8EC03E7472AA04333B /* LookinServer */,
-				1FFED36A657123030ABB700256D73F15 /* Masonry */,
-				E49D6D248DD1CEE584E6776B9164A1B2 /* MJRefresh */,
-				001B15E8F2F06E574D9DFBCB74DA299F /* Pods-DogeChat */,
-				5235E5A02170267DCC9C80B43EFC05F9 /* Pods-DogeChatShare */,
-				AB479B2F2709DCB0E98D1C4CE7DF2D67 /* Pods-DogeChatSiri */,
-				B38327ACE3AC609279EDDB5F703D8950 /* Pods-DogeChatWatch Extension */,
-				971654EFF77088DC30D016D37B0CDC08 /* Pods-mynotification */,
-				87E9377911347A35EDB6D63B6DD4B271 /* RSAiOSWatchOS-iOS */,
-				1E24C58E2A1EEE8DFC3F4DF9898FC3F8 /* RSAiOSWatchOS-watchOS */,
-				B0B214D775196BA7CA8E17E53048A493 /* SDWebImage */,
-				979486118B3E90C08386079D57962701 /* SnapKit */,
-				B9DCB5EC0B1CDADD221717CADDF62359 /* SnapKit-SnapKit_Privacy */,
-				891B2270823847ED23F2ECFC28F935EC /* Starscream */,
-				6F348CF3DF73CCBE882148B54AFDFDD5 /* SwiftyJSON-iOS */,
-				749D4F911D9251D5E6D1603C57F820D9 /* SwiftyJSON-watchOS */,
-				C7E5D8D5023A8B365BC248043DDC2F7A /* SwiftyRSA-iOS */,
-				736C200507D9707ADB80BAF1AA89B953 /* SwiftyRSA-watchOS */,
-				71762A728913EB440C97D3616D291AF3 /* YYText */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		8EC89720E8A01A9DBB0280E3418FA695 /* Pods-DogeChat */ = {
-			isa = PBXGroup;
-			children = (
-				4555A34000684884AE59777748ECB31A /* Pods-DogeChat.modulemap */,
-				2F9916B79BA8848CE755482B2FCC042C /* Pods-DogeChat-acknowledgements.markdown */,
-				7F3A8860AED40D314111837A93B9DF75 /* Pods-DogeChat-acknowledgements.plist */,
-				DEF953C3976CC8B1CFD81CB7ABE1E67E /* Pods-DogeChat-dummy.m */,
-				5B64AD63C3024BAC9C95C0D12D86C5A7 /* Pods-DogeChat-frameworks.sh */,
-				2F3A303BB9DE70F02530C9ABFD1A87C7 /* Pods-DogeChat-Info.plist */,
-				1AEFF40DE6A9BE0A5DCB742F384A5FEC /* Pods-DogeChat-umbrella.h */,
-				6BAEE6B1FA68DA58BA2C4B739A22843B /* Pods-DogeChat.debug.xcconfig */,
-				7A3AAD2BE6F369D8F9907A910E12BE89 /* Pods-DogeChat.release.xcconfig */,
-			);
-			name = "Pods-DogeChat";
-			path = "Target Support Files/Pods-DogeChat";
 			sourceTree = "<group>";
 		};
 		935167620AD31BC921AB5A99EC2E2EE6 /* Support Files */ = {
@@ -3201,18 +3185,6 @@
 			path = "../Target Support Files/Starscream";
 			sourceTree = "<group>";
 		};
-		A23A092A06DFDD12B29D0AE67AD48CCB /* Targets Support Files */ = {
-			isa = PBXGroup;
-			children = (
-				8EC89720E8A01A9DBB0280E3418FA695 /* Pods-DogeChat */,
-				22D69436EBF0C0BA9D34E559D573FEF6 /* Pods-DogeChatShare */,
-				C448D02DB3D2461D187FF1175E457BE5 /* Pods-DogeChatSiri */,
-				824649024D7CD5D33168FA6473DE2187 /* Pods-DogeChatWatch Extension */,
-				BB5716DD659E44D89DDCC4CCEB96D658 /* Pods-mynotification */,
-			);
-			name = "Targets Support Files";
-			sourceTree = "<group>";
-		};
 		AA34AEF438C6DE6E363C9FB49325E446 /* DogeChatUniversal */ = {
 			isa = PBXGroup;
 			children = (
@@ -3227,6 +3199,22 @@
 			);
 			name = DogeChatUniversal;
 			path = ../../DogeChatUniversal;
+			sourceTree = "<group>";
+		};
+		B118924A2E84C6CE998B4FF78C010D9E /* Pods-DogeChatShare */ = {
+			isa = PBXGroup;
+			children = (
+				1405BEF2B360E9901159E08FFFD7791E /* Pods-DogeChatShare.modulemap */,
+				2EB28BC2EBC1E80C3E426548D1F37AEA /* Pods-DogeChatShare-acknowledgements.markdown */,
+				D74E9E2A3DFB796DA02A9E3D17CFA6FF /* Pods-DogeChatShare-acknowledgements.plist */,
+				49774C505D58B222744DFF82CD2D201E /* Pods-DogeChatShare-dummy.m */,
+				6FA1C3CE04A8FF30F226BA83C92E3E93 /* Pods-DogeChatShare-Info.plist */,
+				375ADF36B867436841690609088C9F9C /* Pods-DogeChatShare-umbrella.h */,
+				870CD1F558CC17EF8637AF6C64628527 /* Pods-DogeChatShare.debug.xcconfig */,
+				38F1725F3C2404D6D3A7E779B69EA1F1 /* Pods-DogeChatShare.release.xcconfig */,
+			);
+			name = "Pods-DogeChatShare";
+			path = "Target Support Files/Pods-DogeChatShare";
 			sourceTree = "<group>";
 		};
 		B12B74B8D5FEE9FF428205562A2323C6 /* Support Files */ = {
@@ -3254,22 +3242,6 @@
 			path = FLAnimatedImage/include;
 			sourceTree = "<group>";
 		};
-		BB5716DD659E44D89DDCC4CCEB96D658 /* Pods-mynotification */ = {
-			isa = PBXGroup;
-			children = (
-				2CB4642A6F4133FA981607818BF00803 /* Pods-mynotification.modulemap */,
-				CC4A3AB55D9C98026BCE8AF3278815D2 /* Pods-mynotification-acknowledgements.markdown */,
-				5DA531A5D1DC8F8D2DA3C1E1BBE406CD /* Pods-mynotification-acknowledgements.plist */,
-				D1828053F5F4399A9F49D81AC7563A3F /* Pods-mynotification-dummy.m */,
-				73644E96FFB981E96E2C30B2079DD3E8 /* Pods-mynotification-Info.plist */,
-				1B48DC5B27E81659237128B9EFBEA5D0 /* Pods-mynotification-umbrella.h */,
-				EA62162690C018DB9B033A3311DAB562 /* Pods-mynotification.debug.xcconfig */,
-				E7A4B04DABD10AEA0011C0314D2A20DD /* Pods-mynotification.release.xcconfig */,
-			);
-			name = "Pods-mynotification";
-			path = "Target Support Files/Pods-mynotification";
-			sourceTree = "<group>";
-		};
 		C3B2E31B5EFC23E698B171E352A2BC42 /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
@@ -3283,22 +3255,6 @@
 			);
 			name = "Support Files";
 			path = "../Target Support Files/SDWebImage";
-			sourceTree = "<group>";
-		};
-		C448D02DB3D2461D187FF1175E457BE5 /* Pods-DogeChatSiri */ = {
-			isa = PBXGroup;
-			children = (
-				73706772F6FAA9F251268B05D1BE1F3D /* Pods-DogeChatSiri.modulemap */,
-				D97EB509A15C0E4B95F215EECA343994 /* Pods-DogeChatSiri-acknowledgements.markdown */,
-				AFF3083FBC473A9DEFEC4DCB23A1980D /* Pods-DogeChatSiri-acknowledgements.plist */,
-				3EDFB949A2BF0845F0B69CF963B55BF3 /* Pods-DogeChatSiri-dummy.m */,
-				E2920BB5AF687DD28792CE202701A2E0 /* Pods-DogeChatSiri-Info.plist */,
-				548F6FE1A835A0BB079B3A2D39C3A571 /* Pods-DogeChatSiri-umbrella.h */,
-				B9B260CEEF00BB2E3C167F4E5EA309F0 /* Pods-DogeChatSiri.debug.xcconfig */,
-				48F493A325C663AE715C04778F1F887B /* Pods-DogeChatSiri.release.xcconfig */,
-			);
-			name = "Pods-DogeChatSiri";
-			path = "Target Support Files/Pods-DogeChatSiri";
 			sourceTree = "<group>";
 		};
 		C5FD8B68EE14F51901D1DF34970B62FD /* watchOS */ = {
@@ -3374,8 +3330,8 @@
 				57C0B7A47EAC7818046A82D02E617E80 /* Development Pods */,
 				3EA66B4341BB0C54EBCE2DB529432955 /* Frameworks */,
 				373D6FA6616419B6F96E9C65655C4FBE /* Pods */,
-				8A89477FE7C135B9AB133C540A334D4D /* Products */,
-				A23A092A06DFDD12B29D0AE67AD48CCB /* Targets Support Files */,
+				740C7408902477715841875C0D29F6C0 /* Products */,
+				EB82218A2BC9FDD60AF21EBE2608796D /* Targets Support Files */,
 			);
 			sourceTree = "<group>";
 		};
@@ -3505,6 +3461,18 @@
 			name = Pod;
 			sourceTree = "<group>";
 		};
+		EB82218A2BC9FDD60AF21EBE2608796D /* Targets Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				584267BAF238C6FF262881F8F4E14900 /* Pods-DogeChat */,
+				B118924A2E84C6CE998B4FF78C010D9E /* Pods-DogeChatShare */,
+				F5063A7045EDC9047B51873645F7BA20 /* Pods-DogeChatSiri */,
+				47CF842D37508554726E597F9CFE5119 /* Pods-DogeChatWatch Watch App */,
+				F9DB1C33371F360E4030195CCA5571EE /* Pods-mynotification */,
+			);
+			name = "Targets Support Files";
+			sourceTree = "<group>";
+		};
 		EB924D046CDFF01C092680E8FF313E6B /* Support Files */ = {
 			isa = PBXGroup;
 			children = (
@@ -3542,6 +3510,22 @@
 			path = "../Target Support Files/AFNetworking";
 			sourceTree = "<group>";
 		};
+		F5063A7045EDC9047B51873645F7BA20 /* Pods-DogeChatSiri */ = {
+			isa = PBXGroup;
+			children = (
+				ECA44F419503C3F4BE262383825EBFB2 /* Pods-DogeChatSiri.modulemap */,
+				3114035F8A761919562D68557F5FD437 /* Pods-DogeChatSiri-acknowledgements.markdown */,
+				3D3427E3A8099DC32003F0D704859462 /* Pods-DogeChatSiri-acknowledgements.plist */,
+				4E52D625581C46636DE7AFD165749351 /* Pods-DogeChatSiri-dummy.m */,
+				278590504B01E7953D70BB1829805DA4 /* Pods-DogeChatSiri-Info.plist */,
+				0BB3D8B5B62EA24488CCD50486ECFFD1 /* Pods-DogeChatSiri-umbrella.h */,
+				8EFE8D954BDD01D6C1CAC543AA0DC72C /* Pods-DogeChatSiri.debug.xcconfig */,
+				EB5ECCB32C15D45C5EABEDADBDF2242F /* Pods-DogeChatSiri.release.xcconfig */,
+			);
+			name = "Pods-DogeChatSiri";
+			path = "Target Support Files/Pods-DogeChatSiri";
+			sourceTree = "<group>";
+		};
 		F80151DC076ACDF273098702A48E69B7 /* DataCompression */ = {
 			isa = PBXGroup;
 			children = (
@@ -3559,6 +3543,22 @@
 				1B4458DB67C98FB434989D6307D0E27F /* AFSecurityPolicy.m */,
 			);
 			name = Security;
+			sourceTree = "<group>";
+		};
+		F9DB1C33371F360E4030195CCA5571EE /* Pods-mynotification */ = {
+			isa = PBXGroup;
+			children = (
+				4D3C6C1F967425BE0778C3DA323A2B02 /* Pods-mynotification.modulemap */,
+				81DF5FF1D31EBAB826B0E29967E139C9 /* Pods-mynotification-acknowledgements.markdown */,
+				6A218543C57E9FA96CCDC997EC3BF86B /* Pods-mynotification-acknowledgements.plist */,
+				06797EFD55226C407D786F3EEF11C1EB /* Pods-mynotification-dummy.m */,
+				8545A5172FEBE4B5B30183EF90EFB76B /* Pods-mynotification-Info.plist */,
+				C77A8BF9B8B382C935C7A529A614FDC1 /* Pods-mynotification-umbrella.h */,
+				D3361271812299EB7CD74D7B5A004B94 /* Pods-mynotification.debug.xcconfig */,
+				982BDD319E39BD39039539F8723DDA66 /* Pods-mynotification.release.xcconfig */,
+			);
+			name = "Pods-mynotification";
+			path = "Target Support Files/Pods-mynotification";
 			sourceTree = "<group>";
 		};
 		FAD7F31DB7EB5BEB36371BDE6386F558 /* DogeChatVideoUtil */ = {
@@ -3628,6 +3628,14 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		4A2E008EDD795DDDC02D489E74D75229 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				6CBD9CFBD3B599FEFC3F4F63B56EDC22 /* Pods-DogeChatWatch Watch App-umbrella.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		5D546A87685B22925E8F02F832441D24 /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
@@ -3692,14 +3700,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				4EE92C014D05F6FD29354CB8B40AC164 /* Pods-DogeChatShare-umbrella.h in Headers */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		71AAD91AB4DAE5870C151C599071EB60 /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				58FB09FC3E0FD7E9626D101F5E7F1A19 /* Pods-DogeChatWatch Extension-umbrella.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4482,28 +4482,28 @@
 			productReference = 891B2270823847ED23F2ECFC28F935EC /* Starscream */;
 			productType = "com.apple.product-type.framework";
 		};
-		B1A383ED03B0D8745360213B4A3ABE90 /* Pods-DogeChatWatch Extension */ = {
+		A2EEB207B0BEA2170694B12104B85BB5 /* Pods-DogeChatWatch Watch App */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = C0F3C379C08745EE41B261F195D6F4D4 /* Build configuration list for PBXNativeTarget "Pods-DogeChatWatch Extension" */;
+			buildConfigurationList = 7D265430D067E5C47A80A8609D11795D /* Build configuration list for PBXNativeTarget "Pods-DogeChatWatch Watch App" */;
 			buildPhases = (
-				71AAD91AB4DAE5870C151C599071EB60 /* Headers */,
-				1DBFB62639B6528B9712AA83DEF13B68 /* Sources */,
-				AC6F2DE71899B9F8220BE6B4FDE04275 /* Frameworks */,
-				B61CB937CEB7943398244401E47B03F9 /* Resources */,
+				4A2E008EDD795DDDC02D489E74D75229 /* Headers */,
+				2B2B12420889D73E3FD3C733361E7BBA /* Sources */,
+				871DCDE18DEF3698B188DB5A69D070C8 /* Frameworks */,
+				2138148D63414522FAC4995F99212346 /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				D95A5C4768D2DFC0CF1A21147E28DF1E /* PBXTargetDependency */,
-				E29CA15BB3D16E28D3BB7E6ED876C6DA /* PBXTargetDependency */,
-				4BCCC0CBF128D2A60D8AC1C70C13A161 /* PBXTargetDependency */,
-				7867F2AC3D8507AEDA45B91FCF881E6A /* PBXTargetDependency */,
-				ED3D5E446BF371918A7610DBF6CB77CA /* PBXTargetDependency */,
-				B1ECC1C007AB97A75C79EE5BA66FCE42 /* PBXTargetDependency */,
+				D07795693F0BEF202709BF7ECC428B02 /* PBXTargetDependency */,
+				D1BF1ECBC5AB43CBC7C9E7451FEFAD45 /* PBXTargetDependency */,
+				DAF82479660FB86F7E246915087D3A95 /* PBXTargetDependency */,
+				45D15141D480F17201F1094AC3497F24 /* PBXTargetDependency */,
+				FB7206288F7F79070CD4BFC38672721D /* PBXTargetDependency */,
+				AB51769A91E6778F2871AC26FEAD96C6 /* PBXTargetDependency */,
 			);
-			name = "Pods-DogeChatWatch Extension";
-			productName = Pods_DogeChatWatch_Extension;
-			productReference = B38327ACE3AC609279EDDB5F703D8950 /* Pods-DogeChatWatch Extension */;
+			name = "Pods-DogeChatWatch Watch App";
+			productName = Pods_DogeChatWatch_Watch_App;
+			productReference = B53FCA6EC9DDE0FA6ED90BAF294B4DB3 /* Pods-DogeChatWatch Watch App */;
 			productType = "com.apple.product-type.framework";
 		};
 		BF0C6CD2E713DE257EF65C62E5F27D8A /* SwiftyJSON-iOS */ = {
@@ -4682,7 +4682,7 @@
 			);
 			mainGroup = CF1408CF629C7361332E53B88F7BD30C;
 			minimizedProjectReferenceProxies = 0;
-			productRefGroup = 8A89477FE7C135B9AB133C540A334D4D /* Products */;
+			productRefGroup = 740C7408902477715841875C0D29F6C0 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
@@ -4703,7 +4703,7 @@
 				5984D4EEF3A570B54CABA28854189FA7 /* Pods-DogeChat */,
 				7547A85B6835BCFF082A2D0B94C74929 /* Pods-DogeChatShare */,
 				CBCC475DD9E1F4436D7BC25266CEE10F /* Pods-DogeChatSiri */,
-				B1A383ED03B0D8745360213B4A3ABE90 /* Pods-DogeChatWatch Extension */,
+				A2EEB207B0BEA2170694B12104B85BB5 /* Pods-DogeChatWatch Watch App */,
 				CC52612A25A90673221009F1C39B11FF /* Pods-mynotification */,
 				6D322FEB11A16B73D4ED581AFD5F5385 /* RSAiOSWatchOS-iOS */,
 				0D1BB0EBE60B9D12378BC2AF7C0D062F /* RSAiOSWatchOS-watchOS */,
@@ -4743,6 +4743,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		1B73A9C48F498E8E31AA4893CB857211 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2138148D63414522FAC4995F99212346 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -4865,13 +4872,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		B0F7A5E6F96BFF35265EE5EB7864EC18 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		B61CB937CEB7943398244401E47B03F9 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -5021,14 +5021,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		1DBFB62639B6528B9712AA83DEF13B68 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				578CC9CC76052B070F257475C31784C2 /* Pods-DogeChatWatch Extension-dummy.m in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		1FBD6C2609374B6221972D5708078E5E /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -5122,6 +5114,14 @@
 				DE2727936DC41F69CE1DB90DDFBC4315 /* UIView+LookinServer.m in Sources */,
 				0898FEEC9E748D22B634B55D26C99BFB /* UIViewController+LookinServer.m in Sources */,
 				9D55456B061FC207A9318831B8BFA199 /* UIVisualEffectView+LookinServer.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		2B2B12420889D73E3FD3C733361E7BBA /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				E5F59629A1A17818CAE1A27FD44F60B6 /* Pods-DogeChatWatch Watch App-dummy.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -5609,17 +5609,17 @@
 			target = 9B78EE4AF6AE03E79D88886319853FF7 /* Starscream */;
 			targetProxy = 89BF6FF4172317391F4DEABE7AF43643 /* PBXContainerItemProxy */;
 		};
+		45D15141D480F17201F1094AC3497F24 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "RSAiOSWatchOS-watchOS";
+			target = 0D1BB0EBE60B9D12378BC2AF7C0D062F /* RSAiOSWatchOS-watchOS */;
+			targetProxy = 17921CAC8F57FD622ADDA7A424547C96 /* PBXContainerItemProxy */;
+		};
 		47F6F02EFCECB92767D30627C9CA245C /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = DataCompression;
 			target = F7D8BDE71DA27F3F798B5070A118A979 /* DataCompression */;
 			targetProxy = EFD96341C2F612C0919EADD330BF2EED /* PBXContainerItemProxy */;
-		};
-		4BCCC0CBF128D2A60D8AC1C70C13A161 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "DogeChatUniversal-watchOS";
-			target = D94F085D927C687C8950F0BFBCB97A6F /* DogeChatUniversal-watchOS */;
-			targetProxy = 98682FDD6450154BF4FD34A4583447FC /* PBXContainerItemProxy */;
 		};
 		4F024D8D34C69AC68617B234A1412B14 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -5662,12 +5662,6 @@
 			name = "SwiftyRSA-iOS";
 			target = 918DF6979E4DB460ED5FA774E6E2DB17 /* SwiftyRSA-iOS */;
 			targetProxy = 058EF6FAF2CCCCDE589DC54C5746FBF5 /* PBXContainerItemProxy */;
-		};
-		7867F2AC3D8507AEDA45B91FCF881E6A /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "RSAiOSWatchOS-watchOS";
-			target = 0D1BB0EBE60B9D12378BC2AF7C0D062F /* RSAiOSWatchOS-watchOS */;
-			targetProxy = 51CE1561C869A5A90C9CB53C87CC1931 /* PBXContainerItemProxy */;
 		};
 		7DC2B14B9DE7D33DCD42FCD9EE6CCB82 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -5729,6 +5723,12 @@
 			target = 7737959F044655E11A16E572A933F46D /* SwiftyJSON-watchOS */;
 			targetProxy = A866563AD2BCA2BF8FD592E462EB68F1 /* PBXContainerItemProxy */;
 		};
+		AB51769A91E6778F2871AC26FEAD96C6 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "SwiftyRSA-watchOS";
+			target = CA618B8C7A745F327CC6DAA2B60F6F83 /* SwiftyRSA-watchOS */;
+			targetProxy = FBFC064E4D337603AD57BE1256F9F2E7 /* PBXContainerItemProxy */;
+		};
 		AB70DEB93DEA44775D6DADC0DD0FFFA6 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = AFNetworking;
@@ -5752,12 +5752,6 @@
 			name = "DogeChatCommonDefines-iOS";
 			target = C650A1BAC55265B0D2C33A6353B4F626 /* DogeChatCommonDefines-iOS */;
 			targetProxy = 10A97BFDB386FBD1DBE8D7680BC676D2 /* PBXContainerItemProxy */;
-		};
-		B1ECC1C007AB97A75C79EE5BA66FCE42 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "SwiftyRSA-watchOS";
-			target = CA618B8C7A745F327CC6DAA2B60F6F83 /* SwiftyRSA-watchOS */;
-			targetProxy = FE6AC193617F909D6DE6A07A286C3E56 /* PBXContainerItemProxy */;
 		};
 		B50F3E78010A44B345F4C720DDE78232 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -5795,11 +5789,23 @@
 			target = 3847153A6E5EEFB86565BA840768F429 /* SDWebImage */;
 			targetProxy = 13BA0893AE201A314DD43B0D7E5D37F0 /* PBXContainerItemProxy */;
 		};
-		D95A5C4768D2DFC0CF1A21147E28DF1E /* PBXTargetDependency */ = {
+		D07795693F0BEF202709BF7ECC428B02 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = "AFNetworking.root-NSURLSession-Security-Serialization";
 			target = 47BBD34D08F2A2B3935EC26469C1649F /* AFNetworking.root-NSURLSession-Security-Serialization */;
-			targetProxy = CD27F51AD700BD28ED581BE856F1354C /* PBXContainerItemProxy */;
+			targetProxy = B03ED160DB6A4BE5B517AA273492AD18 /* PBXContainerItemProxy */;
+		};
+		D1BF1ECBC5AB43CBC7C9E7451FEFAD45 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "DogeChatCommonDefines-watchOS";
+			target = BFF49A01BD1202F9F4765B2E6A93BE6D /* DogeChatCommonDefines-watchOS */;
+			targetProxy = 3A851E50D09A6C0174EBAB67B8FD8C2C /* PBXContainerItemProxy */;
+		};
+		DAF82479660FB86F7E246915087D3A95 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "DogeChatUniversal-watchOS";
+			target = D94F085D927C687C8950F0BFBCB97A6F /* DogeChatUniversal-watchOS */;
+			targetProxy = 299FAB5844FFDC13D74E63DFB7779960 /* PBXContainerItemProxy */;
 		};
 		DCFF5E0C62D2A935B8EEBDA9EF16F259 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -5812,12 +5818,6 @@
 			name = "SwiftyJSON-iOS";
 			target = BF0C6CD2E713DE257EF65C62E5F27D8A /* SwiftyJSON-iOS */;
 			targetProxy = F7C1AA5AFA92F9F607B908AE16B7588E /* PBXContainerItemProxy */;
-		};
-		E29CA15BB3D16E28D3BB7E6ED876C6DA /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "DogeChatCommonDefines-watchOS";
-			target = BFF49A01BD1202F9F4765B2E6A93BE6D /* DogeChatCommonDefines-watchOS */;
-			targetProxy = B2280FDB57A96213CA972543A2B65F59 /* PBXContainerItemProxy */;
 		};
 		E2EE3D672BCCEB4FA08CE9F0BEDC0F42 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -5855,17 +5855,17 @@
 			target = 4A8E8992707D01510894596DB9BCCA00 /* FLAnimatedImage */;
 			targetProxy = BAF08A5A002838F04566023A72ADA8C3 /* PBXContainerItemProxy */;
 		};
-		ED3D5E446BF371918A7610DBF6CB77CA /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "SwiftyJSON-watchOS";
-			target = 7737959F044655E11A16E572A933F46D /* SwiftyJSON-watchOS */;
-			targetProxy = E1EED13F7BB19ADF487DB9583C9FEC67 /* PBXContainerItemProxy */;
-		};
 		EEC134386521E56D0C0842BE08FCC0D0 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = AFNetworking;
 			target = 0130B3724283586C0E9D2A112D4F2AA1 /* AFNetworking */;
 			targetProxy = F74051BA1334FCF9EFD9CED587470008 /* PBXContainerItemProxy */;
+		};
+		FB7206288F7F79070CD4BFC38672721D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "SwiftyJSON-watchOS";
+			target = 7737959F044655E11A16E572A933F46D /* SwiftyJSON-watchOS */;
+			targetProxy = 3B78293770E296E769709E8942C33837 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -6088,7 +6088,7 @@
 		};
 		135D2AF87D6EE30683B94650EF61E6F3 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = EA62162690C018DB9B033A3311DAB562 /* Pods-mynotification.debug.xcconfig */;
+			baseConfigurationReference = D3361271812299EB7CD74D7B5A004B94 /* Pods-mynotification.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				CLANG_ENABLE_OBJC_WEAK = NO;
@@ -6563,7 +6563,7 @@
 		};
 		4592CF5AF7328F452C0AE1E93CB46F5C /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = E7A4B04DABD10AEA0011C0314D2A20DD /* Pods-mynotification.release.xcconfig */;
+			baseConfigurationReference = 982BDD319E39BD39039539F8723DDA66 /* Pods-mynotification.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				CLANG_ENABLE_OBJC_WEAK = NO;
@@ -6836,7 +6836,7 @@
 		};
 		6024D40071C6D085BE8B9F998FD89CF0 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 86DDDC399286604156B048E0E6571569 /* Pods-DogeChatShare.release.xcconfig */;
+			baseConfigurationReference = 38F1725F3C2404D6D3A7E779B69EA1F1 /* Pods-DogeChatShare.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				CLANG_ENABLE_OBJC_WEAK = NO;
@@ -6960,6 +6960,45 @@
 			};
 			name = Debug;
 		};
+		66AE9D7CD985A08F2733C16C58F84A14 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 841BB888DB7362FA2BB95CEC817D1B5A /* Pods-DogeChatWatch Watch App.release.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = "Target Support Files/Pods-DogeChatWatch Watch App/Pods-DogeChatWatch Watch App-Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MACH_O_TYPE = staticlib;
+				MODULEMAP_FILE = "Target Support Files/Pods-DogeChatWatch Watch App/Pods-DogeChatWatch Watch App.modulemap";
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 4;
+				VALIDATE_PRODUCT = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+				WATCHOS_DEPLOYMENT_TARGET = 7.0;
+			};
+			name = Release;
+		};
 		6EB9B484D10C7EAD93375B0318A26218 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 167670C44E6C777EEB5345F5BF605E5C /* Masonry.debug.xcconfig */;
@@ -7064,45 +7103,6 @@
 			};
 			name = Debug;
 		};
-		76CDA3E2590F9DB567CEC87B8549BDBA /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = 6C26CC9F6EFEF489D7F225CEEE2773CE /* Pods-DogeChatWatch Extension.release.xcconfig */;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
-				APPLICATION_EXTENSION_API_ONLY = YES;
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				CURRENT_PROJECT_VERSION = 1;
-				DEFINES_MODULE = YES;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				INFOPLIST_FILE = "Target Support Files/Pods-DogeChatWatch Extension/Pods-DogeChatWatch Extension-Info.plist";
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
-				MACH_O_TYPE = staticlib;
-				MODULEMAP_FILE = "Target Support Files/Pods-DogeChatWatch Extension/Pods-DogeChatWatch Extension.modulemap";
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PODS_ROOT = "$(SRCROOT)";
-				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
-				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
-				SDKROOT = watchos;
-				SKIP_INSTALL = YES;
-				TARGETED_DEVICE_FAMILY = 4;
-				VALIDATE_PRODUCT = YES;
-				VERSIONING_SYSTEM = "apple-generic";
-				VERSION_INFO_PREFIX = "";
-				WATCHOS_DEPLOYMENT_TARGET = 7.0;
-			};
-			name = Release;
-		};
 		81756F942BFCDCC2DAE7B0B0BCABE454 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 7B080CBE9DA0FE5CE14BC4E7B295B16D /* RSAiOSWatchOS-watchOS.debug.xcconfig */;
@@ -7141,7 +7141,7 @@
 		};
 		85A7F31B4F77030438ADEE325122AC9D /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 4236A5BC44AE18F66EA7AC1CCB432670 /* Pods-DogeChatShare.debug.xcconfig */;
+			baseConfigurationReference = 870CD1F558CC17EF8637AF6C64628527 /* Pods-DogeChatShare.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				CLANG_ENABLE_OBJC_WEAK = NO;
@@ -7215,7 +7215,7 @@
 		};
 		8CAEBD74E0F1F58DD0DC3A524F7E6643 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = B9B260CEEF00BB2E3C167F4E5EA309F0 /* Pods-DogeChatSiri.debug.xcconfig */;
+			baseConfigurationReference = 8EFE8D954BDD01D6C1CAC543AA0DC72C /* Pods-DogeChatSiri.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				CLANG_ENABLE_OBJC_WEAK = NO;
@@ -7322,7 +7322,7 @@
 		};
 		9491911EA36221E7B0B688CDB51B4981 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 48F493A325C663AE715C04778F1F887B /* Pods-DogeChatSiri.release.xcconfig */;
+			baseConfigurationReference = EB5ECCB32C15D45C5EABEDADBDF2242F /* Pods-DogeChatSiri.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				CLANG_ENABLE_OBJC_WEAK = NO;
@@ -7396,7 +7396,7 @@
 		};
 		988F5351F35D5A78EB675F9FFBB54F74 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 7A3AAD2BE6F369D8F9907A910E12BE89 /* Pods-DogeChat.release.xcconfig */;
+			baseConfigurationReference = 84C94CF27FD2325F9BBAE1C95458B011 /* Pods-DogeChat.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				CLANG_ENABLE_OBJC_WEAK = NO;
@@ -7505,7 +7505,7 @@
 		};
 		A7AE5F1A8DB40397157E371B2849EABE /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = 6BAEE6B1FA68DA58BA2C4B739A22843B /* Pods-DogeChat.debug.xcconfig */;
+			baseConfigurationReference = 7502018CAA7736A9896A076A4E081E0E /* Pods-DogeChat.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
 				CLANG_ENABLE_OBJC_WEAK = NO;
@@ -7571,6 +7571,44 @@
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		ACB70762EDD4EA84C0D89165C1EA492E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = E087737DC8BD446134ECADD46360A3E5 /* Pods-DogeChatWatch Watch App.debug.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
+				APPLICATION_EXTENSION_API_ONLY = YES;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = "Target Support Files/Pods-DogeChatWatch Watch App/Pods-DogeChatWatch Watch App-Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MACH_O_TYPE = staticlib;
+				MODULEMAP_FILE = "Target Support Files/Pods-DogeChatWatch Watch App/Pods-DogeChatWatch Watch App.modulemap";
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = 4;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+				WATCHOS_DEPLOYMENT_TARGET = 7.0;
 			};
 			name = Debug;
 		};
@@ -7641,44 +7679,6 @@
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
-			};
-			name = Debug;
-		};
-		B6FB6E28D850AF2F735B5826BBA360D2 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = C6801BEC8A05CF5EAEA928D70547849E /* Pods-DogeChatWatch Extension.debug.xcconfig */;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
-				APPLICATION_EXTENSION_API_ONLY = YES;
-				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
-				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
-				CURRENT_PROJECT_VERSION = 1;
-				DEFINES_MODULE = YES;
-				DYLIB_COMPATIBILITY_VERSION = 1;
-				DYLIB_CURRENT_VERSION = 1;
-				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				INFOPLIST_FILE = "Target Support Files/Pods-DogeChatWatch Extension/Pods-DogeChatWatch Extension-Info.plist";
-				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
-				MACH_O_TYPE = staticlib;
-				MODULEMAP_FILE = "Target Support Files/Pods-DogeChatWatch Extension/Pods-DogeChatWatch Extension.modulemap";
-				OTHER_LDFLAGS = "";
-				OTHER_LIBTOOLFLAGS = "";
-				PODS_ROOT = "$(SRCROOT)";
-				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
-				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
-				SDKROOT = watchos;
-				SKIP_INSTALL = YES;
-				TARGETED_DEVICE_FAMILY = 4;
-				VERSIONING_SYSTEM = "apple-generic";
-				VERSION_INFO_PREFIX = "";
-				WATCHOS_DEPLOYMENT_TARGET = 7.0;
 			};
 			name = Debug;
 		};
@@ -8263,6 +8263,15 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
+		7D265430D067E5C47A80A8609D11795D /* Build configuration list for PBXNativeTarget "Pods-DogeChatWatch Watch App" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				ACB70762EDD4EA84C0D89165C1EA492E /* Debug */,
+				66AE9D7CD985A08F2733C16C58F84A14 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		80C9657E837451069418F7856BB0F44D /* Build configuration list for PBXNativeTarget "RSAiOSWatchOS-watchOS" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -8322,15 +8331,6 @@
 			buildConfigurations = (
 				BCF74983158D14CE83361FAD71B76900 /* Debug */,
 				D1AAD98B8C9C5BCE1B8F25C4DD36DFBC /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		C0F3C379C08745EE41B261F195D6F4D4 /* Build configuration list for PBXNativeTarget "Pods-DogeChatWatch Extension" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				B6FB6E28D850AF2F735B5826BBA360D2 /* Debug */,
-				76CDA3E2590F9DB567CEC87B8549BDBA /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

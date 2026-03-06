@@ -35,7 +35,7 @@
 			<key>isShown</key>
 			<true/>
 			<key>orderHint</key>
-			<integer>42</integer>
+			<integer>11</integer>
 		</dict>
 		<key>DogeChatSiri.xcscheme_^#shared#^_</key>
 		<dict>
@@ -76,7 +76,7 @@
 		<key>DogeChatWatch.xcscheme_^#shared#^_</key>
 		<dict>
 			<key>isShown</key>
-			<true/>
+			<false/>
 			<key>orderHint</key>
 			<integer>5</integer>
 		</dict>

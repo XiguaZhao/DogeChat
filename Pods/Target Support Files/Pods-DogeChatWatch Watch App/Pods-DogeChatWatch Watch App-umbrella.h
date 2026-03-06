@@ -11,6 +11,6 @@
 #endif
 
 
-FOUNDATION_EXPORT double Pods_DogeChatWatch_ExtensionVersionNumber;
-FOUNDATION_EXPORT const unsigned char Pods_DogeChatWatch_ExtensionVersionString[];
+FOUNDATION_EXPORT double Pods_DogeChatWatch_Watch_AppVersionNumber;
+FOUNDATION_EXPORT const unsigned char Pods_DogeChatWatch_Watch_AppVersionString[];
 

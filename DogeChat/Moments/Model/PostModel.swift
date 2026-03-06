@@ -9,27 +9,53 @@
 import Foundation
 import DogeChatCommonDefines
 
-struct PostModel {
-    
-    struct Location {
-        let latitude: Double
-        let longitude: Double
-    }
+struct PostMedia: Codable, Equatable {
+	enum MediaType: Int, Codable {
+		case image = 1
+		case video = 2
+	}
+	var mediaId: String?
+	var mediaType: MediaType
+	var mediaUrl: String
+	var thumbnailUrl: String?
+	var width: Int?
+	var height: Int?
+	var duration: Int?
+}
 
-    struct PostImage {
-        let imageURL: String?
-        let videoURL: String?
-    }
-    
-    struct PostComment {
-        let text: String
-        let image: String
-    }
-    
-    let images: [PostImage]?
-    let drawURL: NSString?
-    let tracks: [Track]?
-    let location: Location?
-    let comments: [PostComment]
+struct PostComment: Codable, Equatable {
+	var commentId: String?
+	var userId: String
+	var username: String
+	var content: String
+	var createdTime: String?
+	var replyToUserId: String?
+	var replyToUsername: String?
+	var replyToCommentId: String?
+}
+
+struct LikeUser: Codable, Equatable {
+	var avatarUrl: String?
+	var username: String
+	var userId: String
+}
+
+struct PostModel: Codable, Equatable {
+	var momentId: String
+	var userId: String
+	var username: String
+	var avatarUrl: String?
+	var content: String
+	var location: String?
+	var visibility: Int = 0
+	var createdTime: String?
+	var mediaList: [PostMedia] = []
+	var comments: [PostComment] = []
+	var likeUsers: [LikeUser] = []
+	// explicit state tracked locally for quick UI toggles
+	var isLiked: Bool = false
+    let isMine: Bool
+	var likeCount: Int { likeUsers.count }
+	var commentCount: Int { comments.count }
 }
 

@@ -1,0 +1,6 @@
+framework module Pods_DogeChatWatch_Watch_App {
+  umbrella header "Pods-DogeChatWatch Watch App-umbrella.h"
+
+  export *
+  module * { export * }
+}
