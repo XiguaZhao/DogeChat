@@ -84,6 +84,10 @@ extension MomentsVC: UITableViewDataSource, UITableViewDelegate {
         cell.delegate = self
         return cell
     }
+    
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        (cell as? MomentsPostCell)?.willDisplay()
+    }
 
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         checkLoadMoreIfNeeded()

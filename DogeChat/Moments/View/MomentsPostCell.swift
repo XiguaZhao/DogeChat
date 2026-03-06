@@ -22,6 +22,18 @@ private class AutoSizingTableView: UITableView {
 	}
 }
 
+// Auto-sizing collection view that exposes its contentSize as an intrinsic content size
+private class AutoSizingCollectionView: UICollectionView {
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        invalidateIntrinsicContentSize()
+    }
+
+    override var intrinsicContentSize: CGSize {
+        return CGSize(width: UIView.noIntrinsicMetric, height: contentSize.height)
+    }
+}
+
 protocol MomentsPostCellDelegate: AnyObject {
 	func momentsPostCell(_ cell: MomentsPostCell, didTapLikeFor momentId: String)
 	func momentsPostCell(_ cell: MomentsPostCell, didTapCommentFor momentId: String)
@@ -56,6 +68,38 @@ extension MomentsPostCell: UITableViewDataSource, UITableViewDelegate {
 		delegate?.momentsPostCell(self, didTapComment: comment, inMomentId: momentId)
 	}
 
+}
+
+// MARK: - Images collection datasource/delegate
+extension MomentsPostCell: UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
+	func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+		return imageUrls.count
+	}
+
+	func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+		guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ImageGridCell.reuseIdentifier, for: indexPath) as? ImageGridCell else {
+			return UICollectionViewCell()
+		}
+		let url = imageUrls[indexPath.item]
+		loadImage(url: url, into: cell.iv)
+		return cell
+	}
+
+	func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+		guard let post = post, let cell = collectionView.cellForItem(at: indexPath) as? ImageGridCell else { return }
+		delegate?.momentsPostCell(self, didTapImageAt: indexPath.item, forMomentId: post.momentId, imageView: cell.iv)
+	}
+
+	func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+		let perRow: CGFloat = 3
+		let layout = collectionViewLayout as? UICollectionViewFlowLayout
+		let inter = layout?.minimumInteritemSpacing ?? 6
+		let totalInter = inter * (perRow - 1)
+		let width = collectionView.bounds.width
+		if width <= 0 { return CGSize(width: 100, height: 100) }
+		let itemWidth = floor((width - totalInter) / perRow)
+		return CGSize(width: itemWidth, height: itemWidth)
+	}
 }
 
 // MARK: - CommentCell long press forwarding
@@ -124,13 +168,20 @@ class MomentsPostCell: DogeChatTableViewCell {
 		return l
 	}()
 
-	private let imagesContainer: UIStackView = {
-		let sv = UIStackView()
-		sv.axis = .vertical
-		sv.spacing = 6
-		sv.translatesAutoresizingMaskIntoConstraints = false
-		return sv
+	private var imageUrls: [String] = []
+
+	private lazy var imagesCollectionView: AutoSizingCollectionView = {
+		let layout = UICollectionViewFlowLayout()
+		layout.scrollDirection = .vertical
+		layout.minimumInteritemSpacing = 6
+		layout.minimumLineSpacing = 6
+		let cv = AutoSizingCollectionView(frame: .zero, collectionViewLayout: layout)
+		cv.translatesAutoresizingMaskIntoConstraints = false
+		cv.backgroundColor = .clear
+		cv.isScrollEnabled = false
+		return cv
 	}()
+
 
 	// embedded comments table (auto-sizing)
 	private let commentsTable: AutoSizingTableView = {
@@ -212,7 +263,31 @@ class MomentsPostCell: DogeChatTableViewCell {
 		return b
 	}()
 
-	private var imageViews: [UIImageView] = []
+	// old imageViews replaced by collection view
+
+	// Image grid cell
+	private class ImageGridCell: UICollectionViewCell {
+		static let reuseIdentifier = "ImageGridCell"
+		let iv: UIImageView = {
+			let v = UIImageView()
+			v.contentMode = .scaleAspectFill
+			v.clipsToBounds = true
+			v.layer.cornerRadius = 6
+			v.translatesAutoresizingMaskIntoConstraints = false
+			return v
+		}()
+		override init(frame: CGRect) {
+			super.init(frame: frame)
+			contentView.addSubview(iv)
+			NSLayoutConstraint.activate([
+				iv.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+				iv.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+				iv.topAnchor.constraint(equalTo: contentView.topAnchor),
+				iv.bottomAnchor.constraint(equalTo: contentView.bottomAnchor)
+			])
+		}
+		required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+	}
 
 	private var likeAvatarViews: [UIImageView] = []
 
@@ -227,7 +302,7 @@ class MomentsPostCell: DogeChatTableViewCell {
 		cardView.addSubview(timeLabel)
 		cardView.addSubview(contentLabel)
 		cardView.addSubview(locationLabel)
-		cardView.addSubview(imagesContainer)
+		cardView.addSubview(imagesCollectionView)
 		cardView.addSubview(toolbar)
 		cardView.addSubview(likesContainer)
 		cardView.addSubview(commentsTable)
@@ -269,12 +344,12 @@ class MomentsPostCell: DogeChatTableViewCell {
 			contentLabel.topAnchor.constraint(equalTo: avatarView.bottomAnchor, constant: 10),
 			contentLabel.trailingAnchor.constraint(equalTo: cardView.trailingAnchor, constant: -12),
 
-			imagesContainer.leadingAnchor.constraint(equalTo: contentLabel.leadingAnchor),
-			imagesContainer.trailingAnchor.constraint(equalTo: contentLabel.trailingAnchor),
-			imagesContainer.topAnchor.constraint(equalTo: contentLabel.bottomAnchor, constant: 8),
+			imagesCollectionView.leadingAnchor.constraint(equalTo: contentLabel.leadingAnchor),
+			imagesCollectionView.trailingAnchor.constraint(equalTo: contentLabel.trailingAnchor),
+			imagesCollectionView.topAnchor.constraint(equalTo: contentLabel.bottomAnchor, constant: 8),
 
 			locationLabel.leadingAnchor.constraint(equalTo: contentLabel.leadingAnchor),
-			locationLabel.topAnchor.constraint(equalTo: imagesContainer.bottomAnchor, constant: 6),
+			locationLabel.topAnchor.constraint(equalTo: imagesCollectionView.bottomAnchor, constant: 6),
 
 			toolbar.leadingAnchor.constraint(equalTo: contentLabel.leadingAnchor),
 			toolbar.trailingAnchor.constraint(equalTo: contentLabel.trailingAnchor),
@@ -291,6 +366,11 @@ class MomentsPostCell: DogeChatTableViewCell {
 			commentsTable.trailingAnchor.constraint(equalTo: contentLabel.trailingAnchor),
 			commentsTable.bottomAnchor.constraint(equalTo: cardView.bottomAnchor, constant: -12)
 		])
+
+			// collection view setup
+			imagesCollectionView.dataSource = self
+			imagesCollectionView.delegate = self
+			imagesCollectionView.register(ImageGridCell.self, forCellWithReuseIdentifier: ImageGridCell.reuseIdentifier)
 
 	}
 
@@ -329,6 +409,29 @@ class MomentsPostCell: DogeChatTableViewCell {
 		// ensure container relayout
 		self.setNeedsLayout()
 		self.layoutIfNeeded()
+	}
+    
+	func willDisplay() {
+		imagesCollectionView.reloadData()
+		imagesCollectionView.collectionViewLayout.invalidateLayout()
+		imagesCollectionView.layoutIfNeeded()
+		imagesCollectionView.invalidateIntrinsicContentSize()
+	}
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+    }
+
+	private func updateImagesCollectionHeight() {
+		// Use auto-sizing collection view intrinsicContentSize instead of manual constraint.
+		if imageUrls.isEmpty {
+			imagesCollectionView.isHidden = true
+		} else {
+			imagesCollectionView.isHidden = false
+		}
+		imagesCollectionView.collectionViewLayout.invalidateLayout()
+		imagesCollectionView.layoutIfNeeded()
+		imagesCollectionView.invalidateIntrinsicContentSize()
 	}
 
 	private func setupLikes(_ likes: [LikeUser]) {
@@ -389,46 +492,12 @@ class MomentsPostCell: DogeChatTableViewCell {
 		spacer.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
 		likesContainer.addArrangedSubview(spacer)
 	}
-
 	private func setupImages(_ medias: [PostMedia]) {
-		// clear
-		imageViews.forEach { $0.removeFromSuperview() }
-		imageViews = []
-		imagesContainer.arrangedSubviews.forEach { $0.removeFromSuperview() }
-
-		guard !medias.isEmpty else {
-			imagesContainer.isHidden = true
-			return
-		}
-		imagesContainer.isHidden = false
-
-		// create rows with up to 3 per row
-		let perRow = 3
-		var rowStack: UIStackView?
-		for (i, media) in medias.enumerated() {
-			if i % perRow == 0 {
-				rowStack = UIStackView()
-				rowStack?.axis = .horizontal
-				rowStack?.distribution = .fillEqually
-				rowStack?.spacing = 6
-				rowStack?.translatesAutoresizingMaskIntoConstraints = false
-					imagesContainer.addArrangedSubview(rowStack!)
-					// fixed row height so container height is deterministic
-					rowStack?.heightAnchor.constraint(equalToConstant: 100).isActive = true
-			}
-			let iv = UIImageView()
-			iv.contentMode = .scaleAspectFill
-			iv.clipsToBounds = true
-			iv.layer.cornerRadius = 6
-			iv.backgroundColor = .secondarySystemBackground
-            loadImage(url: media.mediaUrl, into: iv)
-			iv.isUserInteractionEnabled = true
-			iv.tag = i
-			let tap = UITapGestureRecognizer(target: self, action: #selector(imageTapped(_:)))
-			iv.addGestureRecognizer(tap)
-			imageViews.append(iv)
-			rowStack?.addArrangedSubview(iv)
-		}
+		imageUrls = medias.map { $0.mediaUrl }
+		imagesCollectionView.reloadData()
+		// ensure layout is updated before computing height
+		imagesCollectionView.layoutIfNeeded()
+		updateImagesCollectionHeight()
 	}
 
 	private func loadImage(url: String, into iv: UIImageView) {
