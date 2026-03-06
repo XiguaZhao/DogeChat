@@ -277,7 +277,8 @@ extension MomentsVC: MomentsPostCellDelegate {
                         let newComment = PostComment(commentId: nil, userId: http.accountInfo.userID ?? "", username: http.accountInfo.username, content: text, createdTime: nil, replyToUserId: comment.userId, replyToUsername: comment.username, replyToCommentId: comment.commentId)
                         updated.comments.append(newComment)
                         self.posts[idx] = updated
-                        DispatchQueue.main.async { self.tableView.reloadSections(IndexSet(integer: idx), with: .automatic) }
+                        DispatchQueue.main.async { self.tableView.reloadData()
+                        }
                     }
                 }
             }
