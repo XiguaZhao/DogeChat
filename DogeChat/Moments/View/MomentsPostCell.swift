@@ -143,6 +143,7 @@ class MomentsPostCell: DogeChatTableViewCell {
 		iv.layer.cornerRadius = 20
 		iv.clipsToBounds = true
 		iv.backgroundColor = .tertiarySystemFill
+        iv.contentMode = .scaleAspectFill
 		iv.translatesAutoresizingMaskIntoConstraints = false
 		return iv
 	}()
@@ -360,7 +361,7 @@ class MomentsPostCell: DogeChatTableViewCell {
 
         headerRowStack.addArrangedSubview(avatarView)
         headerRowStack.addArrangedSubview(headerStack)
-        // assemble main vertical stack
+		// assemble main vertical stack
         mainStack.addArrangedSubview(headerRowStack)
         mainStack.addArrangedSubview(contentLabel)
         mainStack.addArrangedSubview(imagesCollectionView)
@@ -371,6 +372,12 @@ class MomentsPostCell: DogeChatTableViewCell {
         cardView.addSubview(mainStack)
 
 		// likesContainer will be populated per-like with (avatar + name) stacks in setupLikes
+
+		toolbar.addArrangedSubview(likeLabel)
+		toolbar.addArrangedSubview(commentLabel)
+		toolbar.addArrangedSubview(UIView())
+		toolbar.addArrangedSubview(likeButton)
+		toolbar.addArrangedSubview(commentButton)
 
 		likeButton.addTarget(self, action: #selector(likeTapped), for: .touchUpInside)
 		commentButton.addTarget(self, action: #selector(commentTapped), for: .touchUpInside)
@@ -385,7 +392,15 @@ class MomentsPostCell: DogeChatTableViewCell {
 			cardView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8),
 			cardView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -8),
 
-            
+			// main stack fills card with inner padding
+			mainStack.leadingAnchor.constraint(equalTo: cardView.leadingAnchor, constant: 12),
+			mainStack.trailingAnchor.constraint(equalTo: cardView.trailingAnchor, constant: -12),
+			mainStack.topAnchor.constraint(equalTo: cardView.topAnchor, constant: 12),
+			mainStack.bottomAnchor.constraint(equalTo: cardView.bottomAnchor, constant: -12),
+
+			// avatar fixed size
+			avatarView.widthAnchor.constraint(equalToConstant: 40),
+			avatarView.heightAnchor.constraint(equalToConstant: 40),
 		])
 
 			// collection view setup
@@ -429,18 +444,17 @@ class MomentsPostCell: DogeChatTableViewCell {
 		setupLikes(post.likeUsers)
 
 		// reload comments and let the auto-sizing table update its intrinsic content size
-		commentsTable.reloadData()
-		commentsTable.invalidateIntrinsicContentSize()
-		// ensure container relayout
-		self.setNeedsLayout()
-		self.layoutIfNeeded()
+        commentsTable.reloadData()
+        imagesCollectionView.reloadData()
 	}
     
 	func willDisplay() {
-		imagesCollectionView.reloadData()
-		imagesCollectionView.collectionViewLayout.invalidateLayout()
-		imagesCollectionView.layoutIfNeeded()
-		imagesCollectionView.invalidateIntrinsicContentSize()
+        commentsTable.invalidateIntrinsicContentSize()
+        
+        imagesCollectionView.invalidateIntrinsicContentSize()
+        // ensure container relayout
+        self.setNeedsLayout()
+        self.layoutIfNeeded()
 	}
     
     override func prepareForReuse() {
@@ -454,9 +468,6 @@ class MomentsPostCell: DogeChatTableViewCell {
 		} else {
 			imagesCollectionView.isHidden = false
 		}
-		imagesCollectionView.collectionViewLayout.invalidateLayout()
-		imagesCollectionView.layoutIfNeeded()
-		imagesCollectionView.invalidateIntrinsicContentSize()
 	}
 
 	private func setupLikes(_ likes: [LikeUser]) {
