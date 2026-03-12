@@ -52,6 +52,8 @@ struct PostModel: Codable, Equatable {
 	var mediaList: [PostMedia] = []
 	var comments: [PostComment] = []
 	var likeUsers: [LikeUser] = []
+	// whether current user is mentioned in this post (remindWho or comments)
+	var isMentionedMe: Bool = false
 	// explicit state tracked locally for quick UI toggles
 	var isLiked: Bool = false
     let isMine: Bool

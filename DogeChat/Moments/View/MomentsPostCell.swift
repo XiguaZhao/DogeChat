@@ -91,6 +91,7 @@ extension MomentsPostCell: UICollectionViewDataSource, UICollectionViewDelegate,
 	}
 
 	func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+			// assemble header row (avatar + name/mention/time)
 		let perRow: CGFloat = 3
 		let layout = collectionViewLayout as? UICollectionViewFlowLayout
 		let inter = layout?.minimumInteritemSpacing ?? 6
@@ -117,9 +118,18 @@ class MomentsPostCell: DogeChatTableViewCell {
 	weak var delegate: MomentsPostCellDelegate?
     var post: PostModel?
 
+    private let headerRowStack: UIStackView = {
+        let sv = UIStackView()
+        sv.axis = .horizontal
+        sv.spacing = 10
+        sv.alignment = .center
+        sv.translatesAutoresizingMaskIntoConstraints = false
+        return sv
+    }()
+
 	private let cardView: UIView = {
 		let v = UIView()
-		v.backgroundColor = .systemBackground
+        v.backgroundColor = .init(white: 1, alpha: 0.1)
 		v.layer.cornerRadius = 10
 		v.layer.shadowColor = UIColor.black.withAlphaComponent(0.06).cgColor
 		v.layer.shadowOffset = CGSize(width: 0, height: 1)
@@ -142,6 +152,37 @@ class MomentsPostCell: DogeChatTableViewCell {
 		l.font = UIFont.boldSystemFont(ofSize: 15)
 		l.translatesAutoresizingMaskIntoConstraints = false
 		return l
+	}()
+
+	private let mentionLabel: UILabel = {
+		let l = UILabel()
+		l.font = UIFont.systemFont(ofSize: 12)
+		l.textColor = .systemRed
+		l.backgroundColor = UIColor.systemYellow.withAlphaComponent(0.15)
+		l.layer.cornerRadius = 4
+		l.clipsToBounds = true
+		l.text = NSLocalizedString("Mentioned you", comment: "")
+		l.translatesAutoresizingMaskIntoConstraints = false
+		l.isHidden = true
+		return l
+	}()
+
+	private let nameMentionStack: UIStackView = {
+		let sv = UIStackView()
+		sv.axis = .horizontal
+		sv.spacing = 6
+		sv.alignment = .center
+		sv.translatesAutoresizingMaskIntoConstraints = false
+		return sv
+	}()
+
+	private let headerStack: UIStackView = {
+		let sv = UIStackView()
+		sv.axis = .vertical
+		sv.spacing = 2
+		sv.alignment = .leading
+		sv.translatesAutoresizingMaskIntoConstraints = false
+		return sv
 	}()
 
 	private let timeLabel: UILabel = {
@@ -258,7 +299,7 @@ class MomentsPostCell: DogeChatTableViewCell {
 
 	private let commentButton: UIButton = {
 		let b = UIButton(type: .system)
-		b.setTitle(NSLocalizedString("Comment", comment: ""), for: .normal)
+		b.setTitle(NSLocalizedString("✍️", comment: ""), for: .normal)
 		b.translatesAutoresizingMaskIntoConstraints = false
 		return b
 	}()
@@ -287,31 +328,47 @@ class MomentsPostCell: DogeChatTableViewCell {
 			])
 		}
 		required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+        
+        override func prepareForReuse() {
+            super.prepareForReuse()
+            iv.image = nil
+        }
 	}
 
 	private var likeAvatarViews: [UIImageView] = []
+
+    private let mainStack: UIStackView = {
+        let sv = UIStackView()
+        sv.axis = .vertical
+        sv.spacing = 8
+        sv.alignment = .fill
+        sv.translatesAutoresizingMaskIntoConstraints = false
+        return sv
+    }()
 
 	override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
 		super.init(style: style, reuseIdentifier: reuseIdentifier)
 		selectionStyle = .none
 		contentView.backgroundColor = .clear
 		contentView.addSubview(cardView)
+        
+        nameMentionStack.addArrangedSubview(nameLabel)
+        nameMentionStack.addArrangedSubview(mentionLabel)
+                
+        headerStack.addArrangedSubview(nameMentionStack)
+        headerStack.addArrangedSubview(timeLabel)
 
-		cardView.addSubview(avatarView)
-		cardView.addSubview(nameLabel)
-		cardView.addSubview(timeLabel)
-		cardView.addSubview(contentLabel)
-		cardView.addSubview(locationLabel)
-		cardView.addSubview(imagesCollectionView)
-		cardView.addSubview(toolbar)
-		cardView.addSubview(likesContainer)
-		cardView.addSubview(commentsTable)
-
-		toolbar.addArrangedSubview(likeLabel)
-		toolbar.addArrangedSubview(commentLabel)
-		toolbar.addArrangedSubview(UIView())
-		toolbar.addArrangedSubview(likeButton)
-		toolbar.addArrangedSubview(commentButton)
+        headerRowStack.addArrangedSubview(avatarView)
+        headerRowStack.addArrangedSubview(headerStack)
+        // assemble main vertical stack
+        mainStack.addArrangedSubview(headerRowStack)
+        mainStack.addArrangedSubview(contentLabel)
+        mainStack.addArrangedSubview(imagesCollectionView)
+        mainStack.addArrangedSubview(locationLabel)
+        mainStack.addArrangedSubview(toolbar)
+        mainStack.addArrangedSubview(likesContainer)
+        mainStack.addArrangedSubview(commentsTable)
+        cardView.addSubview(mainStack)
 
 		// likesContainer will be populated per-like with (avatar + name) stacks in setupLikes
 
@@ -328,49 +385,15 @@ class MomentsPostCell: DogeChatTableViewCell {
 			cardView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8),
 			cardView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -8),
 
-			avatarView.leadingAnchor.constraint(equalTo: cardView.leadingAnchor, constant: 12),
-			avatarView.topAnchor.constraint(equalTo: cardView.topAnchor, constant: 12),
-			avatarView.widthAnchor.constraint(equalToConstant: 40),
-			avatarView.heightAnchor.constraint(equalToConstant: 40),
-
-			nameLabel.leadingAnchor.constraint(equalTo: avatarView.trailingAnchor, constant: 10),
-			nameLabel.topAnchor.constraint(equalTo: avatarView.topAnchor),
-			nameLabel.trailingAnchor.constraint(equalTo: cardView.trailingAnchor, constant: -12),
-
-			timeLabel.leadingAnchor.constraint(equalTo: nameLabel.leadingAnchor),
-			timeLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 2),
-
-			contentLabel.leadingAnchor.constraint(equalTo: avatarView.leadingAnchor),
-			contentLabel.topAnchor.constraint(equalTo: avatarView.bottomAnchor, constant: 10),
-			contentLabel.trailingAnchor.constraint(equalTo: cardView.trailingAnchor, constant: -12),
-
-			imagesCollectionView.leadingAnchor.constraint(equalTo: contentLabel.leadingAnchor),
-			imagesCollectionView.trailingAnchor.constraint(equalTo: contentLabel.trailingAnchor),
-			imagesCollectionView.topAnchor.constraint(equalTo: contentLabel.bottomAnchor, constant: 8),
-
-			locationLabel.leadingAnchor.constraint(equalTo: contentLabel.leadingAnchor),
-			locationLabel.topAnchor.constraint(equalTo: imagesCollectionView.bottomAnchor, constant: 6),
-
-			toolbar.leadingAnchor.constraint(equalTo: contentLabel.leadingAnchor),
-			toolbar.trailingAnchor.constraint(equalTo: contentLabel.trailingAnchor),
-			toolbar.topAnchor.constraint(equalTo: locationLabel.bottomAnchor, constant: 8),
-
-			// likes container sits below toolbar
-			likesContainer.leadingAnchor.constraint(equalTo: contentLabel.leadingAnchor),
-			likesContainer.trailingAnchor.constraint(equalTo: contentLabel.trailingAnchor),
-			likesContainer.topAnchor.constraint(equalTo: toolbar.bottomAnchor, constant: 8),
-			// commentsTable sits below likes container
-			likesContainer.bottomAnchor.constraint(equalTo: commentsTable.topAnchor, constant: -8),
-
-			commentsTable.leadingAnchor.constraint(equalTo: contentLabel.leadingAnchor),
-			commentsTable.trailingAnchor.constraint(equalTo: contentLabel.trailingAnchor),
-			commentsTable.bottomAnchor.constraint(equalTo: cardView.bottomAnchor, constant: -12)
+            
 		])
 
 			// collection view setup
 			imagesCollectionView.dataSource = self
 			imagesCollectionView.delegate = self
 			imagesCollectionView.register(ImageGridCell.self, forCellWithReuseIdentifier: ImageGridCell.reuseIdentifier)
+
+			// mention label handled by visibility; no manual height constraint
 
 	}
 
@@ -381,15 +404,17 @@ class MomentsPostCell: DogeChatTableViewCell {
 	func configure(with post: PostModel) {
 		self.post = post
 		nameLabel.text = post.username
+		let mentioned = post.isMentionedMe
+		mentionLabel.isHidden = !mentioned
 		contentLabel.text = post.content
 		timeLabel.text = post.createdTime ?? ""
 		locationLabel.text = post.location ?? ""
-		likeLabel.text = "😍\(post.likeCount)"
+		likeLabel.text = "❤️\(post.likeCount)"
 		commentLabel.text = "✍️\(post.commentCount)"
 
 		// like button state
 		let liked = post.isLiked
-		likeButton.setTitle(liked ? NSLocalizedString("Unlike", comment: "") : NSLocalizedString("Like", comment: ""), for: .normal)
+		likeButton.setTitle(liked ? NSLocalizedString("❤️", comment: "") : NSLocalizedString("🤍", comment: ""), for: .normal)
 
 		if let avatar = post.avatarUrl {
 			loadImage(url: avatar, into: avatarView)
@@ -501,7 +526,19 @@ class MomentsPostCell: DogeChatTableViewCell {
 	}
 
 	private func loadImage(url: String, into iv: UIImageView) {
-        MediaLoader.shared.requestImage(urlStr: url, type: .photo) { image, _, _ in
+        guard var component = URLComponents(string: url) else {
+            return
+        }
+        var items = component.queryItems ?? []
+        items.append(URLQueryItem(name: "image_process", value: "image/resize"))
+        items.append(URLQueryItem(name: "ratio", value: "0.3"))
+        component.queryItems = items
+        guard let urlStr = component.string else { return }
+        iv.doge_loadingURLStr = urlStr
+        MediaLoader.shared.requestImage(urlStr: urlStr, type: .photo) { image, _, _ in
+            guard iv.doge_loadingURLStr == urlStr else {
+                return
+            }
             iv.image = image
         }
 	}

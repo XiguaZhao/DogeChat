@@ -31,6 +31,7 @@ class MediaBrowserViewController: UIViewController, TransitionFromDataSource {
     
     var purpose: MediaVCPurpose = .normal
     var customData: Any?
+    var lastViewSize = CGSize.zero
     
     private let isPotrait = UIApplication.shared.statusBarOrientation.isPortrait
     private weak var transitionDelegate: UIViewControllerTransitioningDelegate?
@@ -111,6 +112,10 @@ class MediaBrowserViewController: UIViewController, TransitionFromDataSource {
         
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
+        guard view.frame.size != lastViewSize else {
+            return
+        }
+        lastViewSize = view.frame.size
         flowLayout.itemSize = collectionView.bounds.size
         scrollToIndex(targetIndex)
     }

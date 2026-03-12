@@ -10,9 +10,14 @@ import UIKit
 import SwiftyJSON
 import DogeChatUniversal
 import DogeChatNetwork
+import DogeChatCommonDefines
 
-class MomentsVC: DogeChatViewController, DogeChatVCTableDataSource {
-
+class MomentsVC: DogeChatViewController, DogeChatVCTableDataSource, ContactDataSource {
+    var friends: [DogeChatCommonDefines.Friend] {
+        guard let manager = manager?.httpsManager else { return [] }
+        return manager.friends
+    }
+    
     var tableView = DogeChatTableView()
     var posts = [PostModel]()
     // pagination
@@ -151,32 +156,14 @@ extension MomentsVC: MomentsPostCellDelegate {
                         updated.isLiked = true
                     }
                     self.posts[idx] = updated
-                    DispatchQueue.main.async { self.tableView.reloadSections(IndexSet(integer: idx), with: .automatic) }
+                    DispatchQueue.main.async { self.tableView.reloadData() }
                 }
             }
         }
     }
 
     func momentsPostCell(_ cell: MomentsPostCell, didTapCommentFor momentId: String) {
-        let alert = UIAlertController(title: NSLocalizedString("Add Comment", comment: ""), message: nil, preferredStyle: .alert)
-        alert.addTextField { tf in tf.placeholder = NSLocalizedString("Write a comment...", comment: "") }
-        alert.addAction(UIAlertAction(title: NSLocalizedString("Cancel", comment: ""), style: .cancel))
-        alert.addAction(UIAlertAction(title: NSLocalizedString("Send", comment: ""), style: .default, handler: { _ in
-            guard let text = alert.textFields?.first?.text, !text.isEmpty else { return }
-            guard let http = self.manager?.httpsManager else { return }
-            http.commentMoment(momentId: momentId, content: text) { success in
-                if success {
-                    if let idx = self.posts.firstIndex(where: { $0.momentId == momentId }) {
-                        var updated = self.posts[idx]
-                        let comment = PostComment(commentId: nil, userId: http.accountInfo.userID ?? "", username: http.accountInfo.username, content: text, createdTime: nil, replyToUserId: nil, replyToUsername: nil, replyToCommentId: nil)
-                        updated.comments.append(comment)
-                        self.posts[idx] = updated
-                        DispatchQueue.main.async { self.tableView.reloadSections(IndexSet(integer: idx), with: .automatic) }
-                    }
-                }
-            }
-        }))
-        present(alert, animated: true)
+        presentCommentComposer(momentId: momentId, prefill: nil, replyTo: nil)
     }
 
     func momentsPostCell(_ cell: MomentsPostCell, didTapImageAt index: Int, forMomentId momentId: String, imageView: UIImageView) {
@@ -245,7 +232,7 @@ extension MomentsVC: MomentsPostCellDelegate {
                             }
                         }
                         self.posts[idx] = updated
-                        DispatchQueue.main.async { self.tableView.reloadSections(IndexSet(integer: idx), with: .automatic) }
+                        DispatchQueue.main.async { self.tableView.reloadData() }
                     }
                 }
 
@@ -267,27 +254,7 @@ extension MomentsVC: MomentsPostCellDelegate {
 
     func momentsPostCell(_ cell: MomentsPostCell, didTapComment comment: PostComment, inMomentId momentId: String) {
         // reply to a specific comment
-        let placeholder = String(format: NSLocalizedString("Reply to %@", comment: ""), comment.username)
-        let alert = UIAlertController(title: nil, message: nil, preferredStyle: .alert)
-        alert.addTextField { tf in tf.placeholder = placeholder }
-        alert.addAction(UIAlertAction(title: NSLocalizedString("Cancel", comment: ""), style: .cancel))
-        alert.addAction(UIAlertAction(title: NSLocalizedString("Send", comment: ""), style: .default, handler: { _ in
-            guard let text = alert.textFields?.first?.text, !text.isEmpty else { return }
-            guard let http = self.manager?.httpsManager else { return }
-            http.commentMoment(momentId: momentId, content: text, replyToUserId: comment.userId, replyToCommentId: comment.commentId) { success in
-                if success {
-                    if let idx = self.posts.firstIndex(where: { $0.momentId == momentId }) {
-                        var updated = self.posts[idx]
-                        let newComment = PostComment(commentId: nil, userId: http.accountInfo.userID ?? "", username: http.accountInfo.username, content: text, createdTime: nil, replyToUserId: comment.userId, replyToUsername: comment.username, replyToCommentId: comment.commentId)
-                        updated.comments.append(newComment)
-                        self.posts[idx] = updated
-                        DispatchQueue.main.async { self.tableView.reloadData()
-                        }
-                    }
-                }
-            }
-        }))
-        present(alert, animated: true)
+        presentCommentComposer(momentId: momentId, prefill: nil, replyTo: comment)
     }
 }
 
@@ -304,6 +271,7 @@ extension MomentsVC {
         // prevent duplicate loads
         if isLoadingMore { return }
         isLoadingMore = true
+        let myId = http.accountInfo.userID ?? ""
 
         var urlStr = http.url_pre + "moment/timeline"
         if page > 0 {
@@ -352,6 +320,20 @@ extension MomentsVC {
                 }
                 var post = PostModel(momentId: id, userId: uid, username: name, avatarUrl: avatar, content: content, location: item["location"].string, visibility: item["visibility"].intValue, createdTime: item["createdTime"].string, mediaList: medias, comments: comments, likeUsers: likeUsers, isMine: item["isMine"].boolValue)
                 post.isLiked = item["isLiked"].boolValue
+                // determine if current user was reminded/mentioned
+                var mentioned = false
+                // check remindWho in post
+                for r in item["remindWho"].arrayValue { if r.stringValue == myId { mentioned = true; break } }
+                // check comment mentionedUsers
+                if !mentioned {
+                    for c in item["comments"].arrayValue {
+                        for mu in c["mentionedUsers"].arrayValue {
+                            if mu.stringValue == myId { mentioned = true; break }
+                        }
+                        if mentioned { break }
+                    }
+                }
+                post.isMentionedMe = mentioned
                 newPosts.append(post)
             }
 
@@ -376,5 +358,75 @@ extension MomentsVC {
                 if let p = respPage { self.currentPage = p } else { self.currentPage = page }
             }
         }.resume()
+    }
+}
+
+// MARK: - Comment & mention helpers
+extension MomentsVC {
+    private func showFriendPicker(currentText: String?, completion: @escaping ([Friend]) -> Void) {
+        // use provided list or fallback to http manager's friends
+        let contactVC = SelectContactsViewController()
+        contactVC.dataSourcea = self
+        contactVC.didSelectContacts = { friends in
+            completion(friends)
+        }
+        present(contactVC, animated: true)
+    }
+
+    /// Presents comment composer. If `replyTo` is non-nil, will send as a reply.
+    func presentCommentComposer(momentId: String, prefill: String?, replyTo: PostComment?, mentionedFriends: [Friend]? = nil) {
+        let title = replyTo == nil ? NSLocalizedString("Add Comment", comment: "") : "回复\(replyTo!.username)"
+        let alert = UIAlertController(title: title, message: nil, preferredStyle: .alert)
+        alert.addTextField { tf in
+            tf.placeholder = NSLocalizedString("Write a comment...", comment: "")
+            if let p = prefill { tf.text = p }
+        }
+        alert.addAction(UIAlertAction(title: NSLocalizedString("Cancel", comment: ""), style: .cancel))
+        // At someone action: will open friend picker and re-present composer with inserted mention
+        alert.addAction(UIAlertAction(title: "@某人", style: .default, handler: { _ in
+            let current = alert.textFields?.first?.text
+            self.showFriendPicker(currentText: current) { friends in
+                let appended = friends.reduce((current ?? "")) { acc, f in acc + "@\(f.username) " }
+                DispatchQueue.main.async {
+                    // carry forward any already selected mentioned friends
+                    var merged = mentionedFriends ?? []
+                    merged.append(contentsOf: friends)
+                    self.presentCommentComposer(momentId: momentId, prefill: appended, replyTo: replyTo, mentionedFriends: merged)
+                }
+            }
+        }))
+
+        alert.addAction(UIAlertAction(title: NSLocalizedString("Send", comment: ""), style: .default, handler: { _ in
+            guard let text = alert.textFields?.first?.text, !text.isEmpty else { return }
+            guard let http = self.manager?.httpsManager else { return }
+            let mentionedIds = mentionedFriends?.compactMap { $0.userID }
+            if let r = replyTo {
+                http.commentMoment(momentId: momentId, content: text, mentionedUsers: mentionedIds, replyToUserId: r.userId, replyToCommentId: r.commentId) { success in
+                    if success {
+                        if let idx = self.posts.firstIndex(where: { $0.momentId == momentId }) {
+                            var updated = self.posts[idx]
+                            let newComment = PostComment(commentId: nil, userId: http.accountInfo.userID ?? "", username: http.accountInfo.username, content: text, createdTime: nil, replyToUserId: r.userId, replyToUsername: r.username, replyToCommentId: r.commentId)
+                            updated.comments.append(newComment)
+                            self.posts[idx] = updated
+                            DispatchQueue.main.async { self.tableView.reloadData() }
+                        }
+                    }
+                }
+            } else {
+                http.commentMoment(momentId: momentId, content: text, mentionedUsers: mentionedIds) { success in
+                    if success {
+                        if let idx = self.posts.firstIndex(where: { $0.momentId == momentId }) {
+                            var updated = self.posts[idx]
+                            let comment = PostComment(commentId: nil, userId: http.accountInfo.userID ?? "", username: http.accountInfo.username, content: text, createdTime: nil, replyToUserId: nil, replyToUsername: nil, replyToCommentId: nil)
+                            updated.comments.append(comment)
+                            self.posts[idx] = updated
+                            DispatchQueue.main.async { self.tableView.reloadData() }
+                        }
+                    }
+                }
+            }
+        }))
+
+        present(alert, animated: true)
     }
 }

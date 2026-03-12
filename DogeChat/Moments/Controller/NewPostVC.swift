@@ -4,8 +4,15 @@ import DogeChatNetwork
 import SwiftyJSON
 import DogeChatUniversal
 import CoreLocation
+import DogeChatCommonDefines
 
-class NewPostVC: DogeChatViewController, PHPickerViewControllerDelegate, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, CLLocationManagerDelegate {
+class NewPostVC: DogeChatViewController, PHPickerViewControllerDelegate, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout, CLLocationManagerDelegate, ContactDataSource {
+    var friends: [Friend] {
+        guard let manager = manager?.httpsManager else {
+            return []
+        }
+        return manager.friends
+    }
 
     var onPostPublished: ((PostModel) -> Void)?
     var manager: WebSocketManager? {
@@ -14,6 +21,8 @@ class NewPostVC: DogeChatViewController, PHPickerViewControllerDelegate, UIColle
 
     private let textView: UITextView = {
         let tv = UITextView()
+        tv.backgroundColor = .init(white: 1, alpha: 0.1)
+        tv.layer.cornerRadius = 6
         tv.font = UIFont.systemFont(ofSize: 16)
         tv.translatesAutoresizingMaskIntoConstraints = false
         return tv
@@ -37,6 +46,7 @@ class NewPostVC: DogeChatViewController, PHPickerViewControllerDelegate, UIColle
         tf.placeholder = NSLocalizedString("Location (optional)", comment: "")
         tf.borderStyle = .roundedRect
         tf.translatesAutoresizingMaskIntoConstraints = false
+        tf.backgroundColor = .clear
         return tf
     }()
 
@@ -57,7 +67,18 @@ class NewPostVC: DogeChatViewController, PHPickerViewControllerDelegate, UIColle
 
     private let locationManager = CLLocationManager()
 
-    private var attachedImageURLs: [URL] = []
+    // remindWho user IDs (selected via contact picker). Consumer may implement picker and set this array.
+    var remindWho: [String] = []
+    /// Optional hook: called when user taps select contacts. Caller may present their selector and set `remindWho`.
+
+    private let selectContactsBtn: UIButton = {
+        let b = UIButton(type: .system)
+        b.setTitle(NSLocalizedString("Select Contacts", comment: ""), for: .normal)
+        b.translatesAutoresizingMaskIntoConstraints = false
+        return b
+    }()
+
+    private var attachedImageInfos: [(url: URL, size: CGSize)] = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -70,6 +91,7 @@ class NewPostVC: DogeChatViewController, PHPickerViewControllerDelegate, UIColle
         view.addSubview(collectionView)
         view.addSubview(locationField)
         view.addSubview(useLocationBtn)
+        view.addSubview(selectContactsBtn)
         view.addSubview(visibilityControl)
 
         let pickBtn = UIButton(type: .system)
@@ -101,7 +123,12 @@ class NewPostVC: DogeChatViewController, PHPickerViewControllerDelegate, UIColle
             useLocationBtn.leadingAnchor.constraint(equalTo: view.centerXAnchor, constant: 8),
             useLocationBtn.trailingAnchor.constraint(equalTo: textView.trailingAnchor),
 
-            pickBtn.topAnchor.constraint(equalTo: locationField.bottomAnchor, constant: 12),
+            selectContactsBtn.topAnchor.constraint(equalTo: locationField.bottomAnchor, constant: 8),
+            selectContactsBtn.leadingAnchor.constraint(equalTo: textView.leadingAnchor),
+            selectContactsBtn.trailingAnchor.constraint(equalTo: textView.trailingAnchor),
+            selectContactsBtn.heightAnchor.constraint(equalToConstant: 36),
+
+            pickBtn.topAnchor.constraint(equalTo: selectContactsBtn.bottomAnchor, constant: 12),
             pickBtn.leadingAnchor.constraint(equalTo: textView.leadingAnchor),
 
             collectionView.topAnchor.constraint(equalTo: pickBtn.bottomAnchor, constant: 8),
@@ -114,29 +141,31 @@ class NewPostVC: DogeChatViewController, PHPickerViewControllerDelegate, UIColle
         collectionView.delegate = self
         collectionView.register(SelectedImageCell.self, forCellWithReuseIdentifier: SelectedImageCell.reuseIdentifier)
 
+        selectContactsBtn.addTarget(self, action: #selector(selectContactsTapped), for: .touchUpInside)
+
         useLocationBtn.addTarget(self, action: #selector(useCurrentLocation), for: .touchUpInside)
         locationManager.delegate = self
     }
 
     // MARK: - UICollectionView DataSource
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return attachedImageURLs.count
+        return attachedImageInfos.count
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: SelectedImageCell.reuseIdentifier, for: indexPath) as? SelectedImageCell else {
             return UICollectionViewCell()
         }
-        let url = attachedImageURLs[indexPath.item]
-        if let data = try? Data(contentsOf: url), let img = UIImage(data: data) {
+        let url = attachedImageInfos[indexPath.item]
+        if let data = try? Data(contentsOf: url.url), let img = UIImage(data: data) {
             cell.configure(with: img)
         } else {
             cell.configure(with: nil)
         }
         cell.onDelete = { [weak self] in
             guard let self = self else { return }
-            if indexPath.item < self.attachedImageURLs.count {
-                self.attachedImageURLs.remove(at: indexPath.item)
+            if indexPath.item < self.attachedImageInfos.count {
+                self.attachedImageInfos.remove(at: indexPath.item)
                 self.collectionView.reloadData()
             }
         }
@@ -168,17 +197,18 @@ class NewPostVC: DogeChatViewController, PHPickerViewControllerDelegate, UIColle
         picker.dismiss(animated: true, completion: nil)
         guard !results.isEmpty else { return }
         let group = DispatchGroup()
-        var newURLs: [URL] = []
-        for (i, res) in results.enumerated() {
+        var newURLs: [(url: URL, size: CGSize)] = []
+        for res in results {
             if res.itemProvider.canLoadObject(ofClass: UIImage.self) {
                 group.enter()
                 res.itemProvider.loadObject(ofClass: UIImage.self) { object, error in
                     defer { group.leave() }
-                    if let img = object as? UIImage, let data = img.jpegData(compressionQuality: 0.85) {
-                        let tmp = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("newpost_\(Date().timeIntervalSince1970)_\(i).jpg")
+                    if let img = object as? UIImage {
+                        let data = compressImage(image: img, imageWidth: .original)
+                        let tmp = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("\(UUID().uuidString).jpg")
                         do {
                             try data.write(to: tmp)
-                            newURLs.append(tmp)
+                            newURLs.append((tmp, img.size))
                         } catch {
                         }
                     }
@@ -188,7 +218,7 @@ class NewPostVC: DogeChatViewController, PHPickerViewControllerDelegate, UIColle
         group.notify(queue: .main) { [weak self] in
             guard let self = self else { return }
             if !newURLs.isEmpty {
-                self.attachedImageURLs.append(contentsOf: newURLs)
+                self.attachedImageInfos.append(contentsOf: newURLs)
                 self.collectionView.reloadData()
             }
         }
@@ -207,7 +237,7 @@ class NewPostVC: DogeChatViewController, PHPickerViewControllerDelegate, UIColle
         }()
         let location = locationField.text?.trimmingCharacters(in: .whitespacesAndNewlines)
 
-        if attachedImageURLs.isEmpty {
+        if attachedImageInfos.isEmpty {
             publish(content: content, mediaInfos: [], visibility: visibilityValue, location: location)
             return
         }
@@ -215,9 +245,9 @@ class NewPostVC: DogeChatViewController, PHPickerViewControllerDelegate, UIColle
         var uploadedPaths: [String] = []
         var anyFailed = false
         let dispatchGroup = DispatchGroup()
-        for url in attachedImageURLs {
+        for info in attachedImageInfos {
             dispatchGroup.enter()
-            http.uploadPhoto(imageUrl: url, type: .photo, size: CGSize(width: 1200, height: 1200), uploadProgress: nil, success: { path in
+            http.uploadPhoto(imageUrl: info.url, type: .photo, size: info.size, uploadProgress: nil, success: { path in
                 uploadedPaths.append(path)
                 dispatchGroup.leave()
             }, fail: {
@@ -252,8 +282,9 @@ class NewPostVC: DogeChatViewController, PHPickerViewControllerDelegate, UIColle
                 mediaObj["mediaUrl"] = path
                 mediaObj["thumbnailUrl"] = ""
                 // attempt to get width/height/filesize from corresponding local file if exists
-                if i < attachedImageURLs.count {
-                    let fileUrl = attachedImageURLs[i]
+                if i < attachedImageInfos.count {
+                    let info = attachedImageInfos[i]
+                    let fileUrl = info.url
                     if let img = UIImage(contentsOfFile: fileUrl.path) {
                         mediaObj["width"] = Int(img.size.width)
                         mediaObj["height"] = Int(img.size.height)
@@ -266,6 +297,10 @@ class NewPostVC: DogeChatViewController, PHPickerViewControllerDelegate, UIColle
                 mediaList.append(mediaObj)
             }
             params["mediaList"] = mediaList
+        }
+        // include remindWho if any
+        if !remindWho.isEmpty {
+            params["remindWho"] = remindWho
         }
 
         var request = URLRequest(url: URL(string: http.url_pre + "moment/publish")!)
@@ -342,6 +377,15 @@ class NewPostVC: DogeChatViewController, PHPickerViewControllerDelegate, UIColle
             ac.addAction(UIAlertAction(title: "OK", style: .default))
             self.present(ac, animated: true)
         }
+    }
+
+    @objc private func selectContactsTapped() {
+        let selectVC = SelectContactsViewController()
+        selectVC.dataSourcea = self
+        selectVC.didSelectContacts = { [weak self] friends in
+            self?.remindWho = friends.map { $0.userID }
+        }
+        present(selectVC, animated: true)
     }
 }
 

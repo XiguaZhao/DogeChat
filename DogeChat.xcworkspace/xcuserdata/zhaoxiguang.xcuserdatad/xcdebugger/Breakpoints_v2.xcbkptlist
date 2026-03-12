@@ -575,8 +575,8 @@
             filePath = "DogeChat/ViewControllers/MediaBrowserViewController.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "90"
-            endingLineNumber = "90"
+            startingLineNumber = "91"
+            endingLineNumber = "91"
             landmarkName = "onOrientationChange()"
             landmarkType = "7">
          </BreakpointContent>
@@ -607,10 +607,10 @@
             filePath = "DogeChat/Moments/View/MomentsPostCell.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "249"
-            endingLineNumber = "249"
-            landmarkName = "commentLabel"
-            landmarkType = "24">
+            startingLineNumber = "226"
+            endingLineNumber = "226"
+            landmarkName = "MomentsPostCell"
+            landmarkType = "3">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

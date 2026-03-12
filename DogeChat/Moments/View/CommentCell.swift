@@ -22,16 +22,17 @@ class CommentCell: DogeChatTableViewCell {
 
         private let nameLabel: UILabel = {
             let l = UILabel()
-            l.font = UIFont.boldSystemFont(ofSize: 13)
+            l.font = UIFont.boldSystemFont(ofSize: 14)
+            l.textColor = .secondaryLabel
             l.translatesAutoresizingMaskIntoConstraints = false
             return l
         }()
 
         private let contentLabel: UILabel = {
             let l = UILabel()
-            l.font = UIFont.systemFont(ofSize: 13)
+            l.font = UIFont.systemFont(ofSize: 15)
             l.numberOfLines = 0
-            l.textColor = .secondaryLabel
+            l.textColor = .label
             l.translatesAutoresizingMaskIntoConstraints = false
             return l
         }()
@@ -43,12 +44,12 @@ class CommentCell: DogeChatTableViewCell {
             contentView.addSubview(contentLabel)
 
             NSLayoutConstraint.activate([
-                nameLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 8),
+                nameLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
                 nameLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 6),
                 nameLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8),
 
                 contentLabel.leadingAnchor.constraint(equalTo: nameLabel.leadingAnchor),
-                contentLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 2),
+                contentLabel.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 4),
                 contentLabel.trailingAnchor.constraint(equalTo: nameLabel.trailingAnchor),
                 contentLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -6)
             ])
