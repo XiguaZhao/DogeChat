@@ -89,6 +89,98 @@ extension MomentsVC: UITableViewDataSource, UITableViewDelegate {
         cell.delegate = self
         return cell
     }
+
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        // Manual height calculation to avoid Auto Layout instability with embedded collection/table views
+        guard indexPath.row < posts.count else { return 100 }
+        let post = posts[indexPath.row]
+
+        let tableWidth = tableView.bounds.width
+        if tableWidth <= 0 { return 200 }
+
+        // constants matching MomentsPostCell layout
+        let cardHorizontalMargin: CGFloat = 12 // cardView leading/trailing
+        let mainStackInner: CGFloat = 12 // mainStack leading/trailing inside card
+        let contentWidth = tableWidth - (cardHorizontalMargin * 2) - (mainStackInner * 2)
+
+        var h: CGFloat = 0
+        // card top + mainStack top
+        h += 8 // card top
+        h += 12 // mainStack top
+
+        // Header row (avatar 40) vs name+time stack
+        let avatarH: CGFloat = 40
+        let nameFont = UIFont.boldSystemFont(ofSize: 15)
+        let timeFont = UIFont.systemFont(ofSize: 12)
+        let nameText = post.username as NSString
+        let nameH = nameText.boundingRect(with: CGSize(width: contentWidth, height: .greatestFiniteMagnitude), options: .usesLineFragmentOrigin, attributes: [.font: nameFont], context: nil).height
+        let timeText = (post.createdTime ?? "") as NSString
+        let timeH = timeText.boundingRect(with: CGSize(width: contentWidth, height: .greatestFiniteMagnitude), options: .usesLineFragmentOrigin, attributes: [.font: timeFont], context: nil).height
+        let headerStackH = nameH + 2 + timeH
+        h += max(avatarH, ceil(headerStackH))
+
+        let stackSpacing: CGFloat = 8
+
+        // Content text
+        h += stackSpacing
+        let contentH: CGFloat = {
+            let txt = post.content
+            guard !txt.isEmpty else { return CGFloat(0) }
+            let font = UIFont.systemFont(ofSize: 14)
+            let r = (txt as NSString).boundingRect(with: CGSize(width: contentWidth, height: .greatestFiniteMagnitude), options: .usesLineFragmentOrigin, attributes: [.font: font], context: nil)
+            return ceil(r.height)
+        }()
+        h += contentH
+
+        // Images grid
+        let imageCount = post.mediaList.count
+        if imageCount > 0 {
+            h += stackSpacing
+            let perRow: CGFloat = 3
+            let interItem: CGFloat = 6
+            let totalInter = interItem * (perRow - 1)
+            let itemW = floor((contentWidth - totalInter) / perRow)
+            let rows = CGFloat((imageCount + Int(perRow) - 1) / Int(perRow))
+            let imagesH = rows * itemW + max(0, rows - 1) * interItem
+            h += imagesH
+        }
+
+        // Location
+        if let loc = post.location, !loc.isEmpty {
+            h += stackSpacing
+            let locH = (loc as NSString).boundingRect(with: CGSize(width: contentWidth, height: .greatestFiniteMagnitude), options: .usesLineFragmentOrigin, attributes: [.font: UIFont.systemFont(ofSize: 12)], context: nil).height
+            h += ceil(locH)
+        }
+
+        // Toolbar (fixed)
+        h += stackSpacing
+        let toolbarH: CGFloat = 30
+        h += toolbarH
+
+        // Likes
+        if post.likeUsers.count > 0 {
+            h += stackSpacing
+            let likesH: CGFloat = 22
+            h += likesH
+        }
+
+        // Comments
+        if !post.comments.isEmpty {
+            h += stackSpacing
+            // sum comment heights
+            var totalCommentsH: CGFloat = 0
+            for c in post.comments {
+                totalCommentsH += CommentCell.height(for: c, width: contentWidth)
+            }
+            h += totalCommentsH
+        }
+
+        // mainStack bottom + card bottom
+        h += 12 // mainStack bottom
+        h += 8 // card bottom
+
+        return ceil(h)
+    }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         (cell as? MomentsPostCell)?.willDisplay()

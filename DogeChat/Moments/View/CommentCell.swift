@@ -73,6 +73,29 @@ class CommentCell: DogeChatTableViewCell {
                 contentLabel.text = comment.content
         }
 
+        // Manual height calculation for CommentCell given a constrained width
+        static func height(for comment: PostComment, width: CGFloat) -> CGFloat {
+            // layout constants must match constraints in init
+            let leftInset: CGFloat = 0 // nameLabel leading == contentView.leading
+            let rightInset: CGFloat = 8 // nameLabel.trailing == contentView.trailing - 8
+            let available = max(0, width - leftInset - rightInset)
+
+            let top: CGFloat = 6
+            let interNameContent: CGFloat = 4
+            let bottom: CGFloat = 6
+
+            let nameFont = UIFont.boldSystemFont(ofSize: 14)
+            let contentFont = UIFont.systemFont(ofSize: 15)
+
+            let nameText: NSString = (comment.replyToUsername?.isEmpty == false) ? NSString(string: "\(comment.username) 回复 \(comment.replyToUsername!)") : NSString(string: comment.username)
+            let nameHeight = nameText.boundingRect(with: CGSize(width: available, height: CGFloat.greatestFiniteMagnitude), options: .usesLineFragmentOrigin, attributes: [.font: nameFont], context: nil).height
+
+            let contentText: NSString = NSString(string: comment.content)
+            let contentHeight = contentText.boundingRect(with: CGSize(width: available, height: CGFloat.greatestFiniteMagnitude), options: .usesLineFragmentOrigin, attributes: [.font: contentFont], context: nil).height
+
+            return top + ceil(nameHeight) + interNameContent + ceil(contentHeight) + bottom
+        }
+
         @objc private func longPressed(_ g: UILongPressGestureRecognizer) {
             if g.state == .began {
                 delegate?.commentCellDidLongPress(self)
