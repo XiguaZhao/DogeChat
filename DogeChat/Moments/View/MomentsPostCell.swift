@@ -10,30 +10,6 @@ import UIKit
 import PencilKit
 import MapKit
 
-// Auto-sizing table view that exposes its contentSize as an intrinsic content size
-private class AutoSizingTableView: UITableView {
-	override func layoutSubviews() {
-		super.layoutSubviews()
-		invalidateIntrinsicContentSize()
-	}
-
-	override var intrinsicContentSize: CGSize {
-		return CGSize(width: UIView.noIntrinsicMetric, height: contentSize.height)
-	}
-}
-
-// Auto-sizing collection view that exposes its contentSize as an intrinsic content size
-private class AutoSizingCollectionView: UICollectionView {
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        invalidateIntrinsicContentSize()
-    }
-
-    override var intrinsicContentSize: CGSize {
-        return CGSize(width: UIView.noIntrinsicMetric, height: contentSize.height)
-    }
-}
-
 protocol MomentsPostCellDelegate: AnyObject {
 	func momentsPostCell(_ cell: MomentsPostCell, didTapLikeFor momentId: String)
 	func momentsPostCell(_ cell: MomentsPostCell, didTapCommentFor momentId: String)
@@ -212,22 +188,26 @@ class MomentsPostCell: DogeChatTableViewCell {
 
 	private var imageUrls: [String] = []
 
-	private lazy var imagesCollectionView: AutoSizingCollectionView = {
+	private lazy var imagesCollectionView: UICollectionView = {
 		let layout = UICollectionViewFlowLayout()
 		layout.scrollDirection = .vertical
 		layout.minimumInteritemSpacing = 6
 		layout.minimumLineSpacing = 6
-		let cv = AutoSizingCollectionView(frame: .zero, collectionViewLayout: layout)
+		let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
 		cv.translatesAutoresizingMaskIntoConstraints = false
 		cv.backgroundColor = .clear
 		cv.isScrollEnabled = false
 		return cv
 	}()
+	
+	// explicit height constraint we control (calculated based on #images)
+	private var imagesCollectionHeightConstraint: NSLayoutConstraint!
+	
 
 
 	// embedded comments table (auto-sizing)
-	private let commentsTable: AutoSizingTableView = {
-		let tv = AutoSizingTableView(frame: .zero, style: .plain)
+	private let commentsTable: UITableView = {
+		let tv = UITableView(frame: .zero, style: .plain)
 		tv.translatesAutoresizingMaskIntoConstraints = false
 		tv.isScrollEnabled = false
 		tv.separatorStyle = .none
@@ -404,11 +384,14 @@ class MomentsPostCell: DogeChatTableViewCell {
 		])
 
 			// collection view setup
-			imagesCollectionView.dataSource = self
-			imagesCollectionView.delegate = self
-			imagesCollectionView.register(ImageGridCell.self, forCellWithReuseIdentifier: ImageGridCell.reuseIdentifier)
-
-			// mention label handled by visibility; no manual height constraint
+        imagesCollectionView.dataSource = self
+        imagesCollectionView.delegate = self
+        imagesCollectionView.register(ImageGridCell.self, forCellWithReuseIdentifier: ImageGridCell.reuseIdentifier)
+        // add explicit height constraint so we can calculate grid height
+        imagesCollectionHeightConstraint = imagesCollectionView.heightAnchor.constraint(equalToConstant: 0)
+        imagesCollectionHeightConstraint.isActive = true
+        
+        // mention label handled by visibility; no manual height constraint
 
 	}
 
@@ -444,29 +427,25 @@ class MomentsPostCell: DogeChatTableViewCell {
 		setupLikes(post.likeUsers)
 
 		// reload comments and let the auto-sizing table update its intrinsic content size
-        commentsTable.reloadData()
+		commentsTable.reloadData()
+		// hide comments table when empty so stack spacing matches VC height calc
+		commentsTable.isHidden = (post.comments.isEmpty)
+        locationLabel.isHidden = locationLabel.text?.isEmpty ?? true
         imagesCollectionView.reloadData()
 	}
-    
-	func willDisplay() {
-        commentsTable.invalidateIntrinsicContentSize()
         
-        imagesCollectionView.invalidateIntrinsicContentSize()
-        // ensure container relayout
-        self.setNeedsLayout()
-        self.layoutIfNeeded()
-	}
-    
     override func prepareForReuse() {
         super.prepareForReuse()
     }
 
 	private func updateImagesCollectionHeight() {
-		// Use auto-sizing collection view intrinsicContentSize instead of manual constraint.
+		// Use explicit height constraint; hide when empty
 		if imageUrls.isEmpty {
 			imagesCollectionView.isHidden = true
+			imagesCollectionHeightConstraint.constant = 0
 		} else {
 			imagesCollectionView.isHidden = false
+			imagesCollectionHeightConstraint.constant = calculateImagesHeight(forCount: imageUrls.count)
 		}
 	}
 
@@ -531,9 +510,41 @@ class MomentsPostCell: DogeChatTableViewCell {
 	private func setupImages(_ medias: [PostMedia]) {
 		imageUrls = medias.map { $0.mediaUrl }
 		imagesCollectionView.reloadData()
-		// ensure layout is updated before computing height
+		// compute and set height immediately (layoutSubviews will re-check later)
+		imagesCollectionHeightConstraint.constant = calculateImagesHeight(forCount: imageUrls.count)
 		imagesCollectionView.layoutIfNeeded()
 		updateImagesCollectionHeight()
+	}
+
+	private func calculateImagesHeight(forCount count: Int) -> CGFloat {
+		guard count > 0 else { return 0 }
+		let perRow: CGFloat = 3
+		let layout = imagesCollectionView.collectionViewLayout as? UICollectionViewFlowLayout
+		let inter = layout?.minimumInteritemSpacing ?? 6
+		let line = layout?.minimumLineSpacing ?? 6
+		let totalInter = inter * (perRow - 1)
+		// try to use actual collection width; if not available, estimate from contentView width and known paddings
+		var width = imagesCollectionView.bounds.width
+		if width <= 0 {
+			let cardMargins: CGFloat = 12 * 2
+			let mainStackInner: CGFloat = 12 * 2
+			width = max(0, contentView.bounds.width - cardMargins - mainStackInner)
+		}
+		let itemW = floor((width - totalInter) / perRow)
+		let rows = CGFloat((count + Int(perRow) - 1) / Int(perRow))
+		let imagesH = rows * itemW + max(0, rows - 1) * line
+		return imagesH
+	}
+
+	override func layoutSubviews() {
+		super.layoutSubviews()
+		// Recalculate collection height using the real width after layout
+		let h = calculateImagesHeight(forCount: imageUrls.count)
+		if imagesCollectionHeightConstraint.constant != h {
+			imagesCollectionHeightConstraint.constant = h
+			setNeedsLayout()
+			layoutIfNeeded()
+		}
 	}
 
 	private func loadImage(url: String, into iv: UIImageView) {

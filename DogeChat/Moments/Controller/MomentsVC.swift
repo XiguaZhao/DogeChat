@@ -112,10 +112,21 @@ extension MomentsVC: UITableViewDataSource, UITableViewDelegate {
         let avatarH: CGFloat = 40
         let nameFont = UIFont.boldSystemFont(ofSize: 15)
         let timeFont = UIFont.systemFont(ofSize: 12)
+        // headerStack available width is contentWidth minus avatar and the header row spacing
+        let headerRowSpacing: CGFloat = 10
+        let headerStackAvailable = max(0, contentWidth - avatarH - headerRowSpacing)
+        // if mention label visible, subtract its intrinsic width + spacing in the nameMentionStack
+        var nameAvailable = headerStackAvailable
+        if post.isMentionedMe {
+            let mentionText = NSLocalizedString("Mentioned you", comment: "") as NSString
+            let mentionWidth = mentionText.size(withAttributes: [.font: UIFont.systemFont(ofSize: 12)]).width
+            let nameMentionSpacing: CGFloat = 6
+            nameAvailable = max(0, headerStackAvailable - mentionWidth - nameMentionSpacing)
+        }
         let nameText = post.username as NSString
-        let nameH = nameText.boundingRect(with: CGSize(width: contentWidth, height: .greatestFiniteMagnitude), options: .usesLineFragmentOrigin, attributes: [.font: nameFont], context: nil).height
+        let nameH = nameText.boundingRect(with: CGSize(width: nameAvailable, height: .greatestFiniteMagnitude), options: .usesLineFragmentOrigin, attributes: [.font: nameFont], context: nil).height
         let timeText = (post.createdTime ?? "") as NSString
-        let timeH = timeText.boundingRect(with: CGSize(width: contentWidth, height: .greatestFiniteMagnitude), options: .usesLineFragmentOrigin, attributes: [.font: timeFont], context: nil).height
+        let timeH = timeText.boundingRect(with: CGSize(width: headerStackAvailable, height: .greatestFiniteMagnitude), options: .usesLineFragmentOrigin, attributes: [.font: timeFont], context: nil).height
         let headerStackH = nameH + 2 + timeH
         h += max(avatarH, ceil(headerStackH))
 
@@ -160,7 +171,7 @@ extension MomentsVC: UITableViewDataSource, UITableViewDelegate {
         // Likes
         if post.likeUsers.count > 0 {
             h += stackSpacing
-            let likesH: CGFloat = 22
+            let likesH: CGFloat = 20
             h += likesH
         }
 
@@ -179,11 +190,11 @@ extension MomentsVC: UITableViewDataSource, UITableViewDelegate {
         h += 12 // mainStack bottom
         h += 8 // card bottom
 
+        // small tolerance to avoid 1-2pt compression due to rounding/line-wrapping differences
         return ceil(h)
     }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        (cell as? MomentsPostCell)?.willDisplay()
     }
 
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
